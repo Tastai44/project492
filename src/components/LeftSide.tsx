@@ -30,7 +30,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default function LeftSide() {
   return (
-    <Box sx={{ width: "30vh" }}>
+    <Box sx={{ width: "120%" }}>
       <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
         <Box gridColumn="span 12">
           <Item

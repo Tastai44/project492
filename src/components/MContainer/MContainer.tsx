@@ -140,14 +140,14 @@ export default function MContainer() {
               src={Luffy}
               sx={{ width: "45px", height: "45px" }}
             />
-            <div>
+            <div style={{ width: "98%" }}>
               <TextField
                 id="outlined-basic"
                 label="Comment something..."
                 variant="outlined"
                 multiline
                 maxRows={4}
-                sx={{ width: "90vh" }}
+                sx={{ width: "99%" }}
               />
             </div>
           </div>

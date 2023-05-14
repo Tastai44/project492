@@ -32,7 +32,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function RightContainer() {
   return (
-    <Box sx={{ width: "30vh" }}>
+    <Box sx={{ width: "100%" }}>
       <Stack spacing={2}>
         <Item style={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <div

@@ -21,14 +21,14 @@ export default function PostForm() {
               src={Luffy}
               sx={{ width: "40px", height: "40px" }}
             />
-            <div>
+            <div style={{ width: "98%" }}>
               <TextField
                 id="outlined-basic"
                 label="What is in your mind?"
                 variant="outlined"
                 multiline
                 maxRows={4}
-                sx={{ width: "88vh" }}
+                sx={{ width: "99%" }}
               />
             </div>
           </div>

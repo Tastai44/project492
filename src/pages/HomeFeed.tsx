@@ -1,18 +1,17 @@
-import * as React from "react";
+// import * as React from "react";
 import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
-import NavBar from "../components/Navigation";
+// import Paper from "@mui/material/Paper";
+// import NavBar from "../components/Navigation";
 import LeftSide from "../components/LeftSide";
-import { Card } from "@mui/material";
+// import { Card } from "@mui/material";
 import MContainer from "../components/MContainer/MContainer";
 import RightContainer from "../components/RightSide/RightContainer";
 
-export default function SpacingGrid() {
+export default function HomeFeed() {
 
   return (
     <>
-    <NavBar/>
-      <Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={10}>
+      <Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
         <Grid item xs={12}>
           <Grid
             container
@@ -21,33 +20,19 @@ export default function SpacingGrid() {
             paddingRight={5}
           >
             <Grid item 
-            sx={{
-                height: "100vh",
-                width: "30vh",
-                border:"none",
-              }}>
+            xs={2}>
                 <div style={{position:"fixed"}}><LeftSide /></div>
                 
             </Grid>
 
             <Grid item
-            sx={{
-                height: "100vh",
-                width: "100vh",
-                color:"black",
-                backgroundColor: "#EEECEF"
-              }}
+            xs={7}
             >
                 <MContainer />
             </Grid>
 
             <Grid item 
-            sx={{
-                height: "100vh",
-                width: "30vh",
-                color:"black",
-                backgroundColor: "#EEECEF"
-              }}>
+            xs={2}>
                 <div style={{position:"fixed"}}><RightContainer /></div>
             </Grid>
           </Grid>
