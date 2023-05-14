@@ -6,6 +6,7 @@ import './App.css'
 import Navigation from "./components/Navigation"
 import HomeFeed from "./pages/HomeFeed"
 import Members from "./pages/Members"
+import Topics from "./pages/Topics"
 
 function App() {
 
@@ -16,6 +17,7 @@ function App() {
         <Routes>
           <Route  path={"/"} element={<HomeFeed />} />
           <Route path={"/members"} element={<Members />} />
+          <Route path={"/topics"} element={<Topics />} />
         </Routes>
     
     {/* </BrowserRouter> */}

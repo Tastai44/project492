@@ -30,7 +30,7 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import TagIcon from "@mui/icons-material/Tag";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -350,6 +350,16 @@ export default function Navigation() {
                 padding: "10px",
               }}
             />
+            <NavLink
+              to={"/topics"}
+              style={({ isActive, isPending }) => {
+                return {
+                  fontWeight: isPending ? "bold" : "",
+                  color: isActive ? "white" : "white",
+                  borderBlockEnd: isActive ? "2px solid white" : "",
+                };
+              }}
+            >
             <TagIcon
               sx={{
                 fontSize: "30px",
@@ -358,6 +368,7 @@ export default function Navigation() {
                 padding: "10px",
               }}
             />
+            </NavLink>
             <Diversity3Icon
               sx={{
                 fontSize: "30px",

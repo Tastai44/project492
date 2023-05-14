@@ -14,7 +14,6 @@ export default function MembersCon() {
           <MemberCard />
           <MemberCard />
           <MemberCard />
-
         {/* </Grid>
       </Grid> */}
     </Grid>

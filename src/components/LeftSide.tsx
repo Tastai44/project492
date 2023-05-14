@@ -1,10 +1,8 @@
-import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import {
   Avatar,
-  Divider,
   List,
   ListItem,
   ListItemButton,
@@ -19,6 +17,7 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import TagIcon from "@mui/icons-material/Tag";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
+import { NavLink } from "react-router-dom";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -51,12 +50,24 @@ export default function LeftSide() {
             <nav aria-label="main mailbox folders">
               <List>
                 <ListItem disablePadding>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <HomeIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Home" />
-                  </ListItemButton>
+                  <NavLink
+                    to="/"
+                    style={({ isActive, isPending }) => {
+                      return {
+                        fontWeight: isPending ? "bold" : "",
+                        color: isActive ? "black" : "black",
+                        backgroundColor: isActive ? "#F1F1F1" : "",
+                        width: isActive ? "100%" : "100%",
+                      };
+                    }}
+                  >
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <HomeIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="Home" />
+                    </ListItemButton>
+                  </NavLink>
                 </ListItem>
 
                 <ListItem disablePadding>
@@ -69,12 +80,24 @@ export default function LeftSide() {
                 </ListItem>
 
                 <ListItem disablePadding>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <GroupsIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Members" />
-                  </ListItemButton>
+                  <NavLink
+                    to="/members"
+                    style={({ isActive, isPending }) => {
+                      return {
+                        fontWeight: isPending ? "bold" : "",
+                        color: isActive ? "black" : "black",
+                        backgroundColor: isActive ? "#F1F1F1" : "",
+                        width: isActive ? "100%" : "100%",
+                      };
+                    }}
+                  >
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <GroupsIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="Members" />
+                    </ListItemButton>
+                  </NavLink>
                 </ListItem>
 
                 <ListItem disablePadding>
@@ -87,12 +110,24 @@ export default function LeftSide() {
                 </ListItem>
 
                 <ListItem disablePadding>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <TagIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Topics" />
-                  </ListItemButton>
+                  <NavLink
+                    to="/topics"
+                    style={({ isActive, isPending }) => {
+                      return {
+                        fontWeight: isPending ? "bold" : "",
+                        color: isActive ? "black" : "black",
+                        backgroundColor: isActive ? "#F1F1F1" : "",
+                        width: isActive ? "100%" : "100%",
+                      };
+                    }}
+                  >
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <TagIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="Topics" />
+                    </ListItemButton>
+                  </NavLink>
                 </ListItem>
               </List>
 
