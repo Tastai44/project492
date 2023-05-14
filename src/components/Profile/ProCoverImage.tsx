@@ -1,17 +1,10 @@
 import {
-  Avatar,
-  Badge,
-  Box,
   Button,
   Card,
-  CardContent,
   CardMedia,
-  Paper,
-  Stack,
-  styled,
+
 } from "@mui/material";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import React from "react";
 import Luffy from "../../../public/pictures/Luffy.webp";
 
 export default function ProCoverImage() {

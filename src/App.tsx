@@ -1,26 +1,24 @@
 
-import { BrowserRouter, Routes, Route} from "react-router-dom"
+import {Routes, Route} from "react-router-dom"
 
 import './App.css'
 
 import Navigation from "./components/Navigation"
 import HomeFeed from "./pages/HomeFeed"
+import Members from "./pages/Members"
 
 function App() {
 
   return (
     <>
-      <BrowserRouter>
+      {/* <BrowserRouter> */}
       <Navigation />
         <Routes>
-          <Route path="/" element={<HomeFeed />} />
-          <Route path="/profile:userId" element={<HomeFeed />} />
-
-
-          {/* <Route path='/back' /> */}
+          <Route  path={"/"} element={<HomeFeed />} />
+          <Route path={"/members"} element={<Members />} />
         </Routes>
     
-    </BrowserRouter>
+    {/* </BrowserRouter> */}
     </>
   )
 }

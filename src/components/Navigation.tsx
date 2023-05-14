@@ -1,6 +1,6 @@
 import * as React from "react";
 import { styled, alpha } from "@mui/material/styles";
-import AppBar from '@mui/material/AppBar';
+import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
@@ -23,13 +23,14 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import {Logout } from "@mui/icons-material";
+import { Logout } from "@mui/icons-material";
 import HomeIcon from "@mui/icons-material/Home";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import GroupsIcon from "@mui/icons-material/Groups";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import TagIcon from "@mui/icons-material/Tag";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
+import { Link, NavLink } from "react-router-dom";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -262,8 +263,8 @@ export default function Navigation() {
   );
 
   return (
-    <Box sx={{ flexGrow: 1}}>
-      <AppBar position="fixed" sx={{ backgroundColor: "#8E51E2"}}>
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="fixed" sx={{ backgroundColor: "#8E51E2" }}>
         <Toolbar>
           <IconButton
             size="medium"
@@ -295,14 +296,25 @@ export default function Navigation() {
           {/* Middle */}
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex", gap: 30 } }}>
-            <HomeIcon
-              sx={{
-                fontSize: "30px",
-                "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
-                borderRadius: "10px",
-                padding: "10px",
+            <NavLink
+              to="/"
+              style={({ isActive, isPending }) => {
+                return {
+                  fontWeight: isPending ? "bold" : "",
+                  color: isActive ? "white" : "white",
+                  borderBlockEnd: isActive ? "2px solid white" : "",
+                };
               }}
-            />
+            >
+              <HomeIcon
+                sx={{
+                  fontSize: "30px",
+                  "&:hover": { backgroundColor: "#e8e8e8" },
+                  borderRadius: "10px",
+                  padding: "10px",
+                }}
+              />
+            </NavLink>
             <PeopleAltIcon
               sx={{
                 fontSize: "30px",
@@ -311,14 +323,25 @@ export default function Navigation() {
                 padding: "10px",
               }}
             />
-            <GroupsIcon
-              sx={{
-                fontSize: "30px",
-                "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
-                borderRadius: "10px",
-                padding: "10px",
+            <NavLink
+              to={"/members"}
+              style={({ isActive, isPending }) => {
+                return {
+                  fontWeight: isPending ? "bold" : "",
+                  color: isActive ? "white" : "white",
+                  borderBlockEnd: isActive ? "2px solid white" : "",
+                };
               }}
-            />
+            >
+              <GroupsIcon
+                sx={{
+                  fontSize: "30px",
+                  "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
+                  borderRadius: "10px",
+                  padding: "10px",
+                }}
+              />
+            </NavLink>
             <DateRangeIcon
               sx={{
                 fontSize: "30px",

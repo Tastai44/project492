@@ -10,11 +10,9 @@ import {
   ListItemText,
   Stack,
 } from "@mui/material";
-import React from "react";
 import { styled } from "@mui/material/styles";
 import Luffy from "../../../public/pictures/Luffy.webp";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import { color } from "@mui/system";
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
