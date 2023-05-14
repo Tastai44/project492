@@ -7,6 +7,7 @@ import Navigation from "./components/Navigation"
 import HomeFeed from "./pages/HomeFeed"
 import Members from "./pages/Members"
 import Topics from "./pages/Topics"
+import Groups from "./pages/Groups"
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
           <Route  path={"/"} element={<HomeFeed />} />
           <Route path={"/members"} element={<Members />} />
           <Route path={"/topics"} element={<Topics />} />
+          <Route path={"/groups"} element={<Groups />} />
         </Routes>
     
     {/* </BrowserRouter> */}

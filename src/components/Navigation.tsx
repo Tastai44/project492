@@ -360,23 +360,34 @@ export default function Navigation() {
                 };
               }}
             >
-            <TagIcon
-              sx={{
-                fontSize: "30px",
-                "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
-                borderRadius: "10px",
-                padding: "10px",
-              }}
-            />
+              <TagIcon
+                sx={{
+                  fontSize: "30px",
+                  "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
+                  borderRadius: "10px",
+                  padding: "10px",
+                }}
+              />
             </NavLink>
-            <Diversity3Icon
-              sx={{
-                fontSize: "30px",
-                "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
-                borderRadius: "10px",
-                padding: "10px",
+            <NavLink
+              to="/groups"
+              style={({ isActive, isPending }) => {
+                return {
+                  fontWeight: isPending ? "bold" : "",
+                  color: isActive ? "white" : "white",
+                  borderBlockEnd: isActive ? "2px solid white" : "",
+                };
               }}
-            />
+            >
+              <Diversity3Icon
+                sx={{
+                  fontSize: "30px",
+                  "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
+                  borderRadius: "10px",
+                  padding: "10px",
+                }}
+              />
+            </NavLink>
           </Box>
           {/* Middle */}
 
