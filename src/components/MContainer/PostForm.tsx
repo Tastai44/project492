@@ -19,7 +19,7 @@ export default function PostForm() {
             <Avatar
               alt="User"
               src={Luffy}
-              sx={{ width: "50px", height: "50px" }}
+              sx={{ width: "40px", height: "40px" }}
             />
             <div>
               <TextField
@@ -28,7 +28,7 @@ export default function PostForm() {
                 variant="outlined"
                 multiline
                 maxRows={4}
-                sx={{ width: "90vh" }}
+                sx={{ width: "88vh" }}
               />
             </div>
           </div>

@@ -132,12 +132,13 @@ export default function MContainer() {
               alignItems: "center",
               justifyContent: "space-evenly",
               marginBottom: 10,
+              gap:"10px"
             }}
           >
             <Avatar
               alt="User"
               src={Luffy}
-              sx={{ width: "50px", height: "50px" }}
+              sx={{ width: "45px", height: "45px" }}
             />
             <div>
               <TextField
