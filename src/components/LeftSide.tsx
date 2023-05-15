@@ -101,12 +101,24 @@ export default function LeftSide() {
                 </ListItem>
 
                 <ListItem disablePadding>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <DateRangeIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Events" />
-                  </ListItemButton>
+                  <NavLink
+                    to="/events"
+                    style={({ isActive, isPending }) => {
+                      return {
+                        fontWeight: isPending ? "bold" : "",
+                        color: isActive ? "black" : "black",
+                        backgroundColor: isActive ? "#F1F1F1" : "",
+                        width: isActive ? "100%" : "100%",
+                      };
+                    }}
+                  >
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <DateRangeIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="Events" />
+                    </ListItemButton>
+                  </NavLink>
                 </ListItem>
 
                 <ListItem disablePadding>

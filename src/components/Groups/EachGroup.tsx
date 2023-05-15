@@ -1,6 +1,7 @@
 import { List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import TagIcon from "@mui/icons-material/Tag";
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+// import DeleteIcon from '@mui/icons-material/Delete';
+// import BorderColorIcon from '@mui/icons-material/BorderColor';
 export default function EachGroup() {
   return (
     <div>
@@ -12,7 +13,8 @@ export default function EachGroup() {
                   <TagIcon />
                 </ListItemIcon>
                 <ListItemText primary="ISNE" />
-                <MoreHorizIcon />
+                {/* <BorderColorIcon />
+                <DeleteIcon /> */}
               </ListItemButton>
             </ListItem>
           </List>

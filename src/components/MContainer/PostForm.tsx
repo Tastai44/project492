@@ -1,5 +1,4 @@
 import { Avatar, TextField, Divider, Box } from '@mui/material'
-import React from 'react'
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";

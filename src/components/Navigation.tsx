@@ -342,14 +342,25 @@ export default function Navigation() {
                 }}
               />
             </NavLink>
-            <DateRangeIcon
-              sx={{
-                fontSize: "30px",
-                "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
-                borderRadius: "10px",
-                padding: "10px",
+            <NavLink
+              to={"/events"}
+              style={({ isActive, isPending }) => {
+                return {
+                  fontWeight: isPending ? "bold" : "",
+                  color: isActive ? "white" : "white",
+                  borderBlockEnd: isActive ? "2px solid white" : "",
+                };
               }}
-            />
+            >
+              <DateRangeIcon
+                sx={{
+                  fontSize: "30px",
+                  "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
+                  borderRadius: "10px",
+                  padding: "10px",
+                }}
+              />
+            </NavLink>
             <NavLink
               to={"/topics"}
               style={({ isActive, isPending }) => {

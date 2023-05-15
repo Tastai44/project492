@@ -10,7 +10,6 @@ import {
   CardContent,
   CardMedia,
   Divider,
-  IconButton,
   ListItem,
   ListItemAvatar,
   ListItemText,
