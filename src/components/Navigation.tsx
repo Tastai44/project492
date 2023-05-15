@@ -73,6 +73,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Navigation() {
+  const userId = 1;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
@@ -135,18 +136,25 @@ export default function Navigation() {
       transformOrigin={{ horizontal: "right", vertical: "top" }}
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
     >
+      <NavLink to={`/profileBlog/${userId}`}>
       <MenuItem
         onClick={handleMenuClose}
         sx={{
+          color:"black",
           padding: "20px",
           gap: "10px",
           margin: 1,
           backgroundColor: "white",
           borderRadius: "10px",
+          "&:hover": {
+            color: "white",
+            backgroundColor: "grey",
+          },
         }}
       >
         <Avatar src={Luffy} /> Tastai Khianjai
       </MenuItem>
+      </NavLink>
       <Divider style={{ background: "white" }} />
       <MenuItem
         onClick={handleMenuClose}
@@ -212,16 +220,6 @@ export default function Navigation() {
         Notifications
       </MenuItem>
       <Divider style={{ background: "white" }} />
-      {/* <MenuItem sx={{width:"100px"}}>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <Avatar alt="CMU" src={Luffy} />
-        </IconButton>
-        <p>Notifications...Notifications...Notifications...Notifications...Notifications...</p>
-      </MenuItem> */}
       <ListItem alignItems="flex-start">
         <ListItemAvatar>
           <Avatar alt="CMU" src={Luffy} />

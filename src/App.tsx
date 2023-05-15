@@ -9,6 +9,7 @@ import Members from "./pages/Members"
 import Topics from "./pages/Topics"
 import Groups from "./pages/Groups"
 import Events from "./pages/Events"
+import ProfileBlog from "./pages/ProfileBlog"
 
 function App() {
 
@@ -22,6 +23,8 @@ function App() {
           <Route path={"/topics"} element={<Topics />} />
           <Route path={"/groups"} element={<Groups />} />
           <Route path={"/events"} element={<Events />} />
+
+          <Route path={"/profileBlog/:userId"} element={<ProfileBlog />} />
         </Routes>
     
     {/* </BrowserRouter> */}

@@ -3,10 +3,11 @@ import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
-import { Stack } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import ProLeftside from "../components/Profile/ProLeftside";
 import ProCoverImage from "../components/Profile/ProCoverImage";
 import MContainer from "../components/MContainer/MContainer";
+import { Title } from "@mui/icons-material";
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
@@ -25,15 +26,15 @@ export default function ProfileBlog() {
             justifyContent="space-between"
             paddingLeft={5}
             paddingRight={5}
-            spacing={2}
+            spacing={10}
           >
-            <Grid item xs={3}>
+            <Grid item xs={2}>
               <Item sx={{ backgroundColor: "#EEECEF" }}>
                 <ProLeftside />
               </Item>
             </Grid>
 
-            <Grid item xs={9}>
+            <Grid item xs={10}>
               <Item>
                 <Box sx={{ width: "100%" }}>
                   <Stack spacing={2}>
@@ -41,7 +42,40 @@ export default function ProfileBlog() {
                       <ProCoverImage />
                     </Item>
                     <Item>
-                    <MContainer/>
+                      <Box sx={{ flexGrow: 1 }}>
+                        <Grid container spacing={2}>
+                          <Grid item xs={9}>
+                            <Item>
+                              <MContainer />
+                            </Item>
+                          </Grid>
+                          <Grid item xs={3}>
+                            <Item>
+                              <Paper>
+                                <Typography
+                                  sx={{
+                                    fontSize: "16px",
+                                    textAlign: "left",
+                                    padding: "5px",
+                                    fontWeight:"bold"
+                                  }}
+                                >
+                                  About me
+                                </Typography>
+                                <Typography
+                                  sx={{ textAlign: "left", padding: "10px", color:"#727272" }}
+                                >
+                                  I am a keen, hard working, reliable and
+                                  excellent time keeper. I am a bright and
+                                  receptive person, able to communicate well
+                                  with people at all levels. 
+                                  approach.
+                                </Typography>
+                              </Paper>
+                            </Item>
+                          </Grid>
+                        </Grid>
+                      </Box>
                     </Item>
                   </Stack>
                 </Box>

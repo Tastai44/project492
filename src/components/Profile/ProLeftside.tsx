@@ -30,7 +30,7 @@ const SmallAvatar = styled(Avatar)(({ theme }) => ({
 
 export default function ProLeftside() {
   return (
-    <div>
+    <div style={{position:"fixed"}}>
       <Box sx={{ width: "100%" }}>
         <Stack spacing={2}>
           <Item>
@@ -61,8 +61,8 @@ export default function ProLeftside() {
             </Stack>
           </Item>
 
-          <Item sx={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontSize: "20px" }}>Tastai Khianjai</div>
+          <Item sx={{ display: "flex", flexDirection: "column", textAlign:"left", gap:"5px" }}>
+            <div style={{ fontSize: "20px", fontWeight:"bold" }}>Tastai Khianjai</div>
             <div>@Username</div>
             <Button
               sx={{
