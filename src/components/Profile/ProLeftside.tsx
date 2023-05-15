@@ -13,6 +13,7 @@ import {
 import { styled } from "@mui/material/styles";
 import Luffy from "../../../public/pictures/Luffy.webp";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
+import { NavLink } from "react-router-dom";
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
@@ -30,7 +31,7 @@ const SmallAvatar = styled(Avatar)(({ theme }) => ({
 
 export default function ProLeftside() {
   return (
-    <div style={{position:"fixed"}}>
+    <div style={{ position: "fixed" }}>
       <Box sx={{ width: "100%" }}>
         <Stack spacing={2}>
           <Item>
@@ -61,8 +62,17 @@ export default function ProLeftside() {
             </Stack>
           </Item>
 
-          <Item sx={{ display: "flex", flexDirection: "column", textAlign:"left", gap:"5px" }}>
-            <div style={{ fontSize: "20px", fontWeight:"bold" }}>Tastai Khianjai</div>
+          <Item
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              textAlign: "left",
+              gap: "5px",
+            }}
+          >
+            <div style={{ fontSize: "20px", fontWeight: "bold" }}>
+              Tastai Khianjai
+            </div>
             <div>@Username</div>
             <Button
               sx={{
@@ -84,14 +94,38 @@ export default function ProLeftside() {
             <nav aria-label="secondary mailbox folders">
               <List>
                 <ListItem disablePadding>
-                  <ListItemButton>
-                    <ListItemText primary="Blog" />
-                  </ListItemButton>
+                  <NavLink
+                    to={`/profileBlog/${1}`}
+                    style={({ isActive, isPending }) => {
+                      return {
+                        fontWeight: isPending ? "bold" : "",
+                        color: isActive ? "black" : "black",
+                        backgroundColor: isActive ? "#B8B8B8" : "",
+                        width: isActive ? "100%" : "100%",
+                      };
+                    }}
+                  >
+                    <ListItemButton>
+                      <ListItemText primary="Blog" />
+                    </ListItemButton>
+                  </NavLink>
                 </ListItem>
                 <ListItem disablePadding>
-                  <ListItemButton component="a" href="#simple-list">
-                    <ListItemText primary="About Me" />
-                  </ListItemButton>
+                  <NavLink
+                    to={`/aboutMe/${1}`}
+                    style={({ isActive, isPending }) => {
+                      return {
+                        fontWeight: isPending ? "bold" : "",
+                        color: isActive ? "black" : "grey",
+                        backgroundColor: isActive ? "#B8B8B8" : "",
+                        width: isActive ? "100%" : "100%",
+                      };
+                    }}
+                  >
+                    <ListItemButton component="a" href="#simple-list">
+                      <ListItemText primary="About Me" />
+                    </ListItemButton>
+                  </NavLink>
                 </ListItem>
                 <ListItem disablePadding>
                   <ListItemButton>

@@ -36,9 +36,7 @@ export default function MContainer() {
   return (
     <Box sx={{ width: "100%" }}>
       <Stack spacing={2}>
-        <Item>
-          <PostForm />
-        </Item>
+        
 
         <Item sx={{ display: "flex", flexDirection: "column" }}>
           <ListItem>

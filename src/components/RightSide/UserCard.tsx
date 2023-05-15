@@ -1,18 +1,3 @@
-// import { Avatar } from '@mui/material'
-// import React from 'react'
-// import Luffy from "../../../public/pictures/Luffy.webp";
-
-// export default function UserCard() {
-//   return (
-//     <div style={{display:"flex", gap:10, alignItems:"center"}}>
-//         <Avatar alt="Remy Sharp" src={Luffy} />
-//         <p>Tastai Khianjai</p>
-//     </div>
-//   )
-// }
-
-
-import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import Badge from '@mui/material/Badge';
 import Avatar from '@mui/material/Avatar';
@@ -48,11 +33,6 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   },
 }));
 
-const SmallAvatar = styled(Avatar)(({ theme }) => ({
-  width: 22,
-  height: 22,
-  border: `2px solid ${theme.palette.background.paper}`,
-}));
 
 export default function BadgeAvatars() {
   return (

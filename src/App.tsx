@@ -1,21 +1,19 @@
 
 import {Routes, Route} from "react-router-dom"
-
 import './App.css'
-
 import Navigation from "./components/Navigation"
 import HomeFeed from "./pages/HomeFeed"
 import Members from "./pages/Members"
 import Topics from "./pages/Topics"
 import Groups from "./pages/Groups"
 import Events from "./pages/Events"
-import ProfileBlog from "./pages/ProfileBlog"
+import Blog from "./pages/Profile/Blog"
+import AboutMe from "./pages/Profile/AboutMe"
 
 function App() {
 
   return (
     <>
-      {/* <BrowserRouter> */}
       <Navigation />
         <Routes>
           <Route  path={"/"} element={<HomeFeed />} />
@@ -24,10 +22,9 @@ function App() {
           <Route path={"/groups"} element={<Groups />} />
           <Route path={"/events"} element={<Events />} />
 
-          <Route path={"/profileBlog/:userId"} element={<ProfileBlog />} />
+          <Route path={"/profileBlog/:userId"} element={<Blog />} />
+          <Route path={"/aboutMe/:userId"} element={<AboutMe />} />
         </Routes>
-    
-    {/* </BrowserRouter> */}
     </>
   )
 }

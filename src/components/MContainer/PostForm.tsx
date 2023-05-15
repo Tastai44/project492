@@ -6,7 +6,7 @@ import Luffy from "../../../public/pictures/Luffy.webp";
 
 export default function PostForm() {
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
+    <div style={{ display: "flex", flexDirection: "column"}}>
         <div
             style={{
               display: "flex",
