@@ -9,6 +9,8 @@ import Groups from "./pages/Groups"
 import Events from "./pages/Events"
 import Blog from "./pages/Profile/Blog"
 import AboutMe from "./pages/Profile/AboutMe"
+import Friends from "./pages/Profile/Friends"
+import Collections from "./pages/Profile/Collections"
 
 function App() {
 
@@ -24,6 +26,8 @@ function App() {
 
           <Route path={"/profileBlog/:userId"} element={<Blog />} />
           <Route path={"/aboutMe/:userId"} element={<AboutMe />} />
+          <Route path={"/friends/:userId"} element={<Friends />} />
+          <Route path={"/collections/:userId"} element={<Collections />} />
         </Routes>
     </>
   )
