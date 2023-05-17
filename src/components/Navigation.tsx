@@ -307,12 +307,22 @@ export default function Navigation() {
               <HomeIcon
                 sx={{
                   fontSize: "30px",
-                  "&:hover": { backgroundColor: "#e8e8e8" },
+                  "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
                   borderRadius: "10px",
                   padding: "10px",
                 }}
               />
             </NavLink>
+            <NavLink
+              to={`/friends/${1}`}
+              style={({ isActive, isPending }) => {
+                return {
+                  fontWeight: isPending ? "bold" : "",
+                  color: isActive ? "white" : "white",
+                  borderBlockEnd: isActive ? "2px solid white" : "",
+                };
+              }}
+            >
             <PeopleAltIcon
               sx={{
                 fontSize: "30px",
@@ -321,6 +331,7 @@ export default function Navigation() {
                 padding: "10px",
               }}
             />
+            </NavLink>
             <NavLink
               to={"/members"}
               style={({ isActive, isPending }) => {

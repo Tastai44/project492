@@ -55,7 +55,7 @@ export default function LeftSide() {
                     style={({ isActive, isPending }) => {
                       return {
                         fontWeight: isPending ? "bold" : "",
-                        color: isActive ? "black" : "black",
+                        color: isActive ? "black" : "grey",
                         backgroundColor: isActive ? "#F1F1F1" : "",
                         width: isActive ? "100%" : "100%",
                       };
@@ -71,12 +71,24 @@ export default function LeftSide() {
                 </ListItem>
 
                 <ListItem disablePadding>
+                <NavLink
+                    to={`/friends/${1}`}
+                    style={({ isActive, isPending }) => {
+                      return {
+                        fontWeight: isPending ? "bold" : "",
+                        color: isActive ? "black" : "grey",
+                        backgroundColor: isActive ? "#F1F1F1" : "",
+                        width: isActive ? "100%" : "100%",
+                      };
+                    }}
+                  >
                   <ListItemButton>
                     <ListItemIcon>
                       <PeopleAltIcon />
                     </ListItemIcon>
                     <ListItemText primary="Friends" />
                   </ListItemButton>
+                  </NavLink>
                 </ListItem>
 
                 <ListItem disablePadding>
@@ -85,7 +97,7 @@ export default function LeftSide() {
                     style={({ isActive, isPending }) => {
                       return {
                         fontWeight: isPending ? "bold" : "",
-                        color: isActive ? "black" : "black",
+                        color: isActive ? "black" : "grey",
                         backgroundColor: isActive ? "#F1F1F1" : "",
                         width: isActive ? "100%" : "100%",
                       };
@@ -106,7 +118,7 @@ export default function LeftSide() {
                     style={({ isActive, isPending }) => {
                       return {
                         fontWeight: isPending ? "bold" : "",
-                        color: isActive ? "black" : "black",
+                        color: isActive ? "black" : "grey",
                         backgroundColor: isActive ? "#F1F1F1" : "",
                         width: isActive ? "100%" : "100%",
                       };
@@ -127,7 +139,7 @@ export default function LeftSide() {
                     style={({ isActive, isPending }) => {
                       return {
                         fontWeight: isPending ? "bold" : "",
-                        color: isActive ? "black" : "black",
+                        color: isActive ? "black" : "grey",
                         backgroundColor: isActive ? "#F1F1F1" : "",
                         width: isActive ? "100%" : "100%",
                       };
@@ -149,7 +161,7 @@ export default function LeftSide() {
                   style={({ isActive, isPending }) => {
                     return {
                       fontWeight: isPending ? "bold" : "",
-                      color: isActive ? "black" : "black",
+                      color: isActive ? "black" : "grey",
                       backgroundColor: isActive ? "#F1F1F1" : "",
                       width: isActive ? "100%" : "100%",
                     };
