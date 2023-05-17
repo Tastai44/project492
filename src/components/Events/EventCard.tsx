@@ -5,7 +5,7 @@ import CardMedia from "@mui/material/CardMedia";
 
 import Typography from "@mui/material/Typography";
 import Luffy from "../../../public/pictures/Luffy.webp";
-import { Avatar, IconButton } from "@mui/material";
+import { Avatar, Box, Button, IconButton } from "@mui/material";
 
 import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";
@@ -20,11 +20,17 @@ export default function MediaCard() {
           I believe I can fly — USA
         </Typography>
         <Typography color={"error"}>Mon, 11 JUL AT 23.59</Typography>
-        <Avatar
-          src={Luffy}
-          sx={{ width: "30px", height: "30px", marginTop: 2 }}
-          aria-label="recipe"
-        />
+        <Box sx={{ display: "flex", alignItems: "end", gap: 1 }}>
+          <Avatar
+            src={Luffy}
+            sx={{ width: "30px", height: "30px", marginTop: 2 }}
+            aria-label="recipe"
+          />
+          <Typography>
+            <b>Created by: </b>
+            Username
+          </Typography>
+        </Box>
       </CardContent>
       <CardActions
         sx={{
@@ -34,42 +40,17 @@ export default function MediaCard() {
           alignItems: "center",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <IconButton>
-            <StarBorderOutlinedIcon />
-          </IconButton>
-          <div>Interest</div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            alignContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <IconButton>
-            <ScreenShareIcon />
-          </IconButton>
-          <div>Share</div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            alignContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <IconButton>
-            <MoreHorizIcon />
-          </IconButton>
-        </div>
+        <Button sx={{ color: "black" }} startIcon={<StarBorderOutlinedIcon />}>
+          Interest
+        </Button>
 
+        <Button sx={{ color: "black" }} startIcon={<ScreenShareIcon />}>
+          Share
+        </Button>
+
+        <IconButton>
+          <MoreHorizIcon />
+        </IconButton>
       </CardActions>
     </Card>
   );
