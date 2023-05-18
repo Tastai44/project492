@@ -10,11 +10,16 @@ import { Avatar, Box, Button, IconButton } from "@mui/material";
 import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { NavLink } from "react-router-dom";
 
 export default function MediaCard() {
   return (
     <Card sx={{ width: 258, height: 370 }}>
+              <NavLink
+              to={`/eventsDetail/${1}`}
+            >
       <CardMedia sx={{ height: 194 }} image={Luffy} title="green iguana" />
+      </NavLink>
       <CardContent sx={{ textAlign: "justify" }}>
         <Typography gutterBottom sx={{ fontSize: "18px" }} component="div">
           I believe I can fly — USA

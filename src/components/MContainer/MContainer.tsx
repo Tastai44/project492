@@ -22,9 +22,8 @@ import ScreenShareIcon from "@mui/icons-material/ScreenShare";
 import CommentIcon from "@mui/icons-material/Comment";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import PostForm from "./PostForm";
 
-const Item = styled(Paper)(({ theme }) => ({
+export const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -36,8 +35,6 @@ export default function MContainer() {
   return (
     <Box sx={{ width: "100%" }}>
       <Stack spacing={2}>
-        
-
         <Item sx={{ display: "flex", flexDirection: "column" }}>
           <ListItem>
             <ListItemAvatar>

@@ -3,7 +3,7 @@ import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
-import EventContainer from "../components/Events/EventContainer";
+import EventContainer from "../../components/Events/EventContainer";
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
