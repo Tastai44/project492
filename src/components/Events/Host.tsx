@@ -28,7 +28,7 @@ export default function Host() {
               color: "white",
               "&:hover": {
                 color: "black",
-                backgroundColor: "white",
+                backgroundColor: "#E9E8E8",
               },
               m: 1,
             }}

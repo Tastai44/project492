@@ -3,10 +3,10 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { Stack } from "@mui/material";
 
-import ProCoverImage from "../../components/Profile/ProCoverImage";
 import DetailCard from "../../components/Events/DetailCard";
 import LeftSideContainer from "../../components/Events/LeftSideContainer";
 import HeldMap from "../../components/Events/HeldMap";
+import CoverPhoto from "../../components/Events/CoverPhoto";
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
@@ -29,8 +29,8 @@ export default function EventDetail() {
             <Item>
               <Box sx={{ width: "100%" }}>
                 <Stack spacing={2}>
-                  <Item>
-                    <ProCoverImage />
+                  <Item sx={{mb:0}}>
+                    <CoverPhoto />
                   </Item>
                   <Item>
                     <Box sx={{ flexGrow: 1 }}>
