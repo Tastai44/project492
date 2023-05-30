@@ -137,23 +137,23 @@ export default function Navigation() {
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
     >
       <NavLink to={`/profileBlog/${userId}`}>
-      <MenuItem
-        onClick={handleMenuClose}
-        sx={{
-          color:"black",
-          padding: "20px",
-          gap: "10px",
-          margin: 1,
-          backgroundColor: "white",
-          borderRadius: "10px",
-          "&:hover": {
-            color: "white",
-            backgroundColor: "grey",
-          },
-        }}
-      >
-        <Avatar src={Luffy} /> Tastai Khianjai
-      </MenuItem>
+        <MenuItem
+          onClick={handleMenuClose}
+          sx={{
+            color: "black",
+            padding: "20px",
+            gap: "10px",
+            margin: 1,
+            backgroundColor: "white",
+            borderRadius: "10px",
+            "&:hover": {
+              color: "white",
+              backgroundColor: "grey",
+            },
+          }}
+        >
+          <Avatar src={Luffy} /> Tastai Khianjai
+        </MenuItem>
       </NavLink>
       <Divider style={{ background: "white" }} />
       <MenuItem
@@ -264,15 +264,17 @@ export default function Navigation() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed" sx={{ backgroundColor: "#8E51E2" }}>
         <Toolbar>
-          <IconButton
-            size="medium"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-          >
-            <Avatar alt="CMU" src={Logo} />
-          </IconButton>
+          <NavLink to="/">
+            <IconButton
+              size="medium"
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              sx={{ mr: 2 }}
+            >
+              <Avatar alt="CMU" src={Logo} />
+            </IconButton>
+          </NavLink>
           <Typography
             variant="h6"
             noWrap
@@ -323,14 +325,14 @@ export default function Navigation() {
                 };
               }}
             >
-            <PeopleAltIcon
-              sx={{
-                fontSize: "30px",
-                "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
-                borderRadius: "10px",
-                padding: "10px",
-              }}
-            />
+              <PeopleAltIcon
+                sx={{
+                  fontSize: "30px",
+                  "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
+                  borderRadius: "10px",
+                  padding: "10px",
+                }}
+              />
             </NavLink>
             <NavLink
               to={"/members"}
@@ -443,8 +445,7 @@ export default function Navigation() {
               onClick={handleProfileMenuOpen}
               color="inherit"
             >
-              {/* <AccountCircle src={Logo}/> */}
-              <Avatar alt="CMU" src={Luffy} />
+              <Avatar alt="Profile" src={Luffy} />
             </IconButton>
           </Box>
         </Toolbar>

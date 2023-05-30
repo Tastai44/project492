@@ -32,6 +32,7 @@ export default function LeftSide() {
     <Box sx={{ width: "120%" }}>
       <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
         <Box gridColumn="span 12">
+        <NavLink to={`/profileBlog/${1}`}>
           <Item
             sx={{
               display: "flex",
@@ -43,6 +44,7 @@ export default function LeftSide() {
             <Avatar alt="Remy Sharp" src={Luffy} />
             Tastai Khianjai
           </Item>
+          </NavLink>
         </Box>
 
         <Box gridColumn="span 12">

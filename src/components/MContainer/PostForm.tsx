@@ -1,12 +1,27 @@
-import { Avatar, TextField, Divider, Box } from '@mui/material'
+import { Avatar, TextField, Divider, Box, Button, Modal } from '@mui/material'
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import Luffy from "../../../public/pictures/Luffy.webp";
+import * as React from 'react';
+import CreatePost from './CreatePost';
 
 export default function PostForm() {
+  const [openCreatePost, setOpenCreatePost] = React.useState(false);
+  const handletOpenCratePost = () => setOpenCreatePost(true);
+  const handleCloseCratePost = () => setOpenCreatePost(false);
   return (
     <div style={{ display: "flex", flexDirection: "column"}}>
+      <Modal
+        open={openCreatePost}
+        onClose={handleCloseCratePost}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box>
+          <CreatePost handleCloseCratePost={handleCloseCratePost} />
+        </Box>
+      </Modal>
         <div
             style={{
               display: "flex",
@@ -25,9 +40,9 @@ export default function PostForm() {
                 id="outlined-basic"
                 label="What is in your mind?"
                 variant="outlined"
-                multiline
                 maxRows={4}
                 sx={{ width: "99%" }}
+                onClick={handletOpenCratePost}
               />
             </div>
           </div>
@@ -39,15 +54,15 @@ export default function PostForm() {
               fontSize: "16px",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+            <Button style={{ display: "flex", alignItems: "center", gap: "5px", color:"grey" }}>
               <InsertPhotoIcon sx={{ color: "green" }} /> Photo
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+            </Button>
+            <Button style={{ display: "flex", alignItems: "center", gap: "5px", color:"grey" }}>
               <LocationOnIcon color="error" /> Location
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <EmojiEmotionsIcon sx={{ color: "#ffff00" }} /> Feeling
-            </div>
+            </Button>
+            <Button style={{ display: "flex", alignItems: "center", gap: "5px", color:"grey" }}>
+              <EmojiEmotionsIcon sx={{ color: "#FCE205" }} /> Feeling
+            </Button>
           </Box>
     </div>
   )

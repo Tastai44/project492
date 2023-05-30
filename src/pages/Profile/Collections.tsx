@@ -2,7 +2,7 @@ import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 
 import Grid from "@mui/material/Grid";
-import { Divider, Paper, Stack, Typography } from "@mui/material";
+import { Divider, Paper, Stack } from "@mui/material";
 import ProLeftside from "../../components/Profile/ProLeftside";
 import ProCoverImage from "../../components/Profile/ProCoverImage";
 import {
@@ -53,14 +53,16 @@ export default function Collections() {
                             flexDirection: "column",
                           }}
                         >
-                          <Typography
+                          <Box
                             sx={{
                               display: "flex",
                               justifyContent: "space-between",
                               alignItems: "center",
                             }}
                           >
-                            <Typography sx={{ m: 1, fontSize:"20px" }}>Friends</Typography>
+                            <Box sx={{ m: 1, fontSize: "20px" }}>
+                              Collections
+                            </Box>
                             <Search sx={{ backgroundColor: "#F1F1F1", m: 1 }}>
                               <SearchIconWrapper>
                                 <SearchIcon />
@@ -70,9 +72,9 @@ export default function Collections() {
                                 inputProps={{ "aria-label": "search" }}
                               />
                             </Search>
-                          </Typography>
-                          <Divider light sx={{ background: "grey", mb:1 }} />
-                          <Grid sx={{ flexGrow: 1, gap:1 }} container>
+                          </Box>
+                          <Divider light sx={{ background: "grey", mb: 1 }} />
+                          <Grid sx={{ flexGrow: 1, gap: 1 }} container>
                             <CollectionCard />
                             <CollectionCard />
                             <CollectionCard />
@@ -81,7 +83,7 @@ export default function Collections() {
                             <CollectionCard />
                             <CollectionCard />
                             <CollectionCard />
-                        </Grid>
+                          </Grid>
                         </Paper>
                       </Box>
                     </Item>
