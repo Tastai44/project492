@@ -1,0 +1,65 @@
+{
+    "rules": {
+      ".read": true,
+      ".write": "auth != null",
+      
+      "users": {
+        "$uid": {
+          ".read": "$uid === auth.uid",
+          ".write": "$uid === auth.uid",
+          
+          "profile": {
+            ".validate": "newData.hasChildren(['username', 'name', 'email'])",
+            "username": {
+              ".validate": "newData.isString() && newData.val().length <= 20 && newData.val().matches(/^[a-zA-Z0-9_]+$/)"
+            },
+            "name": {
+              ".validate": "newData.isString() && newData.val().length <= 50"
+            },
+            "email": {
+              ".validate": "newData.isString() && newData.val().matches(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$/i)"
+            }
+          },
+          
+          "posts": {
+            "$postid": {
+              ".read": "data.child('visibility').val() === 'public' || (data.child('visibility').val() === 'private' && $uid === auth.uid)",
+              ".write": "$uid === auth.uid",
+              
+              ".validate": "newData.hasChildren(['title', 'content', 'timestamp', 'visibility'])",
+              "title": {
+                ".validate": "newData.isString() && newData.val().length <= 100"
+              },
+              "content": {
+                ".validate": "newData.isString() && newData.val().length <= 1000"
+              },
+              "timestamp": {
+                ".validate": "newData.isNumber()"
+              },
+              "visibility": {
+                ".validate": "newData.isString() && newData.val() in ['public', 'private']"
+              }
+            }
+          }
+        }
+      },
+      
+      "comments": {
+        "$postid": {
+          "$commentid": {
+            ".read": true,
+            ".write": "auth != null",
+            
+            ".validate": "newData.hasChildren(['content', 'timestamp'])",
+            "content": {
+              ".validate": "newData.isString() && newData.val().length <= 500"
+            },
+            "timestamp": {
+              ".validate": "newData.isNumber()"
+            }
+          }
+        }
+      }
+    }
+  }
+  

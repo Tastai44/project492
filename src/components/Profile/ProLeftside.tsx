@@ -45,7 +45,9 @@ export default function ProLeftside() {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <EditProfile />
+        <Box>
+          <EditProfile />
+        </Box>
       </Modal>
       <div style={{ position: "fixed" }}>
         <Box sx={{ width: "100%" }}>
@@ -138,7 +140,7 @@ export default function ProLeftside() {
                         };
                       }}
                     >
-                      <ListItemButton component="a" href="#simple-list">
+                      <ListItemButton>
                         <ListItemText primary="About Me" />
                       </ListItemButton>
                     </NavLink>
@@ -172,7 +174,7 @@ export default function ProLeftside() {
                         };
                       }}
                     >
-                      <ListItemButton component="a" href="#simple-list">
+                      <ListItemButton>
                         <ListItemText primary="Collections" />
                       </ListItemButton>
                     </NavLink>
