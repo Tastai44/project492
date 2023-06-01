@@ -7,6 +7,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Modal,
   TextField,
 } from "@mui/material";
 import Luffy from "../../../public/pictures/Luffy.webp";
@@ -17,10 +18,12 @@ import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import CancelIcon from "@mui/icons-material/Cancel";
-import LockIcon from '@mui/icons-material/Lock';
-import GroupIcon from '@mui/icons-material/Group';
-import PublicIcon from '@mui/icons-material/Public';
-const style = {
+import LockIcon from "@mui/icons-material/Lock";
+import GroupIcon from "@mui/icons-material/Group";
+import PublicIcon from "@mui/icons-material/Public";
+import Emoji from "./Emoji";
+
+const styleBoxPop = {
   position: "absolute",
   top: "50%",
   left: "50%",
@@ -34,19 +37,77 @@ const style = {
 };
 
 interface IHandle {
-    handleCloseCratePost: () => void;
+  handleCloseCratePost: () => void;
 }
 
-export default function CreatePost({handleCloseCratePost} : IHandle) {
+export default function CreatePost({ handleCloseCratePost }: IHandle) {
   const [status, setStatus] = React.useState("");
   const handleChange = (event: SelectChangeEvent) => {
     setStatus(event.target.value as string);
   };
+
+  const [openEmoji, setOpenEmoji] = React.useState(false);
+  const handletOpenEmoji = () => setOpenEmoji(true);
+  const handleCloseEmoji = () => setOpenEmoji(false);
+
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files && event.target.files[0];
+    if (file) {
+      try {
+        const base64String = await encodeFileToBase64(file);
+        // Do something with the Base64-encoded string
+        console.log(base64String);
+      } catch (error) {
+        // Handle error
+        console.error(error);
+      }
+    }
+  };
+
+  async function encodeFileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+  
+      reader.onload = () => {
+        const base64String = reader.result as string;
+        const encodedString = base64String.split(',')[1]; // Remove the data URL prefix
+        resolve(encodedString);
+      };
+  
+      reader.onerror = (error) => {
+        reject(error);
+      };
+  
+      reader.readAsDataURL(file);
+    });
+  }
+
   return (
     <div>
-      <Box sx={style}>
+      <Modal
+        open={openEmoji}
+        onClose={handleCloseEmoji}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box>
+          <Emoji handleClose={handleCloseEmoji} />
+        </Box>
+      </Modal>
+      <Box sx={styleBoxPop}>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Box id="modal-modal-title" sx={{ fontSize: "25px", fontWeight:"500" }}>
+          <Box
+            id="modal-modal-title"
+            sx={{ fontSize: "25px", fontWeight: "500" }}
+          >
             Create A Post
           </Box>
           <Box>
@@ -75,9 +136,43 @@ export default function CreatePost({handleCloseCratePost} : IHandle) {
                       sx={{ height: "40px" }}
                       onChange={handleChange}
                     >
-                      <MenuItem value={"Private"}>  <Box sx={{display:"flex", alignContent:"end", gap:0.5}}> <LockIcon /> Private</Box> </MenuItem>
-                      <MenuItem value={"Friend"}> <Box sx={{display:"flex", alignContent:"end", gap:0.5}}><GroupIcon /> Friend </Box></MenuItem>
-                      <MenuItem value={"Public"}> <Box sx={{display:"flex", alignContent:"end", gap:0.5}}><PublicIcon /> Public </Box></MenuItem>
+                      <MenuItem value={"Private"}>
+                        {" "}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignContent: "end",
+                            gap: 0.5,
+                          }}
+                        >
+                          {" "}
+                          <LockIcon /> Private
+                        </Box>{" "}
+                      </MenuItem>
+                      <MenuItem value={"Friend"}>
+                        {" "}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignContent: "end",
+                            gap: 0.5,
+                          }}
+                        >
+                          <GroupIcon /> Friend{" "}
+                        </Box>
+                      </MenuItem>
+                      <MenuItem value={"Public"}>
+                        {" "}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignContent: "end",
+                            gap: 0.5,
+                          }}
+                        >
+                          <PublicIcon /> Public{" "}
+                        </Box>
+                      </MenuItem>
                     </Select>
                   </FormControl>
                 </Box>
@@ -109,13 +204,21 @@ export default function CreatePost({handleCloseCratePost} : IHandle) {
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Box sx={{ display: "flex", gap: 1 }}>
-              <IconButton>
-                <InsertPhotoIcon sx={{ color: "green" }} />
-              </IconButton>
-              <IconButton>
+              <Box onClick={handleUploadClick}>
+                <IconButton size="large">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    hidden
+                  />
+                  <InsertPhotoIcon sx={{ color: "green" }} />
+                </IconButton>
+              </Box>
+              <IconButton size="large">
                 <LocationOnIcon color="error" />
               </IconButton>
-              <IconButton>
+              <IconButton onClick={handletOpenEmoji} size="large">
                 <EmojiEmotionsIcon sx={{ color: "#FCE205" }} />
               </IconButton>
             </Box>

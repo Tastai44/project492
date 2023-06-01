@@ -17,8 +17,7 @@ export default function ProCoverImage() {
         style={{
           display: "flex",
           justifyContent: "flex-end",
-          marginTop: "-40px",
-          marginRight: "10px",
+          marginTop: "-5%",
         }}
       >
         <Button
