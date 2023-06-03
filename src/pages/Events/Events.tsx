@@ -14,7 +14,7 @@ const Item = styled(Box)(({ theme }) => ({
 
 export default function Events() {
   return (
-    <Box sx={{ width: "100%", marginTop: 7 }}>
+    <Box sx={{ width: "100%", marginTop: 7}}>
       <Stack spacing={2}>
         <Item
           sx={{
@@ -29,7 +29,7 @@ export default function Events() {
           <Button
             sx={{
               fontSize: "16px",
-              "&:hover": { backgroundColor: "#e8e8e8", color: "black" },
+              "&:hover": { backgroundColor: "white", color: "black" },
               borderRadius: "10px",
               backgroundColor: "#A020F0",
               padding: "5px",
@@ -39,7 +39,7 @@ export default function Events() {
             Add an event
           </Button>
         </Item>
-        <Item>
+        <Item sx={{display:"flex", justifyContent:"center"}}>
           <EventContainer />
         </Item>
       </Stack>

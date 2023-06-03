@@ -14,7 +14,7 @@ import { NavLink } from "react-router-dom";
 
 export default function MediaCard() {
   return (
-    <Card sx={{ width: 258, height: 370 }}>
+    <Card sx={{ width: 258, height: 380 }}>
               <NavLink
               to={`/eventsDetail/${1}`}
             >

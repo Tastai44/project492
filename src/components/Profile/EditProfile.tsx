@@ -24,7 +24,11 @@ const style = {
   p: 4,
 };
 
-export default function BasicModal() {
+interface Ihandle {
+  closeEdit: () => void;
+}
+
+export default function BasicModal({closeEdit} : Ihandle) {
   const [year, setYear] = React.useState("");
   const handleChangeYear = (event: SelectChangeEvent) => {
     setYear(event.target.value as string);
@@ -121,6 +125,7 @@ export default function BasicModal() {
                 backgroundColor: "#E1E1E1",
               },
             }}
+            onClick={closeEdit}
           >
             Cancel
           </Button>

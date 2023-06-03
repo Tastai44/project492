@@ -48,8 +48,8 @@ export default function ProCoverImage() {
                 </Button>
               </Box>
               <Box sx={{ display: "flex" }}>
-                <IconButton>
-                  <ShareIcon />
+                <IconButton size="small">
+                  <ShareIcon style={{width:"10px"}}/>
                 </IconButton>
                 <Button
                   sx={{

@@ -46,7 +46,7 @@ export default function ProLeftside() {
         aria-describedby="modal-modal-description"
       >
         <Box>
-          <EditProfile />
+          <EditProfile closeEdit={handleClose}/>
         </Box>
       </Modal>
       <div style={{ position: "fixed" }}>

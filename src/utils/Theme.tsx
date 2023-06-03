@@ -5,7 +5,6 @@ export const themeApp = createTheme({
     allVariants: {
       fontFamily: "inter",
       textTransform: "none",
-      fontSize: 16,
     },
   },
   palette: {
@@ -17,17 +16,6 @@ export const themeApp = createTheme({
     },
   },
 
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: "5px",
-          padding: "10px 20px",
-          fontWeight: "bold",
-        },
-      },
-    },
-  },
   breakpoints: {
     values: {
       xs: 0,

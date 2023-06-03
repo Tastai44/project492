@@ -16,8 +16,8 @@ export default function FriendCard() {
         </Typography>
       </CardContent>
       <CardActions disableSpacing sx={{display:"flex", justifyContent:"center", gap:1}}>
-        <Button sx={{color:"white", borderRadius:"5px", backgroundColor:"#920EFA"}}>View</Button>
-        <Button sx={{color:"white", borderRadius:"5px", backgroundColor:"red"}}>UnFriend</Button>
+        <Button sx={{color:"white", borderRadius:"5px", backgroundColor:"#920EFA", "&:hover":{backgroundColor:"white", color:"black"}}}>View</Button>
+        <Button sx={{color:"white", borderRadius:"5px", backgroundColor:"grey", "&:hover":{backgroundColor:"white", color:"black"}}}>UnFriend</Button>
       </CardActions>
     </Card>
   );

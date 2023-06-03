@@ -1,9 +1,4 @@
-import {
-  Button,
-  Card,
-  CardMedia,
-
-} from "@mui/material";
+import { Box, Button, Card, CardMedia } from "@mui/material";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import Luffy from "../../../public/pictures/Luffy.webp";
 
@@ -13,31 +8,30 @@ export default function ProCoverImage() {
       <Card sx={{ maxWidth: "100%" }}>
         <CardMedia sx={{ height: 300 }} image={Luffy} title="green iguana" />
       </Card>
-      <div
-        style={{
+      <Box
+        sx={{
           display: "flex",
           justifyContent: "flex-end",
-          marginTop: "-5%",
+          mt: "-4%",
+          alignItems: "center",
+          alignContent: "center",
         }}
       >
         <Button
           sx={{
-            width: "200px",
             backgroundColor: "white",
             color: "black",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
             "&:hover": {
               color: "white",
               backgroundColor: "black",
             },
           }}
+          variant="outlined"
+          startIcon={<AddAPhotoIcon />}
         >
-          <AddAPhotoIcon />
-          <div>Add cover photo</div>
+          Add cover photo
         </Button>
-      </div>
+      </Box>
     </div>
   );
 }
