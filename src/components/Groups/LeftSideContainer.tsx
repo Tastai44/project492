@@ -1,6 +1,6 @@
 import { Box} from '@mui/material'
-import Host from './Host'
 import InterestedContainer from './InterestedContainer'
+import Host from '../Events/Host'
 
 export default function LeftSideContainer() {
   return (

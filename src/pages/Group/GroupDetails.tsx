@@ -3,10 +3,11 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { Stack } from "@mui/material";
 
-import DetailCard from "../../components/Events/DetailCard";
-import LeftSideContainer from "../../components/Events/LeftSideContainer";
-import HeldMap from "../../components/Events/HeldMap";
-import CoverPhoto from "../../components/Events/CoverPhoto";
+import CoverPhoto from "../../components/Groups/CoverPhoto";
+import LeftSideContainer from "../../components/Groups/LeftSideContainer";
+import PostForm from "../../components/MContainer/PostForm";
+import MContainer from "../../components/MContainer/MContainer";
+import AboutGroup from "../../components/Groups/AboutGroup";
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
@@ -14,7 +15,7 @@ const Item = styled(Box)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-export default function EventDetail() {
+export default function GroupDetails() {
   return (
     <div>
       <Grid sx={{ flexGrow: 1 }} container marginTop={5}>
@@ -29,7 +30,7 @@ export default function EventDetail() {
             <Item>
               <Box sx={{ width: "100%" }}>
                 <Stack>
-                  <Item sx={{mb:0}}>
+                  <Item sx={{ mb: 0 }}>
                     <CoverPhoto />
                   </Item>
                   <Item>
@@ -41,13 +42,16 @@ export default function EventDetail() {
                           </Item>
                         </Grid>
                         <Grid item xs={7}>
+                          <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
+                            <PostForm />
+                          </Item>
                           <Item>
-                            <DetailCard />
+                            <MContainer />
                           </Item>
                         </Grid>
                         <Grid item xs={2.5}>
                           <Item>
-                            <HeldMap />
+                            <AboutGroup />
                           </Item>
                         </Grid>
                       </Grid>

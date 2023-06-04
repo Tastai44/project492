@@ -12,7 +12,7 @@ export default function InterestedContainer() {
         }}
       >
         <Box sx={{ p: 1, fontSize: "15px", fontWeight: "bold" }}>
-          People who are interested
+          Members
         </Box>
       </Box>
       <Divider light />

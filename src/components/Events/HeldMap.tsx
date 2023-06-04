@@ -1,11 +1,11 @@
-import { CardMedia, Paper, Typography } from "@mui/material";
+import { Box, CardMedia, Paper } from "@mui/material";
 import Luffy from "../../../public/pictures/Luffy.webp";
 
 export default function HeldMap() {
   return (
     <div>
       <Paper>
-        <Typography
+        <Box
           sx={{
             fontSize: "16px",
             textAlign: "left",
@@ -14,8 +14,8 @@ export default function HeldMap() {
           }}
         >
           Location
-        </Typography>
-        <Typography
+        </Box>
+        <Box
           sx={{
             textAlign: "left",
             padding: "10px",
@@ -24,11 +24,11 @@ export default function HeldMap() {
         >
           Angkaew Reservoir RX42+535 ซอย สุโขทัย 5 Tambon Su Thep, Mueang Chiang
           Mai District, Chiang Mai 50200
-        </Typography>
+        </Box>
       </Paper>
 
       <Paper sx={{mt:1}}>
-        <Typography
+        <Box
           sx={{
             fontSize: "16px",
             textAlign: "left",
@@ -37,8 +37,8 @@ export default function HeldMap() {
           }}
         >
           Map
-        </Typography>
-        <Typography
+        </Box>
+        <Box
           sx={{
             textAlign: "left",
             padding: "10px",
@@ -51,7 +51,7 @@ export default function HeldMap() {
             image={Luffy}
             alt="Host"
           />
-        </Typography>
+        </Box>
       </Paper>
     </div>
   );

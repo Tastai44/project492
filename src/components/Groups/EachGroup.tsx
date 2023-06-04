@@ -1,7 +1,5 @@
 import { List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import TagIcon from "@mui/icons-material/Tag";
-// import DeleteIcon from '@mui/icons-material/Delete';
-// import BorderColorIcon from '@mui/icons-material/BorderColor';
 export default function EachGroup() {
   return (
     <div>

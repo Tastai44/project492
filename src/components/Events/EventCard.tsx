@@ -15,10 +15,8 @@ import { NavLink } from "react-router-dom";
 export default function MediaCard() {
   return (
     <Card sx={{ width: 258, height: 380 }}>
-              <NavLink
-              to={`/eventsDetail/${1}`}
-            >
-      <CardMedia sx={{ height: 194 }} image={Luffy} title="green iguana" />
+      <NavLink to={`/eventsDetail/${1}`}>
+        <CardMedia sx={{ height: 194 }} image={Luffy} title="green iguana" />
       </NavLink>
       <CardContent sx={{ textAlign: "justify" }}>
         <Typography gutterBottom sx={{ fontSize: "18px" }} component="div">

@@ -28,7 +28,7 @@ interface Ihandle {
   closeEdit: () => void;
 }
 
-export default function BasicModal({closeEdit} : Ihandle) {
+export default function BasicModal({ closeEdit }: Ihandle) {
   const [year, setYear] = React.useState("");
   const handleChangeYear = (event: SelectChangeEvent) => {
     setYear(event.target.value as string);
@@ -81,6 +81,8 @@ export default function BasicModal({closeEdit} : Ihandle) {
                 <MenuItem value={2}>2</MenuItem>
                 <MenuItem value={3}>3</MenuItem>
                 <MenuItem value={4}>4</MenuItem>
+                <MenuItem value={5}>5</MenuItem>
+                <MenuItem value={5}>6</MenuItem>
               </Select>
             </FormControl>
 

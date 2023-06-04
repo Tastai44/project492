@@ -7,8 +7,7 @@ import {
   IconButton,
 } from "@mui/material";
 import Luffy from "../../../public/pictures/Luffy.webp";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import FavoriteIcon from "@mui/icons-material/Favorite";
+import MessageIcon from '@mui/icons-material/Message';
 import ShareIcon from "@mui/icons-material/Share";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import TagIcon from "@mui/icons-material/Tag";
@@ -29,11 +28,6 @@ export default function ProCoverImage() {
         <Card sx={{ width: "95%", backgroundColor: "white", display: "flex" }}>
           <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <Box
-              sx={{ mt: 1, ml:1, display: "flex", justifyContent: "flex-start", fontSize:"16px" }}
-            >
-              Name of the event
-            </Box>
-            <Box
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
@@ -41,14 +35,20 @@ export default function ProCoverImage() {
                 width: "100%",
               }}
             >
-              <Box sx={{ml:1}}>
-                <Button color="error" startIcon={<LocationOnIcon />}>
-                  Location
-                </Button>
+              <Box
+                sx={{
+                  mt: 1,
+                  ml: 1,
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  fontSize: "20px",
+                }}
+              >
+                Name of the Group
               </Box>
-              <Box sx={{ display: "flex" }}>
+              <Box sx={{ display: "flex", pt:1, pb:1 }}>
                 <IconButton size="large">
-                  <ShareIcon />
+                  <ShareIcon sx={{width:"20px"}}/>
                 </IconButton>
                 <Button
                   sx={{
@@ -61,19 +61,19 @@ export default function ProCoverImage() {
                     },
                     m: 1,
                   }}
-                  startIcon={<FavoriteIcon />}
+                  startIcon={<MessageIcon />}
                 >
-                  Interested
+                  Chatting
                 </Button>
               </Box>
             </Box>
             <Divider light sx={{ mb: 1 }} />
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Box sx={{ display: "flex", gap: 1, m: 1, alignItems:"center" }}>
+              <Box sx={{ display: "flex", gap: 1, m: 1, alignItems: "center" }}>
                 <DateRangeIcon />
                 <div>Sun 15 Dec at 4:00 AM</div>
               </Box>
-              <Box sx={{ display: "flex", gap: 1, m: 1, alignItems:"center" }}>
+              <Box sx={{ display: "flex", gap: 1, m: 1, alignItems: "center" }}>
                 <TagIcon />
                 <div>Name of the topic | 18+</div>
               </Box>

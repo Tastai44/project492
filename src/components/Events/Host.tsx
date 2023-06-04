@@ -1,5 +1,4 @@
 import {
-  Typography,
   Paper,
   Button,
   Divider,
@@ -12,16 +11,16 @@ export default function Host() {
   return (
     <div>
       <Paper>
-        <Typography
+        <Box
           sx={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <Typography sx={{ p: 1, fontSize: "20px", fontWeight: "bold" }}>
+          <Box sx={{ p: 1, fontSize: "20px", fontWeight: "bold" }}>
             Host
-          </Typography>
+          </Box>
           <Button
             sx={{
               backgroundColor: "#8E51E2",
@@ -36,7 +35,7 @@ export default function Host() {
           >
             Add Friend
           </Button>
-        </Typography>
+        </Box>
         <Divider light />
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <CardMedia
@@ -47,7 +46,7 @@ export default function Host() {
           />
         </Box>
         <Divider light />
-        <Typography sx={{m:1}}>Fristname LastName</Typography>
+        <Box sx={{m:1}}>Fristname LastName</Box>
       </Paper>
     </div>
   );

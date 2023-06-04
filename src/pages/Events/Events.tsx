@@ -1,9 +1,10 @@
-// import * as React from 'react';
-import { Button } from "@mui/material";
+import * as React from 'react';
+import { Button, Modal } from "@mui/material";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
 import EventContainer from "../../components/Events/EventContainer";
+import AddEvent from "../../components/Events/AddEvent";
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
@@ -13,7 +14,22 @@ const Item = styled(Box)(({ theme }) => ({
 }));
 
 export default function Events() {
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   return (
+    <>
+    <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box>
+          <AddEvent closeEdit={handleClose} />
+        </Box>
+      </Modal>
     <Box sx={{ width: "100%", marginTop: 7}}>
       <Stack spacing={2}>
         <Item
@@ -35,6 +51,7 @@ export default function Events() {
               padding: "5px",
               color: "#fff",
             }}
+            onClick={handleOpen}
           >
             Add an event
           </Button>
@@ -44,5 +61,6 @@ export default function Events() {
         </Item>
       </Stack>
     </Box>
+    </>
   );
 }
