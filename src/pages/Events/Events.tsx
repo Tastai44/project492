@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 import { Button, Modal } from "@mui/material";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
@@ -20,7 +20,7 @@ export default function Events() {
 
   return (
     <>
-    <Modal
+      <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
@@ -30,37 +30,39 @@ export default function Events() {
           <AddEvent closeEdit={handleClose} />
         </Box>
       </Modal>
-    <Box sx={{ width: "100%", marginTop: 7}}>
-      <Stack spacing={2}>
-        <Item
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <div style={{ fontSize: "30px", color: "#920EFA", fontWeight: 500 }}>
-            CMU Events
-          </div>
-          <Button
+      <Box sx={{ width: "100%", marginTop: 7 }}>
+        <Stack spacing={2}>
+          <Item
             sx={{
-              fontSize: "16px",
-              "&:hover": { backgroundColor: "white", color: "black" },
-              borderRadius: "10px",
-              backgroundColor: "#A020F0",
-              padding: "5px",
-              color: "#fff",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
-            onClick={handleOpen}
           >
-            Add an event
-          </Button>
-        </Item>
-        <Item sx={{display:"flex", justifyContent:"center"}}>
-          <EventContainer />
-        </Item>
-      </Stack>
-    </Box>
+            <div
+              style={{ fontSize: "30px", color: "#920EFA", fontWeight: 500 }}
+            >
+              CMU Events
+            </div>
+            <Button
+              sx={{
+                fontSize: "16px",
+                "&:hover": { backgroundColor: "white", color: "black" },
+                borderRadius: "10px",
+                backgroundColor: "#A020F0",
+                padding: "5px",
+                color: "#fff",
+              }}
+              onClick={handleOpen}
+            >
+              Add an event
+            </Button>
+          </Item>
+          <Item sx={{ display: "flex", justifyContent: "center" }}>
+            <EventContainer />
+          </Item>
+        </Stack>
+      </Box>
     </>
   );
 }
