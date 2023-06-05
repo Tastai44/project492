@@ -97,6 +97,7 @@ export default function Login() {
             >
               <Box sx={{ fontSize: "40px", mb: 5 }}>Log in</Box>
               <TextField
+                required
                 id="email"
                 label="Email"
                 variant="outlined"
@@ -105,6 +106,7 @@ export default function Login() {
                 onChange={(e) => setEmail(e.target.value)}
               />
               <TextField
+                required
                 id="password"
                 label="Password"
                 variant="outlined"
