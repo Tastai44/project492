@@ -62,7 +62,7 @@ export default function Friends() {
                           <Box sx={{ m: 1, fontSize: "20px" }} component="p">
                             Friends
                           </Box>
-                          <Search sx={{ backgroundColor: "#F1F1F1", m: 1 }}>
+                          <Search sx={{ backgroundColor: "#F1F1F1", m: 1, '&:hover': {backgroundColor:"#C5C5C5"} }}>
                             <SearchIconWrapper>
                               <SearchIcon />
                             </SearchIconWrapper>
