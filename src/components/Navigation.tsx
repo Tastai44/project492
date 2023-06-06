@@ -30,7 +30,10 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import TagIcon from "@mui/icons-material/Tag";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+
+import { auth } from "../config/firebase";
+import { signOut } from "firebase/auth";
 
 export const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -73,6 +76,17 @@ export const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Navigation() {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        navigate("/login");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   const userId = 1;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
@@ -157,7 +171,7 @@ export default function Navigation() {
       </NavLink>
       <Divider style={{ background: "white" }} />
       <MenuItem
-        onClick={handleMenuClose}
+        onClick={handleLogout}
         sx={{ padding: "20px", color: "white" }}
       >
         <ListItemIcon>

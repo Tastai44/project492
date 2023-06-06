@@ -1,0 +1,28 @@
+{
+    "tables": {
+      "users": {
+        "fields": {
+          "user_id": "unique identifier",
+          "username": "unique username",
+          "password": "encrypted password",
+          "email": "user's email address"
+        }
+      },
+      "conversations": {
+        "fields": {
+          "conversation_id": "unique identifier",
+          "participants": "array of user_ids involved in the conversation"
+        }
+      },
+      "messages": {
+        "fields": {
+          "message_id": "unique identifier",
+          "conversation_id": "foreign key referencing conversation_id in the Conversation table",
+          "sender_id": "foreign key referencing user_id in the User table",
+          "content": "message content",
+          "timestamp": "timestamp indicating when the message was sent"
+        }
+      }
+    }
+  }
+  
