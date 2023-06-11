@@ -37,6 +37,7 @@ export interface Post {
   reports?: Report[];
   shares?: Share[];
   location?: Location;
+  owner: string;
 }
 
 export interface todos {

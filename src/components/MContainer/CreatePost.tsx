@@ -71,8 +71,8 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
   React.useEffect (() => {
     const getUerInfo = localStorage.getItem("user");
     const tmp = JSON.parse(getUerInfo ? getUerInfo : '')
-    setUserId(tmp.userId)
-  }, [userId])
+    setUserId(tmp.uid)
+  }, [])
 
   const handleClearImage = () => {
     setPreviewImages([]);
@@ -109,30 +109,13 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
     }
   };
 
-  async function encodeFileToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        const base64String = reader.result as string;
-        const encodedString = base64String.split(",")[1];
-        resolve(encodedString);
-      };
-
-      reader.onerror = (error) => {
-        reject(error);
-      };
-
-      reader.readAsDataURL(file);
-    });
-  }
-
   const [emoji, setEmoji] = React.useState("");
   const handleChangeEmoji = (e: string) => {
     setEmoji(e);
     console.log("DDDD::", emoji);
   };
-  const [post, setPost] = React.useState<Post>({
+
+  const initialState = {
     id: "",
     caption: "",
     hashTagTopic: "",
@@ -141,7 +124,15 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
     likeNumber: 0,
     createAt: "",
     emoji: "",
-  });
+    owner: "",
+  }
+  const [post, setPost] = React.useState<Post>(initialState);
+  const clearState = () => {
+    setPost({...initialState});
+    setStatus('');
+    setEmoji('');
+    handleClearImage();
+  };
 
   const handleChangePost = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -165,9 +156,11 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
       likeNumber: 0,
       createAt: new Date().toLocaleString(),
       emoji: emoji,
+      owner: userId,
     };
     setPost(newPost);
     push(todoRef, newPost);
+    clearState();
     alert("Success!");
   };
 
@@ -357,7 +350,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
                   <CancelIcon />
                 </IconButton>
               </Box>
-              <ImageList sx={{ width: "100%", height: 300 }} cols={3} rowHeight={164}>
+              <ImageList sx={{ width: "100%", height: "auto", maxHeight:"300px" }} cols={3} rowHeight={164}>
                 {previewImages.map((image, index) => (
                   <ImageListItem key={index}>
                     <img src={image} alt={`Preview ${index}`} loading="lazy" />
