@@ -15,10 +15,7 @@ import GroupDetails from "./pages/Group/GroupDetails";
 import Login from "./pages/Login";
 import ProtectedRoute from "./utils/ProtectedRoute";
 
-// import { auth } from "./config/firebase"
-
 function App() {
-  // User is authenticated, render the component
   return (
     <>
       <Navigation />

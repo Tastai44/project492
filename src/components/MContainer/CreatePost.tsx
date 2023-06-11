@@ -4,14 +4,17 @@ import Button from "@mui/material/Button";
 import {
   Avatar,
   IconButton,
+  InputLabel,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Modal,
   TextField,
+  MenuItem,
+  ImageList,
+  ImageListItem,
 } from "@mui/material";
 import Luffy from "../../../public/pictures/Luffy.webp";
-import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
@@ -22,6 +25,11 @@ import LockIcon from "@mui/icons-material/Lock";
 import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
 import Emoji from "./Emoji";
+import "firebase/database";
+
+import { database } from "../../config/firebase";
+import { ref, push } from "firebase/database";
+import { Post } from "../../interface/PostContent";
 
 const styleBoxPop = {
   position: "absolute",
@@ -41,6 +49,9 @@ interface IHandle {
 }
 
 export default function CreatePost({ handleCloseCratePost }: IHandle) {
+
+  const [userId, setUserId] = React.useState("");
+
   const [status, setStatus] = React.useState("");
   const handleChange = (event: SelectChangeEvent) => {
     setStatus(event.target.value as string);
@@ -51,44 +62,103 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
   const handleCloseEmoji = () => setOpenEmoji(false);
 
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+  const [previewImages, setPreviewImages] = React.useState<string[]>([]);
 
+
+  React.useEffect (() => {
+    const getUerInfo = localStorage.getItem("user");
+    const tmp = JSON.parse(getUerInfo ? getUerInfo : '')
+    setUserId(tmp.uid)
+  }, [])
+
+  const handleClearImage = () => {
+    setPreviewImages([]);
+  };
   const handleUploadClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
-
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files && event.target.files[0];
-    if (file) {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = event.target.files;
+    if (files) {
       try {
-        const base64String = await encodeFileToBase64(file);
-        // Do something with the Base64-encoded string
-        console.log(base64String);
+        const selectedFiles = Array.from(files);
+        const readerPromises = selectedFiles.map((file) => {
+          return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              resolve(reader.result as string);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+        });
+
+        const base64Images = await Promise.all(readerPromises);
+        setPreviewImages(base64Images);
       } catch (error) {
-        // Handle error
         console.error(error);
       }
     }
   };
 
-  async function encodeFileToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-  
-      reader.onload = () => {
-        const base64String = reader.result as string;
-        const encodedString = base64String.split(',')[1]; // Remove the data URL prefix
-        resolve(encodedString);
-      };
-  
-      reader.onerror = (error) => {
-        reject(error);
-      };
-  
-      reader.readAsDataURL(file);
-    });
+  const [emoji, setEmoji] = React.useState("");
+  const handleChangeEmoji = (e: string) => {
+    setEmoji(e);
+    console.log("DDDD::", emoji);
+  };
+
+  const initialState = {
+    id: "",
+    caption: "",
+    hashTagTopic: "",
+    status: "",
+    photoPost: [],
+    likeNumber: 0,
+    createAt: "",
+    emoji: "",
+    owner: "",
   }
+  const [post, setPost] = React.useState<Post>(initialState);
+  const clearState = () => {
+    setPost({...initialState});
+    setStatus('');
+    setEmoji('');
+    handleClearImage();
+  };
+
+  const handleChangePost = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target;
+    setPost((prevPost) => ({
+      ...prevPost,
+      [name]: value,
+    }));
+  };
+  const db = database;
+  const createPost = () => {
+    const todoRef = ref(db, "/posts");
+    const newPostRef = push(todoRef);
+    const newPost = {
+      id: newPostRef.key ? newPostRef.key : "",
+      caption: post.caption,
+      hashTagTopic: post.hashTagTopic,
+      status: status,
+      photoPost: previewImages,
+      likeNumber: 0,
+      createAt: new Date().toLocaleString(),
+      emoji: emoji,
+      owner: userId,
+    };
+    setPost(newPost);
+    push(todoRef, newPost);
+    clearState();
+    alert("Success!");
+  };
 
   return (
     <div>
@@ -99,7 +169,10 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
         aria-describedby="modal-modal-description"
       >
         <Box>
-          <Emoji handleClose={handleCloseEmoji} />
+          <Emoji
+            handleClose={handleCloseEmoji}
+            handleChangeEmoji={handleChangeEmoji}
+          />
         </Box>
       </Modal>
       <Box sx={styleBoxPop}>
@@ -127,17 +200,21 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
             <ListItemText
               primary={
                 <Box sx={{ fontSize: "16px" }}>
-                  <b>User Name</b> is feeling happy 😁 <br />
-                  <FormControl sx={{ width: "130px" }}>
+                  <b>User Name </b>
+                  {emoji !== "" && (
+                    <>{String.fromCodePoint(parseInt(emoji, 16))}</>
+                  )}
+                  <br />
+                  <FormControl size="small" sx={{ width: "130px" }}>
+                    <InputLabel id="demo-simple-select">Status</InputLabel>
                     <Select
+                      label="Status"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       value={status}
-                      sx={{ height: "40px" }}
                       onChange={handleChange}
                     >
                       <MenuItem value={"Private"}>
-                        {" "}
                         <Box
                           sx={{
                             display: "flex",
@@ -145,12 +222,10 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
                             gap: 0.5,
                           }}
                         >
-                          {" "}
                           <LockIcon /> Private
-                        </Box>{" "}
+                        </Box>
                       </MenuItem>
                       <MenuItem value={"Friend"}>
-                        {" "}
                         <Box
                           sx={{
                             display: "flex",
@@ -162,7 +237,6 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
                         </Box>
                       </MenuItem>
                       <MenuItem value={"Public"}>
-                        {" "}
                         <Box
                           sx={{
                             display: "flex",
@@ -170,7 +244,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
                             gap: 0.5,
                           }}
                         >
-                          <PublicIcon /> Public{" "}
+                          <PublicIcon /> Public
                         </Box>
                       </MenuItem>
                     </Select>
@@ -179,29 +253,53 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
               }
             />
           </ListItem>
-          <Box sx={{ width: "98%" }}>
-            <TextField
-              id="outlined-basic"
-              label="What is in your mind?"
-              variant="outlined"
-              multiline
-              maxRows={4}
-              sx={{
-                width: "99%",
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: "transparent",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "transparent",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "transparent",
-                  },
+          <TextField
+            name="caption"
+            label="What is in your mind?"
+            variant="outlined"
+            multiline
+            maxRows={4}
+            sx={{
+              width: "99%",
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "transparent",
                 },
-              }}
-            />
-          </Box>
+                "&:hover fieldset": {
+                  borderColor: "transparent",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "transparent",
+                },
+              },
+            }}
+            value={post.caption}
+            onChange={handleChangePost}
+          />
+          <TextField
+            name="hashTagTopic"
+            id="outlined-basic"
+            label="#hashtag"
+            variant="outlined"
+            maxRows={4}
+            sx={{
+              width: "99%",
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "transparent",
+                },
+                "&:hover fieldset": {
+                  borderColor: "transparent",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "transparent",
+                },
+              },
+            }}
+            value={post.hashTagTopic}
+            onChange={handleChangePost}
+          />
+
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Box sx={{ display: "flex", gap: 1 }}>
               <Box onClick={handleUploadClick}>
@@ -210,6 +308,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
                     type="file"
                     ref={fileInputRef}
                     onChange={handleFileChange}
+                    multiple
                     hidden
                   />
                   <InsertPhotoIcon sx={{ color: "green" }} />
@@ -224,6 +323,8 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
             </Box>
             <Box>
               <Button
+                variant="contained"
+                onClick={createPost}
                 sx={{
                   backgroundColor: "#8E51E2",
                   color: "white",
@@ -232,11 +333,28 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
                     backgroundColor: "#E1E1E1",
                   },
                 }}
+                type="submit"
               >
                 Post
               </Button>
             </Box>
           </Box>
+          {previewImages.length !== 0 && (
+            <Box>
+              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <IconButton onClick={handleClearImage}>
+                  <CancelIcon />
+                </IconButton>
+              </Box>
+              <ImageList sx={{ width: "100%", height: "auto", maxHeight:"300px" }} cols={3} rowHeight={164}>
+                {previewImages.map((image, index) => (
+                  <ImageListItem key={index}>
+                    <img src={image} alt={`Preview ${index}`} loading="lazy" />
+                  </ImageListItem>
+                ))}
+              </ImageList>
+            </Box>
+          )}
         </Box>
       </Box>
     </div>
