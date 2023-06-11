@@ -27,9 +27,10 @@ import PublicIcon from "@mui/icons-material/Public";
 import Emoji from "./Emoji";
 import "firebase/database";
 
-import { database } from "../../config/firebase";
+import { db } from "../../config/firebase";
 import { ref, push } from "firebase/database";
 import { Post } from "../../interface/PostContent";
+import emojiData from "emoji-datasource-facebook";
 
 const styleBoxPop = {
   position: "absolute",
@@ -108,7 +109,6 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
   const [emoji, setEmoji] = React.useState("");
   const handleChangeEmoji = (e: string) => {
     setEmoji(e);
-    console.log("DDDD::", emoji);
   };
 
   const initialState = {
@@ -139,7 +139,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
       [name]: value,
     }));
   };
-  const db = database;
+  // const db = db;
   const createPost = () => {
     const todoRef = ref(db, "/posts");
     const newPostRef = push(todoRef);
@@ -159,6 +159,11 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
     clearState();
     alert("Success!");
   };
+
+  const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
+    const emoji = emojiData.find((data) => data.unified === emojiCode);
+    return emoji ? emoji.name : undefined;
+  }
 
   return (
     <div>
@@ -200,11 +205,12 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
             <ListItemText
               primary={
                 <Box sx={{ fontSize: "16px" }}>
-                  <b>User Name </b>
-                  {emoji !== "" && (
-                    <>{String.fromCodePoint(parseInt(emoji, 16))}</>
-                  )}
-                  <br />
+                  <Box sx={{ mb: 1 }}>
+                    <b>User Name </b>
+                    {emoji !== "" && (
+                      <>{String.fromCodePoint(parseInt(emoji, 16))} {convertEmojiCodeToName(emoji)}</>
+                    )}
+                  </Box>
                   <FormControl size="small" sx={{ width: "130px" }}>
                     <InputLabel id="demo-simple-select">Status</InputLabel>
                     <Select
@@ -233,7 +239,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
                             gap: 0.5,
                           }}
                         >
-                          <GroupIcon /> Friend{" "}
+                          <GroupIcon /> Friend
                         </Box>
                       </MenuItem>
                       <MenuItem value={"Public"}>
@@ -346,7 +352,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
                   <CancelIcon />
                 </IconButton>
               </Box>
-              <ImageList sx={{ width: "100%", height: "auto", maxHeight:"300px" }} cols={3} rowHeight={164}>
+              <ImageList sx={{ width: "100%", height: "auto", maxHeight:"500px" }} cols={3} rowHeight={164}>
                 {previewImages.map((image, index) => (
                   <ImageListItem key={index}>
                     <img src={image} alt={`Preview ${index}`} loading="lazy" />

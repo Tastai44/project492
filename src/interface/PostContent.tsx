@@ -29,9 +29,9 @@ export interface Post {
   caption: string;
   hashTagTopic: string;
   status: string;
-  photoPost?: string[];
-  likeNumber?: number;
-  createAt?: string;
+  photoPost: string[];
+  likeNumber: number;
+  createAt: string;
   emoji?: string;
   comments?: Comment[];
   reports?: Report[];
