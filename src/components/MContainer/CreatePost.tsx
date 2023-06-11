@@ -62,9 +62,6 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
   const handleCloseEmoji = () => setOpenEmoji(false);
 
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-  const [selectedImages, setSelectedImages] = React.useState<FileList | null>(
-    null
-  );
   const [previewImages, setPreviewImages] = React.useState<string[]>([]);
 
 
@@ -89,7 +86,6 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
     if (files) {
       try {
         const selectedFiles = Array.from(files);
-        setSelectedImages(files);
         const readerPromises = selectedFiles.map((file) => {
           return new Promise<string>((resolve, reject) => {
             const reader = new FileReader();
