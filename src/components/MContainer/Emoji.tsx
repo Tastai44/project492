@@ -19,9 +19,10 @@ const styleBoxEmoji = {
 };
 interface IHandle {
   handleClose: () => void;
+  handleChangeEmoji: (e:string) => void;
 }
 
-export default function Emoji({ handleClose }: IHandle) {
+export default function Emoji({ handleClose, handleChangeEmoji }: IHandle) {
   const emotionEmojis = emojiData.filter(
     (emoji) => emoji.category === "Smileys & Emotion"
   );
@@ -29,7 +30,12 @@ export default function Emoji({ handleClose }: IHandle) {
   const handleGetEmoji = (e: string) => {
     setEmojiKey(e);
   };
-
+  React.useEffect(() => {
+    handleChangeEmoji(emojiKey);
+    if(emojiKey) {
+      handleClose();
+    }
+  }, [emojiKey, handleChangeEmoji, handleClose]);
   return (
     <Box sx={styleBoxEmoji}>
       <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
@@ -45,7 +51,7 @@ export default function Emoji({ handleClose }: IHandle) {
           pb: 1,
         }}
       >
-        Emoji Feeling
+        Emoji Feeling 
       </Box>
       <Divider sx={{ background: "#EAEAEA", marginBottom: 3 }} />
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>

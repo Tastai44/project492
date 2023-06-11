@@ -40,6 +40,8 @@ export default function Login() {
   const handleSignIn = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      const user = auth.currentUser;
+      localStorage.setItem("user", JSON.stringify(user));
       navigate("/");
     } catch (error) {
       console.error("Error login user:", error);
@@ -119,7 +121,7 @@ export default function Login() {
                 sx={{
                   display: "flex",
                   width: "50px",
-                  backgroundColor: "primary.light",
+                  backgroundColor: "primary.main",
                   color: "white",
                   "&:hover": {background:"primary.contrastText", color:"black"}
                 }}

@@ -16,7 +16,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     return () => unsubscribe();
   }, [auth, navigate]);
 
-  const user = auth.currentUser;
+  const user = auth.currentUser || JSON.parse(localStorage.getItem("user") || "null");
+  // useEffect(() => {
+  //   localStorage.setItem("user", JSON.stringify(user));
+  // }, [user]);
 
   if (!user) {
     return <Navigate to="/login" />;

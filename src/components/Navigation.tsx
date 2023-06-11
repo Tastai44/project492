@@ -80,6 +80,7 @@ export default function Navigation() {
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
+        localStorage.removeItem("user");
         navigate("/login");
       })
       .catch((error) => {
