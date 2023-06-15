@@ -32,7 +32,6 @@ export default function HomeFeed() {
         console.log("Error fetching data:", error);
       }
     };
-
     fetchData();
   }, []);
 
@@ -47,9 +46,9 @@ export default function HomeFeed() {
             paddingRight={5}
           >
             <Grid item xs={2}>
-              <div style={{ position: "fixed" }}>
+              <Box style={{ position: "fixed" }}>
                 <LeftSide />
-              </div>
+              </Box>
             </Grid>
 
             <Grid item xs={7}>
@@ -60,6 +59,7 @@ export default function HomeFeed() {
                 {data.map((m) => (
                   <Box key={m.id}>
                     <MContainer
+                      postId={m.id}
                       caption={m.caption}
                       hashTagTopic={m.hashTagTopic}
                       status={m.status}
@@ -74,9 +74,9 @@ export default function HomeFeed() {
             </Grid>
 
             <Grid item xs={2}>
-              <div style={{ position: "fixed" }}>
+              <Box style={{ position: "fixed" }}>
                 <RightContainer />
-              </div>
+              </Box>
             </Grid>
           </Grid>
         </Grid>

@@ -18,6 +18,7 @@ import {
   Typography,
   MenuItem,
   IconButton,
+  Modal,
 } from "@mui/material";
 import Luffy from "../../../public/pictures/Luffy.webp";
 
@@ -25,15 +26,16 @@ import TextField from "@mui/material/TextField";
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";
 import CommentIcon from "@mui/icons-material/Comment";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 
 import LockIcon from "@mui/icons-material/Lock";
 import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
 import emojiData from "emoji-datasource-facebook";
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import FlagOutlinedIcon from '@mui/icons-material/FlagOutlined';
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
+import Content from "./Content";
 
 export const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -51,7 +53,21 @@ interface data {
   photoPost: string[];
   emoji?: string;
   likeNumber: number;
+  postId: string;
 }
+
+const styleBoxPop = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: "120vh",
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  color: "black",
+  p: 4,
+};
 
 export default function MContainer({
   caption,
@@ -61,6 +77,7 @@ export default function MContainer({
   emoji,
   photoPost,
   likeNumber,
+  postId,
 }: data) {
   const [iconStatus, setIconStatus] = React.useState("");
   React.useEffect(() => {
@@ -87,167 +104,215 @@ export default function MContainer({
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const [openPost, setOpenPost] = React.useState(false);
+  const handletOpenPost = () => setOpenPost(true);
+  const handleClosePost = () => setOpenPost(false);
   return (
-    <Box sx={{ width: "100%" }}>
-      <Stack spacing={2}>
-        <Item sx={{ display: "flex", flexDirection: "column" }}>
-          <ListItem>
-            <ListItemAvatar>
-              <Avatar
-                src={Luffy}
-                sx={{ width: "60px", height: "60px", marginRight: "10px" }}
-              />
-            </ListItemAvatar>
-            <ListItemText
-              primary={
-                <Typography sx={{ fontSize: "16px" }}>
-                  <b>User Name</b>
-                  {emoji && (
-                    <>
-                      is feeling {String.fromCodePoint(parseInt(emoji, 16))}{" "}
-                      {convertEmojiCodeToName(emoji)}
-                    </>
-                  )}
-                </Typography>
-              }
-              secondary={
-                <Box sx={{ display: "flex", alignItems: "end", gap: 2 }}>
-                  {createAt}
-                  <Box sx={{ display: "flex", alignItems: "end" }}>
-                    {iconStatus === "LockIcon" && <LockIcon />}
-                    {iconStatus === "GroupIcon" && <GroupIcon />}
-                    {iconStatus === "PublicIcon" && <PublicIcon />}
-                    {status}
+    <Box>
+      <Modal
+        open={openPost}
+        onClose={handleClosePost}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={styleBoxPop}>
+          <Content postId={postId}/>
+        </Box>
+      </Modal>
+
+      <Box sx={{ width: "100%" }}>
+        <Stack spacing={2}>
+          <Item sx={{ display: "flex", flexDirection: "column" }}>
+            <ListItem>
+              <ListItemAvatar>
+                <Avatar
+                  src={Luffy}
+                  sx={{ width: "60px", height: "60px", marginRight: "10px" }}
+                />
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <Typography sx={{ fontSize: "16px" }}>
+                    <b>User Name</b>
+                    {emoji && (
+                      <>
+                        is feeling {String.fromCodePoint(parseInt(emoji, 16))}{" "}
+                        {convertEmojiCodeToName(emoji)}
+                      </>
+                    )}
+                  </Typography>
+                }
+                secondary={
+                  <Box sx={{ display: "flex", alignItems: "end", gap: 2 }}>
+                    {createAt}
+                    <Box sx={{ display: "flex", alignItems: "end" }}>
+                      {iconStatus === "LockIcon" && <LockIcon />}
+                      {iconStatus === "GroupIcon" && <GroupIcon />}
+                      {iconStatus === "PublicIcon" && <PublicIcon />}
+                      {status}
+                    </Box>
                   </Box>
-                </Box>
-              }
-            />
-            <ListItemAvatar>
-              <IconButton onClick={handleOpenUserMenu}>
-                <MoreHorizIcon />
-              </IconButton>
-              <Menu
-                sx={{ mt: "30px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                <MenuItem onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center" sx={{display:"flex", gap:1,alignItems:"start", fontSize:"18px"}}><BorderColorOutlinedIcon /> Edit</Typography>
-                </MenuItem>
-                <MenuItem onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center" sx={{display:"flex", gap:1,alignItems:"start", fontSize:"18px"}}><DeleteOutlineOutlinedIcon /> Delete</Typography>
-                </MenuItem>
-                <MenuItem onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center" sx={{display:"flex", gap:1,alignItems:"start", fontSize:"18px"}}><FlagOutlinedIcon /> Report</Typography>
-                </MenuItem>
-              </Menu>
-            </ListItemAvatar>
-          </ListItem>
-
-          <CardContent>
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ textAlign: "justify" }}
-            >
-              {caption}
-            </Typography>
-          </CardContent>
-          <Typography
-            sx={{
-              fontSize: "16px",
-              display: "flex",
-              justifyContent: "start",
-              margin: 1,
-            }}
-          >
-            {hashTagTopic}
-          </Typography>
-
-          <ImageList
-            sx={{ width: "100%", height: "auto", maxHeight: "500px" }}
-            cols={3}
-            rowHeight={300}
-          >
-            {photoPost.map((image, index) => (
-              <ImageListItem key={index}>
-                <img src={image} alt={`Preview ${index}`} loading="lazy" />
-              </ImageListItem>
-            ))}
-          </ImageList>
-
-          <CardActions
-            disableSpacing
-            sx={{ display: "flex", justifyContent: "space-evenly" }}
-          >
-            <Button aria-label="add to favorites" sx={{ color: "purple" }}>
-              <ThumbUpIcon sx={{ marginRight: 1 }} /> Like
-            </Button>
-            <Button aria-label="add to favorites">
-              <CommentIcon sx={{ marginRight: 1 }} /> Comment
-            </Button>
-            <Button aria-label="share" sx={{ color: "black" }}>
-              <ScreenShareIcon sx={{ marginRight: 1 }} /> Share
-            </Button>
-          </CardActions>
-          <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
-
-          <CardActions
-            disableSpacing
-            sx={{ display: "flex", justifyContent: "space-between" }}
-          >
-            <Button aria-label="add to favorites" sx={{ color: "red" }}>
-              <ThumbUpIcon sx={{ marginRight: 1 }} /> {likeNumber}
-            </Button>
-            <div>
-              <Button aria-label="add to favorites" sx={{ color: "grey" }}>
-                100 Comments
-              </Button>
-              <Button aria-label="add to favorites" sx={{ color: "grey" }}>
-                100 Shares
-              </Button>
-            </div>
-          </CardActions>
-          <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
-
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-evenly",
-              marginBottom: 10,
-              gap: "10px",
-            }}
-          >
-            <Avatar
-              alt="User"
-              src={Luffy}
-              sx={{ width: "45px", height: "45px" }}
-            />
-            <div style={{ width: "98%" }}>
-              <TextField
-                id="outlined-basic"
-                label="Comment something..."
-                variant="outlined"
-                multiline
-                maxRows={4}
-                sx={{ width: "99%" }}
+                }
               />
+              <ListItemAvatar>
+                <IconButton onClick={handleOpenUserMenu}>
+                  <MoreHorizIcon />
+                </IconButton>
+                <Menu
+                  sx={{ mt: "30px" }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  <MenuItem onClick={handleCloseUserMenu}>
+                    <Typography
+                      textAlign="center"
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                        alignItems: "start",
+                        fontSize: "18px",
+                      }}
+                    >
+                      <BorderColorOutlinedIcon /> Edit
+                    </Typography>
+                  </MenuItem>
+                  <MenuItem onClick={handleCloseUserMenu}>
+                    <Typography
+                      textAlign="center"
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                        alignItems: "start",
+                        fontSize: "18px",
+                      }}
+                    >
+                      <DeleteOutlineOutlinedIcon /> Delete
+                    </Typography>
+                  </MenuItem>
+                  <MenuItem onClick={handleCloseUserMenu}>
+                    <Typography
+                      textAlign="center"
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                        alignItems: "start",
+                        fontSize: "18px",
+                      }}
+                    >
+                      <FlagOutlinedIcon /> Report
+                    </Typography>
+                  </MenuItem>
+                </Menu>
+              </ListItemAvatar>
+            </ListItem>
+
+            <CardContent>
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{ textAlign: "justify" }}
+              >
+                {caption}
+              </Typography>
+            </CardContent>
+            <Typography
+              sx={{
+                fontSize: "16px",
+                display: "flex",
+                justifyContent: "start",
+                margin: 1,
+              }}
+            >
+              {hashTagTopic}
+            </Typography>
+
+            <ImageList
+              sx={{ width: "100%", height: "auto", maxHeight: "500px" }}
+              cols={3}
+              rowHeight={300}
+            >
+              {photoPost.map((image, index) => (
+                <ImageListItem key={index}>
+                  <img src={image} alt={`Preview ${index}`} loading="lazy" />
+                </ImageListItem>
+              ))}
+            </ImageList>
+
+            <CardActions
+              disableSpacing
+              sx={{ display: "flex", justifyContent: "space-evenly" }}
+            >
+              <Button aria-label="add to favorites" sx={{ color: "purple" }}>
+                <ThumbUpIcon sx={{ marginRight: 1 }} /> Like
+              </Button>
+              <Button aria-label="add to favorites">
+                <CommentIcon sx={{ marginRight: 1 }} /> Comment
+              </Button>
+              <Button aria-label="share" sx={{ color: "black" }}>
+                <ScreenShareIcon sx={{ marginRight: 1 }} /> Share
+              </Button>
+            </CardActions>
+            <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
+
+            <CardActions
+              disableSpacing
+              sx={{ display: "flex", justifyContent: "space-between" }}
+            >
+              <Button aria-label="add to favorites" sx={{ color: "red" }}>
+                <ThumbUpIcon sx={{ marginRight: 1 }} /> {likeNumber}
+              </Button>
+              <div>
+                <Button aria-label="add to favorites" sx={{ color: "grey" }}>
+                  100 Comments
+                </Button>
+                <Button aria-label="add to favorites" sx={{ color: "grey" }}>
+                  100 Shares
+                </Button>
+              </div>
+            </CardActions>
+            <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-evenly",
+                marginBottom: 10,
+                gap: "10px",
+              }}
+            >
+              <Avatar
+                alt="User"
+                src={Luffy}
+                sx={{ width: "45px", height: "45px" }}
+              />
+              <div style={{ width: "98%" }}>
+                <TextField
+                  id="outlined-basic"
+                  label="Comment something..."
+                  variant="outlined"
+                  multiline
+                  maxRows={4}
+                  sx={{ width: "99%" }}
+                  onClick={handletOpenPost}
+                />
+              </div>
             </div>
-          </div>
-        </Item>
-      </Stack>
+          </Item>
+        </Stack>
+      </Box>
     </Box>
   );
 }
