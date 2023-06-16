@@ -47,9 +47,10 @@ const styleBoxPop = {
 
 interface IHandle {
   handleCloseCratePost: () => void;
+  handdleReFresh: () => void;
 }
 
-export default function CreatePost({ handleCloseCratePost }: IHandle) {
+export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHandle) {
 
   const [userId, setUserId] = React.useState("");
 
@@ -157,6 +158,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
     setPost(newPost);
     push(todoRef, newPost);
     clearState();
+    handdleReFresh();
     alert("Success!");
   };
 

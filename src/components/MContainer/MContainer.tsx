@@ -117,7 +117,7 @@ export default function MContainer({
         aria-describedby="modal-modal-description"
       >
         <Box sx={styleBoxPop}>
-          <Content postId={postId}/>
+          <Content postId={postId} iconStatus={iconStatus} />
         </Box>
       </Modal>
 
@@ -133,7 +133,7 @@ export default function MContainer({
               </ListItemAvatar>
               <ListItemText
                 primary={
-                  <Typography sx={{ fontSize: "16px" }}>
+                  <Box sx={{ fontSize: "16px" }}>
                     <b>User Name</b>
                     {emoji && (
                       <>
@@ -141,18 +141,16 @@ export default function MContainer({
                         {convertEmojiCodeToName(emoji)}
                       </>
                     )}
-                  </Typography>
+                  </Box>
                 }
                 secondary={
-                  <Box sx={{ display: "flex", alignItems: "end", gap: 2 }}>
+                  <Typography sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                     {createAt}
-                    <Box sx={{ display: "flex", alignItems: "end" }}>
                       {iconStatus === "LockIcon" && <LockIcon />}
                       {iconStatus === "GroupIcon" && <GroupIcon />}
                       {iconStatus === "PublicIcon" && <PublicIcon />}
                       {status}
-                    </Box>
-                  </Box>
+                  </Typography>
                 }
               />
               <ListItemAvatar>
@@ -227,7 +225,7 @@ export default function MContainer({
                 {caption}
               </Typography>
             </CardContent>
-            <Typography
+            <Box
               sx={{
                 fontSize: "16px",
                 display: "flex",
@@ -236,7 +234,7 @@ export default function MContainer({
               }}
             >
               {hashTagTopic}
-            </Typography>
+            </Box>
 
             <ImageList
               sx={{ width: "100%", height: "auto", maxHeight: "500px" }}
@@ -273,19 +271,19 @@ export default function MContainer({
               <Button aria-label="add to favorites" sx={{ color: "red" }}>
                 <ThumbUpIcon sx={{ marginRight: 1 }} /> {likeNumber}
               </Button>
-              <div>
+              <Box>
                 <Button aria-label="add to favorites" sx={{ color: "grey" }}>
                   100 Comments
                 </Button>
                 <Button aria-label="add to favorites" sx={{ color: "grey" }}>
                   100 Shares
                 </Button>
-              </div>
+              </Box>
             </CardActions>
             <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
 
-            <div
-              style={{
+            <Box
+              sx={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-evenly",
@@ -298,7 +296,7 @@ export default function MContainer({
                 src={Luffy}
                 sx={{ width: "45px", height: "45px" }}
               />
-              <div style={{ width: "98%" }}>
+              <Box style={{ width: "98%" }}>
                 <TextField
                   id="outlined-basic"
                   label="Comment something..."
@@ -308,8 +306,8 @@ export default function MContainer({
                   sx={{ width: "99%" }}
                   onClick={handletOpenPost}
                 />
-              </div>
-            </div>
+              </Box>
+            </Box>
           </Item>
         </Stack>
       </Box>

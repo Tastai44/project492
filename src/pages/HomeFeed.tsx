@@ -18,6 +18,11 @@ export default function HomeFeed() {
     color: theme.palette.text.secondary,
   }));
 
+  const [reFresh, setReFresh] = React.useState(0);
+  const handdleReFresh = () => {
+    setReFresh(pre => (pre+1));
+  }
+
   const [data, setData] = React.useState<Post[]>([]);
   React.useEffect(() => {
     const fetchData = async () => {
@@ -33,7 +38,7 @@ export default function HomeFeed() {
       }
     };
     fetchData();
-  }, []);
+  }, [reFresh]);
 
   return (
     <>
@@ -53,7 +58,7 @@ export default function HomeFeed() {
 
             <Grid item xs={7}>
               <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
-                <PostForm />
+                <PostForm handdleReFresh={handdleReFresh} />
               </Item>
               <Item sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 {data.map((m) => (

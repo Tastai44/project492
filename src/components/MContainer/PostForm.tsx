@@ -6,10 +6,15 @@ import Luffy from "../../../public/pictures/Luffy.webp";
 import * as React from 'react';
 import CreatePost from './CreatePost';
 
-export default function PostForm() {
+interface IFunction {
+  handdleReFresh: () => void;
+}
+
+export default function PostForm({handdleReFresh} : IFunction) {
   const [openCreatePost, setOpenCreatePost] = React.useState(false);
   const handletOpenCratePost = () => setOpenCreatePost(true);
   const handleCloseCratePost = () => setOpenCreatePost(false);
+
   return (
     <div style={{ display: "flex", flexDirection: "column"}}>
       <Modal
@@ -19,7 +24,7 @@ export default function PostForm() {
         aria-describedby="modal-modal-description"
       >
         <Box>
-          <CreatePost handleCloseCratePost={handleCloseCratePost} />
+          <CreatePost handleCloseCratePost={handleCloseCratePost} handdleReFresh={handdleReFresh}/>
         </Box>
       </Modal>
         <div
