@@ -16,6 +16,8 @@ import {
   ImageList,
   ImageListItem,
   TextField,
+  Button,
+  CardActions,
 } from "@mui/material";
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";
 import CommentIcon from "@mui/icons-material/Comment";
@@ -31,6 +33,9 @@ import emojiData from "emoji-datasource-facebook";
 import LockIcon from "@mui/icons-material/Lock";
 import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
+import CancelIcon from "@mui/icons-material/Cancel";
+import Divider from "@mui/material/Divider";
+import CommentContent from "./CommentContent";
 
 const Item = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -43,8 +48,15 @@ interface IData {
   postId: string;
   iconStatus: string;
 }
+interface IFunction {
+  handleClosePost: () => void;
+}
 
-export default function Content({ postId, iconStatus }: IData) {
+export default function Content({
+  postId,
+  iconStatus,
+  handleClosePost,
+}: IData & IFunction) {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -78,7 +90,12 @@ export default function Content({ postId, iconStatus }: IData) {
   };
 
   return (
-    <>
+    <Box>
+      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <IconButton onClick={handleClosePost}>
+          <CancelIcon />
+        </IconButton>
+      </Box>
       {data
         .filter((f) => f.id === postId)
         .map((m) => (
@@ -86,21 +103,20 @@ export default function Content({ postId, iconStatus }: IData) {
             <Grid container spacing={1}>
               <Grid item xs={6}>
                 <Item>
-                  <ImageList
-                    sx={{ width: "100%", height: "auto", maxHeight: "500px" }}
-                    cols={3}
-                    rowHeight={300}
-                  >
-                    {m.photoPost.map((image, index) => (
-                      <ImageListItem key={index}>
-                        <img
-                          src={image}
-                          alt={`Preview ${index}`}
-                          loading="lazy"
-                        />
-                      </ImageListItem>
-                    ))}
-                  </ImageList>
+                  <Box sx={{ height: "auto", maxWidth:'lg', minWidth:'sm'}}>
+                    <ImageList variant="masonry" cols={2} gap={10}>
+                      {m.photoPost.map((image, index) => (
+                        <ImageListItem key={index}>
+                          <img
+                            src={image}
+                            srcSet={image}
+                            alt={`${index}`}
+                            loading="lazy"
+                          />
+                        </ImageListItem>
+                      ))}
+                    </ImageList>
+                  </Box>
                 </Item>
               </Grid>
               <Grid item xs={6}>
@@ -124,8 +140,10 @@ export default function Content({ postId, iconStatus }: IData) {
                               <b>User Name</b>
                               {m.emoji && (
                                 <>
-                                  is feeling{" "}
-                                  {String.fromCodePoint(parseInt(m.emoji, 16))}{" "}
+                                  is feeling
+                                  {String.fromCodePoint(
+                                    parseInt(m.emoji, 16)
+                                  )}{" "}
                                   {convertEmojiCodeToName(m.emoji)}
                                 </>
                               )}
@@ -230,13 +248,39 @@ export default function Content({ postId, iconStatus }: IData) {
                         {m.hashTagTopic}
                       </Box>
                     </Box>
-                    
+                    <Divider />
+                    <CardActions
+                      disableSpacing
+                      sx={{ display: "flex", justifyContent: "space-between" }}
+                    >
+                      <Button
+                        aria-label="add to favorites"
+                        sx={{ color: "purple" }}
+                      >
+                        <ThumbUpIcon sx={{ marginRight: 1 }} /> Like
+                      </Button>
+                      <Button aria-label="add to favorites">
+                        <CommentIcon sx={{ marginRight: 1 }} /> Comment
+                      </Button>
+                      <Button aria-label="share" sx={{ color: "black" }}>
+                        <ScreenShareIcon sx={{ marginRight: 1 }} /> Share
+                      </Button>
+                    </CardActions>
+                    <Divider />
+                    <Box
+                      sx={{ mt: 2, mb: 2, height: '350px', maxHeight:'500px', overflowY: 'scroll' }}
+                    >
+                      <CommentContent />
+                      <CommentContent />
+                      <CommentContent />
+                      <CommentContent />
+                    </Box>
                     <Box
                       sx={{
                         display: "flex",
-                        alignItems: "center",
+                        alignItems: "start",
                         justifyContent: "space-evenly",
-                        mt:2,
+                        mt: 2,
                         gap: "10px",
                       }}
                     >
@@ -245,8 +289,9 @@ export default function Content({ postId, iconStatus }: IData) {
                         src={Luffy}
                         sx={{ width: "45px", height: "45px" }}
                       />
-                      <Box style={{ width: "98%" }}>
+                      <Box sx={{ width: "98%", mb: 2 }}>
                         <TextField
+                          size="small"
                           id="outlined-basic"
                           label="Comment something..."
                           variant="outlined"
@@ -256,13 +301,12 @@ export default function Content({ postId, iconStatus }: IData) {
                         />
                       </Box>
                     </Box>
-
                   </Box>
                 </Item>
               </Grid>
             </Grid>
           </Box>
         ))}
-    </>
+    </Box>
   );
 }
