@@ -17,7 +17,12 @@ import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 
-export default function CommentContent() {
+interface IData {
+  text: string;
+  createAt: string;
+}
+
+export default function CommentContent({text, createAt} : IData) {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -49,7 +54,7 @@ export default function CommentContent() {
                 fontSize: "12px",
               }}
             >
-              6/13/2023, 10:36:09 PM
+              {createAt}
             </Typography>
           }
         />
@@ -116,21 +121,7 @@ export default function CommentContent() {
         </ListItemAvatar>
       </ListItem>
       <Box sx={{ m:1 }}>
-        The sun began its descent in the sky, casting a warm, golden glow over
-        the rolling hills. The grass, kissed by the afternoon light, swayed
-        gently in the breeze, creating a mesmerizing dance of green. The air was
-        filled with the sweet fragrance of blooming wildflowers that dotted the
-        landscape, their vibrant colors adding splashes of beauty to the scene.
-        In the distance, a tranquil river meandered through the valley, its
-        crystal-clear waters reflecting the brilliance of the setting sun.
-        Towering trees stood like sentinels along the riverbanks, their branches
-        reaching towards the heavens as if in silent prayer. The entire panorama
-        was painted with nature's brush, a masterpiece of serenity and harmony.
-        As the day drew to a close, the sky transformed into a canvas of fiery
-        oranges and pinks, merging with the cool hues of purples and blues. The
-        scene exuded a sense of tranquility, inviting one to pause, breathe in
-        the scents, and immerse themselves in the breathtaking beauty of the
-        natural world.
+        {text}
       </Box>
     </Paper>
   );

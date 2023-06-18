@@ -61,10 +61,9 @@ const styleBoxPop = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "90%",
+  width: "100%",
+  height:"100%",
   bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
   color: "black",
   p: 4,
 };
@@ -108,6 +107,14 @@ export default function MContainer({
   const [openPost, setOpenPost] = React.useState(false);
   const handletOpenPost = () => setOpenPost(true);
   const handleClosePost = () => setOpenPost(false);
+
+  const [userId, setUserId] = React.useState("");
+  React.useEffect (() => {
+    const getUerInfo = localStorage.getItem("user");
+    const tmp = JSON.parse(getUerInfo ? getUerInfo : '')
+    setUserId(tmp.uid)
+  }, [userId])
+
   return (
     <Box>
       <Modal
@@ -116,12 +123,15 @@ export default function MContainer({
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={styleBoxPop}>
-          <Content 
-            postId={postId} 
-            iconStatus={iconStatus} 
-            handleClosePost={handleClosePost}
-          />
+        <Box>
+          <Paper sx={styleBoxPop}>
+            <Content 
+              postId={postId} 
+              iconStatus={iconStatus} 
+              userId={userId}
+              handleClosePost={handleClosePost}
+            />
+          </Paper>
         </Box>
       </Modal>
 

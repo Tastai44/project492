@@ -26,9 +26,6 @@ import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
-import { Post } from "../../interface/PostContent";
-import { get, ref } from "firebase/database";
-import { db } from "../../config/firebase";
 import emojiData from "emoji-datasource-facebook";
 import LockIcon from "@mui/icons-material/Lock";
 import GroupIcon from "@mui/icons-material/Group";
@@ -36,6 +33,11 @@ import PublicIcon from "@mui/icons-material/Public";
 import CancelIcon from "@mui/icons-material/Cancel";
 import Divider from "@mui/material/Divider";
 import CommentContent from "./CommentContent";
+
+import "firebase/database";
+import { db } from "../../config/firebase";
+import { ref, push, get } from "firebase/database";
+import { Post, Comment } from "../../interface/PostContent";
 
 const Item = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -47,6 +49,7 @@ const Item = styled(Box)(({ theme }) => ({
 interface IData {
   postId: string;
   iconStatus: string;
+  userId: string;
 }
 interface IFunction {
   handleClosePost: () => void;
@@ -55,6 +58,7 @@ interface IFunction {
 export default function Content({
   postId,
   iconStatus,
+  userId,
   handleClosePost,
 }: IData & IFunction) {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
@@ -89,21 +93,78 @@ export default function Content({
     return emoji ? emoji.name : undefined;
   };
 
+  const initialState = {
+    id: "",
+    text: "",
+    createAt: "",
+    author: "",
+    // likeNumber: 0,
+  };
+
+  const [reFresh, setReFresh] = React.useState(0);
+  const handdleReFresh = () => {
+    setReFresh((pre) => pre + 1);
+  };
+  const [comment, setComment] = React.useState<Comment>(initialState);
+  const clearState = () => {
+    setComment({ ...initialState });
+  };
+  const handleChangeComment = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target;
+    setComment((prevComment) => ({
+      ...prevComment,
+      [name]: value,
+    }));
+  };
+  const createComment = () => {
+    const commentRef = ref(db, "/comments");
+    const newCommentRef = push(commentRef);
+    const newComment = {
+      id: newCommentRef.key ? newCommentRef.key : "",
+      text: comment.text,
+      author: userId,
+      // likeNumber: 0,
+      createAt: new Date().toLocaleString(),
+    };
+    setComment(newComment);
+    push(commentRef, newComment);
+    clearState();
+    handdleReFresh();
+    alert("Success!");
+  };
+
+  const [dataComment, setDataComment] = React.useState<Comment[]>([]);
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const dbRef = ref(db, "/comments");
+        const snapshot = await get(dbRef);
+        const val = snapshot.val();
+        if (val) {
+          setDataComment(Object.values(val));
+        }
+      } catch (error) {
+        console.log("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [reFresh]);
+
   return (
     <Box>
-      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-        <IconButton onClick={handleClosePost}>
-          <CancelIcon />
-        </IconButton>
-      </Box>
+      <IconButton onClick={handleClosePost}>
+        <CancelIcon />
+      </IconButton>
       {data
         .filter((f) => f.id === postId)
         .map((m) => (
-          <Box key={m.id} sx={{ flexGrow: 1 }}>
+          <Box key={m.id} sx={{ flexGrow: 1, p: 1 }}>
             <Grid container spacing={1}>
               <Grid item xs={6}>
                 <Item>
-                  <Box sx={{ height: "auto", maxWidth:'lg', minWidth:'sm'}}>
+                  <Box sx={{ height: "auto", maxWidth: "lg", minWidth: "sm" }}>
                     <ImageList variant="masonry" cols={2} gap={10}>
                       {m.photoPost.map((image, index) => (
                         <ImageListItem key={index}>
@@ -268,14 +329,6 @@ export default function Content({
                     </CardActions>
                     <Divider />
                     <Box
-                      sx={{ mt: 2, mb: 2, height: '350px', maxHeight:'500px', overflowY: 'scroll' }}
-                    >
-                      <CommentContent />
-                      <CommentContent />
-                      <CommentContent />
-                      <CommentContent />
-                    </Box>
-                    <Box
                       sx={{
                         display: "flex",
                         alignItems: "start",
@@ -289,8 +342,9 @@ export default function Content({
                         src={Luffy}
                         sx={{ width: "45px", height: "45px" }}
                       />
-                      <Box sx={{ width: "98%", mb: 2 }}>
+                      <Box sx={{ width: "98%", display: "flex", gap: 2 }}>
                         <TextField
+                          name="text"
                           size="small"
                           id="outlined-basic"
                           label="Comment something..."
@@ -298,8 +352,44 @@ export default function Content({
                           multiline
                           maxRows={4}
                           sx={{ width: "99%" }}
+                          value={comment.text}
+                          onChange={handleChangeComment}
                         />
+                        <Button
+                          size="small"
+                          variant="contained"
+                          onClick={createComment}
+                          sx={{
+                            backgroundColor: "#8E51E2",
+                            color: "white",
+                            "&:hover": {
+                              color: "black",
+                              backgroundColor: "#E1E1E1",
+                            },
+                          }}
+                          type="submit"
+                        >
+                          Comment
+                        </Button>
                       </Box>
+                    </Box>
+                    <Box
+                      sx={{
+                        mt: 2,
+                        mb: 2,
+                        height: "380px",
+                        maxHeight: "500px",
+                        overflowY: "auto",
+                      }}
+                    >
+                      {dataComment.map((comment) => (
+                        <Box key={comment.id}>
+                          <CommentContent
+                            text={comment.text}
+                            createAt={comment.createAt}
+                          />
+                        </Box>
+                      ))}
                     </Box>
                   </Box>
                 </Item>

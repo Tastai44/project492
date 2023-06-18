@@ -1,8 +1,9 @@
 import { User } from "./User";
 
 export interface Comment {
-  id: number;
+  id: string;
   text: string;
+  createAt:string;
   author: string;
 }
 export interface Location {

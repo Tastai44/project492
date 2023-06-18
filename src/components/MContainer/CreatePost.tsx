@@ -25,12 +25,12 @@ import LockIcon from "@mui/icons-material/Lock";
 import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
 import Emoji from "./Emoji";
-import "firebase/database";
+import emojiData from "emoji-datasource-facebook";
 
+import "firebase/database";
 import { db } from "../../config/firebase";
 import { ref, push } from "firebase/database";
 import { Post } from "../../interface/PostContent";
-import emojiData from "emoji-datasource-facebook";
 
 const styleBoxPop = {
   position: "absolute",
@@ -140,10 +140,9 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
       [name]: value,
     }));
   };
-  // const db = db;
   const createPost = () => {
-    const todoRef = ref(db, "/posts");
-    const newPostRef = push(todoRef);
+    const postRef = ref(db, "/posts");
+    const newPostRef = push(postRef);
     const newPost = {
       id: newPostRef.key ? newPostRef.key : "",
       caption: post.caption,
@@ -156,7 +155,7 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
       owner: userId,
     };
     setPost(newPost);
-    push(todoRef, newPost);
+    push(postRef, newPost);
     clearState();
     handdleReFresh();
     alert("Success!");
