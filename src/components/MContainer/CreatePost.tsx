@@ -118,6 +118,7 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
     hashTagTopic: "",
     status: "",
     photoPost: [],
+    comments: [],
     likeNumber: 0,
     createAt: "",
     emoji: "",
@@ -153,6 +154,7 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
       createAt: new Date().toLocaleString(),
       emoji: emoji,
       owner: userId,
+      comments: post.comments,
     };
     setPost(newPost);
     push(postRef, newPost);

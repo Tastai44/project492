@@ -34,7 +34,7 @@ export interface Post {
   likeNumber: number;
   createAt: string;
   emoji?: string;
-  comments?: Comment[];
+  comments: Comment[];
   reports?: Report[];
   shares?: Share[];
   location?: Location;

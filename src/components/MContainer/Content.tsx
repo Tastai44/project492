@@ -36,7 +36,7 @@ import CommentContent from "./CommentContent";
 
 import "firebase/database";
 import { db } from "../../config/firebase";
-import { ref, push, get } from "firebase/database";
+import { ref, push, get, update, child } from "firebase/database";
 import { Post, Comment } from "../../interface/PostContent";
 
 const Item = styled(Box)(({ theme }) => ({
@@ -118,39 +118,70 @@ export default function Content({
       [name]: value,
     }));
   };
-  const createComment = () => {
+  const postComment = () => {
     const commentRef = ref(db, "/comments");
+    const postRef = ref(db, "/posts");
+    // const commentRef = postRef.child('comments');
     const newCommentRef = push(commentRef);
     const newComment = {
-      id: newCommentRef.key ? newCommentRef.key : "",
+      id: newCommentRef.ref.key ? newCommentRef.ref.key : "",
       text: comment.text,
       author: userId,
       // likeNumber: 0,
       createAt: new Date().toLocaleString(),
     };
+
     setComment(newComment);
-    push(commentRef, newComment);
+    // push(commentRef, newComment);
     clearState();
     handdleReFresh();
-    alert("Success!");
+    // alert("Success!");
+
+    get(postRef)
+      .then((snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+          const post = childSnapshot.val();
+          if (post.id === postId) {
+            const postKey = childSnapshot.key;
+            const postToUpdateRef = ref(db, `/posts/${postKey}`);
+            
+            const existingComments = post.comments || [];
+            const updatedComments = [...existingComments, newComment];
+
+            update(postToUpdateRef, {comments:updatedComments})
+              .then(() => {
+                clearState();
+                handdleReFresh();
+                alert("Comment updated successfully!");
+              })
+              .catch((error) => {
+                console.error("Error updating comment: ", error);
+                alert("Failed to update comment");
+              });
+          }
+        });
+      })
+      .catch((error) => {
+        console.error("Error updating post: ", error);
+        alert("Failed to update post");
+      });
   };
 
-  const [dataComment, setDataComment] = React.useState<Comment[]>([]);
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const dbRef = ref(db, "/comments");
+        const dbRef = ref(db, "/posts");
         const snapshot = await get(dbRef);
         const val = snapshot.val();
         if (val) {
-          setDataComment(Object.values(val));
+          setData(Object.values(val));
         }
       } catch (error) {
         console.log("Error fetching data:", error);
       }
     };
     fetchData();
-  }, [reFresh]);
+  }, [reFresh, data]);
 
   return (
     <Box>
@@ -358,7 +389,7 @@ export default function Content({
                         <Button
                           size="small"
                           variant="contained"
-                          onClick={createComment}
+                          onClick={postComment}
                           sx={{
                             backgroundColor: "#8E51E2",
                             color: "white",
@@ -382,7 +413,9 @@ export default function Content({
                         overflowY: "auto",
                       }}
                     >
-                      {dataComment.map((comment) => (
+                      {m.comments ? (
+                        <>
+                      {m.comments.map((comment) => (
                         <Box key={comment.id}>
                           <CommentContent
                             text={comment.text}
@@ -390,6 +423,10 @@ export default function Content({
                           />
                         </Box>
                       ))}
+                      </>
+                      ) : (
+                        <Box>There are comment!</Box>
+                      )}
                     </Box>
                   </Box>
                 </Item>
