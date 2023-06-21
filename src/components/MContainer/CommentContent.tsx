@@ -17,12 +17,18 @@ import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 
+import "firebase/database";
+import { db } from "../../config/firebase";
+import { ref, push, get, update, remove, set } from "firebase/database";
+
 interface IData {
   text: string;
   createAt: string;
+  commentId: string;
+  postId: string;
 }
 
-export default function CommentContent({text, createAt} : IData) {
+export default function CommentContent({text, createAt, commentId, postId} : IData) {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -31,6 +37,39 @@ export default function CommentContent({text, createAt} : IData) {
   };
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handdleDelete = (id: string, comId: string) => {
+    const postRef = ref(db, "/posts");
+    get(postRef)
+      .then((snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+          const post = childSnapshot.val();
+          if (post.id === id) {
+            const comments = post.comments;
+            for (let i = 0; i < post.comments.length; i++) {
+              if (post.comments[i].id === comId) {
+                const postKey = childSnapshot.key;
+                const postToDeleteRef = ref(db, `/posts/${postKey}`);
+                comments.splice(i, 1);
+                set(postToDeleteRef, post)
+                  .then(() => {
+                    alert("Comment deleted successfully");
+                    handleCloseUserMenu();
+                    // handleRefresh(); 
+                  })
+                  .catch((error) => {
+                    console.error("Error deleting comment:", error);
+                  });
+                break; 
+              }
+            }
+          }
+        });
+      })
+      .catch((error) => {
+        console.error("Error deleting post:", error);
+      });
   };
 
   return (
@@ -91,7 +130,7 @@ export default function CommentContent({text, createAt} : IData) {
                 <BorderColorOutlinedIcon /> Edit
               </Typography>
             </MenuItem>
-            <MenuItem onClick={handleCloseUserMenu}>
+            <MenuItem onClick={() => handdleDelete(postId, commentId)}>
               <Typography
                 textAlign="center"
                 sx={{

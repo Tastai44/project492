@@ -36,7 +36,7 @@ import CommentContent from "./CommentContent";
 
 import "firebase/database";
 import { db } from "../../config/firebase";
-import { ref, push, get, update } from "firebase/database";
+import { ref, push, get, update, remove } from "firebase/database";
 import { Post, Comment } from "../../interface/PostContent";
 
 const Item = styled(Box)(({ theme }) => ({
@@ -177,6 +177,37 @@ export default function Content({
     };
     fetchData();
   }, [reFresh, data]);
+
+  // const handdleDelete = (id: string, comId: string) => {
+  //   const postRef = ref(db, "/posts");
+  //   get(postRef)
+  //     .then((snapshot) => {
+  //       snapshot.forEach((childSnapshot) => {
+  //         const post = childSnapshot.val();
+  //         if (post.id === id) {
+  //           for (let i = 0; i < post.comment.length; i++) {
+  //             if (post.comment[i] === comId) {
+  //               const postKey = childSnapshot.key;
+  //               const postToDeleteRef = ref(db, `/posts/${postKey}`);
+  //               remove(postToDeleteRef)
+  //                 .then(() => {
+  //                   console.log("Comment deleted successfully");
+  //                   handleCloseUserMenu();
+  //                   // handleRefresh(); 
+  //                 })
+  //                 .catch((error) => {
+  //                   console.error("Error deleting comment:", error);
+  //                 });
+  //               break; 
+  //             }
+  //           }
+  //         }
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error deleting post:", error);
+  //     });
+  // };
 
   return (
     <Box>
@@ -446,6 +477,8 @@ export default function Content({
                               <CommentContent
                                 text={comment.text}
                                 createAt={comment.createAt}
+                                commentId = {comment.id}
+                                postId = {m.id}
                               />
                             </Box>
                           ))}
