@@ -120,7 +120,7 @@ export default function CommentContent({text, createAt} : IData) {
           </Menu>
         </ListItemAvatar>
       </ListItem>
-      <Box sx={{ m:1 }}>
+      <Box sx={{ ml:1, pb:1}}>
         {text}
       </Box>
     </Paper>

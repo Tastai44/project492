@@ -36,7 +36,7 @@ import CommentContent from "./CommentContent";
 
 import "firebase/database";
 import { db } from "../../config/firebase";
-import { ref, push, get, update, child } from "firebase/database";
+import { ref, push, get, update } from "firebase/database";
 import { Post, Comment } from "../../interface/PostContent";
 
 const Item = styled(Box)(({ theme }) => ({
@@ -121,7 +121,6 @@ export default function Content({
   const postComment = () => {
     const commentRef = ref(db, "/comments");
     const postRef = ref(db, "/posts");
-    // const commentRef = postRef.child('comments');
     const newCommentRef = push(commentRef);
     const newComment = {
       id: newCommentRef.ref.key ? newCommentRef.ref.key : "",
@@ -130,13 +129,9 @@ export default function Content({
       // likeNumber: 0,
       createAt: new Date().toLocaleString(),
     };
-
     setComment(newComment);
-    // push(commentRef, newComment);
     clearState();
     handdleReFresh();
-    // alert("Success!");
-
     get(postRef)
       .then((snapshot) => {
         snapshot.forEach((childSnapshot) => {
@@ -144,11 +139,11 @@ export default function Content({
           if (post.id === postId) {
             const postKey = childSnapshot.key;
             const postToUpdateRef = ref(db, `/posts/${postKey}`);
-            
+
             const existingComments = post.comments || [];
             const updatedComments = [...existingComments, newComment];
 
-            update(postToUpdateRef, {comments:updatedComments})
+            update(postToUpdateRef, { comments: updatedComments })
               .then(() => {
                 clearState();
                 handdleReFresh();
@@ -196,18 +191,35 @@ export default function Content({
               <Grid item xs={6}>
                 <Item>
                   <Box sx={{ height: "auto", maxWidth: "lg", minWidth: "sm" }}>
-                    <ImageList variant="masonry" cols={2} gap={10}>
-                      {m.photoPost.map((image, index) => (
-                        <ImageListItem key={index}>
-                          <img
-                            src={image}
-                            srcSet={image}
-                            alt={`${index}`}
-                            loading="lazy"
-                          />
-                        </ImageListItem>
-                      ))}
-                    </ImageList>
+                    {m.photoPost.length == 1 ? (
+                      <>
+                        <ImageList variant="masonry" cols={1}>
+                          {m.photoPost.map((image, index) => (
+                            <ImageListItem key={index}>
+                              <img
+                                src={image}
+                                srcSet={image}
+                                alt={`${index}`}
+                                // loading="lazy"
+                              />
+                            </ImageListItem>
+                          ))}
+                        </ImageList>
+                      </>
+                    ) : (
+                      <ImageList variant="masonry" cols={2} gap={10}>
+                        {m.photoPost.map((image, index) => (
+                          <ImageListItem key={index}>
+                            <img
+                              src={image}
+                              srcSet={image}
+                              alt={`${index}`}
+                              loading="lazy"
+                            />
+                          </ImageListItem>
+                        ))}
+                      </ImageList>
+                    )}
                   </Box>
                 </Item>
               </Grid>
@@ -361,6 +373,19 @@ export default function Content({
                     <Divider />
                     <Box
                       sx={{
+                        p: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Typography>10 likes</Typography>
+                      <Typography>10 comments</Typography>
+                      <Typography>10 shares</Typography>
+                    </Box>
+                    <Divider />
+                    <Box
+                      sx={{
                         display: "flex",
                         alignItems: "start",
                         justifyContent: "space-evenly",
@@ -397,6 +422,7 @@ export default function Content({
                               color: "black",
                               backgroundColor: "#E1E1E1",
                             },
+                            maxHeight: "40px",
                           }}
                           type="submit"
                         >
@@ -415,15 +441,15 @@ export default function Content({
                     >
                       {m.comments ? (
                         <>
-                      {m.comments.map((comment) => (
-                        <Box key={comment.id}>
-                          <CommentContent
-                            text={comment.text}
-                            createAt={comment.createAt}
-                          />
-                        </Box>
-                      ))}
-                      </>
+                          {m.comments.map((comment) => (
+                            <Box key={comment.id}>
+                              <CommentContent
+                                text={comment.text}
+                                createAt={comment.createAt}
+                              />
+                            </Box>
+                          ))}
+                        </>
                       ) : (
                         <Box>There are comment!</Box>
                       )}

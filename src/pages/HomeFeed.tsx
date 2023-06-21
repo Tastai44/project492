@@ -47,8 +47,6 @@ export default function HomeFeed() {
           <Grid
             container
             justifyContent="space-between"
-            paddingLeft={5}
-            paddingRight={5}
           >
             <Grid item xs={2}>
               <Box style={{ position: "fixed" }}>
@@ -72,6 +70,7 @@ export default function HomeFeed() {
                       emoji={m.emoji}
                       photoPost={m.photoPost}
                       likeNumber={m.likeNumber}
+                      handdleReFresh={handdleReFresh}
                     />
                   </Box>
                 ))}

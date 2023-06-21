@@ -37,6 +37,10 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import Content from "./Content";
 
+import "firebase/database";
+import { db } from "../../config/firebase";
+import { ref, get, remove } from "firebase/database";
+
 export const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   ...theme.typography.body2,
@@ -56,6 +60,10 @@ interface data {
   postId: string;
 }
 
+interface IFunction {
+  handdleReFresh: () => void;
+}
+
 const styleBoxPop = {
   position: "absolute",
   top: "50%",
@@ -66,6 +74,7 @@ const styleBoxPop = {
   bgcolor: "background.paper",
   color: "black",
   p: 4,
+  overflow:"auto"
 };
 
 export default function MContainer({
@@ -77,7 +86,8 @@ export default function MContainer({
   photoPost,
   likeNumber,
   postId,
-}: data) {
+  handdleReFresh
+}: data & IFunction) {
   const [iconStatus, setIconStatus] = React.useState("");
   React.useEffect(() => {
     if (status === "Private") {
@@ -114,6 +124,29 @@ export default function MContainer({
     const tmp = JSON.parse(getUerInfo ? getUerInfo : '')
     setUserId(tmp.uid)
   }, [userId])
+
+  const handdleDelete = (id: string) => {
+    const postRef = ref(db, "/posts");
+    get(postRef)
+      .then((snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+          const post = childSnapshot.val();
+          if (post.id === id) {
+            const postKey = childSnapshot.key;
+            const postToDeleteRef = ref(db, `/posts/${postKey}`);
+            remove(postToDeleteRef)
+            .then(() => {
+              console.log("Post deleted successfully");
+              handleCloseUserMenu();
+              handdleReFresh();
+            })
+          }
+        });
+      })
+    .catch((error) => {
+      console.error("Error deleting post:", error);
+    });
+  }
 
   return (
     <Box>
@@ -200,7 +233,7 @@ export default function MContainer({
                       <BorderColorOutlinedIcon /> Edit
                     </Typography>
                   </MenuItem>
-                  <MenuItem onClick={handleCloseUserMenu}>
+                  <MenuItem onClick={() => handdleDelete(postId)}>
                     <Typography
                       textAlign="center"
                       sx={{
@@ -251,12 +284,12 @@ export default function MContainer({
             </Box>
 
             <ImageList
-              sx={{ width: "100%", height: "auto", maxHeight: "500px" }}
+              sx={{ width: "100%", height: "auto", maxHeight: "500px", justifyContent:"center"}}
               cols={3}
               rowHeight={300}
             >
               {photoPost.map((image, index) => (
-                <ImageListItem key={index}>
+                <ImageListItem key={index} >
                   <img src={image} alt={`Preview ${index}`} loading="lazy" />
                 </ImageListItem>
               ))}
@@ -301,7 +334,7 @@ export default function MContainer({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-evenly",
-                marginBottom: 10,
+                mb: 1,
                 gap: "10px",
               }}
             >
