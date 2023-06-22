@@ -7,9 +7,10 @@ import RightContainer from "../components/RightSide/RightContainer";
 import PostForm from "../components/MContainer/PostForm";
 import Box from "@mui/material/Box/Box";
 
-import { db } from "../config/firebase";
-import { get, ref } from "firebase/database";
+import { dbFireStore } from "../config/firebase";
+import {collection, query, orderBy, getDocs} from "firebase/firestore"
 import { Post } from "../interface/PostContent";
+
 
 export default function HomeFeed() {
   const Item = styled(Box)(({ theme }) => ({
@@ -27,16 +28,15 @@ export default function HomeFeed() {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const dbRef = ref(db, "/posts");
-        const snapshot = await get(dbRef);
-        const val = snapshot.val();
-        if (val) {
-          setData(Object.values(val));
-        }
+        const q = query(collection(dbFireStore, 'posts'), orderBy('createAt', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
+        setData(queriedData);
       } catch (error) {
-        console.log("Error fetching data:", error);
+        console.error('Error fetching data:', error);
       }
     };
+
     fetchData();
   }, [reFresh]);
 

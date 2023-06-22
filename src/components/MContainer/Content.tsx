@@ -39,6 +39,9 @@ import { db } from "../../config/firebase";
 import { ref, push, get, update, remove } from "firebase/database";
 import { Post, Comment } from "../../interface/PostContent";
 
+import { dbFireStore } from "../../config/firebase";
+import {collection, query, orderBy, getDocs} from "firebase/firestore"
+
 const Item = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   ...theme.typography.body2,
@@ -75,16 +78,18 @@ export default function Content({
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const dbRef = ref(db, "/posts");
-        const snapshot = await get(dbRef);
-        const val = snapshot.val();
-        if (val) {
-          setData(Object.values(val));
-        }
+        const q = query(collection(dbFireStore, 'posts'));
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }) as Post);
+        setData(queriedData);
       } catch (error) {
-        console.log("Error fetching data:", error);
+        console.error('Error fetching data:', error);
       }
     };
+
     fetchData();
   }, []);
 
@@ -162,21 +167,21 @@ export default function Content({
       });
   };
 
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const dbRef = ref(db, "/posts");
-        const snapshot = await get(dbRef);
-        const val = snapshot.val();
-        if (val) {
-          setData(Object.values(val));
-        }
-      } catch (error) {
-        console.log("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, [reFresh, data]);
+  // React.useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const dbRef = ref(db, "/posts");
+  //       const snapshot = await get(dbRef);
+  //       const val = snapshot.val();
+  //       if (val) {
+  //         setData(Object.values(val));
+  //       }
+  //     } catch (error) {
+  //       console.log("Error fetching data:", error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [reFresh, data]);
 
   // const handdleDelete = (id: string, comId: string) => {
   //   const postRef = ref(db, "/posts");
@@ -231,7 +236,7 @@ export default function Content({
                                 src={image}
                                 srcSet={image}
                                 alt={`${index}`}
-                                // loading="lazy"
+                                loading="lazy"
                               />
                             </ImageListItem>
                           ))}

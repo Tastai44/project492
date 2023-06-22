@@ -28,9 +28,10 @@ import Emoji from "./Emoji";
 import emojiData from "emoji-datasource-facebook";
 
 import "firebase/database";
-import { db } from "../../config/firebase";
-import { ref, push } from "firebase/database";
+import { dbFireStore } from "../../config/firebase";
 import { Post } from "../../interface/PostContent";
+import {doc} from "firebase/firestore"
+import { collection, addDoc, setDoc } from "firebase/firestore";
 
 const styleBoxPop = {
   position: "absolute",
@@ -113,7 +114,7 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
   };
 
   const initialState = {
-    id: "",
+    id:"",
     caption: "",
     hashTagTopic: "",
     status: "",
@@ -141,11 +142,34 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
       [name]: value,
     }));
   };
-  const createPost = () => {
-    const postRef = ref(db, "/posts");
-    const newPostRef = push(postRef);
+
+  // const createPost = () => {
+  //   const postRef = ref(dbFireStore, "/posts");
+  //   const newPostRef = push(postRef);
+  //   const newPost = {
+  //     id: newPostRef.key ? newPostRef.key : "",
+  //     caption: post.caption,
+  //     hashTagTopic: post.hashTagTopic,
+  //     status: status,
+  //     photoPost: previewImages,
+  //     likeNumber: 0,
+  //     createAt: new Date().toLocaleString(),
+  //     emoji: emoji,
+  //     owner: userId,
+  //     comments: post.comments,
+  //   };
+  //   setPost(newPost);
+  //   push(postRef, newPost);
+  //   clearState();
+  //   handdleReFresh();
+  //   alert("Success!");
+  // };
+
+  const createPost = async () => {
+    const postCollection = collection(dbFireStore, "posts");
+
     const newPost = {
-      id: newPostRef.key ? newPostRef.key : "",
+      id: "",
       caption: post.caption,
       hashTagTopic: post.hashTagTopic,
       status: status,
@@ -156,12 +180,23 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
       owner: userId,
       comments: post.comments,
     };
-    setPost(newPost);
-    push(postRef, newPost);
-    clearState();
-    handdleReFresh();
-    alert("Success!");
+  
+    try {
+      const docRef = doc(postCollection);
+      const postId = docRef.id;
+      const updatedPost = { ...newPost, id: postId };
+      await setDoc(docRef, updatedPost);
+    
+      setPost(updatedPost);
+      clearState();
+      handdleReFresh();
+      alert("Success!");
+    } catch (error) {
+      console.error("Error adding post: ", error);
+    }
   };
+
+ 
 
   const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
     const emoji = emojiData.find((data) => data.unified === emojiCode);

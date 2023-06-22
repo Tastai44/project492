@@ -70,11 +70,11 @@ const styleBoxPop = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: "100%",
-  height:"100%",
+  height: "100%",
   bgcolor: "background.paper",
   color: "black",
   p: 4,
-  overflow:"auto"
+  overflow: "auto",
 };
 
 export default function MContainer({
@@ -86,7 +86,7 @@ export default function MContainer({
   photoPost,
   likeNumber,
   postId,
-  handdleReFresh
+  handdleReFresh,
 }: data & IFunction) {
   const [iconStatus, setIconStatus] = React.useState("");
   React.useEffect(() => {
@@ -119,11 +119,11 @@ export default function MContainer({
   const handleClosePost = () => setOpenPost(false);
 
   const [userId, setUserId] = React.useState("");
-  React.useEffect (() => {
+  React.useEffect(() => {
     const getUerInfo = localStorage.getItem("user");
-    const tmp = JSON.parse(getUerInfo ? getUerInfo : '')
-    setUserId(tmp.uid)
-  }, [userId])
+    const tmp = JSON.parse(getUerInfo ? getUerInfo : "");
+    setUserId(tmp.uid);
+  }, [userId]);
 
   const handdleDelete = (id: string) => {
     const postRef = ref(db, "/posts");
@@ -134,19 +134,18 @@ export default function MContainer({
           if (post.id === id) {
             const postKey = childSnapshot.key;
             const postToDeleteRef = ref(db, `/posts/${postKey}`);
-            remove(postToDeleteRef)
-            .then(() => {
+            remove(postToDeleteRef).then(() => {
               console.log("Post deleted successfully");
               handleCloseUserMenu();
               handdleReFresh();
-            })
+            });
           }
         });
       })
-    .catch((error) => {
-      console.error("Error deleting post:", error);
-    });
-  }
+      .catch((error) => {
+        console.error("Error deleting post:", error);
+      });
+  };
 
   return (
     <Box>
@@ -158,9 +157,9 @@ export default function MContainer({
       >
         <Box>
           <Paper sx={styleBoxPop}>
-            <Content 
-              postId={postId} 
-              iconStatus={iconStatus} 
+            <Content
+              postId={postId}
+              iconStatus={iconStatus}
               userId={userId}
               handleClosePost={handleClosePost}
             />
@@ -191,12 +190,14 @@ export default function MContainer({
                   </Box>
                 }
                 secondary={
-                  <Typography sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                  <Typography
+                    sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
+                  >
                     {createAt}
-                      {iconStatus === "LockIcon" && <LockIcon />}
-                      {iconStatus === "GroupIcon" && <GroupIcon />}
-                      {iconStatus === "PublicIcon" && <PublicIcon />}
-                      {status}
+                    {iconStatus === "LockIcon" && <LockIcon />}
+                    {iconStatus === "GroupIcon" && <GroupIcon />}
+                    {iconStatus === "PublicIcon" && <PublicIcon />}
+                    {status}
                   </Typography>
                 }
               />
@@ -282,18 +283,36 @@ export default function MContainer({
             >
               {hashTagTopic}
             </Box>
-
-            <ImageList
-              sx={{ width: "100%", height: "auto", maxHeight: "500px", justifyContent:"center"}}
-              cols={3}
-              rowHeight={300}
-            >
-              {photoPost.map((image, index) => (
-                <ImageListItem key={index} >
-                  <img src={image} alt={`Preview ${index}`} loading="lazy" />
-                </ImageListItem>
-              ))}
-            </ImageList>
+            {photoPost.length == 1 ? (
+              <ImageList
+                sx={{
+                  width: "100%",
+                  minHeight: "300px",
+                  maxHeight: "auto",
+                  justifyContent: "center",
+                }}
+                cols={1}
+              >
+                {photoPost.map((image, index) => (
+                  <ImageListItem key={index}>
+                    <img src={image} alt={`Preview ${index}`} loading="lazy" />
+                  </ImageListItem>
+                ))}
+              </ImageList>
+            ) : (
+              <ImageList
+                variant="masonry" cols={2} gap={2}
+              >
+                {photoPost.map((image, index) => (
+                  <ImageListItem key={index}>
+                    <img 
+                      src={image} 
+                      alt={`Preview ${index}`} 
+                      loading="lazy" />
+                  </ImageListItem>
+                ))}
+              </ImageList>
+            )}
 
             <CardActions
               disableSpacing
