@@ -40,6 +40,7 @@ export default function HomeFeed() {
     fetchData();
   }, [reFresh]);
 
+
   return (
     <>
       <Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
@@ -62,6 +63,7 @@ export default function HomeFeed() {
                 {data.map((m) => (
                   <Box key={m.id}>
                     <MContainer
+                      owner={m.owner}
                       postId={m.id}
                       caption={m.caption}
                       hashTagTopic={m.hashTagTopic}
@@ -69,7 +71,9 @@ export default function HomeFeed() {
                       createAt={m.createAt}
                       emoji={m.emoji}
                       photoPost={m.photoPost}
-                      likeNumber={m.likeNumber}
+                      likeNumber={m.likes.length}
+                      likes={m.likes}
+                      commentNumber={m.comments.length}
                       handdleReFresh={handdleReFresh}
                     />
                   </Box>

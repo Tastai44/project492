@@ -41,6 +41,10 @@ import "firebase/database";
 import { db } from "../../config/firebase";
 import { ref, get, remove } from "firebase/database";
 
+import { dbFireStore } from "../../config/firebase";
+import {collection, query, getDocs, updateDoc, doc, where, arrayUnion} from "firebase/firestore"
+import { Like, Post } from "../../interface/PostContent";
+
 export const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   ...theme.typography.body2,
@@ -58,6 +62,9 @@ interface data {
   emoji?: string;
   likeNumber: number;
   postId: string;
+  commentNumber: number;
+  likes: Like[];
+  owner: string;
 }
 
 interface IFunction {
@@ -86,6 +93,9 @@ export default function MContainer({
   photoPost,
   likeNumber,
   postId,
+  commentNumber,
+  likes,
+  owner,
   handdleReFresh,
 }: data & IFunction) {
   const [iconStatus, setIconStatus] = React.useState("");
@@ -145,6 +155,51 @@ export default function MContainer({
       .catch((error) => {
         console.error("Error deleting post:", error);
       });
+  };
+
+  const increaseLike = () => {
+    const postsCollection = collection(dbFireStore, "posts");
+    const updateLike = {
+      likeBy: userId,
+      createdAt: new Date().toLocaleString(),
+    };
+  
+    const postRef = doc(postsCollection, postId);
+  
+    updateDoc(postRef, {
+      likes: arrayUnion(updateLike),
+    })
+      .then(() => {
+        handdleReFresh();
+        console.log("Like added successfully!");
+      })
+      .catch((error) => {
+        console.error("Error adding likes: ", error);
+      });
+  };
+
+  const isLike = likes.some(f => f.likeBy === owner);
+  const decreaseLike = async (id:string) => {
+    const IndexLike = likes.findIndex(f => f.likeBy === owner)
+    try {
+      const q = query(collection(dbFireStore, 'posts'), where('__name__', '==', id));
+      const querySnapshot = await getDocs(q);
+      const doc = querySnapshot.docs[0];
+      if (doc.exists()) {
+        const postData = { id: doc.id, ...doc.data() } as Post;
+        const updatedLike = [...postData.likes];
+        updatedLike.splice(IndexLike, 1);
+        const updatedData = { ...postData, likes: updatedLike };
+        await updateDoc(doc.ref, updatedData);
+        alert("Success");
+        handdleReFresh();
+        handleCloseUserMenu();
+      } else {
+        console.log('No post found with the specified ID');
+      }
+    } catch (error) {
+      console.error('Error deleting like:', error);
+    }
   };
 
   return (
@@ -300,27 +355,29 @@ export default function MContainer({
                 ))}
               </ImageList>
             ) : (
-              <ImageList
-                variant="masonry" cols={2} gap={2}
-              >
+              <ImageList variant="masonry" cols={2} gap={2}>
                 {photoPost.map((image, index) => (
                   <ImageListItem key={index}>
-                    <img 
-                      src={image} 
-                      alt={`Preview ${index}`} 
-                      loading="lazy" />
+                    <img src={image} alt={`Preview ${index}`} loading="lazy" />
                   </ImageListItem>
                 ))}
               </ImageList>
             )}
-
+            <Divider style={{ background: "#EAEAEA" }} />
             <CardActions
               disableSpacing
               sx={{ display: "flex", justifyContent: "space-evenly" }}
             >
-              <Button aria-label="add to favorites" sx={{ color: "purple" }}>
-                <ThumbUpIcon sx={{ marginRight: 1 }} /> Like
-              </Button>
+             <Button
+              aria-label="add to favorites"
+              sx={{
+                color: isLike ? 'purple' : !isLike ? 'black' : 'black',
+              }}
+              onClick={isLike ? () => decreaseLike(postId) : () => increaseLike()}
+            >
+              <ThumbUpIcon sx={{ marginRight: 1 }} />
+              {isLike ? 'Liked' : !isLike ? 'Like' : 'Like'}
+            </Button>
               <Button aria-label="add to favorites">
                 <CommentIcon sx={{ marginRight: 1 }} /> Comment
               </Button>
@@ -339,7 +396,7 @@ export default function MContainer({
               </Button>
               <Box>
                 <Button aria-label="add to favorites" sx={{ color: "grey" }}>
-                  100 Comments
+                  {commentNumber} Comments
                 </Button>
                 <Button aria-label="add to favorites" sx={{ color: "grey" }}>
                   100 Shares

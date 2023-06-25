@@ -35,12 +35,10 @@ import Divider from "@mui/material/Divider";
 import CommentContent from "./CommentContent";
 
 import "firebase/database";
-import { db } from "../../config/firebase";
-import { ref, push, get, update, remove } from "firebase/database";
 import { Post, Comment } from "../../interface/PostContent";
 
 import { dbFireStore } from "../../config/firebase";
-import {collection, query, orderBy, getDocs} from "firebase/firestore"
+import {collection, query, getDocs, updateDoc, arrayUnion, doc} from "firebase/firestore"
 
 const Item = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -73,6 +71,10 @@ export default function Content({
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+  const [reFresh, setReFresh] = React.useState(0);
+  const handdleReFresh = () => {
+    setReFresh((pre) => pre + 1);
+  };
 
   const [data, setData] = React.useState<Post[]>([]);
   React.useEffect(() => {
@@ -91,7 +93,7 @@ export default function Content({
     };
 
     fetchData();
-  }, []);
+  }, [reFresh]);
 
   const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
     const emoji = emojiData.find((data) => data.unified === emojiCode);
@@ -101,15 +103,11 @@ export default function Content({
   const initialState = {
     id: "",
     text: "",
-    createAt: "",
+    createdAt: "",
     author: "",
     // likeNumber: 0,
   };
 
-  const [reFresh, setReFresh] = React.useState(0);
-  const handdleReFresh = () => {
-    setReFresh((pre) => pre + 1);
-  };
   const [comment, setComment] = React.useState<Comment>(initialState);
   const clearState = () => {
     setComment({ ...initialState });
@@ -123,96 +121,30 @@ export default function Content({
       [name]: value,
     }));
   };
+
   const postComment = () => {
-    const commentRef = ref(db, "/comments");
-    const postRef = ref(db, "/posts");
-    const newCommentRef = push(commentRef);
+    const postsCollection = collection(dbFireStore, "posts");
     const newComment = {
-      id: newCommentRef.ref.key ? newCommentRef.ref.key : "",
       text: comment.text,
       author: userId,
-      // likeNumber: 0,
-      createAt: new Date().toLocaleString(),
+      createdAt: new Date().toLocaleString(),
     };
-    setComment(newComment);
-    clearState();
-    handdleReFresh();
-    get(postRef)
-      .then((snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-          const post = childSnapshot.val();
-          if (post.id === postId) {
-            const postKey = childSnapshot.key;
-            const postToUpdateRef = ref(db, `/posts/${postKey}`);
-
-            const existingComments = post.comments || [];
-            const updatedComments = [...existingComments, newComment];
-
-            update(postToUpdateRef, { comments: updatedComments })
-              .then(() => {
-                clearState();
-                handdleReFresh();
-                alert("Comment updated successfully!");
-              })
-              .catch((error) => {
-                console.error("Error updating comment: ", error);
-                alert("Failed to update comment");
-              });
-          }
-        });
+  
+    const postRef = doc(postsCollection, postId);
+  
+    updateDoc(postRef, {
+      comments: arrayUnion(newComment),
+    })
+      .then(() => {
+        clearState();
+        handdleReFresh();
+        alert("Comment added successfully!");
       })
       .catch((error) => {
-        console.error("Error updating post: ", error);
-        alert("Failed to update post");
+        console.error("Error adding comment: ", error);
+        alert("Failed to add comment");
       });
   };
-
-  // React.useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const dbRef = ref(db, "/posts");
-  //       const snapshot = await get(dbRef);
-  //       const val = snapshot.val();
-  //       if (val) {
-  //         setData(Object.values(val));
-  //       }
-  //     } catch (error) {
-  //       console.log("Error fetching data:", error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [reFresh, data]);
-
-  // const handdleDelete = (id: string, comId: string) => {
-  //   const postRef = ref(db, "/posts");
-  //   get(postRef)
-  //     .then((snapshot) => {
-  //       snapshot.forEach((childSnapshot) => {
-  //         const post = childSnapshot.val();
-  //         if (post.id === id) {
-  //           for (let i = 0; i < post.comment.length; i++) {
-  //             if (post.comment[i] === comId) {
-  //               const postKey = childSnapshot.key;
-  //               const postToDeleteRef = ref(db, `/posts/${postKey}`);
-  //               remove(postToDeleteRef)
-  //                 .then(() => {
-  //                   console.log("Comment deleted successfully");
-  //                   handleCloseUserMenu();
-  //                   // handleRefresh(); 
-  //                 })
-  //                 .catch((error) => {
-  //                   console.error("Error deleting comment:", error);
-  //                 });
-  //               break; 
-  //             }
-  //           }
-  //         }
-  //       });
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error deleting post:", error);
-  //     });
-  // };
 
   return (
     <Box>
@@ -475,15 +407,16 @@ export default function Content({
                         overflowY: "auto",
                       }}
                     >
-                      {m.comments ? (
+                      {m.comments.length !== 0 ? (
                         <>
-                          {m.comments.map((comment) => (
-                            <Box key={comment.id}>
+                          {m.comments.map((comment, index) => (
+                            <Box key={index}>
                               <CommentContent
                                 text={comment.text}
-                                createAt={comment.createAt}
-                                commentId = {comment.id}
+                                createAt={comment.createdAt}
+                                commentIndex = {index}
                                 postId = {m.id}
+                                handdleReFresh={handdleReFresh}
                               />
                             </Box>
                           ))}

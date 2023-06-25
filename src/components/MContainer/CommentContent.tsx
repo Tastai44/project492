@@ -18,17 +18,22 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 
 import "firebase/database";
-import { db } from "../../config/firebase";
-import { ref, push, get, update, remove, set } from "firebase/database";
+import { dbFireStore } from "../../config/firebase";
+import {collection, query, getDocs, where, updateDoc} from "firebase/firestore"
+import { Post } from "../../interface/PostContent";
 
 interface IData {
   text: string;
   createAt: string;
-  commentId: string;
+  commentIndex: number;
   postId: string;
 }
 
-export default function CommentContent({text, createAt, commentId, postId} : IData) {
+interface IFunction {
+  handdleReFresh: () => void;
+}
+
+export default function CommentContent({text, createAt, commentIndex, postId, handdleReFresh} : IData & IFunction) {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -39,41 +44,30 @@ export default function CommentContent({text, createAt, commentId, postId} : IDa
     setAnchorElUser(null);
   };
 
-  const handdleDelete = (id: string, comId: string) => {
-    const postRef = ref(db, "/posts");
-    get(postRef)
-      .then((snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-          const post = childSnapshot.val();
-          if (post.id === id) {
-            const comments = post.comments;
-            for (let i = 0; i < post.comments.length; i++) {
-              if (post.comments[i].id === comId) {
-                const postKey = childSnapshot.key;
-                const postToDeleteRef = ref(db, `/posts/${postKey}`);
-                comments.splice(i, 1);
-                set(postToDeleteRef, post)
-                  .then(() => {
-                    alert("Comment deleted successfully");
-                    handleCloseUserMenu();
-                    // handleRefresh(); 
-                  })
-                  .catch((error) => {
-                    console.error("Error deleting comment:", error);
-                  });
-                break; 
-              }
-            }
-          }
-        });
-      })
-      .catch((error) => {
-        console.error("Error deleting post:", error);
-      });
+  const handleDelete = async (id: string, comId: number) => {
+    try {
+      const q = query(collection(dbFireStore, 'posts'), where('__name__', '==', id));
+      const querySnapshot = await getDocs(q);
+      const doc = querySnapshot.docs[0];
+      if (doc.exists()) {
+        const postData = { id: doc.id, ...doc.data() } as Post;
+        const updatedComments = [...postData.comments];
+        updatedComments.splice(comId, 1);
+        const updatedData = { ...postData, comments: updatedComments };
+        await updateDoc(doc.ref, updatedData);
+        alert("Success");
+        handdleReFresh();
+        handleCloseUserMenu();
+      } else {
+        console.log('No post found with the specified ID');
+      }
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+    }
   };
 
   return (
-    <Paper sx={{backgroundColor:"primary.contrastText" , mb:3}}>
+    <Paper sx={{backgroundColor:"primary.contrastText" , mb:1}}>
       <ListItem>
         <ListItemAvatar>
           <Avatar src={Luffy} sx={{ width: "40px", height: "40px" }} />
@@ -130,7 +124,9 @@ export default function CommentContent({text, createAt, commentId, postId} : IDa
                 <BorderColorOutlinedIcon /> Edit
               </Typography>
             </MenuItem>
-            <MenuItem onClick={() => handdleDelete(postId, commentId)}>
+            <MenuItem 
+              onClick={() => handleDelete(postId, commentIndex)}
+            >
               <Typography
                 textAlign="center"
                 sx={{

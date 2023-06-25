@@ -31,7 +31,7 @@ import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { Post } from "../../interface/PostContent";
 import {doc} from "firebase/firestore"
-import { collection, addDoc, setDoc } from "firebase/firestore";
+import { collection, setDoc } from "firebase/firestore";
 
 const styleBoxPop = {
   position: "absolute",
@@ -120,7 +120,7 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
     status: "",
     photoPost: [],
     comments: [],
-    likeNumber: 0,
+    likes: [],
     createAt: "",
     emoji: "",
     owner: "",
@@ -143,38 +143,15 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
     }));
   };
 
-  // const createPost = () => {
-  //   const postRef = ref(dbFireStore, "/posts");
-  //   const newPostRef = push(postRef);
-  //   const newPost = {
-  //     id: newPostRef.key ? newPostRef.key : "",
-  //     caption: post.caption,
-  //     hashTagTopic: post.hashTagTopic,
-  //     status: status,
-  //     photoPost: previewImages,
-  //     likeNumber: 0,
-  //     createAt: new Date().toLocaleString(),
-  //     emoji: emoji,
-  //     owner: userId,
-  //     comments: post.comments,
-  //   };
-  //   setPost(newPost);
-  //   push(postRef, newPost);
-  //   clearState();
-  //   handdleReFresh();
-  //   alert("Success!");
-  // };
-
   const createPost = async () => {
     const postCollection = collection(dbFireStore, "posts");
-
     const newPost = {
       id: "",
       caption: post.caption,
       hashTagTopic: post.hashTagTopic,
       status: status,
       photoPost: previewImages,
-      likeNumber: 0,
+      likes: [],
       createAt: new Date().toLocaleString(),
       emoji: emoji,
       owner: userId,
@@ -195,8 +172,6 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
       console.error("Error adding post: ", error);
     }
   };
-
- 
 
   const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
     const emoji = emojiData.find((data) => data.unified === emojiCode);

@@ -3,7 +3,7 @@ import { User } from "./User";
 export interface Comment {
   id: string;
   text: string;
-  createAt:string;
+  createdAt:string;
   author: string;
 }
 export interface Location {
@@ -24,6 +24,11 @@ export interface Share {
   message?: string;
   createdAt: Date;
 }
+export interface Like {
+  postId: number;
+  likeBy: string;
+  createdAt: Date;
+}
 
 export interface Post {
   id: string;
@@ -31,7 +36,7 @@ export interface Post {
   hashTagTopic: string;
   status: string;
   photoPost: string[];
-  likeNumber: number;
+  likes: Like[];
   createAt: string;
   emoji?: string;
   comments: Comment[];
