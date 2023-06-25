@@ -44,10 +44,10 @@ export default function Blog() {
                         <Grid container spacing={2}>
                           <Grid item xs={9}>
                             <Item sx={{ backgroundColor: "#fff", margin:1 }}>
-                              <PostForm />
+                              {/* <PostForm /> */}
                             </Item>
                             <Item>
-                              <MContainer />
+                              {/* <MContainer /> */}
                             </Item>
                           </Grid>
                           <Grid item xs={3}>

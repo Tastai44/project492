@@ -36,6 +36,7 @@ import emojiData from "emoji-datasource-facebook";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import Content from "./Content";
+import EditPost from './EditPost';
 
 import "firebase/database";
 import { db } from "../../config/firebase";
@@ -53,7 +54,7 @@ export const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-interface data {
+interface Idata {
   caption: string;
   hashTagTopic: string;
   status: string;
@@ -97,7 +98,7 @@ export default function MContainer({
   likes,
   owner,
   handdleReFresh,
-}: data & IFunction) {
+}: Idata & IFunction) {
   const [iconStatus, setIconStatus] = React.useState("");
   React.useEffect(() => {
     if (status === "Private") {
@@ -128,6 +129,13 @@ export default function MContainer({
   const handletOpenPost = () => setOpenPost(true);
   const handleClosePost = () => setOpenPost(false);
 
+  const [openEditPost, setOpenEditPost] = React.useState(false);
+  const handletOpenEditPost = () => {
+    setOpenEditPost(true);
+    handleCloseUserMenu();
+  };
+  const handleCloseEditPost = () => setOpenEditPost(false);
+
   const [userId, setUserId] = React.useState("");
   React.useEffect(() => {
     const getUerInfo = localStorage.getItem("user");
@@ -145,8 +153,6 @@ export default function MContainer({
             const postKey = childSnapshot.key;
             const postToDeleteRef = ref(db, `/posts/${postKey}`);
             remove(postToDeleteRef).then(() => {
-              console.log("Post deleted successfully");
-              handleCloseUserMenu();
               handdleReFresh();
             });
           }
@@ -163,15 +169,12 @@ export default function MContainer({
       likeBy: userId,
       createdAt: new Date().toLocaleString(),
     };
-  
     const postRef = doc(postsCollection, postId);
-  
     updateDoc(postRef, {
       likes: arrayUnion(updateLike),
     })
       .then(() => {
         handdleReFresh();
-        console.log("Like added successfully!");
       })
       .catch((error) => {
         console.error("Error adding likes: ", error);
@@ -191,9 +194,7 @@ export default function MContainer({
         updatedLike.splice(IndexLike, 1);
         const updatedData = { ...postData, likes: updatedLike };
         await updateDoc(doc.ref, updatedData);
-        alert("Success");
         handdleReFresh();
-        handleCloseUserMenu();
       } else {
         console.log('No post found with the specified ID');
       }
@@ -217,8 +218,28 @@ export default function MContainer({
               iconStatus={iconStatus}
               userId={userId}
               handleClosePost={handleClosePost}
+              likes={likes}
             />
           </Paper>
+        </Box>
+      </Modal>
+
+      <Modal
+        open={openEditPost}
+        onClose={handleCloseEditPost}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box>
+          <EditPost 
+            handleCloseEditPost={handleCloseEditPost}
+            handdleReFresh={handdleReFresh}
+            oldStatus={status}
+            caption={caption}
+            hashTagTopic={hashTagTopic}
+            oldPhoto={photoPost}
+            oldEmoji={emoji}
+          />
         </Box>
       </Modal>
 
@@ -276,7 +297,7 @@ export default function MContainer({
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
-                  <MenuItem onClick={handleCloseUserMenu}>
+                  <MenuItem onClick={handletOpenEditPost}>
                     <Typography
                       textAlign="center"
                       sx={{
@@ -347,6 +368,7 @@ export default function MContainer({
                   justifyContent: "center",
                 }}
                 cols={1}
+                onClick={handletOpenPost}
               >
                 {photoPost.map((image, index) => (
                   <ImageListItem key={index}>
@@ -355,7 +377,7 @@ export default function MContainer({
                 ))}
               </ImageList>
             ) : (
-              <ImageList variant="masonry" cols={2} gap={2}>
+              <ImageList variant="masonry" cols={2} gap={2} onClick={handletOpenPost}>
                 {photoPost.map((image, index) => (
                   <ImageListItem key={index}>
                     <img src={image} alt={`Preview ${index}`} loading="lazy" />
@@ -376,9 +398,9 @@ export default function MContainer({
               onClick={isLike ? () => decreaseLike(postId) : () => increaseLike()}
             >
               <ThumbUpIcon sx={{ marginRight: 1 }} />
-              {isLike ? 'Liked' : !isLike ? 'Like' : 'Like'}
+              Like
             </Button>
-              <Button aria-label="add to favorites">
+              <Button aria-label="add to favorites" sx={{ color: "black" }}>
                 <CommentIcon sx={{ marginRight: 1 }} /> Comment
               </Button>
               <Button aria-label="share" sx={{ color: "black" }}>
@@ -391,8 +413,8 @@ export default function MContainer({
               disableSpacing
               sx={{ display: "flex", justifyContent: "space-between" }}
             >
-              <Button aria-label="add to favorites" sx={{ color: "red" }}>
-                <ThumbUpIcon sx={{ marginRight: 1 }} /> {likeNumber}
+              <Button aria-label="add to favorites" sx={{ color: "grey" }}>
+                {likeNumber} Likes
               </Button>
               <Box>
                 <Button aria-label="add to favorites" sx={{ color: "grey" }}>

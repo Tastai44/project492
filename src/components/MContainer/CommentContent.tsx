@@ -55,7 +55,6 @@ export default function CommentContent({text, createAt, commentIndex, postId, ha
         updatedComments.splice(comId, 1);
         const updatedData = { ...postData, comments: updatedComments };
         await updateDoc(doc.ref, updatedData);
-        alert("Success");
         handdleReFresh();
         handleCloseUserMenu();
       } else {

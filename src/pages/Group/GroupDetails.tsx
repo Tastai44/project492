@@ -43,10 +43,10 @@ export default function GroupDetails() {
                         </Grid>
                         <Grid item xs={7}>
                           <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
-                            <PostForm />
+                            {/* <PostForm /> */}
                           </Item>
                           <Item>
-                            <MContainer />
+                            {/* <MContainer /> */}
                           </Item>
                         </Grid>
                         <Grid item xs={2.5}>

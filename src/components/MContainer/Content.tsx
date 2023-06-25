@@ -35,10 +35,10 @@ import Divider from "@mui/material/Divider";
 import CommentContent from "./CommentContent";
 
 import "firebase/database";
-import { Post, Comment } from "../../interface/PostContent";
+import { Post, Comment, Like } from "../../interface/PostContent";
 
 import { dbFireStore } from "../../config/firebase";
-import {collection, query, getDocs, updateDoc, arrayUnion, doc} from "firebase/firestore"
+import {collection, query, getDocs, updateDoc, doc, arrayUnion, where} from "firebase/firestore"
 
 const Item = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -51,6 +51,7 @@ interface IData {
   postId: string;
   iconStatus: string;
   userId: string;
+  likes: Like[];
 }
 interface IFunction {
   handleClosePost: () => void;
@@ -60,7 +61,8 @@ export default function Content({
   postId,
   iconStatus,
   userId,
-  handleClosePost,
+  likes,
+  handleClosePost
 }: IData & IFunction) {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -91,7 +93,6 @@ export default function Content({
         console.error('Error fetching data:', error);
       }
     };
-
     fetchData();
   }, [reFresh]);
 
@@ -138,12 +139,53 @@ export default function Content({
       .then(() => {
         clearState();
         handdleReFresh();
-        alert("Comment added successfully!");
       })
       .catch((error) => {
         console.error("Error adding comment: ", error);
-        alert("Failed to add comment");
       });
+  };
+
+  const [isLike, setIsLike] = React.useState(false);
+  React.useEffect(() => {
+    setIsLike(data.some((d) => d.id === postId && d.likes.some((l) => l.likeBy === userId)));
+  }, [data, postId, userId]);
+
+  const increaseLike = () => {
+    const postsCollection = collection(dbFireStore, "posts");
+    const updateLike = {
+      likeBy: userId,
+      createdAt: new Date().toLocaleString(),
+    };
+    const postRef = doc(postsCollection, postId);
+    updateDoc(postRef, {
+      likes: arrayUnion(updateLike),
+    })
+      .then(() => {
+        handdleReFresh();
+      })
+      .catch((error) => {
+        console.error("Error adding likes: ", error);
+      });
+  };
+  const decreaseLike = async (id:string) => {
+    const IndexLike = likes.findIndex(f => f.likeBy === userId)
+    try {
+      const q = query(collection(dbFireStore, 'posts'), where('__name__', '==', id));
+      const querySnapshot = await getDocs(q);
+      const doc = querySnapshot.docs[0];
+      if (doc.exists()) {
+        const postData = { id: doc.id, ...doc.data() } as Post;
+        const updatedLike = [...postData.likes];
+        updatedLike.splice(IndexLike, 1);
+        const updatedData = { ...postData, likes: updatedLike };
+        await updateDoc(doc.ref, updatedData);
+        handdleReFresh();
+      } else {
+        console.log('No post found with the specified ID');
+      }
+    } catch (error) {
+      console.error('Error deleting like:', error);
+    }
   };
 
   return (
@@ -327,11 +369,15 @@ export default function Content({
                     >
                       <Button
                         aria-label="add to favorites"
-                        sx={{ color: "purple" }}
+                        sx={{
+                          color: isLike ? 'purple' : !isLike ? 'black' : 'black',
+                        }}
+                        onClick={isLike ? () => decreaseLike(postId) : () => increaseLike()}
                       >
-                        <ThumbUpIcon sx={{ marginRight: 1 }} /> Like
+                        <ThumbUpIcon sx={{ marginRight: 1 }} />
+                        Like
                       </Button>
-                      <Button aria-label="add to favorites">
+                      <Button aria-label="add to favorites" sx={{ color: "black" }}>
                         <CommentIcon sx={{ marginRight: 1 }} /> Comment
                       </Button>
                       <Button aria-label="share" sx={{ color: "black" }}>
@@ -347,8 +393,8 @@ export default function Content({
                         justifyContent: "space-between",
                       }}
                     >
-                      <Typography>10 likes</Typography>
-                      <Typography>10 comments</Typography>
+                      <Typography>{m.likes.length} likes</Typography>
+                      <Typography>{m.comments.length} comments</Typography>
                       <Typography>10 shares</Typography>
                     </Box>
                     <Divider />
