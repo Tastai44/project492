@@ -30,8 +30,7 @@ import emojiData from "emoji-datasource-facebook";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { Post } from "../../interface/PostContent";
-import {doc} from "firebase/firestore"
-import { collection, setDoc } from "firebase/firestore";
+import {doc, updateDoc, collection} from "firebase/firestore"
 
 const styleBoxPop = {
   position: "absolute",
@@ -48,9 +47,10 @@ const styleBoxPop = {
 
 interface IHandle {
   handleCloseEditPost: () => void;
-  handdleReFresh: () => void;
+  handleRefresh: () => void;
 }
 interface Idata {
+  postId: string;
   caption: string;
   hashTagTopic: string;
   oldStatus: string;
@@ -66,12 +66,13 @@ interface Idata {
 
 export default function CreatePost({ 
   handleCloseEditPost, 
-  handdleReFresh,
+  handleRefresh,
   caption,
   oldStatus,
   hashTagTopic,
   oldPhoto,
-  oldEmoji
+  oldEmoji,
+  postId,
  }: IHandle & Idata) {
 
   const [userId, setUserId] = React.useState("");
@@ -164,10 +165,9 @@ export default function CreatePost({
     }));
   };
 
-  const createPost = async () => {
+  const updatePost = async () => {
     const postCollection = collection(dbFireStore, "posts");
-    const newPost = {
-      id: "",
+    const updatedPost = {
       caption: post.caption,
       hashTagTopic: post.hashTagTopic,
       status: status,
@@ -180,17 +180,12 @@ export default function CreatePost({
     };
   
     try {
-      const docRef = doc(postCollection);
-      const postId = docRef.id;
-      const updatedPost = { ...newPost, id: postId };
-      await setDoc(docRef, updatedPost);
-    
-      setPost(updatedPost);
+      const docRef = doc(postCollection, postId);
+      await updateDoc(docRef, updatedPost); 
       clearState();
-      handdleReFresh();
-      alert("Success!");
+      handleRefresh(); 
     } catch (error) {
-      console.error("Error adding post: ", error);
+      console.error("Error updating post: ", error); 
     }
   };
 
@@ -364,7 +359,7 @@ export default function CreatePost({
             <Box>
               <Button
                 variant="contained"
-                onClick={createPost}
+                onClick={updatePost}
                 sx={{
                   backgroundColor: "#8E51E2",
                   color: "white",
@@ -375,7 +370,7 @@ export default function CreatePost({
                 }}
                 type="submit"
               >
-                Post
+                Save
               </Button>
             </Box>
           </Box>

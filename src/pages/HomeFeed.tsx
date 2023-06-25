@@ -20,7 +20,7 @@ export default function HomeFeed() {
   }));
 
   const [reFresh, setReFresh] = React.useState(0);
-  const handdleReFresh = () => {
+  const handleRefresh = () => {
     setReFresh(pre => (pre+1));
   }
 
@@ -57,7 +57,7 @@ export default function HomeFeed() {
 
             <Grid item xs={7}>
               <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
-                <PostForm handdleReFresh={handdleReFresh} />
+                <PostForm handdleReFresh={handleRefresh} />
               </Item>
               <Item sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 {data.map((m) => (
@@ -74,7 +74,7 @@ export default function HomeFeed() {
                       likeNumber={m.likes.length}
                       likes={m.likes}
                       commentNumber={m.comments.length}
-                      handdleReFresh={handdleReFresh}
+                      handleRefresh={handleRefresh}
                     />
                   </Box>
                 ))}

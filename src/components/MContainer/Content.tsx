@@ -130,9 +130,7 @@ export default function Content({
       author: userId,
       createdAt: new Date().toLocaleString(),
     };
-  
     const postRef = doc(postsCollection, postId);
-  
     updateDoc(postRef, {
       comments: arrayUnion(newComment),
     })

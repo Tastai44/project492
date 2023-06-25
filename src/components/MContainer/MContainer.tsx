@@ -39,11 +39,8 @@ import Content from "./Content";
 import EditPost from './EditPost';
 
 import "firebase/database";
-import { db } from "../../config/firebase";
-import { ref, get, remove } from "firebase/database";
-
 import { dbFireStore } from "../../config/firebase";
-import {collection, query, getDocs, updateDoc, doc, where, arrayUnion} from "firebase/firestore"
+import {collection, query, getDocs, updateDoc, doc, where, arrayUnion, deleteDoc} from "firebase/firestore"
 import { Like, Post } from "../../interface/PostContent";
 
 export const Item = styled(Paper)(({ theme }) => ({
@@ -69,7 +66,7 @@ interface Idata {
 }
 
 interface IFunction {
-  handdleReFresh: () => void;
+  handleRefresh: () => void;
 }
 
 const styleBoxPop = {
@@ -97,7 +94,7 @@ export default function MContainer({
   commentNumber,
   likes,
   owner,
-  handdleReFresh,
+  handleRefresh,
 }: Idata & IFunction) {
   const [iconStatus, setIconStatus] = React.useState("");
   React.useEffect(() => {
@@ -143,23 +140,14 @@ export default function MContainer({
     setUserId(tmp.uid);
   }, [userId]);
 
-  const handdleDelete = (id: string) => {
-    const postRef = ref(db, "/posts");
-    get(postRef)
-      .then((snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-          const post = childSnapshot.val();
-          if (post.id === id) {
-            const postKey = childSnapshot.key;
-            const postToDeleteRef = ref(db, `/posts/${postKey}`);
-            remove(postToDeleteRef).then(() => {
-              handdleReFresh();
-            });
-          }
-        });
+  const handleDelete = (pId: string) => {
+    const postRef = doc(dbFireStore, "posts", pId);
+    deleteDoc(postRef)
+      .then(() => {
+        handleRefresh();
       })
       .catch((error) => {
-        console.error("Error deleting post:", error);
+        console.error("Error deleting post: ", error);
       });
   };
 
@@ -174,7 +162,7 @@ export default function MContainer({
       likes: arrayUnion(updateLike),
     })
       .then(() => {
-        handdleReFresh();
+        handleRefresh();
       })
       .catch((error) => {
         console.error("Error adding likes: ", error);
@@ -194,7 +182,7 @@ export default function MContainer({
         updatedLike.splice(IndexLike, 1);
         const updatedData = { ...postData, likes: updatedLike };
         await updateDoc(doc.ref, updatedData);
-        handdleReFresh();
+        handleRefresh();
       } else {
         console.log('No post found with the specified ID');
       }
@@ -233,12 +221,13 @@ export default function MContainer({
         <Box>
           <EditPost 
             handleCloseEditPost={handleCloseEditPost}
-            handdleReFresh={handdleReFresh}
+            handleRefresh={handleRefresh}
             oldStatus={status}
             caption={caption}
             hashTagTopic={hashTagTopic}
             oldPhoto={photoPost}
-            oldEmoji={emoji}
+            oldEmoji={emoji !== undefined ? emoji : ''}
+            postId={postId}
           />
         </Box>
       </Modal>
@@ -310,7 +299,7 @@ export default function MContainer({
                       <BorderColorOutlinedIcon /> Edit
                     </Typography>
                   </MenuItem>
-                  <MenuItem onClick={() => handdleDelete(postId)}>
+                  <MenuItem onClick={() => handleDelete(postId)}>
                     <Typography
                       textAlign="center"
                       sx={{
