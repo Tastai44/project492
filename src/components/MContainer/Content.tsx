@@ -62,7 +62,7 @@ export default function Content({
   iconStatus,
   userId,
   likes,
-  handleClosePost
+  handleClosePost,
 }: IData & IFunction) {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -74,7 +74,7 @@ export default function Content({
     setAnchorElUser(null);
   };
   const [reFresh, setReFresh] = React.useState(0);
-  const handdleReFresh = () => {
+  const handleRefresh = () => {
     setReFresh((pre) => pre + 1);
   };
 
@@ -136,7 +136,7 @@ export default function Content({
     })
       .then(() => {
         clearState();
-        handdleReFresh();
+        handleRefresh();
       })
       .catch((error) => {
         console.error("Error adding comment: ", error);
@@ -159,7 +159,7 @@ export default function Content({
       likes: arrayUnion(updateLike),
     })
       .then(() => {
-        handdleReFresh();
+        handleRefresh();
       })
       .catch((error) => {
         console.error("Error adding likes: ", error);
@@ -177,7 +177,7 @@ export default function Content({
         updatedLike.splice(IndexLike, 1);
         const updatedData = { ...postData, likes: updatedLike };
         await updateDoc(doc.ref, updatedData);
-        handdleReFresh();
+        handleRefresh();
       } else {
         console.log('No post found with the specified ID');
       }
@@ -460,7 +460,7 @@ export default function Content({
                                 createAt={comment.createdAt}
                                 commentIndex = {index}
                                 postId = {m.id}
-                                handdleReFresh={handdleReFresh}
+                                handleRefresh={handleRefresh}
                               />
                             </Box>
                           ))}

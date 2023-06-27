@@ -124,7 +124,10 @@ export default function MContainer({
 
   const [openPost, setOpenPost] = React.useState(false);
   const handletOpenPost = () => setOpenPost(true);
-  const handleClosePost = () => setOpenPost(false);
+  const handleClosePost = () => {
+    handleRefresh();
+    setOpenPost(false);
+  }
 
   const [openEditPost, setOpenEditPost] = React.useState(false);
   const handletOpenEditPost = () => {

@@ -172,11 +172,9 @@ export default function CreatePost({
       hashTagTopic: post.hashTagTopic,
       status: status,
       photoPost: previewImages,
-      likes: [],
       createAt: new Date().toLocaleString(),
       emoji: emoji,
       owner: userId,
-      comments: post.comments,
     };
   
     try {

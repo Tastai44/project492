@@ -28,6 +28,8 @@ import {
   getDocs,
   where,
   updateDoc,
+  doc,
+  getDoc,
 } from "firebase/firestore";
 import { Post } from "../../interface/PostContent";
 
@@ -39,7 +41,7 @@ interface IData {
 }
 
 interface IFunction {
-  handdleReFresh: () => void;
+  handleRefresh: () => void;
 }
 
 const styleBoxPop = {
@@ -59,7 +61,7 @@ export default function CommentContent({
   createAt,
   commentIndex,
   postId,
-  handdleReFresh,
+  handleRefresh,
 }: IData & IFunction) {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -85,7 +87,7 @@ export default function CommentContent({
         updatedComments.splice(comId, 1);
         const updatedData = { ...postData, comments: updatedComments };
         await updateDoc(doc.ref, updatedData);
-        handdleReFresh();
+        handleRefresh();
         handleCloseUserMenu();
       } else {
         console.log("No post found with the specified ID");
@@ -102,6 +104,47 @@ export default function CommentContent({
   };
   const handleCloseEditCom = () => setOpenEditCom(false);
 
+  const [comment, setComment] = React.useState({
+    text:text
+  });
+  const handleChangeComment = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target;
+    setComment((prevComment) => ({
+      ...prevComment,
+      [name]: value,
+    }));
+  };
+
+  const editComment = () => {
+    const postsCollection = collection(dbFireStore, "posts");
+    const postRef = doc(postsCollection, postId);
+    const getDocPromise = getDoc(postRef);
+    const updateCommentPromise = getDocPromise.then((doc) => {
+      if (doc.exists()) {
+        const comments = doc.data().comments;
+        if (commentIndex >= 0 && commentIndex < comments.length) {
+          comments[commentIndex].text = comment.text;
+          comments[commentIndex].createdAt = new Date().toLocaleString();
+        } else {
+          throw new Error("Invalid comment index.");
+        }
+        return updateDoc(postRef, { comments: comments });
+      } else {
+        throw new Error("Post document does not exist.");
+      }
+    });
+    updateCommentPromise
+      .then(() => {
+        handleRefresh();
+        handleCloseEditCom();
+      })
+      .catch((error) => {
+        console.error("Error updating comment: ", error);
+      });
+  };
+
   return (
     <Box>
       <Modal
@@ -113,7 +156,14 @@ export default function CommentContent({
         <Box>
           <Paper sx={styleBoxPop}>
             <Typography sx={{ fontSize: "30px" }}>Edit Comment</Typography>
-            <Box sx={{ width: "98%", display: "flex", flexDirection:"column",gap: 1 }}>
+            <Box
+              sx={{
+                width: "98%",
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+              }}
+            >
               <TextField
                 name="text"
                 size="small"
@@ -123,44 +173,43 @@ export default function CommentContent({
                 multiline
                 maxRows={4}
                 sx={{ width: "100%" }}
-                // value={comment.text}
-                // onChange={handleChangeComment}
+                value={comment.text}
+                onChange={handleChangeComment}
               />
-              <Box sx={{display:"flex", justifyContent:"flex-end", gap:1}}>
-              <Button
-                size="small"
-                variant="contained"
-                // onClick={postComment}
-                sx={{
-                  backgroundColor: "primary.contrastText",
-                  color: "black",
-                  "&:hover": {
+              <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
+                <Button
+                  size="small"
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "primary.contrastText",
                     color: "black",
-                    backgroundColor: "#8E51E2",
-                  },
-                  maxHeight: "40px",
-                }}
-                onClick={handleCloseEditCom}
-              >
-                Cancel
-              </Button>
-              <Button
-                size="small"
-                variant="contained"
-                // onClick={postComment}
-                sx={{
-                  backgroundColor: "primary.main",
-                  color: "white",
-                  "&:hover": {
-                    color: "black",
-                    backgroundColor: "#E1E1E1",
-                  },
-                  maxHeight: "40px",
-                }}
-                type="submit"
-              >
-                Save
-              </Button>
+                    "&:hover": {
+                      color: "black",
+                      backgroundColor: "#E1E1E1",
+                    },
+                    maxHeight: "40px",
+                  }}
+                  onClick={handleCloseEditCom}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  size="small"
+                  variant="contained"
+                  onClick={editComment}
+                  sx={{
+                    backgroundColor: "primary.main",
+                    color: "white",
+                    "&:hover": {
+                      color: "black",
+                      backgroundColor: "#E1E1E1",
+                    },
+                    maxHeight: "40px",
+                  }}
+                  type="submit"
+                >
+                  Save
+                </Button>
               </Box>
             </Box>
           </Paper>
