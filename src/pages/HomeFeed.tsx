@@ -23,7 +23,6 @@ export default function HomeFeed() {
   const handleRefresh = () => {
     setReFresh(pre => (pre+1));
   }
-
   const [data, setData] = React.useState<Post[]>([]);
   React.useEffect(() => {
     const fetchData = async () => {

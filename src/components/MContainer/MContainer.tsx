@@ -36,11 +36,21 @@ import emojiData from "emoji-datasource-facebook";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import Content from "./Content";
-import EditPost from './EditPost';
+import EditPost from "./EditPost";
 
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
-import {collection, query, getDocs, updateDoc, doc, where, arrayUnion, deleteDoc} from "firebase/firestore"
+import {
+  collection,
+  query,
+  getDocs,
+  updateDoc,
+  doc,
+  where,
+  arrayUnion,
+  deleteDoc,
+  getDoc
+} from "firebase/firestore";
 import { Like, Post } from "../../interface/PostContent";
 
 export const Item = styled(Paper)(({ theme }) => ({
@@ -127,7 +137,7 @@ export default function MContainer({
   const handleClosePost = () => {
     handleRefresh();
     setOpenPost(false);
-  }
+  };
 
   const [openEditPost, setOpenEditPost] = React.useState(false);
   const handletOpenEditPost = () => {
@@ -145,12 +155,22 @@ export default function MContainer({
 
   const handleDelete = (pId: string) => {
     const postRef = doc(dbFireStore, "posts", pId);
-    deleteDoc(postRef)
-      .then(() => {
-        handleRefresh();
+    getDoc(postRef)
+      .then((docSnap) => {
+        if (docSnap.exists() && docSnap.data().owner === userId) {
+          deleteDoc(postRef)
+            .then(() => {
+              console.log("Post deleted successfully");
+            })
+            .catch((error) => {
+              console.error("Error deleting post: ", error);
+            });
+        } else {
+          console.log("You don't have permission to delete this post");
+        }
       })
       .catch((error) => {
-        console.error("Error deleting post: ", error);
+        console.error("Error fetching post: ", error);
       });
   };
 
@@ -172,11 +192,14 @@ export default function MContainer({
       });
   };
 
-  const isLike = likes.some(f => f.likeBy === owner);
-  const decreaseLike = async (id:string) => {
-    const IndexLike = likes.findIndex(f => f.likeBy === owner)
+  const isLike = likes.some((f) => f.likeBy === owner);
+  const decreaseLike = async (id: string) => {
+    const IndexLike = likes.findIndex((f) => f.likeBy === owner);
     try {
-      const q = query(collection(dbFireStore, 'posts'), where('__name__', '==', id));
+      const q = query(
+        collection(dbFireStore, "posts"),
+        where("__name__", "==", id)
+      );
       const querySnapshot = await getDocs(q);
       const doc = querySnapshot.docs[0];
       if (doc.exists()) {
@@ -187,10 +210,10 @@ export default function MContainer({
         await updateDoc(doc.ref, updatedData);
         handleRefresh();
       } else {
-        console.log('No post found with the specified ID');
+        console.log("No post found with the specified ID");
       }
     } catch (error) {
-      console.error('Error deleting like:', error);
+      console.error("Error deleting like:", error);
     }
   };
 
@@ -222,14 +245,14 @@ export default function MContainer({
         aria-describedby="modal-modal-description"
       >
         <Box>
-          <EditPost 
+          <EditPost
             handleCloseEditPost={handleCloseEditPost}
             handleRefresh={handleRefresh}
             oldStatus={status}
             caption={caption}
             hashTagTopic={hashTagTopic}
             oldPhoto={photoPost}
-            oldEmoji={emoji !== undefined ? emoji : ''}
+            oldEmoji={emoji !== undefined ? emoji : ""}
             postId={postId}
           />
         </Box>
@@ -248,7 +271,7 @@ export default function MContainer({
               <ListItemText
                 primary={
                   <Box sx={{ fontSize: "16px" }}>
-                    <b>User Name</b>
+                    <b>User Name </b>
                     {emoji && (
                       <>
                         is feeling {String.fromCodePoint(parseInt(emoji, 16))}{" "}
@@ -369,7 +392,12 @@ export default function MContainer({
                 ))}
               </ImageList>
             ) : (
-              <ImageList variant="masonry" cols={2} gap={2} onClick={handletOpenPost}>
+              <ImageList
+                variant="masonry"
+                cols={2}
+                gap={2}
+                onClick={handletOpenPost}
+              >
                 {photoPost.map((image, index) => (
                   <ImageListItem key={index}>
                     <img src={image} alt={`Preview ${index}`} loading="lazy" />
@@ -382,16 +410,18 @@ export default function MContainer({
               disableSpacing
               sx={{ display: "flex", justifyContent: "space-evenly" }}
             >
-             <Button
-              aria-label="add to favorites"
-              sx={{
-                color: isLike ? 'purple' : !isLike ? 'black' : 'black',
-              }}
-              onClick={isLike ? () => decreaseLike(postId) : () => increaseLike()}
-            >
-              <ThumbUpIcon sx={{ marginRight: 1 }} />
-              Like
-            </Button>
+              <Button
+                aria-label="add to favorites"
+                sx={{
+                  color: isLike ? "purple" : !isLike ? "black" : "black",
+                }}
+                onClick={
+                  isLike ? () => decreaseLike(postId) : () => increaseLike()
+                }
+              >
+                <ThumbUpIcon sx={{ marginRight: 1 }} />
+                Like
+              </Button>
               <Button aria-label="add to favorites" sx={{ color: "black" }}>
                 <CommentIcon sx={{ marginRight: 1 }} /> Comment
               </Button>

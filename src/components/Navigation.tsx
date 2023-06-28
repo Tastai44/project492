@@ -88,7 +88,7 @@ export default function Navigation() {
       });
   };
 
-  const userId = 1;
+  const userInfo = JSON.parse(localStorage.getItem('user') || "null");
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
@@ -151,12 +151,12 @@ export default function Navigation() {
       transformOrigin={{ horizontal: "right", vertical: "top" }}
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
     >
-      <NavLink to={`/profileBlog/${userId}`}>
+      <NavLink to={`/profileBlog/${userInfo.uid}`}>
         <MenuItem
           onClick={handleMenuClose}
           sx={{
             color: "black",
-            padding: "20px",
+            padding: "10px",
             gap: "10px",
             margin: 1,
             backgroundColor: "white",
