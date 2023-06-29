@@ -59,13 +59,13 @@ export default function PostForm({handdleReFresh} : IFunction) {
               fontSize: "16px",
             }}
           >
-            <Button style={{ display: "flex", alignItems: "center", gap: "5px", color:"grey" }}>
+            <Button onClick={handletOpenCratePost} style={{ display: "flex", alignItems: "center", gap: "5px", color:"grey" }}>
               <InsertPhotoIcon sx={{ color: "green" }} /> Photo
             </Button>
-            <Button style={{ display: "flex", alignItems: "center", gap: "5px", color:"grey" }}>
+            <Button onClick={handletOpenCratePost} style={{ display: "flex", alignItems: "center", gap: "5px", color:"grey" }}>
               <LocationOnIcon color="error" /> Location
             </Button>
-            <Button style={{ display: "flex", alignItems: "center", gap: "5px", color:"grey" }}>
+            <Button onClick={handletOpenCratePost} style={{ display: "flex", alignItems: "center", gap: "5px", color:"grey" }}>
               <EmojiEmotionsIcon sx={{ color: "#FCE205" }} /> Feeling
             </Button>
           </Box>
