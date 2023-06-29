@@ -30,7 +30,7 @@ import emojiData from "emoji-datasource-facebook";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { Post } from "../../interface/PostContent";
-import {doc, updateDoc, collection} from "firebase/firestore"
+import { doc, updateDoc, collection, getDoc } from "firebase/firestore";
 
 const styleBoxPop = {
   position: "absolute",
@@ -64,8 +64,8 @@ interface Idata {
   // owner: string;
 }
 
-export default function CreatePost({ 
-  handleCloseEditPost, 
+export default function CreatePost({
+  handleCloseEditPost,
   handleRefresh,
   caption,
   oldStatus,
@@ -73,8 +73,7 @@ export default function CreatePost({
   oldPhoto,
   oldEmoji,
   postId,
- }: IHandle & Idata) {
-
+}: IHandle & Idata) {
   const [userId, setUserId] = React.useState("");
 
   const [status, setStatus] = React.useState(`${oldStatus}`);
@@ -89,12 +88,11 @@ export default function CreatePost({
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const [previewImages, setPreviewImages] = React.useState<string[]>(oldPhoto);
 
-
-  React.useEffect (() => {
+  React.useEffect(() => {
     const getUerInfo = localStorage.getItem("user");
-    const tmp = JSON.parse(getUerInfo ? getUerInfo : '')
-    setUserId(tmp.uid)
-  }, [])
+    const tmp = JSON.parse(getUerInfo ? getUerInfo : "");
+    setUserId(tmp.uid);
+  }, []);
 
   const handleClearImage = () => {
     setPreviewImages([]);
@@ -136,7 +134,7 @@ export default function CreatePost({
   };
 
   const initialState = {
-    id:"",
+    id: "",
     caption: caption,
     hashTagTopic: hashTagTopic,
     status: "",
@@ -146,12 +144,12 @@ export default function CreatePost({
     createAt: "",
     emoji: "",
     owner: "",
-  }
+  };
   const [post, setPost] = React.useState<Post>(initialState);
   const clearState = () => {
-    setPost({...initialState});
-    setStatus('');
-    setEmoji('');
+    setPost({ ...initialState });
+    setStatus("");
+    setEmoji("");
     handleClearImage();
   };
 
@@ -176,21 +174,31 @@ export default function CreatePost({
       emoji: emoji,
       owner: userId,
     };
-  
+
     try {
       const docRef = doc(postCollection, postId);
-      await updateDoc(docRef, updatedPost); 
-      clearState();
-      handleRefresh(); 
+      getDoc(docRef)
+        .then(async (docSnap) => {
+          if (docSnap.exists() && docSnap.data().owner === userId) {
+            await updateDoc(docRef, updatedPost);
+            clearState();
+            handleRefresh();
+          } else {
+            console.log("You don't have permission to delete this post");
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching post: ", error);
+        });
     } catch (error) {
-      console.error("Error updating post: ", error); 
+      console.error("Error updating post: ", error);
     }
   };
 
   const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
     const emoji = emojiData.find((data) => data.unified === emojiCode);
     return emoji ? emoji.name : undefined;
-  }
+  };
 
   return (
     <div>
@@ -235,7 +243,10 @@ export default function CreatePost({
                   <Box sx={{ mb: 1 }}>
                     <b>User Name </b>
                     {emoji !== "" && (
-                      <>{String.fromCodePoint(parseInt(emoji, 16))} {convertEmojiCodeToName(emoji)}</>
+                      <>
+                        {String.fromCodePoint(parseInt(emoji, 16))}{" "}
+                        {convertEmojiCodeToName(emoji)}
+                      </>
                     )}
                   </Box>
                   <FormControl size="small" sx={{ width: "130px" }}>
@@ -379,7 +390,11 @@ export default function CreatePost({
                   <CancelIcon />
                 </IconButton>
               </Box>
-              <ImageList sx={{ width: "100%", height: "auto", maxHeight:"500px" }} cols={3} rowHeight={164}>
+              <ImageList
+                sx={{ width: "100%", height: "auto", maxHeight: "500px" }}
+                cols={3}
+                rowHeight={164}
+              >
                 {previewImages.map((image, index) => (
                   <ImageListItem key={index}>
                     <img src={image} alt={`Preview ${index}`} loading="lazy" />

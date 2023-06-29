@@ -38,6 +38,7 @@ interface IData {
   createAt: string;
   commentIndex: number;
   postId: string;
+  userId: string;
 }
 
 interface IFunction {
@@ -61,6 +62,7 @@ export default function CommentContent({
   createAt,
   commentIndex,
   postId,
+  userId,
   handleRefresh,
 }: IData & IFunction) {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
@@ -73,6 +75,13 @@ export default function CommentContent({
     setAnchorElUser(null);
   };
 
+  const [openEditCom, setOpenEditCom] = React.useState(false);
+  const handletOpenEditCom = () => {
+    handleCloseUserMenu();
+    setOpenEditCom(true);
+  };
+  const handleCloseEditCom = () => setOpenEditCom(false);
+
   const handleDelete = async (id: string, comId: number) => {
     try {
       const q = query(
@@ -84,11 +93,17 @@ export default function CommentContent({
       if (doc.exists()) {
         const postData = { id: doc.id, ...doc.data() } as Post;
         const updatedComments = [...postData.comments];
-        updatedComments.splice(comId, 1);
-        const updatedData = { ...postData, comments: updatedComments };
-        await updateDoc(doc.ref, updatedData);
-        handleRefresh();
-        handleCloseUserMenu();
+        if(updatedComments[comId].author === userId) {
+          updatedComments.splice(comId, 1);
+          const updatedData = { ...postData, comments: updatedComments };
+          await updateDoc(doc.ref, updatedData);
+          handleRefresh();
+          handleCloseUserMenu();
+        } else {
+            handleCloseUserMenu();
+            alert("You don't have permission to delete this comment")
+            return;
+        }
       } else {
         console.log("No post found with the specified ID");
       }
@@ -96,13 +111,6 @@ export default function CommentContent({
       console.error("Error deleting comment:", error);
     }
   };
-
-  const [openEditCom, setOpenEditCom] = React.useState(false);
-  const handletOpenEditCom = () => {
-    handleCloseUserMenu();
-    setOpenEditCom(true);
-  };
-  const handleCloseEditCom = () => setOpenEditCom(false);
 
   const [comment, setComment] = React.useState({
     text:text
@@ -125,11 +133,19 @@ export default function CommentContent({
       if (doc.exists()) {
         const comments = doc.data().comments;
         if (commentIndex >= 0 && commentIndex < comments.length) {
-          comments[commentIndex].text = comment.text;
-          comments[commentIndex].createdAt = new Date().toLocaleString();
+          if(comments[commentIndex].author === userId) {
+            comments[commentIndex].text = comment.text;
+            comments[commentIndex].createdAt = new Date().toLocaleString();
+          }else {
+            setComment({text: comments[commentIndex].text});
+            alert("You don't have permission to edit this comment")
+            return;
+          }
+          
         } else {
           throw new Error("Invalid comment index.");
         }
+        
         return updateDoc(postRef, { comments: comments });
       } else {
         throw new Error("Post document does not exist.");

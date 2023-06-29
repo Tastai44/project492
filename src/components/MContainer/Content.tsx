@@ -49,7 +49,6 @@ const Item = styled(Box)(({ theme }) => ({
 
 interface IData {
   postId: string;
-  iconStatus: string;
   userId: string;
   likes: Like[];
 }
@@ -59,7 +58,6 @@ interface IFunction {
 
 export default function Content({
   postId,
-  iconStatus,
   userId,
   likes,
   handleClosePost,
@@ -256,7 +254,7 @@ export default function Content({
                                   {String.fromCodePoint(
                                     parseInt(m.emoji, 16)
                                   )}{" "}
-                                  {convertEmojiCodeToName(m.emoji)}
+                                  {convertEmojiCodeToName(m.emoji)?.toLocaleLowerCase()}
                                 </>
                               )}
                             </Typography>
@@ -270,9 +268,9 @@ export default function Content({
                               }}
                             >
                               {m.createAt}
-                              {iconStatus === "LockIcon" && <LockIcon />}
-                              {iconStatus === "GroupIcon" && <GroupIcon />}
-                              {iconStatus === "PublicIcon" && <PublicIcon />}
+                              {m.status === "Private" && <LockIcon />}
+                              {m.status === "Friend" && <GroupIcon />}
+                              {m.status === "Public" && <PublicIcon />}
                               {m.status}
                             </Typography>
                           }
@@ -461,6 +459,7 @@ export default function Content({
                                 commentIndex = {index}
                                 postId = {m.id}
                                 handleRefresh={handleRefresh}
+                                userId={userId}
                               />
                             </Box>
                           ))}
