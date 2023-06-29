@@ -30,8 +30,7 @@ import emojiData from "emoji-datasource-facebook";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { Post } from "../../interface/PostContent";
-import {doc} from "firebase/firestore"
-import { collection, setDoc } from "firebase/firestore";
+import { doc, updateDoc, collection, getDoc } from "firebase/firestore";
 
 const styleBoxPop = {
   position: "absolute",
@@ -47,15 +46,37 @@ const styleBoxPop = {
 };
 
 interface IHandle {
-  handleCloseCratePost: () => void;
-  handdleReFresh: () => void;
+  handleCloseEditPost: () => void;
+  handleRefresh: () => void;
+}
+interface Idata {
+  postId: string;
+  caption: string;
+  hashTagTopic: string;
+  oldStatus: string;
+  // createAt: string;
+  oldPhoto: string[];
+  oldEmoji: string;
+  // likeNumber: number;
+  // postId: string;
+  // commentNumber: number;
+  // likes: Like[];
+  // owner: string;
 }
 
-export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHandle) {
-
+export default function CreatePost({
+  handleCloseEditPost,
+  handleRefresh,
+  caption,
+  oldStatus,
+  hashTagTopic,
+  oldPhoto,
+  oldEmoji,
+  postId,
+}: IHandle & Idata) {
   const [userId, setUserId] = React.useState("");
 
-  const [status, setStatus] = React.useState("");
+  const [status, setStatus] = React.useState(`${oldStatus}`);
   const handleChange = (event: SelectChangeEvent) => {
     setStatus(event.target.value as string);
   };
@@ -65,14 +86,13 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
   const handleCloseEmoji = () => setOpenEmoji(false);
 
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-  const [previewImages, setPreviewImages] = React.useState<string[]>([]);
+  const [previewImages, setPreviewImages] = React.useState<string[]>(oldPhoto);
 
-
-  React.useEffect (() => {
+  React.useEffect(() => {
     const getUerInfo = localStorage.getItem("user");
-    const tmp = JSON.parse(getUerInfo ? getUerInfo : '')
-    setUserId(tmp.uid)
-  }, [])
+    const tmp = JSON.parse(getUerInfo ? getUerInfo : "");
+    setUserId(tmp.uid);
+  }, []);
 
   const handleClearImage = () => {
     setPreviewImages([]);
@@ -108,15 +128,15 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
     }
   };
 
-  const [emoji, setEmoji] = React.useState("");
+  const [emoji, setEmoji] = React.useState(oldEmoji ? oldEmoji : "");
   const handleChangeEmoji = (e: string) => {
     setEmoji(e);
   };
 
   const initialState = {
-    id:"",
-    caption: "",
-    hashTagTopic: "",
+    id: "",
+    caption: caption,
+    hashTagTopic: hashTagTopic,
     status: "",
     photoPost: [],
     comments: [],
@@ -124,12 +144,12 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
     createAt: "",
     emoji: "",
     owner: "",
-  }
+  };
   const [post, setPost] = React.useState<Post>(initialState);
   const clearState = () => {
-    setPost({...initialState});
-    setStatus('');
-    setEmoji('');
+    setPost({ ...initialState });
+    setStatus("");
+    setEmoji("");
     handleClearImage();
   };
 
@@ -143,40 +163,42 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
     }));
   };
 
-  const createPost = async () => {
+  const updatePost = async () => {
     const postCollection = collection(dbFireStore, "posts");
-    const newPost = {
-      id: "",
+    const updatedPost = {
       caption: post.caption,
       hashTagTopic: post.hashTagTopic,
       status: status,
       photoPost: previewImages,
-      likes: [],
       createAt: new Date().toLocaleString(),
       emoji: emoji,
       owner: userId,
-      comments: post.comments,
     };
-  
+
     try {
-      const docRef = doc(postCollection);
-      const postId = docRef.id;
-      const updatedPost = { ...newPost, id: postId };
-      await setDoc(docRef, updatedPost);
-    
-      setPost(updatedPost);
-      clearState();
-      handdleReFresh();
-      alert("Success!");
+      const docRef = doc(postCollection, postId);
+      getDoc(docRef)
+        .then(async (docSnap) => {
+          if (docSnap.exists() && docSnap.data().owner === userId) {
+            await updateDoc(docRef, updatedPost);
+            clearState();
+            handleRefresh();
+          } else {
+            console.log("You don't have permission to delete this post");
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching post: ", error);
+        });
     } catch (error) {
-      console.error("Error adding post: ", error);
+      console.error("Error updating post: ", error);
     }
   };
 
   const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
     const emoji = emojiData.find((data) => data.unified === emojiCode);
     return emoji ? emoji.name : undefined;
-  }
+  };
 
   return (
     <div>
@@ -199,10 +221,10 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
             id="modal-modal-title"
             sx={{ fontSize: "25px", fontWeight: "500" }}
           >
-            Create A Post
+            Edit The Post
           </Box>
           <Box>
-            <IconButton onClick={handleCloseCratePost}>
+            <IconButton onClick={handleCloseEditPost}>
               <CancelIcon />
             </IconButton>
           </Box>
@@ -221,7 +243,10 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
                   <Box sx={{ mb: 1 }}>
                     <b>User Name </b>
                     {emoji !== "" && (
-                      <>{String.fromCodePoint(parseInt(emoji, 16))} {convertEmojiCodeToName(emoji)}</>
+                      <>
+                        {String.fromCodePoint(parseInt(emoji, 16))}{" "}
+                        {convertEmojiCodeToName(emoji)}
+                      </>
                     )}
                   </Box>
                   <FormControl size="small" sx={{ width: "130px" }}>
@@ -343,7 +368,7 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
             <Box>
               <Button
                 variant="contained"
-                onClick={createPost}
+                onClick={updatePost}
                 sx={{
                   backgroundColor: "#8E51E2",
                   color: "white",
@@ -354,7 +379,7 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
                 }}
                 type="submit"
               >
-                Post
+                Save
               </Button>
             </Box>
           </Box>
@@ -365,7 +390,11 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
                   <CancelIcon />
                 </IconButton>
               </Box>
-              <ImageList sx={{ width: "100%", height: "auto", maxHeight:"500px" }} cols={3} rowHeight={164}>
+              <ImageList
+                sx={{ width: "100%", height: "auto", maxHeight: "500px" }}
+                cols={3}
+                rowHeight={164}
+              >
                 {previewImages.map((image, index) => (
                   <ImageListItem key={index}>
                     <img src={image} alt={`Preview ${index}`} loading="lazy" />

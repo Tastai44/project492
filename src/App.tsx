@@ -36,9 +36,9 @@ function App() {
           path={"/members"}
           element={
             <>
-              <ProtectedRoute>
+              {/* <ProtectedRoute> */}
                 <Members />
-              </ProtectedRoute>
+              {/* </ProtectedRoute> */}
             </>
           }
         />
@@ -46,9 +46,9 @@ function App() {
           path={"/topics"}
           element={
             <>
-              <ProtectedRoute>
+              {/* <ProtectedRoute> */}
                 <Topics />
-              </ProtectedRoute>
+              {/* </ProtectedRoute> */}
             </>
           }
         />
@@ -57,9 +57,9 @@ function App() {
           path={"/profileBlog/:userId"}
           element={
             <>
-              <ProtectedRoute>
+              {/* <ProtectedRoute> */}
                 <Blog />
-              </ProtectedRoute>
+              {/* </ProtectedRoute> */}
             </>
           }
         />
@@ -67,9 +67,9 @@ function App() {
           path={"/aboutMe/:userId"}
           element={
             <>
-              <ProtectedRoute>
+              {/* <ProtectedRoute> */}
                 <AboutMe />
-              </ProtectedRoute>
+              {/* </ProtectedRoute> */}
             </>
           }
         />
@@ -77,9 +77,9 @@ function App() {
           path={"/friends/:userId"}
           element={
             <>
-              <ProtectedRoute>
+              {/* <ProtectedRoute> */}
                 <Friends />
-              </ProtectedRoute>
+              {/* </ProtectedRoute> */}
             </>
           }
         />
@@ -87,9 +87,9 @@ function App() {
           path={"/collections/:userId"}
           element={
             <>
-              <ProtectedRoute>
+              {/* <ProtectedRoute> */}
                 <Collections />
-              </ProtectedRoute>
+              {/* </ProtectedRoute> */}
             </>
           }
         />
@@ -100,9 +100,9 @@ function App() {
           path={"/events"}
           element={
             <>
-              <ProtectedRoute>
+              {/* <ProtectedRoute> */}
                 <Events />
-              </ProtectedRoute>
+              {/* </ProtectedRoute> */}
             </>
           }
         />
@@ -110,9 +110,9 @@ function App() {
           path={"/eventsDetail/:eventId"}
           element={
             <>
-              <ProtectedRoute>
+              {/* <ProtectedRoute> */}
                 <EventDetail />
-              </ProtectedRoute>
+              {/* </ProtectedRoute> */}
             </>
           }
         />
@@ -123,9 +123,9 @@ function App() {
           path={"/groups"}
           element={
             <>
-              <ProtectedRoute>
+              {/* <ProtectedRoute> */}
                 <Groups />
-              </ProtectedRoute>
+              {/* </ProtectedRoute> */}
             </>
           }
         />
@@ -133,9 +133,9 @@ function App() {
           path={"/groupDetail/:groupId"}
           element={
             <>
-              <ProtectedRoute>
+              {/* <ProtectedRoute> */}
                 <GroupDetails />
-              </ProtectedRoute>
+              {/* </ProtectedRoute> */}
             </>
           }
         />

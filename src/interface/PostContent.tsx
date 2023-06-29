@@ -1,8 +1,9 @@
 import { User } from "./User";
 
 export interface Comment {
-  id: number;
+  id: string;
   text: string;
+  createdAt:string;
   author: string;
 }
 export interface Location {
@@ -23,17 +24,22 @@ export interface Share {
   message?: string;
   createdAt: Date;
 }
+export interface Like {
+  postId: number;
+  likeBy: string;
+  createdAt: Date;
+}
 
 export interface Post {
   id: string;
   caption: string;
   hashTagTopic: string;
   status: string;
-  photoPost?: string[];
-  likeNumber?: number;
-  createAt?: string;
+  photoPost: string[];
+  likes: Like[];
+  createAt: string;
   emoji?: string;
-  comments?: Comment[];
+  comments: Comment[];
   reports?: Report[];
   shares?: Share[];
   location?: Location;

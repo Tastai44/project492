@@ -8,7 +8,7 @@ export const themeApp = createTheme({
     },
   },
   palette: {
-    primary: { main: "#8E51E2", dark: "#000000", contrastText: "#fbf6ee" },
+    primary: { main: "#8E51E2", dark: "#000000", contrastText: "#CCCCCC" },
     secondary: { main: "#456086", dark: "#CCC1BE" },
     action: { active: "#000" },
     background: {

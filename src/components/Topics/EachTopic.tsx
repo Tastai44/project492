@@ -1,7 +1,11 @@
 import { List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import TagIcon from "@mui/icons-material/Tag";
-// import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-export default function EachTopic() {
+
+interface IData {
+  hashTag: string;
+}
+
+export default function EachTopic({hashTag} : IData) {
   return (
     <div>
         <nav aria-label="main mailbox folders">
@@ -11,7 +15,7 @@ export default function EachTopic() {
                 <ListItemIcon>
                   <TagIcon />
                 </ListItemIcon>
-                <ListItemText primary="Inbox" />
+                <ListItemText primary={`${hashTag}`} />
                 {/* <MoreHorizIcon /> */}
               </ListItemButton>
             </ListItem>
