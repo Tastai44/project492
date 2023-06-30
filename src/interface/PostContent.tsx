@@ -37,7 +37,8 @@ export interface Post {
   status: string;
   photoPost: string[];
   likes: Like[];
-  createAt: string;
+  createAt?: string;
+  updateAt?: string;
   emoji?: string;
   comments: Comment[];
   reports?: Report[];

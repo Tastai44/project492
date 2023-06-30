@@ -18,6 +18,7 @@ import {
   TextField,
   Button,
   CardActions,
+  Modal,
 } from "@mui/material";
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";
 import CommentIcon from "@mui/icons-material/Comment";
@@ -38,7 +39,18 @@ import "firebase/database";
 import { Post, Comment, Like } from "../../interface/PostContent";
 
 import { dbFireStore } from "../../config/firebase";
-import {collection, query, getDocs, updateDoc, doc, arrayUnion, where} from "firebase/firestore"
+import {
+  collection,
+  query,
+  getDocs,
+  updateDoc,
+  doc,
+  arrayUnion,
+  where,
+  getDoc,
+  deleteDoc,
+} from "firebase/firestore";
+import EditPost from "./EditPost";
 
 const Item = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -80,15 +92,18 @@ export default function Content({
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const q = query(collection(dbFireStore, 'posts'));
+        const q = query(collection(dbFireStore, "posts"));
         const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }) as Post);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              id: doc.id,
+              ...doc.data(),
+            } as Post)
+        );
         setData(queriedData);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
     fetchData();
@@ -143,7 +158,11 @@ export default function Content({
 
   const [isLike, setIsLike] = React.useState(false);
   React.useEffect(() => {
-    setIsLike(data.some((d) => d.id === postId && d.likes.some((l) => l.likeBy === userId)));
+    setIsLike(
+      data.some(
+        (d) => d.id === postId && d.likes.some((l) => l.likeBy === userId)
+      )
+    );
   }, [data, postId, userId]);
 
   const increaseLike = () => {
@@ -163,10 +182,13 @@ export default function Content({
         console.error("Error adding likes: ", error);
       });
   };
-  const decreaseLike = async (id:string) => {
-    const IndexLike = likes.findIndex(f => f.likeBy === userId)
+  const decreaseLike = async (id: string) => {
+    const IndexLike = likes.findIndex((f) => f.likeBy === userId);
     try {
-      const q = query(collection(dbFireStore, 'posts'), where('__name__', '==', id));
+      const q = query(
+        collection(dbFireStore, "posts"),
+        where("__name__", "==", id)
+      );
       const querySnapshot = await getDocs(q);
       const doc = querySnapshot.docs[0];
       if (doc.exists()) {
@@ -177,11 +199,40 @@ export default function Content({
         await updateDoc(doc.ref, updatedData);
         handleRefresh();
       } else {
-        console.log('No post found with the specified ID');
+        console.log("No post found with the specified ID");
       }
     } catch (error) {
-      console.error('Error deleting like:', error);
+      console.error("Error deleting like:", error);
     }
+  };
+
+  const [openEditPost, setOpenEditPost] = React.useState(false);
+  const handletOpenEditPost = () => {
+    setOpenEditPost(true);
+    handleCloseUserMenu();
+  };
+  const handleCloseEditPost = () => setOpenEditPost(false);
+
+  const handleDelete = (pId: string) => {
+    const postRef = doc(dbFireStore, "posts", pId);
+    getDoc(postRef)
+      .then((docSnap) => {
+        if (docSnap.exists() && docSnap.data().owner === userId) {
+          deleteDoc(postRef)
+            .then(() => {
+              handleRefresh();
+              handleClosePost();
+            })
+            .catch((error) => {
+              console.error("Error deleting post: ", error);
+            });
+        } else {
+          console.log("You don't have permission to delete this post");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching post: ", error);
+      });
   };
 
   return (
@@ -193,6 +244,25 @@ export default function Content({
         .filter((f) => f.id === postId)
         .map((m) => (
           <Box key={m.id} sx={{ flexGrow: 1, p: 1 }}>
+            <Modal
+              open={openEditPost}
+              onClose={handleCloseEditPost}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box>
+                <EditPost
+                  handleCloseEditPost={handleCloseEditPost}
+                  handleRefresh={handleRefresh}
+                  oldStatus={m.status}
+                  caption={m.caption}
+                  hashTagTopic={m.hashTagTopic}
+                  oldPhoto={m.photoPost}
+                  oldEmoji={m.emoji !== undefined ? m.emoji : ""}
+                  postId={postId}
+                />
+              </Box>
+            </Modal>
             <Grid container spacing={1}>
               <Grid item xs={6}>
                 <Item>
@@ -254,7 +324,9 @@ export default function Content({
                                   {String.fromCodePoint(
                                     parseInt(m.emoji, 16)
                                   )}{" "}
-                                  {convertEmojiCodeToName(m.emoji)?.toLocaleLowerCase()}
+                                  {convertEmojiCodeToName(
+                                    m.emoji
+                                  )?.toLocaleLowerCase()}
                                 </>
                               )}
                             </Typography>
@@ -295,7 +367,7 @@ export default function Content({
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                           >
-                            <MenuItem onClick={handleCloseUserMenu}>
+                            <MenuItem onClick={handletOpenEditPost}>
                               <Typography
                                 textAlign="center"
                                 sx={{
@@ -308,7 +380,7 @@ export default function Content({
                                 <BorderColorOutlinedIcon /> Edit
                               </Typography>
                             </MenuItem>
-                            <MenuItem onClick={handleCloseUserMenu}>
+                            <MenuItem onClick={() => handleDelete(postId)}>
                               <Typography
                                 textAlign="center"
                                 sx={{
@@ -366,14 +438,25 @@ export default function Content({
                       <Button
                         aria-label="add to favorites"
                         sx={{
-                          color: isLike ? 'purple' : !isLike ? 'black' : 'black',
+                          color: isLike
+                            ? "purple"
+                            : !isLike
+                            ? "black"
+                            : "black",
                         }}
-                        onClick={isLike ? () => decreaseLike(postId) : () => increaseLike()}
+                        onClick={
+                          isLike
+                            ? () => decreaseLike(postId)
+                            : () => increaseLike()
+                        }
                       >
                         <ThumbUpIcon sx={{ marginRight: 1 }} />
                         Like
                       </Button>
-                      <Button aria-label="add to favorites" sx={{ color: "black" }}>
+                      <Button
+                        aria-label="add to favorites"
+                        sx={{ color: "black" }}
+                      >
                         <CommentIcon sx={{ marginRight: 1 }} /> Comment
                       </Button>
                       <Button aria-label="share" sx={{ color: "black" }}>
@@ -456,8 +539,8 @@ export default function Content({
                               <CommentContent
                                 text={comment.text}
                                 createAt={comment.createdAt}
-                                commentIndex = {index}
-                                postId = {m.id}
+                                commentIndex={index}
+                                postId={m.id}
                                 handleRefresh={handleRefresh}
                                 userId={userId}
                               />

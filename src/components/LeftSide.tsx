@@ -26,13 +26,14 @@ const Item = styled(Paper)(({ theme }) => ({
   textAlign: "center",
   color: theme.palette.text.secondary,
 }));
+const userInfo = JSON.parse(localStorage.getItem('user') || "null");
 
 export default function LeftSide() {
   return (
     <Box sx={{ width: "120%" }}>
       <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
         <Box gridColumn="span 12">
-        <NavLink to={`/profileBlog/${1}`}>
+        <NavLink to={`/profileBlog/${userInfo.uid}`}>
           <Item
             sx={{
               display: "flex",

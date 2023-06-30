@@ -140,8 +140,8 @@ export default function CreatePost({
     status: "",
     photoPost: [],
     comments: [],
+    updateAt: "",
     likes: [],
-    createAt: "",
     emoji: "",
     owner: "",
   };
@@ -170,7 +170,7 @@ export default function CreatePost({
       hashTagTopic: post.hashTagTopic,
       status: status,
       photoPost: previewImages,
-      createAt: new Date().toLocaleString(),
+      updateAt: new Date().toLocaleString(),
       emoji: emoji,
       owner: userId,
     };
@@ -183,6 +183,7 @@ export default function CreatePost({
             await updateDoc(docRef, updatedPost);
             clearState();
             handleRefresh();
+            handleCloseEditPost();
           } else {
             console.log("You don't have permission to delete this post");
           }

@@ -148,7 +148,9 @@ export default function MContainer({
         if (docSnap.exists() && docSnap.data().owner === userId) {
           deleteDoc(postRef)
             .then(() => {
+              alert("Post deleted successfully");
               console.log("Post deleted successfully");
+              handleRefresh();
             })
             .catch((error) => {
               console.error("Error deleting post: ", error);
@@ -409,7 +411,7 @@ export default function MContainer({
                 <ThumbUpIcon sx={{ marginRight: 1 }} />
                 Like
               </Button>
-              <Button aria-label="add to favorites" sx={{ color: "black" }}>
+              <Button onClick={handletOpenPost} aria-label="add to favorites" sx={{ color: "black" }}>
                 <CommentIcon sx={{ marginRight: 1 }} /> Comment
               </Button>
               <Button aria-label="share" sx={{ color: "black" }}>
