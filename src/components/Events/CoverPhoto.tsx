@@ -6,18 +6,31 @@ import {
   Divider,
   IconButton,
 } from "@mui/material";
-import Luffy from "../../../public/pictures/Luffy.webp";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import TagIcon from "@mui/icons-material/Tag";
 
-export default function ProCoverImage() {
+interface IData {
+  eventId: string;
+  startDate: string;
+  startTime: string;
+  endDate: string;
+  endTime: string;
+  title: string;
+  coverPhoto: string[];
+  topic: string;
+  ageRage: number;
+}
+
+export default function ProCoverImage({eventId, startDate, startTime, endDate, endTime, title, coverPhoto, topic, ageRage} : IData) {
   return (
     <div>
       <Card sx={{ maxWidth: "100%" }}>
-        <CardMedia sx={{ height: 300 }} image={Luffy} title="green iguana" />
+        {coverPhoto.map((cover, index) => (
+          <CardMedia key={index} sx={{ height: 300 }} image={cover} title="green iguana" />
+        ))}
       </Card>
       <Box
         sx={{
@@ -29,9 +42,9 @@ export default function ProCoverImage() {
         <Card sx={{ width: "95%", backgroundColor: "white", display: "flex" }}>
           <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <Box
-              sx={{ mt: 1, ml:1, display: "flex", justifyContent: "flex-start", fontSize:"16px" }}
+              sx={{ mt: 1, ml:1, display: "flex", justifyContent: "flex-start", fontSize:"20px" }}
             >
-              Name of the event
+              {title}
             </Box>
             <Box
               sx={{
@@ -71,11 +84,11 @@ export default function ProCoverImage() {
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
               <Box sx={{ display: "flex", gap: 1, m: 1, alignItems:"center" }}>
                 <DateRangeIcon />
-                <div>Sun 15 Dec at 4:00 AM</div>
+                <div>Start: {startDate} {startTime}, End: {endDate} {endTime}</div>
               </Box>
               <Box sx={{ display: "flex", gap: 1, m: 1, alignItems:"center" }}>
-                <TagIcon />
-                <div>Name of the topic | 18+</div>
+                {/* <TagIcon /> */}
+                <div>{topic} | {ageRage}+</div>
               </Box>
             </Box>
           </Box>

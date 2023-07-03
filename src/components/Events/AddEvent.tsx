@@ -14,7 +14,7 @@ import {
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
-import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
+// import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import { EventPost } from "../../interface/Event";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -334,10 +334,8 @@ export default function AddEvent({ closeEdit }: Ihandle) {
               ref={fileInputRef}
               onChange={handleFileChange}
               endAdornment={
-                <InputAdornment position="end">
-                  <IconButton edge="start">
-                    <InsertPhotoIcon />
-                  </IconButton>
+                <InputAdornment position="end" sx={{fontSize:"20px"}}>
+                    Cover photo
                 </InputAdornment>
               }
             />
@@ -382,9 +380,9 @@ export default function AddEvent({ closeEdit }: Ihandle) {
               </IconButton>
             </Box>
             <ImageList
-              sx={{ width: "100%", height: "auto", maxHeight: "500px" }}
-              cols={3}
-              rowHeight={164}
+              sx={{ width: "100%", height: "auto", maxHeight: "400px" }}
+              cols={1}
+              rowHeight={160}
             >
               {previewImages.map((image, index) => (
                 <ImageListItem key={index}>

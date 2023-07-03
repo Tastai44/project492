@@ -46,7 +46,6 @@ export default function Blog() {
 
     fetchData();
   }, [reFresh, userId]);
-  console.log(data);
 
   return (
     <div>

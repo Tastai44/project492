@@ -18,6 +18,7 @@ export default function Events() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+
   return (
     <>
       <Modal

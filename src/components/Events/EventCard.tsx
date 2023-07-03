@@ -12,17 +12,28 @@ import ScreenShareIcon from "@mui/icons-material/ScreenShare";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { NavLink } from "react-router-dom";
 
-export default function MediaCard() {
+interface IData {
+  eventId: string;
+  startDate: string;
+  startTime: string;
+  title: string;
+  coverPhoto: string[];
+}
+
+export default function MediaCard({eventId, startDate, startTime, title, coverPhoto}:IData) {
+
   return (
     <Card sx={{ width: 258, height: 380 }}>
-      <NavLink to={`/eventsDetail/${1}`}>
-        <CardMedia sx={{ height: 194 }} image={Luffy} title="green iguana" />
+      <NavLink to={`/eventsDetail/${eventId}`}>
+        {coverPhoto.map((cover, index) => (
+          <CardMedia key={index} sx={{ height: 194 }} image={cover} title="green iguana" />
+        ))}
       </NavLink>
       <CardContent sx={{ textAlign: "justify" }}>
         <Typography gutterBottom sx={{ fontSize: "18px" }} component="div">
-          I believe I can fly — USA
+          {title}
         </Typography>
-        <Typography color={"error"}>Mon, 11 JUL AT 23.59</Typography>
+        <Typography color={"error"}>{startDate} {startTime}</Typography>
         <Box sx={{ display: "flex", alignItems: "end", gap: 1 }}>
           <Avatar
             src={Luffy}

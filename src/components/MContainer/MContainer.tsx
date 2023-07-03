@@ -66,7 +66,7 @@ interface Idata {
   caption: string;
   hashTagTopic: string;
   status: string;
-  createAt: string;
+  createAt?: string;
   photoPost: string[];
   emoji?: string;
   likeNumber: number;

@@ -1,9 +1,15 @@
 import { Box, Button, Divider } from "@mui/material";
 import { Item } from "../MContainer/MContainer";
 import FlagCircleIcon from "@mui/icons-material/FlagCircle";
+
 import Tooltip from "@mui/material/Tooltip";
 
-export default function DetailCard() {
+interface IData {
+  details: string;
+}
+
+export default function DetailCard({details} : IData) {
+
   return (
     <div>
       <Box>
@@ -23,13 +29,7 @@ export default function DetailCard() {
           <Divider />
           <Box sx={{textAlign:"left"}}>
             <Box sx={{m:2, textAlign:"justify"}}>
-                Description:
-                The FutureTech Summit 2023 is a premier international 
-                conference dedicated to exploring the latest advancements 
-                and trends in technology and innovation. The event brings 
-                together leading experts, entrepreneurs, researchers, and 
-                industry professionals from various sectors to share insights, 
-                exchange ideas, and foster collaboration.
+              {details}
             </Box>
           </Box>
         </Item>
