@@ -37,6 +37,8 @@ export default function ProLeftside() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const userInfo = JSON.parse(localStorage.getItem('user') || "null");
+
   return (
     <>
       <Modal
@@ -113,7 +115,7 @@ export default function ProLeftside() {
                 <List>
                   <ListItem disablePadding>
                     <NavLink
-                      to={`/profileBlog/${1}`}
+                      to={`/profileBlog/${userInfo.uid}`}
                       style={({ isActive, isPending }) => {
                         return {
                           fontWeight: isPending ? "bold" : "",
@@ -130,7 +132,7 @@ export default function ProLeftside() {
                   </ListItem>
                   <ListItem disablePadding>
                     <NavLink
-                      to={`/aboutMe/${1}`}
+                      to={`/aboutMe/${userInfo.uid}`}
                       style={({ isActive, isPending }) => {
                         return {
                           fontWeight: isPending ? "bold" : "",
@@ -147,7 +149,7 @@ export default function ProLeftside() {
                   </ListItem>
                   <ListItem disablePadding>
                     <NavLink
-                      to={`/friends/${1}`}
+                      to={`/friends/${userInfo.uid}`}
                       style={({ isActive, isPending }) => {
                         return {
                           fontWeight: isPending ? "bold" : "",
@@ -164,7 +166,7 @@ export default function ProLeftside() {
                   </ListItem>
                   <ListItem disablePadding>
                     <NavLink
-                      to={`/collections/${1}`}
+                      to={`/collections/${userInfo.uid}`}
                       style={({ isActive, isPending }) => {
                         return {
                           fontWeight: isPending ? "bold" : "",

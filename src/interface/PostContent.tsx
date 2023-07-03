@@ -6,7 +6,7 @@ export interface Comment {
   createdAt:string;
   author: string;
 }
-export interface Location {
+export interface Address {
   latitude: number;
   longtitude: number;
   address: string;
@@ -43,12 +43,6 @@ export interface Post {
   comments: Comment[];
   reports?: Report[];
   shares?: Share[];
-  location?: Location;
+  location?: Address[];
   owner: string;
-}
-
-export interface todos {
-  id: string;
-  content: string;
-  title: string;
 }

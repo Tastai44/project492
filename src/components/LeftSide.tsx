@@ -75,7 +75,7 @@ export default function LeftSide() {
 
                 <ListItem disablePadding>
                 <NavLink
-                    to={`/friends/${1}`}
+                    to={`/friends/${userInfo.uid}`}
                     style={({ isActive, isPending }) => {
                       return {
                         fontWeight: isPending ? "bold" : "",

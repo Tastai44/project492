@@ -135,7 +135,7 @@ export default function CommentContent({
         if (commentIndex >= 0 && commentIndex < comments.length) {
           if(comments[commentIndex].author === userId) {
             comments[commentIndex].text = comment.text;
-            comments[commentIndex].createdAt = new Date().toLocaleString();
+            comments[commentIndex].updateAt = new Date().toLocaleString();
           }else {
             setComment({text: comments[commentIndex].text});
             alert("You don't have permission to edit this comment")
