@@ -73,6 +73,8 @@ export default function EventDetail() {
                       endTime= {e.endTime}
                       topic={e.topic}
                       ageRage={e.ageRage}
+                      interest={e.interest}
+                      handleRefresh={handleRefresh}
                     />
                   </Item>
                   <Item>

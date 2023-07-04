@@ -294,7 +294,7 @@ export default function Navigation() {
             variant="h6"
             noWrap
             component="div"
-            sx={{ display: { xs: "none", sm: "block" } }}
+            sx={{ display: { xs: "none", sm: "block" }, fontWeight:"bold" }}
           >
             CMU
           </Typography>
