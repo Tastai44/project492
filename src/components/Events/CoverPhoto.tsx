@@ -84,7 +84,7 @@ export default function ProCoverImage({eventId, startDate, startTime, endDate, e
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
               <Box sx={{ display: "flex", gap: 1, m: 1, alignItems:"center" }}>
                 <DateRangeIcon />
-                <div>Start: {startDate} {startTime}, End: {endDate} {endTime}</div>
+                <div> <b>Start:</b> {startDate}, {startTime} | <b>End:</b> {endDate}, {endTime}</div>
               </Box>
               <Box sx={{ display: "flex", gap: 1, m: 1, alignItems:"center" }}>
                 {/* <TagIcon /> */}

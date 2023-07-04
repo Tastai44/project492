@@ -17,13 +17,15 @@ interface IData {
   startDate: string;
   startTime: string;
   title: string;
+  endDate: string;
+  endTime: string;
   coverPhoto: string[];
 }
 
-export default function MediaCard({eventId, startDate, startTime, title, coverPhoto}:IData) {
+export default function MediaCard({eventId, startDate, startTime, title, coverPhoto, endDate, endTime}:IData) {
 
   return (
-    <Card sx={{ width: 258, height: 380 }}>
+    <Card sx={{ width: 258, height: 400 }}>
       <NavLink to={`/eventsDetail/${eventId}`}>
         {coverPhoto.map((cover, index) => (
           <CardMedia key={index} sx={{ height: 194 }} image={cover} title="green iguana" />
@@ -33,7 +35,8 @@ export default function MediaCard({eventId, startDate, startTime, title, coverPh
         <Typography gutterBottom sx={{ fontSize: "18px" }} component="div">
           {title}
         </Typography>
-        <Typography color={"error"}>{startDate} {startTime}</Typography>
+        <Typography color={"error"}><b>Start:</b> {startDate}, {startTime} <br />
+         <b>End:</b> {endDate}, {endTime}</Typography>
         <Box sx={{ display: "flex", alignItems: "end", gap: 1 }}>
           <Avatar
             src={Luffy}

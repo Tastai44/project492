@@ -40,6 +40,8 @@ export default function EventContainer() {
               title={m.title}
               startDate={m.startDate}
               startTime={m.startTime}
+              endDate={m.endDate}
+              endTime={m.endTime}
               eventId={m.id}
               coverPhoto={m.coverPhoto}
             />
