@@ -21,8 +21,8 @@ import {
   doc,
   where,
   arrayUnion,
-  deleteDoc,
-  getDoc,
+  // deleteDoc,
+  // getDoc,
 } from "firebase/firestore";
 import { EventPost, Interest } from "../../interface/Event";
 

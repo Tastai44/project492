@@ -18,7 +18,6 @@ import ProtectedRoute from "./utils/ProtectedRoute";
 function App() {
   return (
     <>
-      <Navigation />
       <Routes>
         <Route path={"/login"} element={<Login />} />
 
@@ -27,6 +26,7 @@ function App() {
           element={
             <>
               <ProtectedRoute>
+                <Navigation />
                 <HomeFeed />
               </ProtectedRoute>
             </>
@@ -37,7 +37,8 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-                <Members />
+              <Navigation />
+              <Members />
               {/* </ProtectedRoute> */}
             </>
           }
@@ -47,7 +48,8 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-                <Topics />
+              <Navigation />
+              <Topics />
               {/* </ProtectedRoute> */}
             </>
           }
@@ -58,7 +60,8 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-                <Blog />
+              <Navigation />
+              <Blog />
               {/* </ProtectedRoute> */}
             </>
           }
@@ -68,7 +71,8 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-                <AboutMe />
+              <Navigation />
+              <AboutMe />
               {/* </ProtectedRoute> */}
             </>
           }
@@ -78,7 +82,8 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-                <Friends />
+              <Navigation />
+              <Friends />
               {/* </ProtectedRoute> */}
             </>
           }
@@ -88,7 +93,8 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-                <Collections />
+              <Navigation />
+              <Collections />
               {/* </ProtectedRoute> */}
             </>
           }
@@ -101,7 +107,8 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-                <Events />
+              <Navigation />
+              <Events />
               {/* </ProtectedRoute> */}
             </>
           }
@@ -111,7 +118,8 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-                <EventDetail />
+              <Navigation />
+              <EventDetail />
               {/* </ProtectedRoute> */}
             </>
           }
@@ -124,7 +132,8 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-                <Groups />
+              <Navigation />
+              <Groups />
               {/* </ProtectedRoute> */}
             </>
           }
@@ -134,7 +143,8 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-                <GroupDetails />
+              <Navigation />
+              <GroupDetails />
               {/* </ProtectedRoute> */}
             </>
           }

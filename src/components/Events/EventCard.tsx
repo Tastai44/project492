@@ -1,15 +1,11 @@
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 
 import Typography from "@mui/material/Typography";
 import Luffy from "../../../public/pictures/Luffy.webp";
-import { Avatar, Box, Button, IconButton } from "@mui/material";
+import { Avatar, Box} from "@mui/material";
 
-import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
-import ScreenShareIcon from "@mui/icons-material/ScreenShare";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { NavLink } from "react-router-dom";
 
 interface IData {
@@ -25,14 +21,14 @@ interface IData {
 export default function MediaCard({eventId, startDate, startTime, title, coverPhoto, endDate, endTime}:IData) {
 
   return (
-    <Card sx={{ width: 258, height: 400 }}>
+    <Card sx={{ width: 258, height: 360 }}>
       <NavLink to={`/eventsDetail/${eventId}`}>
         {coverPhoto.map((cover, index) => (
           <CardMedia key={index} sx={{ height: 194 }} image={cover} title="green iguana" />
         ))}
       </NavLink>
       <CardContent sx={{ textAlign: "justify" }}>
-        <Typography gutterBottom sx={{ fontSize: "18px" }} component="div">
+        <Typography gutterBottom sx={{ fontSize: "20px" }} component="div">
           {title}
         </Typography>
         <Typography color={"error"}><b>Start:</b> {startDate}, {startTime} <br />
@@ -49,26 +45,7 @@ export default function MediaCard({eventId, startDate, startTime, title, coverPh
           </Typography>
         </Box>
       </CardContent>
-      <CardActions
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginTop: -1,
-          alignItems: "center",
-        }}
-      >
-        <Button sx={{ color: "black" }} startIcon={<StarBorderOutlinedIcon />}>
-          Interest
-        </Button>
-
-        <Button sx={{ color: "black" }} startIcon={<ScreenShareIcon />}>
-          Share
-        </Button>
-
-        <IconButton>
-          <MoreHorizIcon />
-        </IconButton>
-      </CardActions>
+      
     </Card>
   );
 }
