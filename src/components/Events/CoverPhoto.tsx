@@ -21,10 +21,15 @@ import {
   doc,
   where,
   arrayUnion,
+  deleteDoc,
+  getDoc,
   // deleteDoc,
   // getDoc,
 } from "firebase/firestore";
 import { EventPost, Interest } from "../../interface/Event";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import {useNavigate} from "react-router-dom"
 
 interface IData {
   eventId: string;
@@ -58,7 +63,7 @@ export default function ProCoverImage({
 }: IData & IFunction) {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const isInterest = interest.some((f) => f.interestBy === userInfo.uid);
-console.log(isInterest)
+  const navigate = useNavigate();
   const increaseInterest = () => {
     const eventtsCollection = collection(dbFireStore, "events");
     const updateInterest = {
@@ -101,6 +106,28 @@ console.log(isInterest)
     }
   };
 
+  const handleDelete = (eId: string) => {
+    const postRef = doc(dbFireStore, "events", eId);
+    getDoc(postRef)
+      .then((docSnap) => {
+        if (docSnap.exists() && docSnap.data().owner === userInfo.uid) {
+          deleteDoc(postRef)
+            .then(() => {
+              navigate('/events');
+              console.log("Post deleted successfully");
+              handleRefresh();
+            })
+            .catch((error) => {
+              console.error("Error deleting Event: ", error);
+            });
+        } else {
+          console.log("You don't have permission to delete this Event");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching Event: ", error);
+      });
+  };
 
   return (
     <div>
@@ -147,29 +174,78 @@ console.log(isInterest)
                   Location
                 </Button>
               </Box>
-              <Box sx={{ display: "flex" }}>
+              <Box sx={{ display: "flex", gap:0.5 }}>
                 <IconButton size="large">
                   <ShareIcon />
                 </IconButton>
                 <Button
+                  size="small"
                   variant="outlined"
                   sx={{
-                    backgroundColor: isInterest ? "primary.main" : !isInterest ? "white" : "white",
-                    color: isInterest ? "white" : !isInterest ? "black" : "black",
+                    fontSize: "16px",
+                    backgroundColor: isInterest
+                      ? "primary.main"
+                      : !isInterest
+                      ? "white"
+                      : "white",
+                    color: isInterest
+                      ? "white"
+                      : !isInterest
+                      ? "black"
+                      : "black",
                     border: "1px solid",
                     "&:hover": {
                       color: "white",
                       border: "1px solid",
                       backgroundColor: "primary.main",
                     },
-                    m: 1,
                   }}
                   onClick={
-                    isInterest ? () => decreaseInterest(eventId) : () => increaseInterest()
+                    isInterest
+                      ? () => decreaseInterest(eventId)
+                      : () => increaseInterest()
                   }
-                  startIcon={<FavoriteIcon sx={{width:"16px"}}/>}
+                  startIcon={<FavoriteIcon sx={{ width: "16px" }} />}
                 >
                   {isInterest ? "Interested" : "Interest"}
+                </Button>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  sx={{
+                    fontSize: "16px",
+                    backgroundColor: "primary.main",
+                    color: "white",
+                    border: "1px solid",
+                    "&:hover": {
+                      color: "white",
+                      border: "1px solid",
+                      backgroundColor: "grey",
+                    },
+                  }}
+                  startIcon={<BorderColorOutlinedIcon sx={{ width: "16px" }} />}
+                >
+                  Edit
+                </Button>
+                <Button
+                  onClick={() => handleDelete(eventId)}
+                  size="small"
+                  variant="outlined"
+                  sx={{
+                    fontSize: "16px",
+                    backgroundColor: "primary.main",
+                    color: "white",
+                    border: "1px solid",
+                    "&:hover": {
+                      color: "white",
+                      border: "1px solid",
+                      backgroundColor: "grey",
+                    },
+                    mr:1
+                  }}
+                  startIcon={<DeleteOutlineOutlinedIcon sx={{ width: "16px" }} />}
+                >
+                  Delete
                 </Button>
               </Box>
             </Box>

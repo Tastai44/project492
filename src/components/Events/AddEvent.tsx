@@ -40,10 +40,11 @@ const style = {
 };
 
 interface Ihandle {
-  closeEdit: () => void;
+  closeAdd: () => void;
+  handleRefresh: () => void;
 }
 
-export default function AddEvent({ closeEdit }: Ihandle) {
+export default function AddEvent({ closeAdd, handleRefresh }: Ihandle) {
   const [userId, setUserId] = React.useState("");
   React.useEffect(() => {
     const getUerInfo = localStorage.getItem("user");
@@ -111,7 +112,7 @@ export default function AddEvent({ closeEdit }: Ihandle) {
   const [event, setEvent] = React.useState<EventPost>(initialState);
   const clearState = () => {
     setEvent({ ...initialState });
-    // handleClearImage();
+    handleClearImage();
   };
   const handleChangeEvent = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -150,7 +151,8 @@ export default function AddEvent({ closeEdit }: Ihandle) {
 
       setEvent(updatedEvent);
       clearState();
-      // handdleReFresh();
+      closeAdd()
+      handleRefresh();
       alert("Success!");
     } catch (error) {
       console.error("Error adding post: ", error);
@@ -353,7 +355,7 @@ export default function AddEvent({ closeEdit }: Ihandle) {
                 backgroundColor: "#E1E1E1",
               },
             }}
-            onClick={closeEdit}
+            onClick={closeAdd}
           >
             Cancel
           </Button>

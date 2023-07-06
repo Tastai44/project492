@@ -6,11 +6,12 @@ import { dbFireStore } from "../../config/firebase";
 import { collection, query, orderBy, getDocs } from "firebase/firestore";
 import { EventPost } from "../../interface/Event";
 
-export default function EventContainer() {
-  const [reFresh, setReFresh] = React.useState(0);
-  const handleRefresh = () => {
-    setReFresh((pre) => pre + 1);
-  };
+interface IData {
+  reFresh: number;
+}
+
+export default function EventContainer({reFresh} : IData) {
+
   const [data, setData] = React.useState<EventPost[]>([]);
   React.useEffect(() => {
     const fetchData = async () => {
