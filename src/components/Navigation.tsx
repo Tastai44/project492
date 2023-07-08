@@ -34,6 +34,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 
 import { auth } from "../config/firebase";
 import { signOut } from "firebase/auth";
+import ChatBox from "./Chat/ChatBox";
 
 export const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -276,6 +277,11 @@ export default function Navigation() {
   );
 
   return (
+    <>
+    <Box >
+        <ChatBox />
+    </Box>
+
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed" sx={{ backgroundColor: "#8E51E2" }}>
         <Toolbar>
@@ -468,5 +474,6 @@ export default function Navigation() {
       {renderMobileMenu}
       {renderMenu}
     </Box>
+    </>
   );
 }

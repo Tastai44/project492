@@ -1,0 +1,140 @@
+// import * as React from 'react'
+import Luffy from "../../../public/pictures/Luffy.webp";
+import {
+  Avatar,
+  Box,
+  IconButton,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { styleBoxChat } from "../../utils/styleBox";
+import { StyledBadge } from "../RightSide/UserCard";
+
+import CancelIcon from "@mui/icons-material/Cancel";
+import CameraAltOutlinedIcon from "@mui/icons-material/CameraAltOutlined";
+import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
+import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
+
+export default function ChatBox() {
+  return (
+    <div>
+      <Paper sx={styleBoxChat}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            justifyContent: "space-between",
+            color: "white",
+          }}
+        >
+          <Box
+            sx={{
+              backgroundColor: "primary.main",
+              height: "15%",
+              display: "flex",
+              justifyContent: "space-between",
+              pl: 0.5,
+            }}
+          >
+            <ListItem>
+              <ListItemAvatar>
+                <StyledBadge
+                  overlap="circular"
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  variant="dot"
+                >
+                  <Avatar src={Luffy} sx={{ width: "40px", height: "40px" }} />
+                </StyledBadge>
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <Box sx={{ fontSize: "16px", ml: -1 }}>
+                    <b>User Name </b>
+                  </Box>
+                }
+                secondary={
+                  <Typography
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.5,
+                      fontSize: "14px",
+                      ml: -1,
+                    }}
+                  >
+                    Active
+                  </Typography>
+                }
+              />
+            </ListItem>
+            <Box sx={{ p: 0.2 }}>
+              <IconButton size="small">
+                <CancelIcon sx={{ color: "white", fontSize: "20px" }} />
+              </IconButton>
+            </Box>
+          </Box>
+          <Box sx={{ backgroundColor: "green", height: "70%" }}>s</Box>
+          <Box
+            sx={{
+              height: "15%",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              alignContent: "center",
+            }}
+          >
+            <Box>
+              <IconButton>
+                <CameraAltOutlinedIcon
+                  sx={{ color: "black", fontSize: "16px" }}
+                />
+              </IconButton>
+              <IconButton>
+                <EmojiEmotionsIcon
+                  sx={{ color: "#FEE135", fontSize: "16px" }}
+                />
+              </IconButton>
+            </Box>
+            <Box>
+              <TextField
+                name="caption"
+                label="Message?"
+                variant="outlined"
+                multiline
+                maxRows={4}
+                sx={{
+                  width: "100%",
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "transparent",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "transparent",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "transparent",
+                    },
+                  },
+                }}
+                // value={post.caption}
+                // onChange={handleChangePost}
+              />
+            </Box>
+            <Box>
+              <IconButton>
+                <SendOutlinedIcon
+                  sx={{ color: "black", fontSize: "16px" }}
+                />
+              </IconButton>
+            </Box>
+          </Box>
+        </Box>
+      </Paper>
+    </div>
+  );
+}
