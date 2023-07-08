@@ -14,6 +14,7 @@ export const styleBoxPop = {
 
 export const styleBoxChat = {
   position: "fixed",
+  left:10,
   bottom: 0,
   width: 300,
   height: 380,

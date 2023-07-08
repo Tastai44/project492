@@ -14,7 +14,11 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-export default function RightContainer() {
+interface IFunction {
+  handleOpen: () => void;
+}
+
+export default function RightContainer({handleOpen} : IFunction) {
   return (
     <Box sx={{ width: "100%" }}>
       <Stack spacing={2}>
@@ -46,8 +50,9 @@ export default function RightContainer() {
             <Button sx={{ color: "black" }}>General</Button>
           </div>
           <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
-          <UserCard />
-          <UserCard />
+          <Box onClick={handleOpen}>
+            <UserCard />
+          </Box>
         </Item>
 
         <Item style={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -78,8 +83,9 @@ export default function RightContainer() {
             <Button sx={{ color: "black" }}>General</Button>
           </div>
           <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
-          <UserCard />
-          <UserCard />
+          <Box onClick={handleOpen}>
+            <UserCard />
+          </Box>
         </Item>
       </Stack>
     </Box>

@@ -22,6 +22,7 @@ import {
   ListItemAvatar,
   ListItemIcon,
   ListItemText,
+  Modal,
 } from "@mui/material";
 import { Logout } from "@mui/icons-material";
 import HomeIcon from "@mui/icons-material/Home";
@@ -35,6 +36,14 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { auth } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import ChatBox from "./Chat/ChatBox";
+
+interface IData {
+  open: boolean;
+}
+interface IFunction{
+  handleOpen: () => void;
+  handleClose: () => void;
+}
 
 export const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -76,7 +85,7 @@ export const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function Navigation() {
+export default function Navigation({open, handleOpen, handleClose} : IData & IFunction) {
   const navigate = useNavigate();
   const handleLogout = () => {
     signOut(auth)
@@ -278,9 +287,18 @@ export default function Navigation() {
 
   return (
     <>
-    <Box >
-        <ChatBox />
-    </Box>
+    <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+      <Box >
+          <ChatBox 
+            handleClose={handleClose}
+          />
+      </Box>
+    </Modal>
 
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed" sx={{ backgroundColor: "#8E51E2" }}>

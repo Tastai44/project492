@@ -21,7 +21,11 @@ import CameraAltOutlinedIcon from "@mui/icons-material/CameraAltOutlined";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 
-export default function ChatBox() {
+interface IFunction{
+  handleClose: () => void;
+}
+
+export default function ChatBox({handleClose} : IFunction) {
   return (
     <div>
       <Paper sx={styleBoxChat}>
@@ -75,7 +79,7 @@ export default function ChatBox() {
               />
             </ListItem>
             <Box sx={{ p: 0.2 }}>
-              <IconButton size="small">
+              <IconButton size="small" onClick={handleClose}>
                 <CancelIcon sx={{ color: "white", fontSize: "20px" }} />
               </IconButton>
             </Box>

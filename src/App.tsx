@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Routes, Route } from "react-router-dom";
 import "./App.css";
 import Navigation from "./components/Navigation";
@@ -16,6 +17,9 @@ import Login from "./pages/Login";
 import ProtectedRoute from "./utils/ProtectedRoute";
 
 function App() {
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   return (
     <>
       <Routes>
@@ -26,8 +30,14 @@ function App() {
           element={
             <>
               <ProtectedRoute>
-                <Navigation />
-                <HomeFeed />
+                <Navigation 
+                  open={open}
+                  handleOpen={handleOpen}
+                  handleClose={handleClose}
+                />
+                <HomeFeed 
+                  handleOpen={handleOpen}
+                />
               </ProtectedRoute>
             </>
           }
@@ -37,7 +47,11 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-              <Navigation />
+              <Navigation 
+                  open={open}
+                  handleOpen={handleClose}
+                  handleClose={handleClose}
+                />
               <Members />
               {/* </ProtectedRoute> */}
             </>
@@ -48,7 +62,11 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-              <Navigation />
+              <Navigation 
+                  open={open}
+                  handleOpen={handleClose}
+                  handleClose={handleClose}
+                />
               <Topics />
               {/* </ProtectedRoute> */}
             </>
@@ -60,7 +78,11 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-              <Navigation />
+              <Navigation 
+                  open={open}
+                  handleOpen={handleClose}
+                  handleClose={handleClose}
+                />
               <Blog />
               {/* </ProtectedRoute> */}
             </>
@@ -71,7 +93,11 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-              <Navigation />
+              <Navigation 
+                  open={open}
+                  handleOpen={handleClose}
+                  handleClose={handleClose}
+                />
               <AboutMe />
               {/* </ProtectedRoute> */}
             </>
@@ -82,7 +108,11 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-              <Navigation />
+              <Navigation 
+                  open={open}
+                  handleOpen={handleClose}
+                  handleClose={handleClose}
+                />
               <Friends />
               {/* </ProtectedRoute> */}
             </>
@@ -93,7 +123,11 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-              <Navigation />
+              <Navigation 
+                  open={open}
+                  handleOpen={handleClose}
+                  handleClose={handleClose}
+                />
               <Collections />
               {/* </ProtectedRoute> */}
             </>
@@ -107,7 +141,11 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-              <Navigation />
+              <Navigation 
+                  open={open}
+                  handleOpen={handleClose}
+                  handleClose={handleClose}
+                />
               <Events />
               {/* </ProtectedRoute> */}
             </>
@@ -118,7 +156,11 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-              <Navigation />
+              <Navigation 
+                  open={open}
+                  handleOpen={handleClose}
+                  handleClose={handleClose}
+                />
               <EventDetail />
               {/* </ProtectedRoute> */}
             </>
@@ -132,7 +174,11 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-              <Navigation />
+              <Navigation 
+                  open={open}
+                  handleOpen={handleClose}
+                  handleClose={handleClose}
+                />
               <Groups />
               {/* </ProtectedRoute> */}
             </>
@@ -143,7 +189,11 @@ function App() {
           element={
             <>
               {/* <ProtectedRoute> */}
-              <Navigation />
+              <Navigation 
+                  open={open}
+                  handleOpen={handleClose}
+                  handleClose={handleClose}
+                />
               <GroupDetails />
               {/* </ProtectedRoute> */}
             </>

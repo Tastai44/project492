@@ -11,8 +11,11 @@ import { dbFireStore } from "../config/firebase";
 import {collection, query, orderBy, getDocs} from "firebase/firestore"
 import { Post } from "../interface/PostContent";
 
+interface IFunction {
+  handleOpen: () => void;
+}
 
-export default function HomeFeed() {
+export default function HomeFeed({handleOpen} : IFunction) {
   const Item = styled(Box)(({ theme }) => ({
     ...theme.typography.body2,
     padding: theme.spacing(1),
@@ -82,7 +85,9 @@ export default function HomeFeed() {
 
             <Grid item xs={2}>
               <Box style={{ position: "fixed" }}>
-                <RightContainer />
+                <RightContainer 
+                  handleOpen={handleOpen}
+                />
               </Box>
             </Grid>
           </Grid>
