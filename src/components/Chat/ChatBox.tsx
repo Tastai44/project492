@@ -3,6 +3,8 @@ import Luffy from "../../../public/pictures/Luffy.webp";
 import {
   Avatar,
   Box,
+  Chip,
+  Divider,
   IconButton,
   ListItem,
   ListItemAvatar,
@@ -78,7 +80,15 @@ export default function ChatBox() {
               </IconButton>
             </Box>
           </Box>
-          <Box sx={{ backgroundColor: "green", height: "70%" }}>s</Box>
+          <Box sx={{ backgroundColor: "white", height: "70%", display:"flex", flexDirection:"column"}}>
+            <Box sx={{display:"flex", justifyContent:"start", m:1}}>
+                <Chip color="primary" variant="outlined"  label="User one" />
+            </Box>
+            <Box sx={{display:"flex", justifyContent:"end", m:1}}>
+                <Chip color="primary" label="User two" />
+            </Box>
+          </Box>
+          <Divider />
           <Box
             sx={{
               height: "15%",
