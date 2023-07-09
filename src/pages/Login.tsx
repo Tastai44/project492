@@ -10,9 +10,13 @@ import {
 import * as React from "react";
 // import { createUserWithEmailAndPassword } from "firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../config/firebase";
+import { auth, dbFireStore } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
 import community from "../../public/pictures/communityPic.png";
+
+import "firebase/database";
+import { doc, getDocs, query, where } from "firebase/firestore";
+import { collection, setDoc } from "firebase/firestore";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -38,11 +42,31 @@ export default function Login() {
   //     }
   //   };
   const handleSignIn = async () => {
+    const userCollection = collection(dbFireStore, "users");
     try {
       await signInWithEmailAndPassword(auth, email, password);
       const user = auth.currentUser;
       localStorage.setItem("user", JSON.stringify(user));
-      navigate("/");
+      const q = query(
+        collection(dbFireStore, "users"),
+        where("uid", "==", user?.uid)
+      );
+      const querySnapshot = await getDocs(q);
+      const docUser = querySnapshot.docs[0];
+  
+      if (docUser) {
+        navigate("/");
+      } else {
+        const newUser = {
+          uid: user?.uid,
+          email: user?.email,
+          displayName: user?.displayName,
+        };
+        const docRef = doc(userCollection);
+        await setDoc(docRef, newUser);
+        navigate("/");
+      }
+      
     } catch (error) {
       console.error("Error login user:", error);
     }
@@ -123,7 +147,10 @@ export default function Login() {
                   width: "50px",
                   backgroundColor: "primary.main",
                   color: "white",
-                  "&:hover": {background:"primary.contrastText", color:"black"}
+                  "&:hover": {
+                    background: "primary.contrastText",
+                    color: "black",
+                  },
                 }}
                 onClick={handleSignIn}
               >

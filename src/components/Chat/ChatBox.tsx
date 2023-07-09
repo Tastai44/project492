@@ -4,7 +4,6 @@ import {
   Avatar,
   Box,
   Chip,
-  Divider,
   IconButton,
   ListItem,
   ListItemAvatar,
@@ -92,7 +91,6 @@ export default function ChatBox({handleClose} : IFunction) {
                 <Chip color="primary" label="User two" />
             </Box>
           </Box>
-          <Divider />
           <Box
             sx={{
               height: "15%",
@@ -105,23 +103,26 @@ export default function ChatBox({handleClose} : IFunction) {
             <Box>
               <IconButton>
                 <CameraAltOutlinedIcon
-                  sx={{ color: "black", fontSize: "16px" }}
+                  sx={{ color: "primary.main", fontSize: "16px" }}
                 />
               </IconButton>
               <IconButton>
                 <EmojiEmotionsIcon
-                  sx={{ color: "#FEE135", fontSize: "16px" }}
+                  sx={{ color: "primary.main", fontSize: "16px" }}
                 />
               </IconButton>
             </Box>
             <Box>
               <TextField
+                size="small"
                 name="caption"
-                label="Message?"
                 variant="outlined"
                 multiline
-                maxRows={4}
+                maxRows={1}
                 sx={{
+                  borderRadius:"10px",
+                  backgroundColor:"primary.contrastText",
+                  overflow:"auto",
                   width: "100%",
                   "& .MuiOutlinedInput-root": {
                     "& fieldset": {
@@ -142,7 +143,7 @@ export default function ChatBox({handleClose} : IFunction) {
             <Box>
               <IconButton>
                 <SendOutlinedIcon
-                  sx={{ color: "black", fontSize: "16px" }}
+                  sx={{ color: "primary.main", fontSize: "16px" }}
                 />
               </IconButton>
             </Box>

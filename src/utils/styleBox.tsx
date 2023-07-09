@@ -15,11 +15,10 @@ export const styleBoxPop = {
 export const styleBoxChat = {
   position: "fixed",
   left:10,
-  bottom: 0,
+  bottom: 5,
   width: 300,
   height: 380,
   backgroundColor: "background.paper",
   color: "black",
-  overflow: "auto",
   zIndex: 9999,
 };
