@@ -1,3 +1,4 @@
+import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -19,6 +20,11 @@ import TagIcon from "@mui/icons-material/Tag";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
 import { NavLink } from "react-router-dom";
 
+import { dbFireStore } from "../config/firebase";
+import {collection, query, getDocs, where} from "firebase/firestore"
+import { User } from "../interface/User";
+
+
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   ...theme.typography.body2,
@@ -26,15 +32,42 @@ const Item = styled(Paper)(({ theme }) => ({
   textAlign: "center",
   color: theme.palette.text.secondary,
 }));
-const userInfo = JSON.parse(localStorage.getItem('user') || "null");
 
 export default function LeftSide() {
+  const userInfo = JSON.parse(localStorage.getItem('user') || "null");
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", userInfo.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [userInfo.uid]); 
+
   return (
     <Box sx={{ width: "120%" }}>
       <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
         <Box gridColumn="span 12">
         <NavLink to={`/profileBlog/${userInfo.uid}`}>
+          {inFoUser.map((m) => (
           <Item
+          key={m.uid}
             sx={{
               display: "flex",
               alignItems: "center",
@@ -43,8 +76,9 @@ export default function LeftSide() {
             }}
           >
             <Avatar alt="Remy Sharp" src={Luffy} />
-            Tastai Khianjai
+            {m.firstName} {m.lastName}
           </Item>
+          ))}
           </NavLink>
         </Box>
 

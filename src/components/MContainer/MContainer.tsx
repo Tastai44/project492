@@ -73,7 +73,6 @@ interface Idata {
   postId: string;
   commentNumber: number;
   likes: Like[];
-  owner: string;
 }
 
 interface IFunction {
@@ -91,7 +90,6 @@ export default function MContainer({
   postId,
   commentNumber,
   likes,
-  owner,
   handleRefresh,
 }: Idata & IFunction) {
   const [iconStatus, setIconStatus] = React.useState("");
@@ -182,15 +180,17 @@ export default function MContainer({
       });
   };
 
-  const isLike = likes.some((f) => f.likeBy === owner);
+  const userInfo = JSON.parse(localStorage.getItem('user') || "null");
+  const isLike = likes.some((f) => f.likeBy === userInfo.uid);
   const decreaseLike = async (id: string) => {
-    const IndexLike = likes.findIndex((f) => f.likeBy === owner);
+    const IndexLike = likes.findIndex((f) => f.likeBy === userInfo.uid);
     try {
       const q = query(
         collection(dbFireStore, "posts"),
-        where("__name__", "==", id)
+        where("id", "==", id)
       );
       const querySnapshot = await getDocs(q);
+      
       const doc = querySnapshot.docs[0];
       if (doc.exists()) {
         const postData = { id: doc.id, ...doc.data() } as Post;

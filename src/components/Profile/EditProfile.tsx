@@ -102,11 +102,11 @@ export default function BasicModal({ closeEdit }: Ihandle) {
             </FormControl>
           </Box>
           <TextField
+            multiline
             sx={{ width: 400, mb: 1 }}
             id="outlined-basic"
-            label="Email"
+            label="About me"
             variant="outlined"
-            type="email"
           />
           <TextField
             sx={{ width: 400, mb: 1 }}

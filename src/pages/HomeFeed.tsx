@@ -65,7 +65,6 @@ export default function HomeFeed({handleOpen} : IFunction) {
                 {data.map((m) => (
                   <Box key={m.id}>
                     <MContainer
-                      owner={m.owner}
                       postId={m.id}
                       caption={m.caption}
                       hashTagTopic={m.hashTagTopic}
