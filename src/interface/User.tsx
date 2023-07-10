@@ -9,5 +9,10 @@ export interface User {
     profilePhoto: string;
     coverPhoto: string;
     active: boolean;
+    aboutMe: string;
+    faculty: string;
+    instagram: string;
+    status: string;
+    year: number;
     posts: Post[];
 }

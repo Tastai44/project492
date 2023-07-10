@@ -1,10 +1,15 @@
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
-
+import * as React from "react";
 import Grid from "@mui/material/Grid";
 import { Divider, Stack, Typography } from "@mui/material";
 import ProLeftside from "../../components/Profile/ProLeftside";
 import ProCoverImage from "../../components/Profile/ProCoverImage";
+
+import {collection, query, getDocs, where} from "firebase/firestore"
+import { dbFireStore } from "../../config/firebase";
+import { User } from "../../interface/User";
+import { useParams } from "react-router-dom";
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
@@ -13,6 +18,32 @@ const Item = styled(Box)(({ theme }) => ({
 }));
 
 export default function Blog() {
+  const { userId } = useParams();
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", userId)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [userId]); 
+
   return (
     <div>
       <Grid sx={{ flexGrow: 1 }} container marginTop={5}>
@@ -58,7 +89,9 @@ export default function Blog() {
                           >
                             About me
                           </Item>
+                          {inFoUser.map((m) => ( 
                           <Item
+                          key={m.uid}
                             sx={{
                               padding: "50px",
                               width: "50%",
@@ -68,14 +101,12 @@ export default function Blog() {
                               gap: "10px",
                             }}
                           >
-                            <Typography><b>Faculty:</b> Engineering</Typography>
-                            <Typography><b>Year:</b> 3</Typography>
-                            <Typography><b>Lives in:</b> Chiang mai </Typography>
-                            <Typography><b>From:</b> Chiang mai </Typography>
-                            <Typography><b>Phone:</b> 0000000000</Typography>
-                            <Typography><b>Status:</b> Single</Typography>
-                            <Typography><b>IG:</b> igigiggi</Typography>
+                            <Typography><b>Faculty:</b> {m.faculty}</Typography>
+                            <Typography><b>Year:</b> {m.year}</Typography>
+                            <Typography><b>Status:</b> {m.status}</Typography>
+                            <Typography><b>IG:</b> {m.instagram}</Typography>
                           </Item>
+                          ))}
                         </Stack>
                       </Box>
                     </Item>

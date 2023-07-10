@@ -13,6 +13,7 @@ import { useParams } from "react-router-dom";
 import { dbFireStore } from "../../config/firebase";
 import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
 import { Post } from "../../interface/PostContent";
+import { User } from "../../interface/User";
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
@@ -46,6 +47,31 @@ export default function Blog() {
 
     fetchData();
   }, [reFresh, userId]);
+
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", userId)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [userId]); 
 
   return (
     <div>
@@ -82,7 +108,6 @@ export default function Blog() {
                               {data.map((m) => (
                                 <Box key={m.id}>
                                   <MContainer
-                                    owner={m.owner}
                                     postId={m.id}
                                     caption={m.caption}
                                     hashTagTopic={m.hashTagTopic}
@@ -100,7 +125,8 @@ export default function Blog() {
                             </Item>
                           </Grid>
                           <Grid item xs={3}>
-                            <Item>
+                            {inFoUser.map((m) => (
+                            <Item key={m.uid}>
                               <Paper>
                                 <Typography
                                   sx={{
@@ -119,13 +145,11 @@ export default function Blog() {
                                     color: "#727272",
                                   }}
                                 >
-                                  I am a keen, hard working, reliable and
-                                  excellent time keeper. I am a bright and
-                                  receptive person, able to communicate well
-                                  with people at all levels. approach.
+                                  {m.aboutMe}
                                 </Typography>
                               </Paper>
                             </Item>
+                            ))}
                           </Grid>
                         </Grid>
                       </Box>
