@@ -11,6 +11,17 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import React from "react";
+import { User } from "../../interface/User";
+
+import "firebase/database";
+import { dbFireStore } from "../../config/firebase";
+import {
+  updateDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 
 const style = {
   position: "absolute",
@@ -26,17 +37,102 @@ const style = {
 
 interface Ihandle {
   closeEdit: () => void;
+  handleRefresh: () => void;
+}
+interface IData {
+  userId?: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  aboutMe: string;
+  faculty: string;
+  instagram: string;
+  statusDefault?: string;
+  yearDefault?: string;
 }
 
-export default function BasicModal({ closeEdit }: Ihandle) {
-  const [year, setYear] = React.useState("");
+export default function BasicModal({
+  userId,
+  username,
+  firstName,
+  lastName,
+  email,
+  aboutMe,
+  faculty,
+  instagram,
+  statusDefault,
+  yearDefault,
+  closeEdit,
+  handleRefresh,
+}: Ihandle & IData) {
+  const initialState = {
+    uid: "",
+    username: username,
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
+    profilePhoto: "",
+    coverPhoto: "",
+    aboutMe: aboutMe,
+    faculty: faculty,
+    instagram: instagram,
+  };
+  const [profile, setProfile] = React.useState<User>(initialState);
+  const clearState = () => {
+    setProfile({ ...initialState });
+  };
+
+  const handleChangeProfile = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target;
+    setProfile((prevPost) => ({
+      ...prevPost,
+      [name]: value,
+    }));
+  };
+  const [year, setYear] = React.useState(yearDefault);
   const handleChangeYear = (event: SelectChangeEvent) => {
     setYear(event.target.value as string);
   };
-
-  const [status, setStatus] = React.useState("");
+  const [status, setStatus] = React.useState(statusDefault);
   const handleChangeStatus = (event: SelectChangeEvent) => {
     setStatus(event.target.value as string);
+  };
+
+  const handleEditProfile = async () => {
+    const updatedProfile = {
+      username: profile.username,
+      firstName: profile.firstName,
+      lastName: profile.lastName,
+      email: profile.email,
+      aboutMe: profile.aboutMe,
+      faculty: profile.faculty,
+      instagram: profile.instagram,
+      status: status,
+      year: year,
+    };
+
+    try {
+      const q = query(
+        collection(dbFireStore, "users"),
+        where("uid", "==", userId)
+      );
+      const querySnapshot = await getDocs(q);
+      const doc = querySnapshot.docs[0];
+
+      if (doc.exists()) {
+        await updateDoc(doc.ref, updatedProfile);
+        clearState();
+        handleRefresh();
+        closeEdit();
+      } else {
+        console.log("Profile does not exist");
+      }
+    } catch (error) {
+      console.error("Error updating profile: ", error);
+    }
   };
 
   return (
@@ -53,12 +149,18 @@ export default function BasicModal({ closeEdit }: Ihandle) {
               id="outlined-basic"
               label="FirstName"
               variant="outlined"
+              name="firstName"
+              onChange={handleChangeProfile}
+              value={profile.firstName}
             />
             <TextField
               sx={{ width: 400, mb: 1 }}
               id="outlined-basic"
               label="LastName"
               variant="outlined"
+              name="lastName"
+              onChange={handleChangeProfile}
+              value={profile.lastName}
             />
           </Box>
           <TextField
@@ -66,6 +168,9 @@ export default function BasicModal({ closeEdit }: Ihandle) {
             id="outlined-basic"
             label="Username"
             variant="outlined"
+            name="username"
+            onChange={handleChangeProfile}
+            value={profile.username}
           />
           <Box sx={{ display: "flex", gap: 1 }}>
             <FormControl fullWidth>
@@ -73,8 +178,8 @@ export default function BasicModal({ closeEdit }: Ihandle) {
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={year}
                 label="Age"
+                value={year}
                 onChange={handleChangeYear}
               >
                 <MenuItem value={1}>1</MenuItem>
@@ -95,24 +200,48 @@ export default function BasicModal({ closeEdit }: Ihandle) {
                 label="Age"
                 onChange={handleChangeStatus}
               >
-                <MenuItem value={1}>Single</MenuItem>
-                <MenuItem value={2}>In relationship</MenuItem>
-                <MenuItem value={3}>Undefined</MenuItem>
+                <MenuItem value={"Single"}>Single</MenuItem>
+                <MenuItem value={"In relationship"}>In relationship</MenuItem>
+                <MenuItem value={"Undefined"}>Undefined</MenuItem>
               </Select>
             </FormControl>
           </Box>
+          <TextField
+            sx={{ width: 400, mb: 1 }}
+            id="outlined-basic"
+            label="Faculty"
+            variant="outlined"
+            name="faculty"
+            onChange={handleChangeProfile}
+            value={profile.faculty}
+          />
           <TextField
             multiline
             sx={{ width: 400, mb: 1 }}
             id="outlined-basic"
             label="About me"
             variant="outlined"
+            name="aboutMe"
+            onChange={handleChangeProfile}
+            value={profile.aboutMe}
+          />
+          <TextField
+            sx={{ width: 400, mb: 1 }}
+            id="outlined-basic"
+            label="Email"
+            variant="outlined"
+            name="email"
+            onChange={handleChangeProfile}
+            value={profile.email}
           />
           <TextField
             sx={{ width: 400, mb: 1 }}
             id="outlined-basic"
             label="IG"
             variant="outlined"
+            name="instagram"
+            onChange={handleChangeProfile}
+            value={profile.instagram}
           />
         </Box>
         <Typography
@@ -140,6 +269,8 @@ export default function BasicModal({ closeEdit }: Ihandle) {
                 backgroundColor: "#E1E1E1",
               },
             }}
+            onClick={handleEditProfile}
+            type="submit"
           >
             Save
           </Button>
