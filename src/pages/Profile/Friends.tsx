@@ -12,6 +12,7 @@ import {
 } from "../../components/Navigation";
 import SearchIcon from "@mui/icons-material/Search";
 import FriendCard from "../../components/Profile/FriendCard";
+import * as React from "react";
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
@@ -19,7 +20,13 @@ const Item = styled(Box)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+
+
 export default function Friends() {
+  const [reFresh, setReFresh] = React.useState(0);
+  const handleRefresh = () => {
+    setReFresh((pre) => pre + 1);
+  };
   return (
     <Grid sx={{ flexGrow: 1 }} container marginTop={5}>
       <Grid item xs={12}>
@@ -32,7 +39,9 @@ export default function Friends() {
         >
           <Grid item xs={2}>
             <Item sx={{ backgroundColor: "#EEECEF" }}>
-              <ProLeftside />
+              <ProLeftside 
+              handleRefreshData={handleRefresh}
+              />
             </Item>
           </Grid>
 

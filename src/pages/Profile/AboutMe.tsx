@@ -21,6 +21,11 @@ export default function Blog() {
   const { userId } = useParams();
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
 
+  const [reFresh, setReFresh] = React.useState(0);
+  const handleRefresh = () => {
+    setReFresh((pre) => pre + 1);
+  };
+
   React.useEffect(() => {
     const fetchData = async () => {
       try {
@@ -42,7 +47,7 @@ export default function Blog() {
       }
     };
     fetchData();
-  }, [userId]); 
+  }, [userId, reFresh]); 
 
   return (
     <div>
@@ -57,7 +62,9 @@ export default function Blog() {
           >
             <Grid item xs={2}>
               <Item sx={{ backgroundColor: "#EEECEF" }}>
-                <ProLeftside />
+                <ProLeftside 
+                  handleRefreshData={handleRefresh}
+                />
               </Item>
             </Grid>
 

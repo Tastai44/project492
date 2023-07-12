@@ -1,9 +1,11 @@
+import * as React from "react";
 import {
   Avatar,
   Badge,
   Box,
   Button,
   Divider,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
@@ -15,7 +17,6 @@ import { styled } from "@mui/material/styles";
 import Luffy from "../../../public/pictures/Luffy.webp";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import { NavLink, useParams } from "react-router-dom";
-import * as React from "react";
 import EditProfile from "./EditProfile";
 import { User } from "../../interface/User";
 import { collection, query, getDocs, where } from "firebase/firestore";
@@ -27,15 +28,12 @@ const Item = styled(Box)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-const SmallAvatar = styled(Avatar)(({ theme }) => ({
-  width: 30,
-  height: 30,
-  border: `2px solid ${theme.palette.background.paper}`,
-  backgroundColor: "white",
-  color: "black",
-}));
 
-export default function ProLeftside() {
+interface IFunction {
+  handleRefreshData: () => void;
+}
+
+export default function ProLeftside({ handleRefreshData }: IFunction) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -71,6 +69,39 @@ export default function ProLeftside() {
     fetchData();
   }, [userId, reFresh]);
 
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+  const [previewImages, setPreviewImages] = React.useState<string[]>([]);
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = event.target.files;
+    if (files) {
+      try {
+        const selectedFiles = Array.from(files);
+        const readerPromises = selectedFiles.map((file) => {
+          return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              resolve(reader.result as string);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+        });
+
+        const base64Images = await Promise.all(readerPromises);
+        setPreviewImages(base64Images);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
   return (
     <>
       {inFoUser.map((m) => (
@@ -85,6 +116,7 @@ export default function ProLeftside() {
               <EditProfile
                 closeEdit={handleClose}
                 handleRefresh={handleRefresh}
+                handleRefreshData={handleRefreshData}
                 userId={userId}
                 username={m.username}
                 firstName={m.firstName}
@@ -107,16 +139,25 @@ export default function ProLeftside() {
                       overlap="circular"
                       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                       badgeContent={
-                        <SmallAvatar
-                          sx={{
-                            "&:hover": {
-                              color: "white",
-                              backgroundColor: "black",
-                            },
-                          }}
-                        >
-                          <AddAPhotoIcon />
-                        </SmallAvatar>
+                        <Box onClick={handleUploadClick}>
+                          <IconButton
+                            sx={{
+                              "&:hover": {
+                                color: "white",
+                                backgroundColor: "black",
+                              },
+                            }}
+                          >
+                            <input
+                              type="file"
+                              ref={fileInputRef}
+                              onChange={handleFileChange}
+                              multiple
+                              hidden
+                            />
+                            <AddAPhotoIcon />
+                          </IconButton>
+                        </Box>
                       }
                     >
                       <Avatar

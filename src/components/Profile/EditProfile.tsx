@@ -38,6 +38,7 @@ const style = {
 interface Ihandle {
   closeEdit: () => void;
   handleRefresh: () => void;
+  handleRefreshData: () => void;
 }
 interface IData {
   userId?: string;
@@ -65,6 +66,7 @@ export default function BasicModal({
   yearDefault,
   closeEdit,
   handleRefresh,
+  handleRefreshData
 }: Ihandle & IData) {
   const initialState = {
     uid: "",
@@ -126,6 +128,7 @@ export default function BasicModal({
         await updateDoc(doc.ref, updatedProfile);
         clearState();
         handleRefresh();
+        handleRefreshData();
         closeEdit();
       } else {
         console.log("Profile does not exist");

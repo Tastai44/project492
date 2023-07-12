@@ -86,7 +86,9 @@ export default function Blog() {
           >
             <Grid item xs={2}>
               <Item sx={{ backgroundColor: "#EEECEF" }}>
-                <ProLeftside />
+                <ProLeftside 
+                handleRefreshData={handleRefresh}
+                />
               </Item>
             </Grid>
 

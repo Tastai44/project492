@@ -28,6 +28,12 @@ const Item = styled(Box)(({ theme }) => ({
 export default function Collections() {
   const { userId } = useParams();
   const [data, setData] = React.useState<Post[]>([]);
+
+  const [reFresh, setReFresh] = React.useState(0);
+  const handleRefresh = () => {
+    setReFresh((pre) => pre + 1);
+  };
+
   React.useEffect(() => {
     const fetchData = async () => {
       try {
@@ -45,7 +51,7 @@ export default function Collections() {
     };
 
     fetchData();
-  }, [userId]);
+  }, [userId, reFresh]);
 
   const [openPost, setOpenPost] = React.useState(false);
   const [likes, setLikes] = React.useState<Like[]>([])
@@ -58,6 +64,9 @@ export default function Collections() {
   const handleClosePost = () => {
     setOpenPost(false);
   };
+
+  
+
   return (
     <div>
       <Modal
@@ -89,7 +98,9 @@ export default function Collections() {
           >
             <Grid item xs={2}>
               <Item sx={{ backgroundColor: "#EEECEF" }}>
-                <ProLeftside />
+                <ProLeftside 
+                handleRefreshData={handleRefresh}
+                />
               </Item>
             </Grid>
 

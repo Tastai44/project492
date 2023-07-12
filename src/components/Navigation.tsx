@@ -386,7 +386,7 @@ export default function Navigation({
                 />
               </NavLink>
               <NavLink
-                to={`/friends/${1}`}
+                to={`/friends/${userInfo.uid}`}
                 style={({ isActive, isPending }) => {
                   return {
                     fontWeight: isPending ? "bold" : "",
