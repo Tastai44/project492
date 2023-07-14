@@ -247,7 +247,7 @@ export default function BasicModal({
             value={profile.instagram}
           />
         </Box>
-        <Typography
+        <Box
           sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}
         >
           <Button
@@ -277,7 +277,7 @@ export default function BasicModal({
           >
             Save
           </Button>
-        </Typography>
+        </Box>
       </Box>
     </div>
   );

@@ -71,7 +71,7 @@ export default function Blog() {
       }
     };
     fetchData();
-  }, [userId]); 
+  }, [userId]);
 
   return (
     <div>
@@ -86,80 +86,83 @@ export default function Blog() {
           >
             <Grid item xs={2}>
               <Item sx={{ backgroundColor: "#EEECEF" }}>
-                <ProLeftside 
-                handleRefreshData={handleRefresh}
-                />
+                <ProLeftside handleRefreshData={handleRefresh} />
               </Item>
             </Grid>
-
-            <Grid item xs={10}>
-              <Item>
-                <Box sx={{ width: "100%" }}>
-                  <Stack spacing={2}>
-                    <Item>
-                      <ProCoverImage />
-                    </Item>
-                    <Item>
-                      <Box sx={{ flexGrow: 1 }}>
-                        <Grid container spacing={2}>
-                          <Grid item xs={9}>
-                            <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
-                              <PostForm handdleReFresh={handleRefresh} />
-                            </Item>
-                            <Item sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                              {data.map((m) => (
-                                <Box key={m.id}>
-                                  <MContainer
-                                    postId={m.id}
-                                    caption={m.caption}
-                                    hashTagTopic={m.hashTagTopic}
-                                    status={m.status}
-                                    createAt={m.createAt}
-                                    emoji={m.emoji}
-                                    photoPost={m.photoPost}
-                                    likeNumber={m.likes.length}
-                                    likes={m.likes}
-                                    commentNumber={m.comments.length}
-                                    handleRefresh={handleRefresh}
-                                  />
-                                </Box>
-                              ))}
-                            </Item>
+            {inFoUser.map((m) => (
+              <Grid item xs={10} key={m.uid}>
+                <Item>
+                  <Box sx={{ width: "100%" }}>
+                    <Stack spacing={2}>
+                      <Item>
+                        <ProCoverImage />
+                      </Item>
+                      <Item>
+                        <Box sx={{ flexGrow: 1 }}>
+                          <Grid container spacing={2}>
+                            <Grid item xs={9}>
+                              <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
+                                <PostForm handdleReFresh={handleRefresh} />
+                              </Item>
+                              <Item
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: 2,
+                                }}
+                              >
+                                {data.map((m) => (
+                                  <Box key={m.id}>
+                                    <MContainer
+                                      postId={m.id}
+                                      caption={m.caption}
+                                      hashTagTopic={m.hashTagTopic}
+                                      status={m.status}
+                                      createAt={m.createAt}
+                                      emoji={m.emoji}
+                                      photoPost={m.photoPost}
+                                      likeNumber={m.likes.length}
+                                      likes={m.likes}
+                                      commentNumber={m.comments.length}
+                                      handleRefresh={handleRefresh}
+                                    />
+                                  </Box>
+                                ))}
+                              </Item>
+                            </Grid>
+                            <Grid item xs={3}>
+                              <Item>
+                                <Paper>
+                                  <Typography
+                                    sx={{
+                                      fontSize: "16px",
+                                      textAlign: "left",
+                                      padding: "5px",
+                                      fontWeight: "bold",
+                                    }}
+                                  >
+                                    About me
+                                  </Typography>
+                                  <Typography
+                                    sx={{
+                                      textAlign: "left",
+                                      padding: "10px",
+                                      color: "#727272",
+                                    }}
+                                  >
+                                    {m.aboutMe}
+                                  </Typography>
+                                </Paper>
+                              </Item>
+                            </Grid>
                           </Grid>
-                          <Grid item xs={3}>
-                            {inFoUser.map((m) => (
-                            <Item key={m.uid}>
-                              <Paper>
-                                <Typography
-                                  sx={{
-                                    fontSize: "16px",
-                                    textAlign: "left",
-                                    padding: "5px",
-                                    fontWeight: "bold",
-                                  }}
-                                >
-                                  About me
-                                </Typography>
-                                <Typography
-                                  sx={{
-                                    textAlign: "left",
-                                    padding: "10px",
-                                    color: "#727272",
-                                  }}
-                                >
-                                  {m.aboutMe}
-                                </Typography>
-                              </Paper>
-                            </Item>
-                            ))}
-                          </Grid>
-                        </Grid>
-                      </Box>
-                    </Item>
-                  </Stack>
-                </Box>
-              </Item>
-            </Grid>
+                        </Box>
+                      </Item>
+                    </Stack>
+                  </Box>
+                </Item>
+              </Grid>
+            ))}
           </Grid>
         </Grid>
       </Grid>

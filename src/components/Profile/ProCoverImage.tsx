@@ -1,9 +1,35 @@
 import * as React from "react";
-import { Box, Button, Card, CardMedia } from "@mui/material";
+import { Box, Button, Card, CardMedia, IconButton, Modal } from "@mui/material";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import Luffy from "../../../public/pictures/Luffy.webp";
+import { stylePreviewPhoto } from "../../utils/styleBox";
+import CancelIcon from "@mui/icons-material/Cancel";
+
+import {
+  collection,
+  query,
+  getDocs,
+  where,
+  updateDoc,
+} from "firebase/firestore";
+import { dbFireStore } from "../../config/firebase";
+import { useParams } from "react-router-dom";
+import { User } from "../../interface/User";
+
 
 export default function ProCoverImage() {
+  const { userId } = useParams();
+  
+  const [openPre, setOpenPre] = React.useState(false);
+  const handleOpenPre = () => setOpenPre(true);
+  const handleClosePre = () => setOpenPre(false);
+  const handleClearImage = () => {
+    setPreviewImages([]);
+    handleClosePre();
+  };
+  const [reFresh, setReFresh] = React.useState(0);
+  const handleRefresh = () => {
+    setReFresh((pre) => pre + 1);
+  };
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const [previewImages, setPreviewImages] = React.useState<string[]>([]);
   const handleUploadClick = () => {
@@ -31,16 +57,124 @@ export default function ProCoverImage() {
 
         const base64Images = await Promise.all(readerPromises);
         setPreviewImages(base64Images);
+        handleOpenPre();
       } catch (error) {
         console.error(error);
       }
     }
   };
+  const handleEditPhotoProfile = async () => {
+    try {
+      const q = query(
+        collection(dbFireStore, "users"),
+        where("uid", "==", userId)
+      );
+      const querySnapshot = await getDocs(q);
+      const doc = querySnapshot.docs[0];
+
+      if (doc.exists()) {
+        await updateDoc(doc.ref, {
+          coverPhoto: previewImages,
+        });
+        handleClearImage();
+        handleRefresh();
+      } else {
+        console.log("Profile does not exist");
+      }
+    } catch (error) {
+      console.error("Error updating profile: ", error);
+    }
+  };
+  
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", userId)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [userId, reFresh]); 
+
   return (
     <div>
-      <Card sx={{ maxWidth: "100%" }}>
-        <CardMedia sx={{ height: 300 }} image={Luffy} title="green iguana" />
+      <Modal
+        open={openPre}
+        onClose={handleClosePre}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={stylePreviewPhoto}>
+          {previewImages.length !== 0 && (
+            <Box>
+              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <IconButton onClick={handleClearImage}>
+                  <CancelIcon sx={{ color: "black" }} />
+                </IconButton>
+              </Box>
+              <Box sx={{ display: "flex", justifyContent: "center" }}>
+                {previewImages.map((image, index) => (
+                  <Card key={index} sx={{ width: "50%", height: "auto" }}>
+                    <CardMedia
+                      component="img"
+                      image={image}
+                      alt="Paella dish"
+                    />
+                  </Card>
+                ))}
+              </Box>
+            </Box>
+          )}
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, m:1 }}>
+            <Button
+              sx={{
+                backgroundColor: "grey",
+                color: "white",
+                "&:hover": {
+                  color: "black",
+                  backgroundColor: "#E1E1E1",
+                },
+              }}
+              onClick={handleClosePre}
+            >
+              Cancel
+            </Button>
+            <Button
+              sx={{
+                backgroundColor: "#8E51E2",
+                color: "white",
+                "&:hover": {
+                  color: "black",
+                  backgroundColor: "#E1E1E1",
+                },
+              }}
+              onClick={handleEditPhotoProfile}
+              type="submit"
+            >
+              Upload
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+      {inFoUser.map((info) => (
+      <Card key={info.coverPhoto} sx={{ maxWidth: "100%" }}>
+        <CardMedia sx={{ height: 300 }} image={info.coverPhoto} title="green iguana" />
       </Card>
+      ))}
       <Box
         sx={{
           display: "flex",

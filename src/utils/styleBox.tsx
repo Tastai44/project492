@@ -22,3 +22,13 @@ export const styleBoxChat = {
   color: "black",
   zIndex: 9999,
 };
+
+export const stylePreviewPhoto = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  bgcolor: "background.paper",
+  color: "black",
+  overflow: "auto",
+};

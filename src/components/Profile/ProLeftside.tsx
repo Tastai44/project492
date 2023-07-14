@@ -4,6 +4,8 @@ import {
   Badge,
   Box,
   Button,
+  Card,
+  CardMedia,
   Divider,
   IconButton,
   List,
@@ -14,20 +16,26 @@ import {
   Stack,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import Luffy from "../../../public/pictures/Luffy.webp";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import { NavLink, useParams } from "react-router-dom";
 import EditProfile from "./EditProfile";
 import { User } from "../../interface/User";
-import { collection, query, getDocs, where } from "firebase/firestore";
+import {
+  collection,
+  query,
+  getDocs,
+  where,
+  updateDoc,
+} from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
+import CancelIcon from "@mui/icons-material/Cancel";
+import { stylePreviewPhoto } from "../../utils/styleBox";
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
   color: theme.palette.text.secondary,
 }));
-
 
 interface IFunction {
   handleRefreshData: () => void;
@@ -37,6 +45,10 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const [openPre, setOpenPre] = React.useState(false);
+  const handleOpenPre = () => setOpenPre(true);
+  const handleClosePre = () => setOpenPre(false);
 
   const [reFresh, setReFresh] = React.useState(0);
   const handleRefresh = () => {
@@ -96,14 +108,101 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
 
         const base64Images = await Promise.all(readerPromises);
         setPreviewImages(base64Images);
+        handleOpenPre();
       } catch (error) {
         console.error(error);
       }
     }
   };
+  const handleClearImage = () => {
+    setPreviewImages([]);
+    handleClosePre();
+  };
+
+  const handleEditPhotoProfile = async () => {
+    try {
+      const q = query(
+        collection(dbFireStore, "users"),
+        where("uid", "==", userId)
+      );
+      const querySnapshot = await getDocs(q);
+      const doc = querySnapshot.docs[0];
+
+      if (doc.exists()) {
+        await updateDoc(doc.ref, {
+          profilePhoto: previewImages,
+        });
+        handleClearImage();
+        handleRefresh();
+        handleRefreshData();
+      } else {
+        console.log("Profile does not exist");
+      }
+    } catch (error) {
+      console.error("Error updating profile: ", error);
+    }
+  };
 
   return (
     <>
+      <Modal
+        open={openPre}
+        onClose={handleClosePre}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={stylePreviewPhoto}>
+          {previewImages.length !== 0 && (
+            <Box>
+              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <IconButton onClick={handleClearImage}>
+                  <CancelIcon sx={{ color: "black" }} />
+                </IconButton>
+              </Box>
+              <Box sx={{ display: "flex", justifyContent: "center" }}>
+                {previewImages.map((image, index) => (
+                  <Card key={index} sx={{ width: "50%", height: "auto" }}>
+                    <CardMedia
+                      component="img"
+                      image={image}
+                      alt="Paella dish"
+                    />
+                  </Card>
+                ))}
+              </Box>
+            </Box>
+          )}
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, m:1 }}>
+            <Button
+              sx={{
+                backgroundColor: "grey",
+                color: "white",
+                "&:hover": {
+                  color: "black",
+                  backgroundColor: "#E1E1E1",
+                },
+              }}
+              onClick={handleClosePre}
+            >
+              Cancel
+            </Button>
+            <Button
+              sx={{
+                backgroundColor: "#8E51E2",
+                color: "white",
+                "&:hover": {
+                  color: "black",
+                  backgroundColor: "#E1E1E1",
+                },
+              }}
+              onClick={handleEditPhotoProfile}
+              type="submit"
+            >
+              Upload
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
       {inFoUser.map((m) => (
         <Box key={m.uid}>
           <Modal
@@ -162,7 +261,7 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
                     >
                       <Avatar
                         alt="Travis Howard"
-                        src={Luffy}
+                        src={m.profilePhoto}
                         sx={{ width: "186px", height: "186px" }}
                       />
                     </Badge>
