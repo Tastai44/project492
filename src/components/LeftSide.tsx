@@ -1,4 +1,3 @@
-import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -11,7 +10,6 @@ import {
   ListItemText,
 } from "@mui/material";
 
-import Luffy from "../../public/pictures/Luffy.webp";
 import HomeIcon from "@mui/icons-material/Home";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -20,8 +18,6 @@ import TagIcon from "@mui/icons-material/Tag";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
 import { NavLink } from "react-router-dom";
 
-import { dbFireStore } from "../config/firebase";
-import {collection, query, getDocs, where} from "firebase/firestore"
 import { User } from "../interface/User";
 
 
@@ -33,32 +29,12 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-export default function LeftSide() {
-  const userInfo = JSON.parse(localStorage.getItem('user') || "null");
-  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+interface IData {
+  inFoUser: User[];
+}
 
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "users"),
-          where("uid", "==", userInfo.uid)
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              uid: doc.id,
-              ...doc.data(),
-            } as User)
-        );
-        setInFoUser(queriedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, [userInfo.uid]); 
+export default function LeftSide({inFoUser} : IData) {
+  const userInfo = JSON.parse(localStorage.getItem('user') || "null");
 
   return (
     <Box sx={{ width: "120%" }}>
@@ -75,7 +51,7 @@ export default function LeftSide() {
               fontWeight: "bold",
             }}
           >
-            <Avatar alt="Remy Sharp" src={Luffy} />
+            <Avatar alt="Remy Sharp" src={m.profilePhoto} />
             {m.firstName} {m.lastName}
           </Item>
           ))}

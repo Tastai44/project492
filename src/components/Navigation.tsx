@@ -42,6 +42,7 @@ import {collection, query, getDocs, where} from "firebase/firestore";
 
 interface IData {
   open: boolean;
+  inFoUser: User[];
 }
 interface IFunction {
   handleOpen: () => void;
@@ -90,6 +91,7 @@ export const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function Navigation({
   open,
+  inFoUser,
   handleOpen,
   handleClose,
 }: IData & IFunction) {
@@ -106,29 +108,29 @@ export default function Navigation({
   };
 
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "users"),
-          where("uid", "==", userInfo.uid)
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              uid: doc.id,
-              ...doc.data(),
-            } as User)
-        );
-        setInFoUser(queriedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, [userInfo.uid]); 
+  // const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+  // React.useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const q = query(
+  //         collection(dbFireStore, "users"),
+  //         where("uid", "==", userInfo.uid)
+  //       );
+  //       const querySnapshot = await getDocs(q);
+  //       const queriedData = querySnapshot.docs.map(
+  //         (doc) =>
+  //           ({
+  //             uid: doc.id,
+  //             ...doc.data(),
+  //           } as User)
+  //       );
+  //       setInFoUser(queriedData);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [userInfo.uid]); 
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
@@ -193,7 +195,9 @@ export default function Navigation({
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
     >
       <NavLink to={`/profileBlog/${userInfo.uid}`}>
+      {inFoUser.map((m) => (
         <MenuItem
+          key={m.uid}
           onClick={handleMenuClose}
           sx={{
             color: "black",
@@ -208,13 +212,13 @@ export default function Navigation({
             },
           }}
         >
-          <Avatar src={Luffy} /> 
-          {inFoUser.map((m) => (
-          <Typography key={m.uid}>
+          <Avatar src={m.profilePhoto} /> 
+          
+          <Typography>
             {m.firstName} {m.lastName}
           </Typography>
-          ))}
         </MenuItem>
+        ))}
       </NavLink>
       <Divider style={{ background: "white" }} />
       <MenuItem onClick={handleLogout} sx={{ padding: "20px", color: "white" }}>
@@ -506,7 +510,9 @@ export default function Navigation({
                   <NotificationsIcon />
                 </Badge>
               </IconButton>
+              {inFoUser.map((m) => (
               <IconButton
+                key={m.uid}
                 size="small"
                 edge="end"
                 aria-label="account of current user"
@@ -515,8 +521,9 @@ export default function Navigation({
                 onClick={handleProfileMenuOpen}
                 color="inherit"
               >
-                <Avatar alt="Profile" src={Luffy} />
+                <Avatar alt="Profile" src={m.profilePhoto} />
               </IconButton>
+              ))}
             </Box>
           </Toolbar>
         </AppBar>

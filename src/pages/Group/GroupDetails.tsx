@@ -1,3 +1,4 @@
+import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -16,6 +17,33 @@ const Item = styled(Box)(({ theme }) => ({
 }));
 
 export default function GroupDetails() {
+  // const { userId } = useParams();
+
+  // const [reFresh, setReFresh] = React.useState(0);
+  // const handleRefresh = () => {
+  //   setReFresh((pre) => pre + 1);
+  // };
+
+  // const [data, setData] = React.useState<Post[]>([]);
+  // React.useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const q = query(
+  //         collection(dbFireStore, "posts"),
+  //         where("owner", "==", userId),
+  //         orderBy("createAt", "desc")
+  //       );
+  //       const querySnapshot = await getDocs(q);
+  //       const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
+  //       setData(queriedData);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [reFresh, userId]);
+
   return (
     <div>
       <Grid sx={{ flexGrow: 1 }} container marginTop={5}>
@@ -43,7 +71,7 @@ export default function GroupDetails() {
                         </Grid>
                         <Grid item xs={7}>
                           <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
-                            {/* <PostForm /> */}
+                            {/* <PostForm handdleReFresh={handleRefresh} /> */}
                           </Item>
                           <Item>
                             {/* <MContainer /> */}

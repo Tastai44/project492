@@ -221,6 +221,7 @@ export default function MContainer({
               postId={postId}
               userId={userId}
               handleClosePost={handleClosePost}
+              handleRefreshData={handleRefresh}
               likes={likes}
             />
           </Paper>
@@ -237,6 +238,7 @@ export default function MContainer({
           <EditPost
             handleCloseEditPost={handleCloseEditPost}
             handleRefresh={handleRefresh}
+            handleRefreshData={handleRefresh}
             oldStatus={status}
             caption={caption}
             hashTagTopic={hashTagTopic}

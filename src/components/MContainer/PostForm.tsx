@@ -2,15 +2,18 @@ import { Avatar, TextField, Divider, Box, Button, Modal } from '@mui/material'
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
-import Luffy from "../../../public/pictures/Luffy.webp";
 import * as React from 'react';
 import CreatePost from './CreatePost';
+import { User } from '../../interface/User';
 
 interface IFunction {
   handdleReFresh: () => void;
 }
+interface IData {
+  inFoUser: User[];
+}
 
-export default function PostForm({handdleReFresh} : IFunction) {
+export default function PostForm({handdleReFresh, inFoUser} : IFunction & IData) {
   const [openCreatePost, setOpenCreatePost] = React.useState(false);
   const handletOpenCratePost = () => setOpenCreatePost(true);
   const handleCloseCratePost = () => setOpenCreatePost(false);
@@ -27,6 +30,7 @@ export default function PostForm({handdleReFresh} : IFunction) {
           <CreatePost handleCloseCratePost={handleCloseCratePost} handdleReFresh={handdleReFresh}/>
         </Box>
       </Modal>
+      {inFoUser.map((u) => (
         <div
             style={{
               display: "flex",
@@ -37,7 +41,7 @@ export default function PostForm({handdleReFresh} : IFunction) {
           >
             <Avatar
               alt="User"
-              src={Luffy}
+              src={u.profilePhoto}
               sx={{ width: "40px", height: "40px" }}
             />
             <div style={{ width: "98%" }}>
@@ -51,6 +55,7 @@ export default function PostForm({handdleReFresh} : IFunction) {
               />
             </div>
           </div>
+          ))}
           <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
           <Box
             sx={{

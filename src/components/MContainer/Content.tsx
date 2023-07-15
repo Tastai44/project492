@@ -66,6 +66,7 @@ interface IData {
 }
 interface IFunction {
   handleClosePost: () => void;
+  handleRefreshData: () => void;
 }
 
 export default function Content({
@@ -73,6 +74,7 @@ export default function Content({
   userId,
   likes,
   handleClosePost,
+  handleRefreshData
 }: IData & IFunction) {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -221,6 +223,7 @@ export default function Content({
           deleteDoc(postRef)
             .then(() => {
               handleRefresh();
+              handleRefreshData();
               handleClosePost();
             })
             .catch((error) => {
@@ -254,6 +257,7 @@ export default function Content({
                 <EditPost
                   handleCloseEditPost={handleCloseEditPost}
                   handleRefresh={handleRefresh}
+                  handleRefreshData={handleRefreshData}
                   oldStatus={m.status}
                   caption={m.caption}
                   hashTagTopic={m.hashTagTopic}

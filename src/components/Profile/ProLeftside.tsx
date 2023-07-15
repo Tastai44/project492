@@ -241,6 +241,7 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
                         <Box onClick={handleUploadClick}>
                           <IconButton
                             sx={{
+                              backgroundColor:"white",
                               "&:hover": {
                                 color: "white",
                                 backgroundColor: "black",

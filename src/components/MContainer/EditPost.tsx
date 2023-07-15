@@ -48,6 +48,7 @@ const styleBoxPop = {
 interface IHandle {
   handleCloseEditPost: () => void;
   handleRefresh: () => void;
+  handleRefreshData: () => void;
 }
 interface Idata {
   postId: string;
@@ -67,6 +68,7 @@ interface Idata {
 export default function CreatePost({
   handleCloseEditPost,
   handleRefresh,
+  handleRefreshData,
   caption,
   oldStatus,
   hashTagTopic,
@@ -183,6 +185,7 @@ export default function CreatePost({
             await updateDoc(docRef, updatedPost);
             clearState();
             handleRefresh();
+            handleRefreshData();
             handleCloseEditPost();
           } else {
             console.log("You don't have permission to delete this post");
