@@ -82,7 +82,6 @@ function App() {
                   handleClose={handleClose}
                   inFoUser={inFoUser}
                 />
-
                 <Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
                   <Grid item xs={12}>
                     <Grid container justifyContent="space-between">
@@ -119,7 +118,24 @@ function App() {
                 handleClose={handleClose}
                 inFoUser={inFoUser}
               />
-              <Members />
+              {/* <Members /> */}
+              <Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
+                <Grid item xs={12}>
+                  <Grid
+                    container
+                    justifyContent="space-between"
+                    paddingLeft={5}
+                    paddingRight={5}
+                  >
+                    <Grid item xs={2}>
+                      <div style={{ position: "fixed" }}>
+                        <LeftSide inFoUser={inFoUser} />
+                      </div>
+                    </Grid>
+                    <Members />
+                  </Grid>
+                </Grid>
+              </Grid>
               {/* </ProtectedRoute> */}
             </>
           }
@@ -445,7 +461,7 @@ function App() {
                 handleClose={handleClose}
                 inFoUser={inFoUser}
               />
-              <GroupDetails />
+              <GroupDetails inFoUser={inFoUser}/>
               {/* </ProtectedRoute> */}
             </>
           }

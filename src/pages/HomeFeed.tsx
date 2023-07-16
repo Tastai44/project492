@@ -52,6 +52,7 @@ export default function HomeFeed({inFoUser} : IData) {
         {data.map((m) => (
           <Box key={m.id}>
             <MContainer
+              onwer={m.owner}
               postId={m.id}
               caption={m.caption}
               hashTagTopic={m.hashTagTopic}

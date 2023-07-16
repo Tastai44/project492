@@ -143,11 +143,12 @@ export default function AddGroup({ closeEdit, handleRefresh }: Ihandle) {
   const initialState = {
     gId: "",
     hostId: "",
-    title: "",
+    groupName: "",
     members: [],
     status: "",
     details: "",
     coverPhoto: "",
+    createAt: "",
   };
   const [group, setGroup] = React.useState<IGroup>(initialState);
   const clearState = () => {
@@ -177,7 +178,7 @@ export default function AddGroup({ closeEdit, handleRefresh }: Ihandle) {
     const newPost = {
       gId: "",
       hostId: userInfo.uid,
-      title: group.title,
+      groupName: group.groupName,
       members: tmp2,
       status: status,
       details: group.details,
@@ -216,7 +217,7 @@ export default function AddGroup({ closeEdit, handleRefresh }: Ihandle) {
             variant="outlined"
             name="title"
             onChange={handleChangeGroup}
-            value={group.title}
+            value={group.groupName}
           />
 
           <Box sx={{ display: "flex", gap: 1, mt: 1, mb: 1 }}>

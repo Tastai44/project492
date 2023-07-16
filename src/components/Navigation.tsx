@@ -188,7 +188,7 @@ export default function Navigation({
         >
           <Avatar src={m.profilePhoto} /> 
           <Typography>
-            {m.firstName} {m.lastName}
+            {m.username}
           </Typography>
         </MenuItem>
         ))}

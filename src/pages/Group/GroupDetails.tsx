@@ -5,7 +5,6 @@ import { Stack } from "@mui/material";
 
 import CoverPhoto from "../../components/Groups/CoverPhoto";
 import LeftSideContainer from "../../components/Groups/LeftSideContainer";
-import PostForm from "../../components/MContainer/PostForm";
 import MContainer from "../../components/MContainer/MContainer";
 import AboutGroup from "../../components/Groups/AboutGroup";
 import { useParams } from "react-router-dom";
@@ -14,8 +13,14 @@ import { Item } from "../../App";
 import { dbFireStore } from "../../config/firebase";
 import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
 import { IGroup } from "../../interface/Group";
+import { User } from "../../interface/User";
+import PostGroupForm from "../../components/Groups/PostGroupForm";
 
-export default function GroupDetails() {
+interface IData {
+  inFoUser: User[];
+}
+
+export default function GroupDetails({ inFoUser }: IData) {
   const { groupId } = useParams();
   const [data, setData] = React.useState<IGroup[]>([]);
   const [reFresh, setReFresh] = React.useState(0);
@@ -46,59 +51,61 @@ export default function GroupDetails() {
   return (
     <div>
       {data.map((g) => (
-      <Grid key={g.gId} sx={{ flexGrow: 1 }} container marginTop={5}>
-        <Grid
-          container
-          justifyContent="space-between"
-          paddingLeft={5}
-          paddingRight={5}
-          spacing={10}
-        >
-          <Grid item xs={12}>
-            <Item>
-              <Box sx={{ width: "100%" }}>
-                <Stack>
-                  <Item sx={{ mb: 0 }}>
-                    <CoverPhoto 
-                      coverPhoto={g.coverPhoto}
-                      createAt={g.createAt}
-                      title={g.title}
-                      members={g.members}
-                    />
-                  </Item>
-                  <Item>
-                    <Box sx={{ flexGrow: 1 }}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={2.5}>
-                          <Item>
-                            <LeftSideContainer 
-                              hostId={g.hostId}
-                              members={g.members}
-                            />
-                          </Item>
+        <Grid key={g.gId} sx={{ flexGrow: 1 }} container marginTop={5}>
+          <Grid
+            container
+            justifyContent="space-between"
+            paddingLeft={5}
+            paddingRight={5}
+            spacing={10}
+          >
+            <Grid item xs={12}>
+              <Item>
+                <Box sx={{ width: "100%" }}>
+                  <Stack>
+                    <Item sx={{ mb: 0 }}>
+                      <CoverPhoto
+                        coverPhoto={g.coverPhoto}
+                        createAt={g.createAt}
+                        title={g.groupName}
+                        members={g.members}
+                      />
+                    </Item>
+                    <Item>
+                      <Box sx={{ flexGrow: 1 }}>
+                        <Grid container spacing={2}>
+                          <Grid item xs={2.5}>
+                            <Item>
+                              <LeftSideContainer
+                                hostId={g.hostId}
+                                members={g.members}
+                              />
+                            </Item>
+                          </Grid>
+                          <Grid item xs={7}>
+                            <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
+                              <PostGroupForm
+                                handdleReFresh={handleRefresh}
+                                inFoUser={inFoUser}
+                                groupName={g.groupName}
+                              />
+                            </Item>
+                            <Item>{/* <MContainer /> */}</Item>
+                          </Grid>
+                          <Grid item xs={2.5}>
+                            <Item>
+                              <AboutGroup details={g.details} />
+                            </Item>
+                          </Grid>
                         </Grid>
-                        <Grid item xs={7}>
-                          <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
-                            {/* <PostForm handdleReFresh={handleRefresh} /> */}
-                          </Item>
-                          <Item>{/* <MContainer /> */}</Item>
-                        </Grid>
-                        <Grid item xs={2.5}>
-                          <Item>
-                            <AboutGroup 
-                              details={g.details}
-                            />
-                          </Item>
-                        </Grid>
-                      </Grid>
-                    </Box>
-                  </Item>
-                </Stack>
-              </Box>
-            </Item>
+                      </Box>
+                    </Item>
+                  </Stack>
+                </Box>
+              </Item>
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
       ))}
     </div>
   );

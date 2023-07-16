@@ -5,7 +5,7 @@ export interface IMember {
 
 export interface IGroup {
     gId: string;
-    title: string;
+    groupName: string;
     hostId: string;
     members: IMember[];
     status: string;

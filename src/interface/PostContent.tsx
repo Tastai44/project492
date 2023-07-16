@@ -45,4 +45,5 @@ export interface Post {
   shares?: Share[];
   location?: Address[];
   owner: string;
+  groupName?:string;
 }

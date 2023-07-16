@@ -52,7 +52,7 @@ export default function LeftSide({inFoUser} : IData) {
             }}
           >
             <Avatar alt="Remy Sharp" src={m.profilePhoto} />
-            {m.firstName} {m.lastName}
+            {m.username}
           </Item>
           ))}
           </NavLink>

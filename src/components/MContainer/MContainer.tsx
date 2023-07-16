@@ -53,6 +53,7 @@ import {
 } from "firebase/firestore";
 import { Like, Post } from "../../interface/PostContent";
 import { styleBoxPop } from "../../utils/styleBox";
+import { User } from "../../interface/User";
 
 export const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -73,6 +74,7 @@ interface Idata {
   postId: string;
   commentNumber: number;
   likes: Like[];
+  onwer: string;
 }
 
 interface IFunction {
@@ -90,6 +92,7 @@ export default function MContainer({
   postId,
   commentNumber,
   likes,
+  onwer,
   handleRefresh,
 }: Idata & IFunction) {
   const [iconStatus, setIconStatus] = React.useState("");
@@ -180,10 +183,9 @@ export default function MContainer({
       });
   };
 
-  const userInfo = JSON.parse(localStorage.getItem('user') || "null");
-  const isLike = likes.some((f) => f.likeBy === userInfo.uid);
+  const isLike = likes.some((f) => f.likeBy === userId);
   const decreaseLike = async (id: string) => {
-    const IndexLike = likes.findIndex((f) => f.likeBy === userInfo.uid);
+    const IndexLike = likes.findIndex((f) => f.likeBy === userId);
     try {
       const q = query(
         collection(dbFireStore, "posts"),
@@ -207,8 +209,34 @@ export default function MContainer({
     }
   };
 
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", onwer)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [onwer]);
+
   return (
     <Box>
+      {inFoUser.map((u) => (
+      <Box key={u.uid}>
       <Modal
         open={openPost}
         onClose={handleClosePost}
@@ -255,14 +283,14 @@ export default function MContainer({
             <ListItem>
               <ListItemAvatar>
                 <Avatar
-                  src={Luffy}
+                  src={u.profilePhoto}
                   sx={{ width: "60px", height: "60px", marginRight: "10px" }}
                 />
               </ListItemAvatar>
               <ListItemText
                 primary={
                   <Box sx={{ fontSize: "16px" }}>
-                    <b>User Name </b>
+                    <b>{u.username} </b>
                     {emoji && (
                       <>
                         is feeling {String.fromCodePoint(parseInt(emoji, 16))}{" "}
@@ -470,5 +498,8 @@ export default function MContainer({
         </Stack>
       </Box>
     </Box>
+    ))}
+    </Box>
+    
   );
 }

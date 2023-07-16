@@ -48,7 +48,7 @@ export default function GroupContainer({ openAddGroup, groupData }: IFunction & 
       <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
       {groupData.map((g) => (
         <NavLink key={g.gId} to={`/groupDetail/${g.gId}`}>
-        <EachGroup title={g.title}/>
+        <EachGroup title={g.groupName}/>
         </NavLink>
       ))}
     </Box>
