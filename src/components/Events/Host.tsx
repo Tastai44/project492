@@ -1,53 +1,64 @@
-import {
-  Paper,
-  Button,
-  Divider,
-  CardMedia,
-  Box,
-} from "@mui/material";
-import Luffy from "../../../public/pictures/Luffy.webp";
+import * as React from "react";
+import { Paper, Divider, CardMedia, Box } from "@mui/material";
+import { collection, query, getDocs, where } from "firebase/firestore";
+import { User } from "../../interface/User";
+import { dbFireStore } from "../../config/firebase";
 
-export default function Host() {
+interface IData {
+  hostId: string;
+}
+export default function Host({ hostId }: IData) {
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", hostId)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [hostId]);
+
   return (
     <div>
-      <Paper>
+      {inFoUser.map((u) => (
+      <Paper key={u.uid}>
         <Box
           sx={{
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: "center",
             alignItems: "center",
           }}
         >
-          <Box sx={{ p: 1, fontSize: "20px", fontWeight: "bold" }}>
-            Host
-          </Box>
-          <Button
-            sx={{
-              backgroundColor: "#8E51E2",
-              color: "white",
-              "&:hover": {
-                color: "black",
-                backgroundColor: "#E9E8E8",
-              },
-              m: 1,
-            }}
-            // onClick={handleOpen}
-          >
-            Add Friend
-          </Button>
+          <Box sx={{ p: 1, fontSize: "20px", fontWeight: "bold" }}>Host</Box>
         </Box>
         <Divider light />
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <CardMedia
             component="img"
-            sx={{ width: "90%", m: 1 }}
-            image={Luffy}
+            sx={{ width: 200, m: 1, height:200 }}
+            image={u.profilePhoto}
             alt="Host"
           />
         </Box>
         <Divider light />
-        <Box sx={{m:1}}>Fristname LastName</Box>
+        <Box sx={{ m: 1, fontSize:"18px" }}>{u.firstName} {u.lastName}</Box>
       </Paper>
+      ))}
     </div>
   );
 }

@@ -3,6 +3,7 @@ import Badge from "@mui/material/Badge";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import Luffy from "../../../public/pictures/Luffy.webp";
+import { Typography } from "@mui/material";
 
 export const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -33,7 +34,11 @@ export const StyledBadge = styled(Badge)(({ theme }) => ({
   },
 }));
 
-export default function UserCard() {
+interface IData {
+  username: string;
+}
+
+export default function UserCard({username} : IData) {
   return (
     <Stack
       direction="row"
@@ -56,7 +61,7 @@ export default function UserCard() {
       >
         <Avatar alt="Remy Sharp" src={Luffy} />
       </StyledBadge>
-      <p style={{ fontSize: "16px" }}>Tastai Khianai</p>
+      <Typography sx={{fontSize:"16px"}}>{username}</Typography>
     </Stack>
   );
 }

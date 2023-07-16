@@ -1,12 +1,17 @@
 import { Box,Paper } from "@mui/material";
-export default function AboutGroup() {
+
+interface IData {
+  details: string;
+}
+
+export default function AboutGroup({details} : IData) {
   return (
     <div>
       <Paper>
         <Box
           sx={{
-            fontSize: "16px",
-            textAlign: "left",
+            fontSize: "20px",
+            textAlign: "center",
             padding: "5px",
             fontWeight: "bold",
           }}
@@ -20,8 +25,7 @@ export default function AboutGroup() {
             color: "#727272",
           }}
         >
-          Angkaew Reservoir RX42+535 ซอย สุโขทัย 5 Tambon Su Thep, Mueang Chiang
-          Mai District, Chiang Mai 50200
+          {details}
         </Box>
       </Paper>
     </div>

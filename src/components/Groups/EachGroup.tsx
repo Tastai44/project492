@@ -1,22 +1,22 @@
 import { List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import TagIcon from "@mui/icons-material/Tag";
-export default function EachGroup() {
+
+interface IData {
+  title: string;
+}
+export default function EachGroup({title} : IData) {
   return (
-    <div>
-        <nav aria-label="main mailbox folders">
           <List sx={{color:"black"}}>
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon>
                   <TagIcon />
                 </ListItemIcon>
-                <ListItemText primary="ISNE" />
+                <ListItemText primary={`${title}`} />
                 {/* <BorderColorIcon />
                 <DeleteIcon /> */}
               </ListItemButton>
             </ListItem>
           </List>
-        </nav>
-    </div>
   )
 }

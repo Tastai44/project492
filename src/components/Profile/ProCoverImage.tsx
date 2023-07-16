@@ -74,7 +74,7 @@ export default function ProCoverImage() {
 
       if (doc.exists()) {
         await updateDoc(doc.ref, {
-          coverPhoto: previewImages,
+          coverPhoto: previewImages[0],
         });
         handleClearImage();
         handleRefresh();

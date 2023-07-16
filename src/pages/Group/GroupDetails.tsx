@@ -1,5 +1,4 @@
 import * as React from "react";
-import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { Stack } from "@mui/material";
@@ -9,44 +8,45 @@ import LeftSideContainer from "../../components/Groups/LeftSideContainer";
 import PostForm from "../../components/MContainer/PostForm";
 import MContainer from "../../components/MContainer/MContainer";
 import AboutGroup from "../../components/Groups/AboutGroup";
+import { useParams } from "react-router-dom";
+import { Item } from "../../App";
 
-const Item = styled(Box)(({ theme }) => ({
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  color: theme.palette.text.secondary,
-}));
+import { dbFireStore } from "../../config/firebase";
+import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
+import { IGroup } from "../../interface/Group";
 
 export default function GroupDetails() {
-  // const { userId } = useParams();
+  const { groupId } = useParams();
+  const [data, setData] = React.useState<IGroup[]>([]);
+  const [reFresh, setReFresh] = React.useState(0);
+  const handleRefresh = () => {
+    setReFresh((pre) => pre + 1);
+  };
 
-  // const [reFresh, setReFresh] = React.useState(0);
-  // const handleRefresh = () => {
-  //   setReFresh((pre) => pre + 1);
-  // };
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "groups"),
+          where("gId", "==", groupId),
+          orderBy("createAt", "desc")
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) => doc.data() as IGroup
+        );
+        setData(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-  // const [data, setData] = React.useState<Post[]>([]);
-  // React.useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const q = query(
-  //         collection(dbFireStore, "posts"),
-  //         where("owner", "==", userId),
-  //         orderBy("createAt", "desc")
-  //       );
-  //       const querySnapshot = await getDocs(q);
-  //       const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
-  //       setData(queriedData);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [reFresh, userId]);
-
+    fetchData();
+  }, [reFresh, groupId]);
   return (
     <div>
-      <Grid sx={{ flexGrow: 1 }} container marginTop={5}>
+      {data.map((g) => (
+      <Grid key={g.gId} sx={{ flexGrow: 1 }} container marginTop={5}>
         <Grid
           container
           justifyContent="space-between"
@@ -59,27 +59,35 @@ export default function GroupDetails() {
               <Box sx={{ width: "100%" }}>
                 <Stack>
                   <Item sx={{ mb: 0 }}>
-                    <CoverPhoto />
+                    <CoverPhoto 
+                      coverPhoto={g.coverPhoto}
+                      createAt={g.createAt}
+                      title={g.title}
+                      members={g.members}
+                    />
                   </Item>
                   <Item>
                     <Box sx={{ flexGrow: 1 }}>
                       <Grid container spacing={2}>
                         <Grid item xs={2.5}>
                           <Item>
-                            <LeftSideContainer />
+                            <LeftSideContainer 
+                              hostId={g.hostId}
+                              members={g.members}
+                            />
                           </Item>
                         </Grid>
                         <Grid item xs={7}>
                           <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
                             {/* <PostForm handdleReFresh={handleRefresh} /> */}
                           </Item>
-                          <Item>
-                            {/* <MContainer /> */}
-                          </Item>
+                          <Item>{/* <MContainer /> */}</Item>
                         </Grid>
                         <Grid item xs={2.5}>
                           <Item>
-                            <AboutGroup />
+                            <AboutGroup 
+                              details={g.details}
+                            />
                           </Item>
                         </Grid>
                       </Grid>
@@ -91,6 +99,7 @@ export default function GroupDetails() {
           </Grid>
         </Grid>
       </Grid>
+      ))}
     </div>
   );
 }

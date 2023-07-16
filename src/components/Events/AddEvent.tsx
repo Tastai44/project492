@@ -14,7 +14,6 @@ import {
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
-// import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import { EventPost } from "../../interface/Event";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import CancelIcon from "@mui/icons-material/Cancel";

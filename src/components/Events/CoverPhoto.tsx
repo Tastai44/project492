@@ -29,7 +29,7 @@ import {
 import { EventPost, Interest } from "../../interface/Event";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
-import {useNavigate} from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
 interface IData {
   eventId: string;
@@ -42,6 +42,7 @@ interface IData {
   topic: string;
   ageRage: number;
   interest: Interest[];
+  owner: string;
 }
 
 interface IFunction {
@@ -59,9 +60,11 @@ export default function ProCoverImage({
   topic,
   ageRage,
   interest,
+  owner,
   handleRefresh,
 }: IData & IFunction) {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+  const IsOwner = userInfo.uid === owner;
   const isInterest = interest.some((f) => f.interestBy === userInfo.uid);
   const navigate = useNavigate();
   const increaseInterest = () => {
@@ -113,7 +116,7 @@ export default function ProCoverImage({
         if (docSnap.exists() && docSnap.data().owner === userInfo.uid) {
           deleteDoc(postRef)
             .then(() => {
-              navigate('/events');
+              navigate("/events");
               console.log("Post deleted successfully");
               handleRefresh();
             })
@@ -174,7 +177,7 @@ export default function ProCoverImage({
                   Location
                 </Button>
               </Box>
-              <Box sx={{ display: "flex", gap:0.5 }}>
+              <Box sx={{ display: "flex", gap: 0.5, m:1 }}>
                 <IconButton size="large">
                   <ShareIcon />
                 </IconButton>
@@ -209,44 +212,52 @@ export default function ProCoverImage({
                 >
                   {isInterest ? "Interested" : "Interest"}
                 </Button>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  sx={{
-                    fontSize: "16px",
-                    backgroundColor: "primary.main",
-                    color: "white",
-                    border: "1px solid",
-                    "&:hover": {
-                      color: "white",
-                      border: "1px solid",
-                      backgroundColor: "grey",
-                    },
-                  }}
-                  startIcon={<BorderColorOutlinedIcon sx={{ width: "16px" }} />}
-                >
-                  Edit
-                </Button>
-                <Button
-                  onClick={() => handleDelete(eventId)}
-                  size="small"
-                  variant="outlined"
-                  sx={{
-                    fontSize: "16px",
-                    backgroundColor: "primary.main",
-                    color: "white",
-                    border: "1px solid",
-                    "&:hover": {
-                      color: "white",
-                      border: "1px solid",
-                      backgroundColor: "grey",
-                    },
-                    mr:1
-                  }}
-                  startIcon={<DeleteOutlineOutlinedIcon sx={{ width: "16px" }} />}
-                >
-                  Delete
-                </Button>
+                {IsOwner ? (
+                  <>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      sx={{
+                        fontSize: "16px",
+                        backgroundColor: "primary.main",
+                        color: "white",
+                        border: "1px solid",
+                        "&:hover": {
+                          color: "white",
+                          border: "1px solid",
+                          backgroundColor: "grey",
+                        },
+                      }}
+                      startIcon={
+                        <BorderColorOutlinedIcon sx={{ width: "16px" }} />
+                      }
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      onClick={() => handleDelete(eventId)}
+                      size="small"
+                      variant="outlined"
+                      sx={{
+                        fontSize: "16px",
+                        backgroundColor: "primary.main",
+                        color: "white",
+                        border: "1px solid",
+                        "&:hover": {
+                          color: "white",
+                          border: "1px solid",
+                          backgroundColor: "grey",
+                        },
+                        mr: 1,
+                      }}
+                      startIcon={
+                        <DeleteOutlineOutlinedIcon sx={{ width: "16px" }} />
+                      }
+                    >
+                      Delete
+                    </Button>
+                  </>
+                ) : null}
               </Box>
             </Box>
             <Divider light sx={{ mb: 1 }} />

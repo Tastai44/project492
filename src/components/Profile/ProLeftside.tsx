@@ -130,7 +130,7 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
 
       if (doc.exists()) {
         await updateDoc(doc.ref, {
-          profilePhoto: previewImages,
+          profilePhoto: previewImages[0],
         });
         handleClearImage();
         handleRefresh();

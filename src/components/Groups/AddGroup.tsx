@@ -4,6 +4,8 @@ import {
   Divider,
   FormControl,
   IconButton,
+  ImageList,
+  ImageListItem,
   InputAdornment,
   InputLabel,
   MenuItem,
@@ -13,12 +15,20 @@ import {
   Theme,
   useTheme,
 } from "@mui/material";
+import CancelIcon from "@mui/icons-material/Cancel";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
-
-import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
+import LockIcon from "@mui/icons-material/Lock";
+import PublicIcon from "@mui/icons-material/Public";
 import React from "react";
+import { IGroup } from "../../interface/Group";
+
+import "firebase/database";
+import { dbFireStore } from "../../config/firebase";
+import { doc, getDocs } from "firebase/firestore";
+import { collection, setDoc } from "firebase/firestore";
+import { User } from "../../interface/User";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -53,29 +63,34 @@ const style = {
 
 interface Ihandle {
   closeEdit: () => void;
+  handleRefresh: () => void;
 }
-const users = [
-  {
-    userId: 1,
-    userName: "Tastai44",
-    firstName: "Tastai",
-    lastName: "Khianjai",
-  },
-  {
-    userId: 2,
-    userName: "Testing",
-    firstName: "Test",
-    lastName: "Ing",
-  },
-];
-const groupStatus = [
-  { statusId: 1, statusName: "Private" },
-  { statusId: 2, statusName: "Public" },
-];
 
-export default function AddGroup({ closeEdit }: Ihandle) {
+export default function AddGroup({ closeEdit, handleRefresh }: Ihandle) {
   const theme = useTheme();
   const [member, setMember] = React.useState<string[]>([]);
+  const [users, setUsers] = React.useState<User[]>([]);
+  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = collection(dbFireStore, "users");
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setUsers(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const handleAddMember = (event: SelectChangeEvent<typeof member>) => {
     const {
@@ -84,11 +99,106 @@ export default function AddGroup({ closeEdit }: Ihandle) {
     setMember(typeof value === "string" ? value.split(",") : value);
   };
 
-  const [statusObj, setStatusObj] = React.useState<string[]>([]);
-  const [statusName, setStatusName] = React.useState("");
-  const handleChangeStatus = (event: SelectChangeEvent) => {
-    setStatusName(event.target.value as string);
-    setStatusObj([event.target.value]);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+  const [previewImages, setPreviewImages] = React.useState<string[]>([]);
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = event.target.files;
+    if (files) {
+      try {
+        const selectedFiles = Array.from(files);
+        const readerPromises = selectedFiles.map((file) => {
+          return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              resolve(reader.result as string);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+        });
+
+        const base64Images = await Promise.all(readerPromises);
+        setPreviewImages(base64Images);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+  const handleClearImage = () => {
+    setPreviewImages([]);
+  };
+
+  const [status, setStatus] = React.useState("");
+  const handleChange = (event: SelectChangeEvent) => {
+    setStatus(event.target.value as string);
+  };
+
+  const initialState = {
+    gId: "",
+    hostId: "",
+    title: "",
+    members: [],
+    status: "",
+    details: "",
+    coverPhoto: "",
+  };
+  const [group, setGroup] = React.useState<IGroup>(initialState);
+  const clearState = () => {
+    setGroup({ ...initialState });
+    handleClearImage();
+  };
+
+  const handleChangeGroup = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target;
+    setGroup((prevGroup) => ({
+      ...prevGroup,
+      [name]: value,
+    }));
+  };
+
+  const createGroup = async () => {
+    const postCollection = collection(dbFireStore, "groups");
+    const tmp = [...member].map((m) => JSON.parse(m));
+    const tmp2 = [...tmp].map((m) => {
+      return {
+        uid: m.uid,
+        username: `${m.firstName} ${m.lastName}`,
+      };
+    });
+    const newPost = {
+      gId: "",
+      hostId: userInfo.uid,
+      title: group.title,
+      members: tmp2,
+      status: status,
+      details: group.details,
+      coverPhoto: previewImages[0],
+      createAt: new Date().toLocaleString(),
+    };
+
+    try {
+      const docRef = doc(postCollection);
+      const groupId = docRef.id;
+      const updatedPost = { ...newPost, gId: groupId };
+      await setDoc(docRef, updatedPost);
+
+      setGroup(updatedPost);
+      clearState();
+      alert("Success!");
+      handleRefresh();
+      closeEdit();
+    } catch (error) {
+      console.error("Error adding post: ", error);
+    }
   };
 
   return (
@@ -104,6 +214,9 @@ export default function AddGroup({ closeEdit }: Ihandle) {
             id="outlined-basic"
             label="Title"
             variant="outlined"
+            name="title"
+            onChange={handleChangeGroup}
+            value={group.title}
           />
 
           <Box sx={{ display: "flex", gap: 1, mt: 1, mb: 1 }}>
@@ -122,7 +235,7 @@ export default function AddGroup({ closeEdit }: Ihandle) {
                       const temp = JSON.parse(value);
                       return (
                         <Chip
-                          key={temp.userId}
+                          key={temp.uid}
                           label={`${temp.firstName} ${temp.lastName}`}
                         />
                       );
@@ -133,7 +246,7 @@ export default function AddGroup({ closeEdit }: Ihandle) {
               >
                 {users.map((e) => (
                   <MenuItem
-                    key={e.userId}
+                    key={e.uid}
                     value={JSON.stringify(e)}
                     style={getStyles(e.firstName, member, theme)}
                   >
@@ -145,20 +258,37 @@ export default function AddGroup({ closeEdit }: Ihandle) {
           </Box>
 
           <Box sx={{ display: "flex", gap: 1, mt: 1, mb: 1 }}>
-            <FormControl sx={{ width: "100%" }}>
-              <InputLabel id="demo-multiple-checkbox-label">Status</InputLabel>
+            <FormControl size="small" sx={{ width: "100%" }}>
+              <InputLabel id="demo-simple-select">Status</InputLabel>
               <Select
+                label="Status"
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={statusName}
-                label="Project"
-                onChange={handleChangeStatus}
+                value={status}
+                onChange={handleChange}
               >
-                {groupStatus.map((p) => (
-                  <MenuItem key={p.statusId} value={JSON.stringify(p)}>
-                    {p.statusName}
-                  </MenuItem>
-                ))}
+                <MenuItem value={"Private"}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignContent: "end",
+                      gap: 0.5,
+                    }}
+                  >
+                    <LockIcon /> Private
+                  </Box>
+                </MenuItem>
+                <MenuItem value={"Public"}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignContent: "end",
+                      gap: 0.5,
+                    }}
+                  >
+                    <PublicIcon /> Public
+                  </Box>
+                </MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -169,17 +299,24 @@ export default function AddGroup({ closeEdit }: Ihandle) {
             label="Details"
             variant="outlined"
             multiline
+            name="details"
+            onChange={handleChangeGroup}
+            value={group.details}
           />
-          <FormControl sx={{ width: "100%", mb: 1 }} variant="outlined">
+          <FormControl
+            sx={{ width: "100%", mb: 1 }}
+            variant="outlined"
+            onClick={handleUploadClick}
+          >
             <OutlinedInput
               id="outlined-insertPhoto"
               type={"file"}
               inputProps={{ "aria-label": " " }}
+              ref={fileInputRef}
+              onChange={handleFileChange}
               endAdornment={
-                <InputAdornment position="end">
-                  <IconButton edge="start">
-                    <InsertPhotoIcon />
-                  </IconButton>
+                <InputAdornment position="end" sx={{ fontSize: "20px" }}>
+                  Cover photo
                 </InputAdornment>
               }
             />
@@ -210,10 +347,32 @@ export default function AddGroup({ closeEdit }: Ihandle) {
                 backgroundColor: "#E1E1E1",
               },
             }}
+            onClick={createGroup}
+            type="submit"
           >
             Save
           </Button>
         </Typography>
+        {previewImages.length !== 0 && (
+          <Box>
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <IconButton onClick={handleClearImage}>
+                <CancelIcon />
+              </IconButton>
+            </Box>
+            <ImageList
+              sx={{ width: "100%", height: "auto", maxHeight: "400px" }}
+              cols={1}
+              rowHeight={160}
+            >
+              {previewImages.map((image, index) => (
+                <ImageListItem key={index}>
+                  <img src={image} alt={`Preview ${index}`} loading="lazy" />
+                </ImageListItem>
+              ))}
+            </ImageList>
+          </Box>
+        )}
       </Box>
     </div>
   );

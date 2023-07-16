@@ -4,12 +4,16 @@ import Box from "@mui/material/Box";
 import EachGroup from "./EachGroup";
 import { Typography, Button, Divider } from "@mui/material";
 import { NavLink } from "react-router-dom";
+import { IGroup } from "../../interface/Group";
 
 interface IFunction {
   openAddGroup: () => void;
 }
+interface IData {
+  groupData: IGroup[];
+}
 
-export default function GroupContainer({ openAddGroup }: IFunction) {
+export default function GroupContainer({ openAddGroup, groupData }: IFunction & IData) {
   return (
     <Box sx={{ width: "100%", bgcolor: "background.paper", color: "black" }}>
       <div
@@ -42,9 +46,11 @@ export default function GroupContainer({ openAddGroup }: IFunction) {
         </div>
       </div>
       <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
-      <NavLink to={`/groupDetail/${1}`}>
-        <EachGroup />
-      </NavLink>
+      {groupData.map((g) => (
+        <NavLink key={g.gId} to={`/groupDetail/${g.gId}`}>
+        <EachGroup title={g.title}/>
+        </NavLink>
+      ))}
     </Box>
   );
 }

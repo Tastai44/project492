@@ -37,8 +37,6 @@ import { auth } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import ChatBox from "./Chat/ChatBox";
 import { User } from "../interface/User";
-import { dbFireStore } from "../config/firebase";
-import {collection, query, getDocs, where} from "firebase/firestore";
 
 interface IData {
   open: boolean;
@@ -108,30 +106,6 @@ export default function Navigation({
   };
 
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-  // const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-  // React.useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const q = query(
-  //         collection(dbFireStore, "users"),
-  //         where("uid", "==", userInfo.uid)
-  //       );
-  //       const querySnapshot = await getDocs(q);
-  //       const queriedData = querySnapshot.docs.map(
-  //         (doc) =>
-  //           ({
-  //             uid: doc.id,
-  //             ...doc.data(),
-  //           } as User)
-  //       );
-  //       setInFoUser(queriedData);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [userInfo.uid]); 
-
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
@@ -213,7 +187,6 @@ export default function Navigation({
           }}
         >
           <Avatar src={m.profilePhoto} /> 
-          
           <Typography>
             {m.firstName} {m.lastName}
           </Typography>

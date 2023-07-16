@@ -6,17 +6,24 @@ import {
   Divider,
   IconButton,
 } from "@mui/material";
-import Luffy from "../../../public/pictures/Luffy.webp";
 import MessageIcon from '@mui/icons-material/Message';
 import ShareIcon from "@mui/icons-material/Share";
 import DateRangeIcon from "@mui/icons-material/DateRange";
-import TagIcon from "@mui/icons-material/Tag";
+import GroupsIcon from "@mui/icons-material/Groups";
+import { IMember } from "../../interface/Group";
 
-export default function ProCoverImage() {
+interface IData {
+  coverPhoto: string;
+  createAt: string;
+  title: string;
+  members: IMember[];
+}
+
+export default function ProCoverImage({coverPhoto, createAt, title, members} : IData) {
   return (
     <div>
       <Card sx={{ maxWidth: "100%" }}>
-        <CardMedia sx={{ height: 300 }} image={Luffy} title="green iguana" />
+        <CardMedia sx={{ height: 300 }} image={coverPhoto} title="green iguana" />
       </Card>
       <Box
         sx={{
@@ -44,7 +51,7 @@ export default function ProCoverImage() {
                   fontSize: "20px",
                 }}
               >
-                Name of the Group
+                {title}
               </Box>
               <Box sx={{ display: "flex", pt:1, pb:1 }}>
                 <IconButton size="large">
@@ -71,11 +78,11 @@ export default function ProCoverImage() {
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
               <Box sx={{ display: "flex", gap: 1, m: 1, alignItems: "center" }}>
                 <DateRangeIcon />
-                <div>Sun 15 Dec at 4:00 AM</div>
+                <div>Create date: {createAt}</div>
               </Box>
               <Box sx={{ display: "flex", gap: 1, m: 1, alignItems: "center" }}>
-                <TagIcon />
-                <div>Name of the topic | 18+</div>
+                <GroupsIcon />
+                <div>{members.length} members</div>
               </Box>
             </Box>
           </Box>

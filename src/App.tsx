@@ -450,7 +450,6 @@ function App() {
             </>
           }
         />
-        {/* Groups */}
       </Routes>
     </>
   );
