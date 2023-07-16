@@ -15,6 +15,7 @@ import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
 import { IGroup } from "../../interface/Group";
 import { User } from "../../interface/User";
 import PostGroupForm from "../../components/Groups/PostGroupForm";
+import { Post } from "../../interface/PostContent";
 
 interface IData {
   inFoUser: User[];
@@ -22,7 +23,7 @@ interface IData {
 
 export default function GroupDetails({ inFoUser }: IData) {
   const { groupId } = useParams();
-  const [data, setData] = React.useState<IGroup[]>([]);
+  const [groupData, setGroupData] = React.useState<IGroup[]>([]);
   const [reFresh, setReFresh] = React.useState(0);
   const handleRefresh = () => {
     setReFresh((pre) => pre + 1);
@@ -40,6 +41,26 @@ export default function GroupDetails({ inFoUser }: IData) {
         const queriedData = querySnapshot.docs.map(
           (doc) => doc.data() as IGroup
         );
+        setGroupData(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [reFresh, groupId]);
+
+  const [data, setData] = React.useState<Post[]>([]);
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "posts"),
+          where("groupId", "==", groupId),
+          orderBy("createAt", "desc")
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
         setData(queriedData);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -48,9 +69,10 @@ export default function GroupDetails({ inFoUser }: IData) {
 
     fetchData();
   }, [reFresh, groupId]);
+
   return (
     <div>
-      {data.map((g) => (
+      {groupData.map((g) => (
         <Grid key={g.gId} sx={{ flexGrow: 1 }} container marginTop={5}>
           <Grid
             container
@@ -88,9 +110,29 @@ export default function GroupDetails({ inFoUser }: IData) {
                                 handdleReFresh={handleRefresh}
                                 inFoUser={inFoUser}
                                 groupName={g.groupName}
+                                groupId={g.gId}
                               />
                             </Item>
-                            <Item>{/* <MContainer /> */}</Item>
+                            <Item>
+                              {data.map((m) => (
+                                <Box key={m.id}>
+                                  <MContainer
+                                    onwer={m.owner}
+                                    postId={m.id}
+                                    caption={m.caption}
+                                    hashTagTopic={m.hashTagTopic}
+                                    status={m.status}
+                                    createAt={m.createAt}
+                                    emoji={m.emoji}
+                                    photoPost={m.photoPost}
+                                    likeNumber={m.likes.length}
+                                    likes={m.likes}
+                                    commentNumber={m.comments.length}
+                                    handleRefresh={handleRefresh}
+                                  />
+                                </Box>
+                              ))}
+                            </Item>
                           </Grid>
                           <Grid item xs={2.5}>
                             <Item>

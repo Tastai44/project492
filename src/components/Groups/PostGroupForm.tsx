@@ -12,12 +12,14 @@ interface IFunction {
 interface IData {
   inFoUser: User[];
   groupName: string;
+  groupId: string;
 }
 
 export default function PostGroupForm({
   handdleReFresh,
   inFoUser,
   groupName,
+  groupId
 }: IFunction & IData) {
   const [openCreatePost, setOpenCreatePost] = React.useState(false);
   const handletOpenCratePost = () => setOpenCreatePost(true);
@@ -36,6 +38,7 @@ export default function PostGroupForm({
             handleCloseCratePost={handleCloseCratePost}
             handdleReFresh={handdleReFresh}
             groupName={groupName}
+            groupId={groupId}
           />
         </Box>
       </Modal>

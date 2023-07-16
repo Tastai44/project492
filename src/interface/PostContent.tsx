@@ -46,4 +46,5 @@ export interface Post {
   location?: Address[];
   owner: string;
   groupName?:string;
+  groupId?: string;
 }

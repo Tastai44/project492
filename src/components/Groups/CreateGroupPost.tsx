@@ -14,7 +14,6 @@ import {
   ImageList,
   ImageListItem,
 } from "@mui/material";
-import Luffy from "../../../public/pictures/Luffy.webp";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
@@ -53,12 +52,14 @@ interface IHandle {
 }
 interface IData {
   groupName: string;
+  groupId: string;
 }
 
 export default function CreateGroupPost({
   handleCloseCratePost,
   handdleReFresh,
   groupName,
+  groupId
 }: IHandle & IData) {
   const [userId, setUserId] = React.useState("");
 
@@ -163,6 +164,7 @@ export default function CreateGroupPost({
       owner: userId,
       comments: post.comments,
       groupName: groupName,
+      groupId: groupId,
     };
 
     try {
