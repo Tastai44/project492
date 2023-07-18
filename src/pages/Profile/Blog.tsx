@@ -1,5 +1,4 @@
 import * as React from "react";
-import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
@@ -12,21 +11,18 @@ import { dbFireStore } from "../../config/firebase";
 import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
 import { Post } from "../../interface/PostContent";
 import { User } from "../../interface/User";
+import { Item } from "../../App";
 
 interface IData {
-  inFoUser: User[];
+  reFreshInfo: number;
 }
 
-const Item = styled(Box)(({ theme }) => ({
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  color: theme.palette.text.secondary,
-}));
-
-export default function Blog({ inFoUser }: IData) {
+export default function Blog({reFreshInfo} : IData) {
   const { userId } = useParams();
-
+  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   const [reFresh, setReFresh] = React.useState(0);
+
   const handleRefresh = () => {
     setReFresh((pre) => pre + 1);
   };
@@ -49,6 +45,29 @@ export default function Blog({ inFoUser }: IData) {
 
     fetchData();
   }, [reFresh, userId]);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", userInfo.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [userInfo.uid, reFreshInfo]);
 
   return (
     <div>

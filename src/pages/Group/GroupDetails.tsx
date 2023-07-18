@@ -17,11 +17,9 @@ import { User } from "../../interface/User";
 import PostGroupForm from "../../components/Groups/PostGroupForm";
 import { Post } from "../../interface/PostContent";
 
-interface IData {
-  inFoUser: User[];
-}
-
-export default function GroupDetails({ inFoUser }: IData) {
+export default function GroupDetails() {
+  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   const { groupId } = useParams();
   const [groupData, setGroupData] = React.useState<IGroup[]>([]);
   const [reFresh, setReFresh] = React.useState(0);
@@ -49,6 +47,29 @@ export default function GroupDetails({ inFoUser }: IData) {
 
     fetchData();
   }, [reFresh, groupId]);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", userInfo.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [userInfo.uid]);
 
   const [data, setData] = React.useState<Post[]>([]);
   React.useEffect(() => {

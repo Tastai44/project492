@@ -19,9 +19,7 @@ import { Box, Grid, Stack } from "@mui/material";
 import LeftSide from "./components/LeftSide";
 import RightContainer from "./components/RightSide/RightContainer";
 
-import { collection, query, getDocs, where } from "firebase/firestore";
-import { User } from "./interface/User";
-import { dbFireStore } from "./config/firebase";
+
 import ProCoverImage from "./components/Profile/ProCoverImage";
 import ProLeftside from "./components/Profile/ProLeftside";
 import { styled } from "@mui/material/styles";
@@ -36,35 +34,11 @@ function App() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
   const [reFresh, setReFresh] = React.useState(0);
   const handleRefresh = () => {
     setReFresh((pre) => pre + 1);
   };
-  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "users"),
-          where("uid", "==", userInfo.uid)
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              uid: doc.id,
-              ...doc.data(),
-            } as User)
-        );
-        setInFoUser(queriedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, [userInfo.uid, reFresh]);
 
   return (
     <>
@@ -80,19 +54,18 @@ function App() {
                   open={open}
                   handleOpen={handleOpen}
                   handleClose={handleClose}
-                  inFoUser={inFoUser}
                 />
                 <Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
                   <Grid item xs={12}>
                     <Grid container justifyContent="space-between">
                       <Grid item xs={2}>
                         <Box style={{ position: "fixed" }}>
-                          <LeftSide inFoUser={inFoUser} />
+                          <LeftSide />
                         </Box>
                       </Grid>
 
                       <Grid item xs={7}>
-                        <HomeFeed inFoUser={inFoUser} />
+                        <HomeFeed />
                       </Grid>
 
                       <Grid item xs={2}>
@@ -116,7 +89,6 @@ function App() {
                 open={open}
                 handleOpen={handleOpen}
                 handleClose={handleClose}
-                inFoUser={inFoUser}
               />
               {/* <Members /> */}
               <Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
@@ -129,7 +101,7 @@ function App() {
                   >
                     <Grid item xs={2}>
                       <div style={{ position: "fixed" }}>
-                        <LeftSide inFoUser={inFoUser} />
+                        <LeftSide />
                       </div>
                     </Grid>
                     <Members />
@@ -149,7 +121,6 @@ function App() {
                 open={open}
                 handleOpen={handleOpen}
                 handleClose={handleClose}
-                inFoUser={inFoUser}
               />
               <Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
                 <Grid item xs={12}>
@@ -161,7 +132,7 @@ function App() {
                   >
                     <Grid item xs={2}>
                       <div style={{ position: "fixed" }}>
-                        <LeftSide inFoUser={inFoUser} />
+                        <LeftSide />
                       </div>
                     </Grid>
 
@@ -191,7 +162,6 @@ function App() {
                 open={open}
                 handleOpen={handleOpen}
                 handleClose={handleClose}
-                inFoUser={inFoUser}
               />
 
               <Grid sx={{ flexGrow: 1 }} container marginTop={5}>
@@ -216,7 +186,7 @@ function App() {
                               <ProCoverImage />
                             </Item>
                             <Item>
-                              <Blog inFoUser={inFoUser} />
+                              <Blog reFreshInfo={reFresh}/>
                             </Item>
                           </Stack>
                         </Box>
@@ -239,7 +209,6 @@ function App() {
                 open={open}
                 handleOpen={handleOpen}
                 handleClose={handleClose}
-                inFoUser={inFoUser}
               />
               <Grid sx={{ flexGrow: 1 }} container marginTop={5}>
                 <Grid item xs={12}>
@@ -264,7 +233,7 @@ function App() {
                               <ProCoverImage />
                             </Item>
                             <Item>
-                              <AboutMe inFoUser={inFoUser} />
+                              <AboutMe reFresh={reFresh} />
                             </Item>
                           </Stack>
                         </Box>
@@ -286,7 +255,6 @@ function App() {
                 open={open}
                 handleOpen={handleOpen}
                 handleClose={handleClose}
-                inFoUser={inFoUser}
               />
               <Grid sx={{ flexGrow: 1 }} container marginTop={5}>
                 <Grid item xs={12}>
@@ -333,7 +301,6 @@ function App() {
                 open={open}
                 handleOpen={handleOpen}
                 handleClose={handleClose}
-                inFoUser={inFoUser}
               />
               <Grid sx={{ flexGrow: 1 }} container marginTop={5}>
                 <Grid item xs={12}>
@@ -383,7 +350,6 @@ function App() {
                 open={open}
                 handleOpen={handleOpen}
                 handleClose={handleClose}
-                inFoUser={inFoUser}
               />
               <Events />
               {/* </ProtectedRoute> */}
@@ -399,7 +365,6 @@ function App() {
                 open={open}
                 handleOpen={handleOpen}
                 handleClose={handleClose}
-                inFoUser={inFoUser}
               />
               <EventDetail />
               {/* </ProtectedRoute> */}
@@ -418,7 +383,6 @@ function App() {
                 open={open}
                 handleOpen={handleOpen}
                 handleClose={handleClose}
-                inFoUser={inFoUser}
               />
               <Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
                 <Grid item xs={12}>
@@ -430,7 +394,7 @@ function App() {
                   >
                     <Grid item xs={2}>
                       <div style={{ position: "fixed" }}>
-                        <LeftSide inFoUser={inFoUser} />
+                        <LeftSide />
                       </div>
                     </Grid>
 
@@ -459,9 +423,8 @@ function App() {
                 open={open}
                 handleOpen={handleOpen}
                 handleClose={handleClose}
-                inFoUser={inFoUser}
               />
-              <GroupDetails inFoUser={inFoUser}/>
+              <GroupDetails />
               {/* </ProtectedRoute> */}
             </>
           }

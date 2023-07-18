@@ -1,26 +1,19 @@
 import * as React from "react";
-import { styled } from "@mui/material/styles";
 import MContainer from "../components/MContainer/MContainer";
 import PostForm from "../components/MContainer/PostForm";
 import Box from "@mui/material/Box/Box";
 
 import { dbFireStore } from "../config/firebase";
-import { collection, query, orderBy, getDocs } from "firebase/firestore";
+import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
 import { Post } from "../interface/PostContent";
 import { User } from "../interface/User";
+import { Item } from "../App";
 
-interface IData {
-  inFoUser: User[];
-}
-
-export default function HomeFeed({inFoUser} : IData) {
-  const Item = styled(Box)(({ theme }) => ({
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    color: theme.palette.text.secondary,
-  }));
-
+export default function HomeFeed() {
+  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const [reFresh, setReFresh] = React.useState(0);
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+
   const handleRefresh = () => {
     setReFresh((pre) => pre + 1);
   };
@@ -42,6 +35,29 @@ export default function HomeFeed({inFoUser} : IData) {
 
     fetchData();
   }, [reFresh]);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", userInfo.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [userInfo.uid]);
 
   return (
     <>

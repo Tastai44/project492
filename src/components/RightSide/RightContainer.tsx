@@ -51,7 +51,7 @@ export default function RightContainer({handleOpen} : IFunction) {
           </div>
           <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
           <Box onClick={handleOpen}>
-            <UserCard />
+            <UserCard username={"df"} />
           </Box>
         </Item>
 
@@ -84,7 +84,7 @@ export default function RightContainer({handleOpen} : IFunction) {
           </div>
           <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
           <Box onClick={handleOpen}>
-            <UserCard />
+            <UserCard username={"df"} />
           </Box>
         </Item>
       </Stack>

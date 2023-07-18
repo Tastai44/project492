@@ -37,10 +37,11 @@ import { auth } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import ChatBox from "./Chat/ChatBox";
 import { User } from "../interface/User";
+import { collection, query, getDocs, where } from "firebase/firestore";
+import { dbFireStore } from "../config/firebase";
 
 interface IData {
   open: boolean;
-  inFoUser: User[];
 }
 interface IFunction {
   handleOpen: () => void;
@@ -89,7 +90,6 @@ export const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function Navigation({
   open,
-  inFoUser,
   handleOpen,
   handleClose,
 }: IData & IFunction) {
@@ -104,14 +104,38 @@ export default function Navigation({
         console.log(error);
       });
   };
-
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
-
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", userInfo.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [userInfo.uid]);
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

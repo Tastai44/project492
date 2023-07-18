@@ -1,3 +1,4 @@
+import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -19,7 +20,8 @@ import Diversity3Icon from "@mui/icons-material/Diversity3";
 import { NavLink } from "react-router-dom";
 
 import { User } from "../interface/User";
-
+import { collection, query, getDocs, where } from "firebase/firestore";
+import { dbFireStore } from "../config/firebase";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -29,12 +31,33 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-interface IData {
-  inFoUser: User[];
-}
 
-export default function LeftSide({inFoUser} : IData) {
-  const userInfo = JSON.parse(localStorage.getItem('user') || "null");
+export default function LeftSide() {
+  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", userInfo.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [userInfo.uid]);
 
   return (
     <Box sx={{ width: "120%" }}>
