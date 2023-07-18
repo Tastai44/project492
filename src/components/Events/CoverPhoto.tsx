@@ -177,7 +177,7 @@ export default function ProCoverImage({
                   Location
                 </Button>
               </Box>
-              <Box sx={{ display: "flex", gap: 0.5, m:1 }}>
+              <Box sx={{ display: "flex", gap: 0.5, m:1, alignItems:"center" }}>
                 <IconButton size="large">
                   <ShareIcon />
                 </IconButton>
@@ -248,7 +248,6 @@ export default function ProCoverImage({
                           border: "1px solid",
                           backgroundColor: "grey",
                         },
-                        mr: 1,
                       }}
                       startIcon={
                         <DeleteOutlineOutlinedIcon sx={{ width: "16px" }} />

@@ -11,6 +11,7 @@ import ShareIcon from "@mui/icons-material/Share";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import GroupsIcon from "@mui/icons-material/Groups";
 import { IMember } from "../../interface/Group";
+import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 
 interface IData {
   coverPhoto: string;
@@ -53,12 +54,28 @@ export default function ProCoverImage({coverPhoto, createAt, title, members} : I
               >
                 {title}
               </Box>
-              <Box sx={{ display: "flex", pt:1, pb:1 }}>
-                <IconButton size="large">
-                  <ShareIcon sx={{width:"20px"}}/>
+              <Box sx={{ display: "flex", gap: 0.5, m:1, alignItems:"center" }}>
+              <IconButton size="large">
+                  <ShareIcon />
                 </IconButton>
                 <Button
                   sx={{
+                    fontSize: "16px",
+                    backgroundColor: "#8E51E2",
+                    color: "white",
+                    "&:hover": {
+                      color: "black",
+                      backgroundColor: "#E9E8E8",
+                    },
+                  }}
+                  size="small"
+                  startIcon={<MessageIcon sx={{width:"16px"}}/>}
+                >
+                  Chatting
+                </Button>
+                <Button
+                  sx={{
+                    fontSize: "16px",
                     mr: 1,
                     backgroundColor: "#8E51E2",
                     color: "white",
@@ -66,11 +83,11 @@ export default function ProCoverImage({coverPhoto, createAt, title, members} : I
                       color: "black",
                       backgroundColor: "#E9E8E8",
                     },
-                    m: 1,
                   }}
-                  startIcon={<MessageIcon />}
+                  size="small"
+                  startIcon={<BorderColorOutlinedIcon sx={{width:"16px"}}/>}
                 >
-                  Chatting
+                  Edit
                 </Button>
               </Box>
             </Box>

@@ -30,6 +30,7 @@ import {
 import { dbFireStore } from "../../config/firebase";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { stylePreviewPhoto } from "../../utils/styleBox";
+import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
@@ -57,6 +58,7 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
 
   const { userId } = useParams();
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -172,7 +174,9 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
               </Box>
             </Box>
           )}
-          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, m:1 }}>
+          <Box
+            sx={{ display: "flex", justifyContent: "flex-end", gap: 1, m: 1 }}
+          >
             <Button
               sx={{
                 backgroundColor: "grey",
@@ -241,7 +245,7 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
                         <Box onClick={handleUploadClick}>
                           <IconButton
                             sx={{
-                              backgroundColor:"white",
+                              backgroundColor: "white",
                               "&:hover": {
                                 color: "white",
                                 backgroundColor: "black",
@@ -280,20 +284,41 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
                     {m.firstName} {m.lastName}
                   </div>
                   <div>@{m.username}</div>
-                  <Button
-                    sx={{
-                      width: "30px",
-                      backgroundColor: "#8E51E2",
-                      color: "white",
-                      "&:hover": {
-                        color: "black",
-                        backgroundColor: "white",
-                      },
-                    }}
-                    onClick={handleOpen}
-                  >
-                    Edit
-                  </Button>
+                  {userInfo.uid == m.uid ? (
+                    <Button
+                      size="small"
+                      sx={{
+                        width: "30px",
+                        fontSize:"16px",
+                        alignItems:"center",
+                        backgroundColor: "#8E51E2",
+                        color: "white",
+                        "&:hover": {
+                          color: "black",
+                          backgroundColor: "white",
+                        },
+                      }}
+                      startIcon={<BorderColorOutlinedIcon sx={{width:"16px"}} />}
+                      onClick={handleOpen}
+                    >
+                      Edit
+                    </Button>
+                  ) : (
+                    <Button
+                      size="small"
+                      sx={{
+                        width: "100px",
+                        backgroundColor: "#8E51E2",
+                        color: "white",
+                        "&:hover": {
+                          color: "black",
+                          backgroundColor: "white",
+                        },
+                      }}
+                    >
+                      Add Friend
+                    </Button>
+                  )}
                 </Item>
                 <Divider style={{ background: "#EAEAEA" }} />
 

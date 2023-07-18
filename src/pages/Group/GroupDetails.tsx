@@ -149,6 +149,8 @@ export default function GroupDetails() {
                                     likeNumber={m.likes.length}
                                     likes={m.likes}
                                     commentNumber={m.comments.length}
+                                    groupName={m.groupName}
+                                    groupId={m.groupId}
                                     handleRefresh={handleRefresh}
                                   />
                                 </Box>
