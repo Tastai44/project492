@@ -1,14 +1,25 @@
 import { Box} from '@mui/material'
 import Host from './Host'
 import InterestedContainer from './InterestedContainer'
+import { EventPost } from '../../interface/Event';
 
-export default function LeftSideContainer() {
+interface IData {
+  evenetData: EventPost[];
+}
+
+export default function LeftSideContainer({evenetData} : IData) {
   return (
     <div>
-      <Box sx={{display:"flex", flexDirection:"column"}}>
-        <Host />
-        <InterestedContainer />
-      </Box>
+      {evenetData.map((e) => (
+        <Box sx={{display:"flex", flexDirection:"column"}} key={e.id}>
+          <Host 
+            hostId={e.owner}
+          />
+          <InterestedContainer 
+            interestedPeople={e.interest}
+          />
+        </Box>
+      ))}
     </div>
   )
 }

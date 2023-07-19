@@ -1,9 +1,13 @@
+import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Badge from "@mui/material/Badge";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import Luffy from "../../../public/pictures/Luffy.webp";
 import { Typography } from "@mui/material";
+import { dbFireStore } from "../../config/firebase";
+import { collection, query, getDocs, where } from "firebase/firestore";
+import { User } from "../../interface/User";
 
 export const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -35,16 +39,44 @@ export const StyledBadge = styled(Badge)(({ theme }) => ({
 }));
 
 interface IData {
-  username: string;
+  username?: string;
+  userId?: string;
 }
 
-export default function UserCard({username} : IData) {
+export default function UserCard({ username, userId }: IData) {
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", userId)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    if (userId) {
+      fetchData();
+    }
+  }, [userId]);
+  console.log(username);
+
   return (
     <Stack
       direction="row"
       spacing={2}
       sx={{
-        p:1,
+        p: 1,
         display: "flex",
         alignItems: "center",
         marginBottom: "10px",
@@ -61,7 +93,17 @@ export default function UserCard({username} : IData) {
       >
         <Avatar alt="Remy Sharp" src={Luffy} />
       </StyledBadge>
-      <Typography sx={{fontSize:"16px"}}>{username}</Typography>
+      {(inFoUser.length!==0) ? (
+        <>
+          {inFoUser.map((u) => (
+            <Typography sx={{ fontSize: "16px" }}>
+              {u.username !== null ? u.username : ""}
+            </Typography>
+          ))}
+        </>
+      ) : (
+        <Typography sx={{ fontSize: "16px" }}>{username}</Typography>
+      )}
     </Stack>
   );
 }

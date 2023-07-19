@@ -83,7 +83,9 @@ export default function EventDetail() {
                       <Grid container spacing={2}>
                         <Grid item xs={2.5}>
                           <Item>
-                            <LeftSideContainer />
+                            <LeftSideContainer 
+                              evenetData={data}
+                            />
                           </Item>
                         </Grid>
                         <Grid item xs={7}>

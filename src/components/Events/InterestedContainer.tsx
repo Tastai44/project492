@@ -1,7 +1,13 @@
 import { Paper, Divider, Box } from "@mui/material";
 import UserCard from "../RightSide/UserCard";
+import { Interest } from "../../interface/Event";
+import { NavLink } from "react-router-dom";
 
-export default function InterestedContainer() {
+interface IData {
+  interestedPeople: Interest[];
+}
+
+export default function InterestedContainer({ interestedPeople }: IData) {
   return (
     <Paper>
       <Box
@@ -16,10 +22,11 @@ export default function InterestedContainer() {
         </Box>
       </Box>
       <Divider light />
-      <UserCard />
-      <UserCard />
-      <UserCard />
-      <UserCard />
+      {interestedPeople.map((i) => (
+        <NavLink to={`/profileBlog/${i.interestBy}`} style={{ color: "black" }}>
+          <UserCard key={i.interestBy} userId={i.interestBy} />
+        </NavLink>
+      ))}
     </Paper>
   );
 }
