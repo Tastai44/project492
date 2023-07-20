@@ -5,8 +5,14 @@ import CardActions from "@mui/material/CardActions";
 import Typography from "@mui/material/Typography";
 import Luffy from "../../../public/pictures/Luffy.webp";
 import { Button } from "@mui/material";
+import { User } from "../../interface/User";
 
-export default function MemberCard() {
+interface IData {
+  members: User;
+}
+
+export default function MemberCard(props : IData) {
+  console.log(props.members)
   return (
     <Card sx={{ width: 250 }}>
       <CardActions disableSpacing sx={{display:"flex", justifyContent:"center", gap:1 ,background:"white"}}>
@@ -16,7 +22,7 @@ export default function MemberCard() {
       <CardMedia component="img" height="194" image={Luffy} alt="Paella dish" />
       <CardContent>
         <Typography variant="body2" color="text.secondary" sx={{fontSize:"20px"}}>
-          Tastai Khianjai
+          {props.members.username}
         </Typography>
       </CardContent>
     </Card>

@@ -108,6 +108,7 @@ export default function GroupDetails() {
                   <Stack>
                     <Item sx={{ mb: 0 }}>
                       <CoverPhoto
+                        host={g.hostId}
                         coverPhoto={g.coverPhoto}
                         createAt={g.createAt}
                         title={g.groupName}

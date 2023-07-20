@@ -6,25 +6,31 @@ import {
   Divider,
   IconButton,
 } from "@mui/material";
-import MessageIcon from '@mui/icons-material/Message';
+import MessageIcon from "@mui/icons-material/Message";
 import ShareIcon from "@mui/icons-material/Share";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import GroupsIcon from "@mui/icons-material/Groups";
 import { IMember } from "../../interface/Group";
-import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 
 interface IData {
   coverPhoto: string;
   createAt: string;
   title: string;
+  host: string;
   members: IMember[];
 }
 
-export default function ProCoverImage({coverPhoto, createAt, title, members} : IData) {
+export default function ProCoverImage(props: IData) {
+  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   return (
     <div>
       <Card sx={{ maxWidth: "100%" }}>
-        <CardMedia sx={{ height: 300 }} image={coverPhoto} title="green iguana" />
+        <CardMedia
+          sx={{ height: 300 }}
+          image={props.coverPhoto}
+          title="green iguana"
+        />
       </Card>
       <Box
         sx={{
@@ -52,10 +58,12 @@ export default function ProCoverImage({coverPhoto, createAt, title, members} : I
                   fontSize: "20px",
                 }}
               >
-                {title}
+                {props.title}
               </Box>
-              <Box sx={{ display: "flex", gap: 0.5, m:1, alignItems:"center" }}>
-              <IconButton size="large">
+              <Box
+                sx={{ display: "flex", gap: 0.5, m: 1, alignItems: "center" }}
+              >
+                <IconButton size="large">
                   <ShareIcon />
                 </IconButton>
                 <Button
@@ -69,37 +77,41 @@ export default function ProCoverImage({coverPhoto, createAt, title, members} : I
                     },
                   }}
                   size="small"
-                  startIcon={<MessageIcon sx={{width:"16px"}}/>}
+                  startIcon={<MessageIcon sx={{ width: "16px" }} />}
                 >
                   Chatting
                 </Button>
-                <Button
-                  sx={{
-                    fontSize: "16px",
-                    mr: 1,
-                    backgroundColor: "#8E51E2",
-                    color: "white",
-                    "&:hover": {
-                      color: "black",
-                      backgroundColor: "#E9E8E8",
-                    },
-                  }}
-                  size="small"
-                  startIcon={<BorderColorOutlinedIcon sx={{width:"16px"}}/>}
-                >
-                  Edit
-                </Button>
+                {userInfo.uid === props.host && (
+                  <Button
+                    sx={{
+                      fontSize: "16px",
+                      mr: 1,
+                      backgroundColor: "#8E51E2",
+                      color: "white",
+                      "&:hover": {
+                        color: "black",
+                        backgroundColor: "#E9E8E8",
+                      },
+                    }}
+                    size="small"
+                    startIcon={
+                      <BorderColorOutlinedIcon sx={{ width: "16px" }} />
+                    }
+                  >
+                    Edit
+                  </Button>
+                )}
               </Box>
             </Box>
             <Divider light sx={{ mb: 1 }} />
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
               <Box sx={{ display: "flex", gap: 1, m: 1, alignItems: "center" }}>
                 <DateRangeIcon />
-                <div>Create date: {createAt}</div>
+                <div>Create date: {props.createAt}</div>
               </Box>
               <Box sx={{ display: "flex", gap: 1, m: 1, alignItems: "center" }}>
                 <GroupsIcon />
-                <div>{members.length} members</div>
+                <div>{props.members.length} members</div>
               </Box>
             </Box>
           </Box>
