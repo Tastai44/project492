@@ -69,7 +69,6 @@ export default function UserCard({ username, userId }: IData) {
       fetchData();
     }
   }, [userId]);
-  console.log(username);
 
   return (
     <Stack

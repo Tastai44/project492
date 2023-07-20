@@ -11,7 +11,7 @@ React.useEffect(() => {
       try {
         const q = query(
           collection(dbFireStore, "users"),
-          orderBy("createAt", "desc")
+          orderBy("firstName", "desc")
         );
         const querySnapshot = await getDocs(q);
         const queriedData = querySnapshot.docs.map((doc) => doc.data() as User);
@@ -22,13 +22,16 @@ React.useEffect(() => {
     };
     fetchData();
   },[])
+  console.log(users)
 
   return (
     <Grid sx={{ flexGrow: 1, gap:"30px" }} container>
       {users.map((u) => (
           <MemberCard 
             key={u.uid}
-            members={u}
+            username={`${u.firstName} ${u.lastName}`}
+            profilePhoto={u.profilePhoto ? u.profilePhoto : ""}
+            uId={u.uid}
           />
       ))}
     </Grid>
