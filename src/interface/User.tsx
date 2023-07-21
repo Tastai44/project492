@@ -15,4 +15,13 @@ export interface User {
     status?: string;
     year?: string;
     posts?: Post[];
+    friendList?: IFriendList[];
+}
+
+export interface IFriendList{
+    status: boolean;
+    friendId: string;
+    username: string;
+    profilePhoto?: string;
+    createdAt: string;
 }

@@ -109,8 +109,6 @@ export default function Navigation({
     React.useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
 
   React.useEffect(() => {
@@ -135,6 +133,7 @@ export default function Navigation({
     };
     fetchData();
   }, [userInfo.uid]);
+
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
