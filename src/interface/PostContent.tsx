@@ -38,6 +38,7 @@ export interface Post {
   photoPost: string[];
   likes: Like[];
   createAt?: string;
+  date?: string;
   updateAt?: string;
   emoji?: string;
   comments: Comment[];

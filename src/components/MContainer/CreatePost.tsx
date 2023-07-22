@@ -153,6 +153,7 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
       photoPost: previewImages,
       likes: [],
       createAt: new Date().toLocaleString(),
+      date: new Date().toLocaleDateString("en-US"),
       emoji: emoji,
       owner: userId,
       comments: post.comments,

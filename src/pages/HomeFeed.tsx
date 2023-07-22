@@ -59,8 +59,6 @@ export default function HomeFeed() {
     fetchData();
   }, [userInfo.uid]);
 
-  console.log(inFoUser)
-
   return (
     <>
       <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
