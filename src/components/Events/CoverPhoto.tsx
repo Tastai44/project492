@@ -25,8 +25,6 @@ import {
   arrayUnion,
   deleteDoc,
   getDoc,
-  // deleteDoc,
-  // getDoc,
 } from "firebase/firestore";
 import { EventPost, Interest } from "../../interface/Event";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";

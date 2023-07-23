@@ -108,11 +108,14 @@ export default function GroupDetails() {
                   <Stack>
                     <Item sx={{ mb: 0 }}>
                       <CoverPhoto
+                        gId={g.gId}
                         host={g.hostId}
                         coverPhoto={g.coverPhoto}
                         createAt={g.createAt}
                         title={g.groupName}
                         members={g.members}
+                        details={g.details}
+                        status={g.status}
                       />
                     </Item>
                     <Item>

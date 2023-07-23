@@ -213,9 +213,9 @@ export default function AddGroup({ closeEdit, handleRefresh }: Ihandle) {
           <TextField
             sx={{ width: "100%" }}
             id="outlined-basic"
-            label="Title"
+            label="Group Name"
             variant="outlined"
-            name="title"
+            name="groupName"
             onChange={handleChangeGroup}
             value={group.groupName}
           />
@@ -259,7 +259,7 @@ export default function AddGroup({ closeEdit, handleRefresh }: Ihandle) {
           </Box>
 
           <Box sx={{ display: "flex", gap: 1, mt: 1, mb: 1 }}>
-            <FormControl size="small" sx={{ width: "100%" }}>
+            <FormControl sx={{ width: "100%" }}>
               <InputLabel id="demo-simple-select">Status</InputLabel>
               <Select
                 label="Status"
