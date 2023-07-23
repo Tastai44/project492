@@ -14,7 +14,6 @@ import {
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
-import { EventPost } from "../../interface/Event";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import CancelIcon from "@mui/icons-material/Cancel";
 import LockIcon from "@mui/icons-material/Lock";
@@ -24,7 +23,7 @@ import PublicIcon from "@mui/icons-material/Public";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { doc } from "firebase/firestore";
-import { collection, setDoc } from "firebase/firestore";
+import { collection, getDoc, updateDoc } from "firebase/firestore";
 
 const style = {
   position: "absolute",
@@ -43,7 +42,21 @@ interface Ihandle {
   handleRefresh: () => void;
 }
 
-export default function AddEvent({ closeAdd, handleRefresh }: Ihandle) {
+interface IData {
+    eventId: string;
+    startDate: string;
+    startTime: string;
+    endDate: string;
+    endTime: string;
+    title: string;
+    coverPhoto: string[];
+    topic: string;
+    ageRage: number;
+    details: string;
+    status: string;
+  }
+
+export default function EditEvent(props:IData & Ihandle ) {
   const [userId, setUserId] = React.useState("");
   React.useEffect(() => {
     const getUerInfo = localStorage.getItem("user");
@@ -56,7 +69,7 @@ export default function AddEvent({ closeAdd, handleRefresh }: Ihandle) {
     setStatus(event.target.value as string);
   };
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-  const [previewImages, setPreviewImages] = React.useState<string[]>([]);
+  const [previewImages, setPreviewImages] = React.useState<string[]>(props.coverPhoto);
 
   const handleClearImage = () => {
     setPreviewImages([]);
@@ -93,22 +106,20 @@ export default function AddEvent({ closeAdd, handleRefresh }: Ihandle) {
   };
 
   const initialState = {
-    id: "",
-    title: "",
-    startDate: "",
-    startTime: "",
-    endDate: "",
-    endTime: "",
-    topic: "",
-    ageRage: 0,
-    details: "",
-    status: "",
-    coverPhoto: [],
-    interest: [],
-    owner: "",
-    createAt: "",
+    eventId: "",
+    title: props.title,
+    startDate: props.startDate,
+    startTime: props.startTime,
+    endDate: props.endDate,
+    endTime: props.endTime,
+    topic: props.topic,
+    ageRage: props.ageRage,
+    details: props.details,
+    status: props.status,
+    coverPhoto: props.coverPhoto,
   };
-  const [event, setEvent] = React.useState<EventPost>(initialState);
+
+  const [event, setEvent] = React.useState<IData>(initialState);
   const clearState = () => {
     setEvent({ ...initialState });
     handleClearImage();
@@ -123,56 +134,60 @@ export default function AddEvent({ closeAdd, handleRefresh }: Ihandle) {
     }));
   };
 
-  const createEvent = async () => {
+  const handleEditEvent = () => {
     const eventCollection = collection(dbFireStore, "events");
-    const newEvent = {
-      id: "",
-      title: event.title,
-      startDate: event.startDate
-        ? event.startDate
-        : new Date().toISOString().slice(0, 10),
-      startTime: event.startTime
-        ? event.startTime
-        : new Date().toLocaleTimeString("en-US", {
-            hour12: false,
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-      endDate: event.endDate
-        ? event.endDate
-        : new Date().toISOString().slice(0, 10),
-      endTime: event.endTime
-        ? event.endTime
-        : new Date().toLocaleTimeString("en-US", {
-            hour12: false,
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-      topic: event.topic,
-      ageRage: event.ageRage,
-      details: event.details,
-      coverPhoto: previewImages,
-      status: status,
-      interest: [],
-      createAt: new Date().toLocaleString(),
-      owner: userId,
+    const updatedEvent = {
+        title: event.title,
+        startDate: event.startDate
+          ? event.startDate
+          : new Date().toISOString().slice(0, 10),
+        startTime: event.startTime
+          ? event.startTime
+          : new Date().toLocaleTimeString("en-US", {
+              hour12: false,
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+        endDate: event.endDate
+          ? event.endDate
+          : new Date().toISOString().slice(0, 10),
+        endTime: event.endTime
+          ? event.endTime
+          : new Date().toLocaleTimeString("en-US", {
+              hour12: false,
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+        topic: event.topic,
+        ageRage: event.ageRage,
+        details: event.details,
+        coverPhoto: previewImages,
+        status: status,
+        updateAt: new Date().toLocaleString(),
     };
-
     try {
-      const docRef = doc(eventCollection);
-      const eventId = docRef.id;
-      const updatedEvent = { ...newEvent, id: eventId };
-      await setDoc(docRef, updatedEvent);
+        const docRef = doc(eventCollection, props.eventId);
+        getDoc(docRef)
+          .then(async (docSnap) => {
+            if (docSnap.exists() && docSnap.data().owner === userId) {
+              await updateDoc(docRef, updatedEvent);
+              clearState();
+              props.handleRefresh();
+              props.closeAdd();
+            //   handleRefreshData();
+            } else {
+              console.log("You don't have permission to delete this post");
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching post: ", error);
+          });
+      } catch (error) {
+        console.error("Error updating post: ", error);
+      }
+  }
 
-      setEvent(updatedEvent);
-      clearState();
-      closeAdd();
-      handleRefresh();
-      alert("Success!");
-    } catch (error) {
-      console.error("Error adding post: ", error);
-    }
-  };
+  
 
   return (
     <div style={{ color: "black" }}>
@@ -368,12 +383,12 @@ export default function AddEvent({ closeAdd, handleRefresh }: Ihandle) {
                 backgroundColor: "#E1E1E1",
               },
             }}
-            onClick={closeAdd}
+            onClick={props.closeAdd}
           >
             Cancel
           </Button>
           <Button
-            onClick={createEvent}
+            onClick={handleEditEvent}
             sx={{
               backgroundColor: "#8E51E2",
               color: "white",

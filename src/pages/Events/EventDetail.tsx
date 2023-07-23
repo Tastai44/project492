@@ -76,6 +76,8 @@ export default function EventDetail() {
                       interest={e.interest}
                       owner={e.owner}
                       handleRefresh={handleRefresh}
+                      details={e.details}
+                      status={e.status}
                     />
                   </Item>
                   <Item>

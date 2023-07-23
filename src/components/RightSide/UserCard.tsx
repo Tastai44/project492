@@ -95,7 +95,7 @@ export default function UserCard({ username, userId }: IData) {
       {(inFoUser.length!==0) ? (
         <>
           {inFoUser.map((u) => (
-            <Typography sx={{ fontSize: "16px" }}>
+            <Typography key={u.uid} sx={{ fontSize: "16px" }}>
               {u.username !== null ? u.username : ""}
             </Typography>
           ))}

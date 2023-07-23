@@ -1,3 +1,4 @@
+import * as React from "react";
 import {
   Box,
   Button,
@@ -5,6 +6,7 @@ import {
   CardMedia,
   Divider,
   IconButton,
+  Modal,
 } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -30,6 +32,7 @@ import { EventPost, Interest } from "../../interface/Event";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import { useNavigate } from "react-router-dom";
+import EditEvent from "./EditEvent";
 
 interface IData {
   eventId: string;
@@ -43,6 +46,8 @@ interface IData {
   ageRage: number;
   interest: Interest[];
   owner: string;
+  details: string;
+  status: string;
 }
 
 interface IFunction {
@@ -61,11 +66,18 @@ export default function ProCoverImage({
   ageRage,
   interest,
   owner,
+  details,
+  status,
   handleRefresh,
 }: IData & IFunction) {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const IsOwner = userInfo.uid === owner;
   const isInterest = interest.some((f) => f.interestBy === userInfo.uid);
+
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   const navigate = useNavigate();
   const increaseInterest = () => {
     const eventtsCollection = collection(dbFireStore, "events");
@@ -134,6 +146,31 @@ export default function ProCoverImage({
 
   return (
     <div>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box>
+          <EditEvent
+            closeAdd={handleClose}
+            handleRefresh={handleRefresh}
+            eventId={eventId}
+            startDate={startDate}
+            startTime={startTime}
+            endDate={endDate}
+            endTime={endTime}
+            title={title}
+            coverPhoto={coverPhoto}
+            topic={topic}
+            ageRage={ageRage}
+            details={details}
+            status={status}
+          />
+        </Box>
+      </Modal>
+
       <Card sx={{ maxWidth: "100%" }}>
         {coverPhoto.map((cover, index) => (
           <CardMedia
@@ -177,7 +214,9 @@ export default function ProCoverImage({
                   Location
                 </Button>
               </Box>
-              <Box sx={{ display: "flex", gap: 0.5, m:1, alignItems:"center" }}>
+              <Box
+                sx={{ display: "flex", gap: 0.5, m: 1, alignItems: "center" }}
+              >
                 <IconButton size="large">
                   <ShareIcon />
                 </IconButton>
@@ -215,6 +254,7 @@ export default function ProCoverImage({
                 {IsOwner ? (
                   <>
                     <Button
+                      onClick={handleOpen}
                       size="small"
                       variant="outlined"
                       sx={{

@@ -85,10 +85,13 @@ export default function TopicContainer() {
   const handleWeekly = () => {
     const today = new Date();
     const firstDayOfWeek = new Date(today);
-    firstDayOfWeek.setDate(today.getDate() - today.getDay());
-    const lastDayOfWeek = new Date(today);
-    lastDayOfWeek.setDate(today.getDate() + (6 - today.getDay()));
-
+    const dayOfWeek = today.getDay();
+  
+    firstDayOfWeek.setDate(today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1));
+  
+    const lastDayOfWeek = new Date(firstDayOfWeek);
+    lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+  
     const fetchWeeklyData = async () => {
       try {
         const startDate = firstDayOfWeek.toLocaleDateString("en-US");
@@ -106,21 +109,15 @@ export default function TopicContainer() {
         console.error("Error fetching data:", error);
       }
     };
-
+  
     fetchWeeklyData();
   };
 
   const handleMonthly = () => {
     const today = new Date();
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    firstDayOfMonth.setDate(today.getDate() - today.getDay());
-    const lastDayOfMonth = new Date(
-      today.getFullYear(),
-      today.getMonth() + 1,
-      0
-    );
-    lastDayOfMonth.setDate(today.getDate() + (6 - today.getDay()));
-
+    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  
     const fetchData = async () => {
       try {
         const startOfMonth = firstDayOfMonth.toLocaleDateString("en-US");
