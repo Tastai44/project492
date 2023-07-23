@@ -29,6 +29,7 @@ import { dbFireStore } from "../../config/firebase";
 import { doc, getDocs } from "firebase/firestore";
 import { collection, setDoc } from "firebase/firestore";
 import { User } from "../../interface/User";
+import { styleBox } from "../../utils/styleBox";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -48,18 +49,6 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
         : theme.typography.fontWeightMedium,
   };
 }
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
 
 interface Ihandle {
   closeEdit: () => void;
@@ -204,7 +193,7 @@ export default function AddGroup({ closeEdit, handleRefresh }: Ihandle) {
 
   return (
     <div style={{ color: "black" }}>
-      <Box sx={style}>
+      <Box sx={styleBox}>
         <Typography id="modal-modal-title" variant="h5">
           Create a group
         </Typography>
@@ -323,7 +312,7 @@ export default function AddGroup({ closeEdit, handleRefresh }: Ihandle) {
             />
           </FormControl>
         </Box>
-        <Typography
+        <Box
           sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}
         >
           <Button
@@ -353,7 +342,7 @@ export default function AddGroup({ closeEdit, handleRefresh }: Ihandle) {
           >
             Save
           </Button>
-        </Typography>
+        </Box>
         {previewImages.length !== 0 && (
           <Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>

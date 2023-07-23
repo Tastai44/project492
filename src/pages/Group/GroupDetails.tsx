@@ -126,6 +126,7 @@ export default function GroupDetails() {
                               <LeftSideContainer
                                 hostId={g.hostId}
                                 members={g.members}
+                                gId={g.gId}
                               />
                             </Item>
                           </Grid>

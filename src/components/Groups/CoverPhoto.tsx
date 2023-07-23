@@ -77,7 +77,6 @@ export default function ProCoverImage(
             handleRefresh={handleRefresh}
             gId={props.gId}
             groupName={props.title}
-            members={props.members}
             status={props.status}
             details={props.details}
             coverPhoto={props.coverPhoto}

@@ -4,16 +4,17 @@ import Host from "../Events/Host";
 import { IMember } from "../../interface/Group";
 
 interface IData {
+  gId: string;
   hostId: string;
   members: IMember[];
 }
 
-export default function LeftSideContainer({ hostId, members }: IData) {
+export default function LeftSideContainer(props: IData) {
   return (
     <div>
       <Box sx={{ display: "flex", flexDirection: "column" }}>
-        <Host hostId={hostId} />
-        <InterestedContainer members={members} />
+        <Host hostId={props.hostId} />
+        <InterestedContainer members={props.members} gId={props.gId} />
       </Box>
     </div>
   );
