@@ -1,7 +1,7 @@
 import * as React from "react";
 import MContainer from "../components/MContainer/MContainer";
 import PostForm from "../components/MContainer/PostForm";
-import Box from "@mui/material/Box/Box";
+import Box from "@mui/material/Box";
 
 import { dbFireStore } from "../config/firebase";
 import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
@@ -67,7 +67,8 @@ export default function HomeFeed() {
       <Item sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         {data.map((m) => (
           <Box key={m.id}>
-            <MContainer
+            {(m.status === "Public" || m.status === "Friend") && (
+              <MContainer
               onwer={m.owner}
               postId={m.id}
               caption={m.caption}
@@ -83,6 +84,7 @@ export default function HomeFeed() {
               groupId={m.groupId}
               handleRefresh={handleRefresh}
             />
+            )}
           </Box>
         ))}
       </Item>
