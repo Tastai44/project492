@@ -9,7 +9,10 @@ interface IData {
   members: IMember[];
   gId: string;
 }
-export default function InterestedContainer(props: IData) {
+interface IFunction {
+  handleRefresh: () => void;
+}
+export default function InterestedContainer(props: IData & IFunction) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -23,7 +26,7 @@ export default function InterestedContainer(props: IData) {
         aria-describedby="modal-modal-description"
       >
         <Box>
-          <AddMembers handleClose={handleClose}/>
+          <AddMembers gId={props.gId} handleClose={handleClose} handleRefresh={props.handleRefresh}/>
         </Box>
       </Modal>
       <Paper>

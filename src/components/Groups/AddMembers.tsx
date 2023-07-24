@@ -17,9 +17,8 @@ import * as React from "react";
 import { styleBox } from "../../utils/styleBox";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
-import { getDocs } from "firebase/firestore";
-import { collection } from "firebase/firestore";
 import { User } from "../../interface/User";
+import { collection, getDocs, doc, updateDoc, arrayUnion } from "firebase/firestore";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -42,9 +41,14 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
 
 interface IFunction {
   handleClose: () => void;
+  handleRefresh: () => void;
 }
 
-export default function AddMembers(props: IFunction) {
+interface IData {
+  gId: string;
+}
+
+export default function AddMembers(props: IFunction & IData) {
   const theme = useTheme();
   const [member, setMember] = React.useState<string[]>([]);
   const [users, setUsers] = React.useState<User[]>([]);
@@ -77,6 +81,29 @@ export default function AddMembers(props: IFunction) {
     };
     fetchData();
   }, []);
+
+  const addMember = () => {
+    const groupCollection = collection(dbFireStore, "groups");
+    const tmp = [...member].map((m) => JSON.parse(m));
+    const tmp2 = tmp.map((m) => {
+      return {
+        uid: m.uid,
+        username: `${m.firstName} ${m.lastName}`,
+      };
+    });
+    const groupRef = doc(groupCollection, props.gId);
+    updateDoc(groupRef, {
+      members: arrayUnion(...tmp2), // Use arrayUnion to insert into the array
+    })
+      .then(() => {
+        props.handleRefresh();
+        props.handleClose();
+      })
+      .catch((error) => {
+        console.error("Error adding likes: ", error);
+      });
+  };
+
   return (
     <div>
       <Box sx={styleBox}>
@@ -146,7 +173,7 @@ export default function AddMembers(props: IFunction) {
                 backgroundColor: "#E1E1E1",
               },
             }}
-            // onClick={createGroup}
+            onClick={addMember}
             type="submit"
           >
             Add

@@ -127,6 +127,7 @@ export default function GroupDetails() {
                                 hostId={g.hostId}
                                 members={g.members}
                                 gId={g.gId}
+                                handleRefresh={handleRefresh}
                               />
                             </Item>
                           </Grid>

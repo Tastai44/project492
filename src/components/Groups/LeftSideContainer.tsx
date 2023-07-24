@@ -8,13 +8,16 @@ interface IData {
   hostId: string;
   members: IMember[];
 }
+interface IFunction {
+  handleRefresh: () => void;
+}
 
-export default function LeftSideContainer(props: IData) {
+export default function LeftSideContainer(props: IData & IFunction) {
   return (
     <div>
       <Box sx={{ display: "flex", flexDirection: "column" }}>
         <Host hostId={props.hostId} />
-        <InterestedContainer members={props.members} gId={props.gId} />
+        <InterestedContainer members={props.members} gId={props.gId} handleRefresh={props.handleRefresh} />
       </Box>
     </div>
   );
