@@ -1,6 +1,7 @@
 export interface IMember {
     uid: string;
     username: string;
+    profilePhoto?: string;
 }
 
 export interface IGroup {

@@ -18,7 +18,15 @@ import { styleBox } from "../../utils/styleBox";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { User } from "../../interface/User";
-import { collection, getDocs, doc, updateDoc, arrayUnion } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
+import { Search, SearchIconWrapper, StyledInputBase } from "../Navigation";
+import SearchIcon from "@mui/icons-material/Search";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -54,7 +62,6 @@ export default function AddMembers(props: IFunction & IData) {
   const [users, setUsers] = React.useState<User[]>([]);
   // const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
-
   const handleAddMember = (event: SelectChangeEvent<typeof member>) => {
     const {
       target: { value },
@@ -89,11 +96,12 @@ export default function AddMembers(props: IFunction & IData) {
       return {
         uid: m.uid,
         username: `${m.firstName} ${m.lastName}`,
+        profilePhoto: m.profilePhoto,
       };
     });
     const groupRef = doc(groupCollection, props.gId);
     updateDoc(groupRef, {
-      members: arrayUnion(...tmp2), // Use arrayUnion to insert into the array
+      members: arrayUnion(...tmp2),
     })
       .then(() => {
         props.handleRefresh();
@@ -107,9 +115,37 @@ export default function AddMembers(props: IFunction & IData) {
   return (
     <div>
       <Box sx={styleBox}>
-        <Typography id="modal-modal-title" variant="h5" sx={{ color: "black" }}>
-          Add Members
-        </Typography>
+        <Box
+          sx={{
+            color: "black",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb:1
+          }}
+        >
+          <Typography
+            id="modal-modal-title"
+            variant="h5"
+            sx={{ color: "black" }}
+          >
+            Add Members
+          </Typography>
+          <Search
+            sx={{
+              backgroundColor: "#F1F1F1",
+              "&:hover": { backgroundColor: "#C5C5C5" },
+            }}
+          >
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="Search…"
+              inputProps={{ "aria-label": "search" }}
+            />
+          </Search>
+        </Box>
         <Divider sx={{ background: "grey" }} />
         <Box sx={{ display: "flex", gap: 1, mt: 1, mb: 1 }}>
           <FormControl sx={{ width: "100%" }}>
@@ -149,7 +185,7 @@ export default function AddMembers(props: IFunction & IData) {
           </FormControl>
         </Box>
         <Box
-          sx={{ mt:1, display: "flex", justifyContent: "flex-end", gap: 1 }}
+          sx={{ mt: 1, display: "flex", justifyContent: "flex-end", gap: 1 }}
         >
           <Button
             sx={{

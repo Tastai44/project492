@@ -3,7 +3,6 @@ import { styled } from "@mui/material/styles";
 import Badge from "@mui/material/Badge";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
-import Luffy from "../../../public/pictures/Luffy.webp";
 import { Typography } from "@mui/material";
 import { dbFireStore } from "../../config/firebase";
 import { collection, query, getDocs, where } from "firebase/firestore";
@@ -41,16 +40,17 @@ export const StyledBadge = styled(Badge)(({ theme }) => ({
 interface IData {
   username?: string;
   userId?: string;
+  profilePhoto?: string;
 }
 
-export default function UserCard({ username, userId }: IData) {
+export default function UserCard(props: IData) {
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   React.useEffect(() => {
     const fetchData = async () => {
       try {
         const q = query(
           collection(dbFireStore, "users"),
-          where("uid", "==", userId)
+          where("uid", "==", props.userId)
         );
         const querySnapshot = await getDocs(q);
         const queriedData = querySnapshot.docs.map(
@@ -65,10 +65,10 @@ export default function UserCard({ username, userId }: IData) {
         console.error("Error fetching data:", error);
       }
     };
-    if (userId) {
+    if (props.userId) {
       fetchData();
     }
-  }, [userId]);
+  }, [props.userId]);
 
   return (
     <Stack
@@ -90,7 +90,7 @@ export default function UserCard({ username, userId }: IData) {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         variant="dot"
       >
-        <Avatar alt="Remy Sharp" src={Luffy} />
+        <Avatar alt="Remy Sharp" src={props.profilePhoto} />
       </StyledBadge>
       {(inFoUser.length!==0) ? (
         <>
@@ -101,7 +101,7 @@ export default function UserCard({ username, userId }: IData) {
           ))}
         </>
       ) : (
-        <Typography sx={{ fontSize: "16px" }}>{username}</Typography>
+        <Typography sx={{ fontSize: "16px" }}>{props.username}</Typography>
       )}
     </Stack>
   );

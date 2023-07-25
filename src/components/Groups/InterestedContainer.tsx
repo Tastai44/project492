@@ -148,7 +148,7 @@ export default function InterestedContainer(props: IData & IFunction) {
         {props.members.map((m) => (
           <Box key={m.uid}>
             <NavLink to={`/profileBlog/${m.uid}`} style={{ color: "black" }}>
-              <UserCard username={m.username} />
+              <UserCard username={m.username} profilePhoto={m.profilePhoto}/>
             </NavLink>
           </Box>
         ))}

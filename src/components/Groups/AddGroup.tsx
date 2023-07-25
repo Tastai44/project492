@@ -162,6 +162,7 @@ export default function AddGroup({ closeEdit, handleRefresh }: Ihandle) {
       return {
         uid: m.uid,
         username: `${m.firstName} ${m.lastName}`,
+        profilePhoto: m.profilePhoto,
       };
     });
     const newPost = {
