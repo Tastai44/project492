@@ -45,6 +45,7 @@ export default function EventContainer({reFresh} : IData) {
               endTime={m.endTime}
               eventId={m.id}
               coverPhoto={m.coverPhoto}
+              userId={m.owner}
             />
           </Box>
         ))}

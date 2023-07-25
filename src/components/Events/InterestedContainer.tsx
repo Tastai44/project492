@@ -22,9 +22,9 @@ export default function InterestedContainer({ interestedPeople }: IData) {
         </Box>
       </Box>
       <Divider light />
-      {interestedPeople.map((i) => (
-        <NavLink key={i.interestBy} to={`/profileBlog/${i.interestBy}`} style={{ color: "black" }}>
-          <UserCard key={i.interestBy} userId={i.interestBy} />
+      {interestedPeople.map((item) => (
+        <NavLink key={item.interestBy} to={`/profileBlog/${item.interestBy}`} style={{ color: "black" }}>
+          <UserCard key={item.interestBy} userId={item.interestBy} />
         </NavLink>
       ))}
     </Paper>

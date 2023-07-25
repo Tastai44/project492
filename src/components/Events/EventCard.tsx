@@ -1,12 +1,14 @@
+import * as React from "react";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
-
 import Typography from "@mui/material/Typography";
-import Luffy from "../../../public/pictures/Luffy.webp";
 import { Avatar, Box} from "@mui/material";
 
 import { NavLink } from "react-router-dom";
+import { User } from "../../interface/User";
+import { dbFireStore } from "../../config/firebase";
+import { collection, query, getDocs, where } from "firebase/firestore";
 
 interface IData {
   eventId: string;
@@ -15,35 +17,62 @@ interface IData {
   title: string;
   endDate: string;
   endTime: string;
+  userId: string;
   coverPhoto: string[];
 }
 
-export default function MediaCard({eventId, startDate, startTime, title, coverPhoto, endDate, endTime}:IData) {
+export default function MediaCard(props:IData) {
+
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", props.userId)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [props.userId]);
+  console.log(props.userId)
 
   return (
     <Card sx={{ width: 258, height: 360 }}>
-      <NavLink to={`/eventsDetail/${eventId}`}>
-        {coverPhoto.map((cover, index) => (
+      <NavLink to={`/eventsDetail/${props.eventId}`}>
+        {props.coverPhoto.map((cover, index) => (
           <CardMedia key={index} sx={{ height: 194 }} image={cover} title="green iguana" />
         ))}
       </NavLink>
       <CardContent sx={{ textAlign: "justify" }}>
         <Typography gutterBottom sx={{ fontSize: "20px" }} component="div">
-          {title}
+          {props.title}
         </Typography>
-        <Typography color={"error"}><b>Start:</b> {startDate}, {startTime} <br />
-         <b>End:</b> {endDate}, {endTime}</Typography>
-        <Box sx={{ display: "flex", alignItems: "end", gap: 1 }}>
+        <Typography color={"error"}><b>Start:</b> {props.startDate}, {props.startTime} <br />
+         <b>End:</b> {props.endDate}, {props.endTime}</Typography>
+         {inFoUser.map((user) => (
+        <Box key={user.uid} sx={{ display: "flex", alignItems: "end", gap: 1 }}>
           <Avatar
-            src={Luffy}
+            src={user.profilePhoto}
             sx={{ width: "30px", height: "30px", marginTop: 2 }}
             aria-label="recipe"
           />
-          <Typography>
-            <b>Created by: </b>
-            Username
+            <Typography>
+              {user.firstName} {user.lastName} is owner.
           </Typography>
         </Box>
+        ))}
       </CardContent>
       
     </Card>

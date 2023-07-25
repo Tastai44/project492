@@ -85,19 +85,21 @@ export default function UserCard(props: IData) {
         },
       }}
     >
-      <StyledBadge
-        overlap="circular"
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        variant="dot"
-      >
-        <Avatar alt="Remy Sharp" src={props.profilePhoto} />
-      </StyledBadge>
       {(inFoUser.length!==0) ? (
         <>
-          {inFoUser.map((u) => (
+        {inFoUser.map((u) => (
+          <>
+          <StyledBadge
+            overlap="circular"
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            variant="dot"
+          >
+            <Avatar alt="Remy Sharp" src={props.profilePhoto ? props.profilePhoto : u.profilePhoto} />
+          </StyledBadge>
             <Typography key={u.uid} sx={{ fontSize: "16px" }}>
               {u.username !== null ? u.username : ""}
             </Typography>
+            </>
           ))}
         </>
       ) : (

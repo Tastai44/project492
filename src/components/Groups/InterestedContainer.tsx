@@ -141,7 +141,6 @@ export default function InterestedContainer(props: IData & IFunction) {
                 </Typography>
               </MenuItem>
             </Menu>
-            {/* <Button onClick={handleOpen} startIcon={<AddCircleOutlineOutlinedIcon />}>Add</Button> */}
           </Box>
         </Box>
         <Divider light />
