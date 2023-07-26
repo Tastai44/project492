@@ -2,7 +2,7 @@ import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import Luffy from "../../../public/pictures/Luffy.webp";
+import Luffy from "/images/Luffy.webp";
 import {
   ListItem,
   ListItemAvatar,

@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 import Badge from "@mui/material/Badge";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
-import { Typography } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import { dbFireStore } from "../../config/firebase";
 import { collection, query, getDocs, where } from "firebase/firestore";
 import { User } from "../../interface/User";
@@ -88,18 +88,22 @@ export default function UserCard(props: IData) {
       {(inFoUser.length!==0) ? (
         <>
         {inFoUser.map((u) => (
-          <>
-          <StyledBadge
-            overlap="circular"
-            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            variant="dot"
-          >
-            <Avatar alt="Remy Sharp" src={props.profilePhoto ? props.profilePhoto : u.profilePhoto} />
-          </StyledBadge>
-            <Typography key={u.uid} sx={{ fontSize: "16px" }}>
-              {u.username !== null ? u.username : ""}
-            </Typography>
-            </>
+          <Box key={u.uid}>
+            <StyledBadge
+              overlap="circular"
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              variant="dot"
+            >
+              {props.profilePhoto !== undefined ? (
+                <Avatar alt="Remy Sharp" src={props.profilePhoto} />
+              ): (
+                <Avatar alt="Remy Sharp" src={u.profilePhoto} />
+              )}
+            </StyledBadge>
+              <Typography  sx={{ fontSize: "16px" }}>
+                {u.username !== null ? u.username : ""}
+              </Typography>
+            </Box>
           ))}
         </>
       ) : (

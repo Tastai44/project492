@@ -13,8 +13,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 
-import Logo from "../../public/pictures/logoCmu.png";
-import Luffy from "../../public/pictures/Luffy.webp";
+import Logo from "/images/logoCmu.png";
+import Luffy from "/images/Luffy.webp";
 import {
   Avatar,
   Divider,

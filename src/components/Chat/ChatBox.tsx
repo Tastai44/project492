@@ -1,5 +1,5 @@
 // import * as React from 'react'
-import Luffy from "../../../public/pictures/Luffy.webp";
+import Luffy from "/images/Luffy.webp";
 import {
   Avatar,
   Box,

@@ -14,7 +14,7 @@ import {
   Button,
   TextField,
 } from "@mui/material";
-import Luffy from "../../../public/pictures/Luffy.webp";
+import Luffy from "/images/Luffy.webp";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";

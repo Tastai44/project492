@@ -14,7 +14,7 @@ import {
   ImageList,
   ImageListItem,
 } from "@mui/material";
-import Luffy from "../../../public/pictures/Luffy.webp";
+import Luffy from "/images/Luffy.webp";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";

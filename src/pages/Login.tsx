@@ -12,7 +12,7 @@ import * as React from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, dbFireStore } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
-import community from "../../public/pictures/communityPic.png";
+import community from "/images/communityPic.png";
 
 import "firebase/database";
 import { doc, getDocs, query, where } from "firebase/firestore";

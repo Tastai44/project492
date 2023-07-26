@@ -3,7 +3,7 @@ import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import Typography from "@mui/material/Typography";
-import Luffy from "../../../public/pictures/Luffy.webp";
+import Luffy from "/images/Luffy.webp";
 import { Button } from "@mui/material";
 
 export default function FriendCard() {

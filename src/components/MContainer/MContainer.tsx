@@ -20,7 +20,7 @@ import {
   IconButton,
   Modal,
 } from "@mui/material";
-import Luffy from "../../../public/pictures/Luffy.webp";
+import Luffy from "/images/Luffy.webp";
 
 import TextField from "@mui/material/TextField";
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";

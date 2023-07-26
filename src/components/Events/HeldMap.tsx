@@ -1,5 +1,5 @@
 import { Box, CardMedia, Paper } from "@mui/material";
-import Luffy from "../../../public/pictures/Luffy.webp";
+import Luffy from "/images/Luffy.webp";
 
 export default function HeldMap() {
   return (
