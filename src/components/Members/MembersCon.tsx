@@ -72,7 +72,7 @@ export default function MembersCon() {
     >
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems:"end" }}>
         <Typography sx={{ fontSize: "30px", color: "primary.main", fontWeight: 500 }}>
-          People who you mat know
+          People who you may know
         </Typography>
         <Search
           sx={{

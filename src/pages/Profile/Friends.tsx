@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import { Divider, Paper } from "@mui/material";
+import { Divider, Paper, Typography } from "@mui/material";
 import {
   Search,
   SearchIconWrapper,
@@ -9,7 +9,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import FriendCard from "../../components/Profile/FriendCard";
 import * as React from "react";
-import { collection, query, orderBy, getDocs, where } from "firebase/firestore"
+import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
 import { useParams } from "react-router-dom";
 import { User } from "../../interface/User";
@@ -17,9 +17,15 @@ import { User } from "../../interface/User";
 export default function Friends() {
   const { userId } = useParams();
   const [user, setUser] = React.useState<User[]>([]);
-  React.useMemo(() => {
+  const [refresh, setRefresh] = React.useState(0);
+
+  const handleRefresh = () => {
+    setRefresh(pre => pre+1);
+  }
+
+  React.useEffect(() => {
     const fetchData = async () => {
-      try{
+      try {
         const queryData = query(
           collection(dbFireStore, "users"),
           where("uid", "==", userId),
@@ -27,13 +33,13 @@ export default function Friends() {
         );
         const querySnapshot = await getDocs(queryData);
         const queriedData = querySnapshot.docs.map((doc) => doc.data() as User);
-          setUser(queriedData);
+        setUser(queriedData);
       } catch (err) {
         console.log("Error fetching data:", err);
       }
-    }
+    };
     fetchData();
-  }, [userId])
+  }, [userId, refresh]);
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -74,18 +80,33 @@ export default function Friends() {
         <Grid sx={{ flexGrow: 1, gap: 1 }} container>
           {user.map((user) => (
             <Box key={user.uid}>
-              {user.friendList?.map((friend) => (
-                <FriendCard 
-                  key={friend.friendId}
-                  username={friend.username}
-                  profilePhoto={friend.profilePhoto}
-                  uid={friend.friendId}
-                />
-              ))}
+              {user.friendList?.length !== 0 ? (
+                <>
+                  {user.friendList?.map((friend) => (
+                    <FriendCard
+                      key={friend.friendId}
+                      username={friend.username}
+                      profilePhoto={friend.profilePhoto}
+                      uid={friend.friendId}
+                      friendList={user.friendList ? user.friendList : []}
+                      handleRefresh={handleRefresh}
+                    />
+                  ))}
+                </>
+              ) : (
+                <>
+                  <Typography
+                    sx={{
+                      color: "primary.contrastText",
+                      ml:1
+                    }}
+                  >
+                    You have no friend...
+                  </Typography>
+                </>
+              )}
             </Box>
-            
           ))}
-          
         </Grid>
       </Paper>
     </Box>

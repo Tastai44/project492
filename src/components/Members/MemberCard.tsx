@@ -77,7 +77,7 @@ export default function MemberCard(props: IData & IFunction) {
         >
           Add Friend
         </Button>
-        <Button
+        {/* <Button
           sx={{
             fontSize: "14px",
             color: "white",
@@ -87,7 +87,7 @@ export default function MemberCard(props: IData & IFunction) {
           }}
         >
           UnKnow
-        </Button>
+        </Button> */}
       </CardActions>
       {props.profilePhoto ? (
         <CardMedia
