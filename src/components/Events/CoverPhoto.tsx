@@ -52,25 +52,10 @@ interface IFunction {
   handleRefresh: () => void;
 }
 
-export default function ProCoverImage({
-  eventId,
-  startDate,
-  startTime,
-  endDate,
-  endTime,
-  title,
-  coverPhoto,
-  topic,
-  ageRage,
-  interest,
-  owner,
-  details,
-  status,
-  handleRefresh,
-}: IData & IFunction) {
+export default function ProCoverImage(props: IData & IFunction) {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-  const IsOwner = userInfo.uid === owner;
-  const isInterest = interest.some((f) => f.interestBy === userInfo.uid);
+  const IsOwner = userInfo.uid === props.owner;
+  const isInterest = props.interest.some((f) => f.interestBy === userInfo.uid);
 
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -83,12 +68,12 @@ export default function ProCoverImage({
       interestBy: userInfo.uid,
       createdAt: new Date().toLocaleString(),
     };
-    const postRef = doc(eventtsCollection, eventId);
+    const postRef = doc(eventtsCollection, props.eventId);
     updateDoc(postRef, {
       interest: arrayUnion(updateInterest),
     })
       .then(() => {
-        handleRefresh();
+        props.handleRefresh();
       })
       .catch((error) => {
         console.error("Error adding interest: ", error);
@@ -96,7 +81,7 @@ export default function ProCoverImage({
   };
 
   const decreaseInterest = async (id: string) => {
-    const IndexLike = interest.findIndex((f) => f.interestBy === userInfo.uid);
+    const IndexLike = props.interest.findIndex((f) => f.interestBy === userInfo.uid);
     try {
       const q = query(
         collection(dbFireStore, "events"),
@@ -110,7 +95,7 @@ export default function ProCoverImage({
         updatedLike.splice(IndexLike, 1);
         const updatedData = { ...postData, interest: updatedLike };
         await updateDoc(doc.ref, updatedData);
-        handleRefresh();
+        props.handleRefresh();
       } else {
         console.log("No event found with the specified ID");
       }
@@ -128,7 +113,7 @@ export default function ProCoverImage({
             .then(() => {
               navigate("/events");
               console.log("Post deleted successfully");
-              handleRefresh();
+              props.handleRefresh();
             })
             .catch((error) => {
               console.error("Error deleting Event: ", error);
@@ -153,24 +138,24 @@ export default function ProCoverImage({
         <Box>
           <EditEvent
             closeAdd={handleClose}
-            handleRefresh={handleRefresh}
-            eventId={eventId}
-            startDate={startDate}
-            startTime={startTime}
-            endDate={endDate}
-            endTime={endTime}
-            title={title}
-            coverPhoto={coverPhoto}
-            topic={topic}
-            ageRage={ageRage}
-            details={details}
-            status={status}
+            handleRefresh={props.handleRefresh}
+            eventId={props.eventId}
+            startDate={props.startDate}
+            startTime={props.startTime}
+            endDate={props.endDate}
+            endTime={props.endTime}
+            title={props.title}
+            coverPhoto={props.coverPhoto}
+            topic={props.topic}
+            ageRage={props.ageRage}
+            details={props.details}
+            status={props.status}
           />
         </Box>
       </Modal>
 
       <Card sx={{ maxWidth: "100%" }}>
-        {coverPhoto.map((cover, index) => (
+        {props.coverPhoto.map((cover, index) => (
           <CardMedia
             key={index}
             sx={{ height: 300 }}
@@ -197,7 +182,7 @@ export default function ProCoverImage({
                 fontSize: "20px",
               }}
             >
-              {title}
+              {props.title}
             </Box>
             <Box
               sx={{
@@ -242,7 +227,7 @@ export default function ProCoverImage({
                   }}
                   onClick={
                     isInterest
-                      ? () => decreaseInterest(eventId)
+                      ? () => decreaseInterest(props.eventId)
                       : () => increaseInterest()
                   }
                   startIcon={<FavoriteIcon sx={{ width: "16px" }} />}
@@ -273,7 +258,7 @@ export default function ProCoverImage({
                       Edit
                     </Button>
                     <Button
-                      onClick={() => handleDelete(eventId)}
+                      onClick={() => handleDelete(props.eventId)}
                       size="small"
                       variant="outlined"
                       sx={{
@@ -303,14 +288,14 @@ export default function ProCoverImage({
                 <DateRangeIcon />
                 <div>
                   {" "}
-                  <b>Start:</b> {startDate}, {startTime} | <b>End:</b> {endDate}
-                  , {endTime}
+                  <b>Start:</b> {props.startDate}, {props.startTime} | <b>End:</b> {props.endDate}
+                  , {props.endTime}
                 </div>
               </Box>
               <Box sx={{ display: "flex", gap: 1, m: 1, alignItems: "center" }}>
                 {/* <TagIcon /> */}
                 <div>
-                  {topic} | {ageRage}+
+                  {props.topic} | {props.ageRage}+ | {props.status}
                 </div>
               </Box>
             </Box>

@@ -85,29 +85,37 @@ export default function UserCard(props: IData) {
         },
       }}
     >
-      {(inFoUser.length!==0) ? (
+      {inFoUser.length !== 0 ? (
         <>
-        {inFoUser.map((u) => (
-          <Box key={u.uid}>
-            <StyledBadge
-              overlap="circular"
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              variant="dot"
+          {inFoUser.map((u) => (
+            <Box
+              key={u.uid}
+              sx={{ display: "flex", alignItems: "center", gap: 1 }}
             >
-              {props.profilePhoto !== undefined ? (
-                <Avatar alt="Remy Sharp" src={props.profilePhoto} />
-              ): (
+              <StyledBadge
+                overlap="circular"
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                variant="dot"
+              >
                 <Avatar alt="Remy Sharp" src={u.profilePhoto} />
-              )}
-            </StyledBadge>
-              <Typography  sx={{ fontSize: "16px" }}>
-                {u.username !== null ? u.username : ""}
+              </StyledBadge>
+              <Typography sx={{ fontSize: "16px" }}>
+                {u.username !== null ? u.firstName + " " + u.lastName : ""}
               </Typography>
             </Box>
           ))}
         </>
       ) : (
-        <Typography sx={{ fontSize: "16px" }}>{props.username}</Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <StyledBadge
+            overlap="circular"
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            variant="dot"
+          >
+            <Avatar alt="Remy Sharp" src={props.profilePhoto} />
+          </StyledBadge>
+          <Typography sx={{ fontSize: "16px" }}>{props.username}</Typography>
+        </Box>
       )}
     </Stack>
   );

@@ -22,8 +22,11 @@ interface IData {
   profilePhoto: string;
   uId: string;
 }
+interface IFunction {
+  handleRefresh: () => void;
+}
 
-export default function MemberCard(props: IData) {
+export default function MemberCard(props: IData & IFunction) {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const handleAddFriend = async () => {
     const addFriend : IFriendList = {
@@ -43,7 +46,7 @@ export default function MemberCard(props: IData) {
         friendList: arrayUnion(addFriend),
       })
         .then(() => {
-          // handleRefresh();
+          props.handleRefresh();
           console.log("Successfully added friend to the friendList.");
         })
         .catch((error) => {
@@ -91,7 +94,7 @@ export default function MemberCard(props: IData) {
           component="img"
           height="194"
           image={props.profilePhoto}
-          alt="Paella dish"
+          alt="userPicture"
         />
       ) : (
         <Box sx={{ width: "100%", backgroundColor: "primary.contrastText" }}>

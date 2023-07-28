@@ -191,7 +191,7 @@ export default function ProCoverImage(
               </Box>
               <Box sx={{ display: "flex", gap: 1, m: 1, alignItems: "center" }}>
                 <GroupsIcon />
-                <div>{props.members.length} members</div>
+                <div>{props.members.length} members | {props.status}</div>
               </Box>
             </Box>
           </Box>
