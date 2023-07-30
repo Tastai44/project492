@@ -221,6 +221,27 @@ export default function MContainer(props: Idata & IFunction) {
       console.log(error);
     }
   };
+  const unShare = async (id: string) => {
+    const IndexShare = props.shareUsers.findIndex((index) => index.uid === userId);
+    try {
+      const queyShare = query(collection(dbFireStore, "posts"), where("id", "==", id));
+      const querySnapshot = await getDocs(queyShare);
+
+      const doc = querySnapshot.docs[0];
+      if(doc.exists()) {
+        const postData = { id: doc.id, ...doc.data()} as Post;
+        const updateShare = [...postData.shareUsers];
+        updateShare.splice(IndexShare, 1);
+        const updateData = {...postData, shareUsers: updateShare};
+        await updateDoc(doc.ref, updateData);
+        props.handleRefresh();
+      } else {
+        console.log("No post found with the specified ID");
+      }
+    }catch (error) {
+      console.error(error)
+    }
+  }
 
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   React.useEffect(() => {
@@ -487,7 +508,11 @@ export default function MContainer(props: Idata & IFunction) {
                     <CommentIcon sx={{ marginRight: 1 }} /> Comment
                   </Button>
                   <Button
-                    onClick={handleShare}
+                    onClick={
+                      isShare
+                      ? () => unShare(props.postId)
+                      : () => handleShare()
+                    }
                     aria-label="share"
                     sx={{
                       color: isShare ? "purple" : !isShare ? "black" : "black",
