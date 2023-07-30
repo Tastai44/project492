@@ -23,6 +23,7 @@ import RightContainer from "./components/RightSide/RightContainer";
 import ProCoverImage from "./components/Profile/ProCoverImage";
 import ProLeftside from "./components/Profile/ProLeftside";
 import { styled } from "@mui/material/styles";
+import ReportContent from "./pages/ReportContent";
 
 export const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
@@ -426,6 +427,26 @@ function App() {
                 handleClose={handleClose}
               />
               <GroupDetails />
+              {/* </ProtectedRoute> */}
+            </>
+          }
+        />
+        <Route
+          path={"/report"}
+          element={
+            <>
+              {/* <ProtectedRoute> */}
+              <Navigation
+                open={open}
+                handleOpen={handleOpen}
+                handleClose={handleClose}
+              />
+              {/* <Members /> */}
+              <Grid sx={{ flexGrow: 1 }} container>
+                <Grid item xs={12}>
+                    <ReportContent />
+                </Grid>
+              </Grid>
               {/* </ProtectedRoute> */}
             </>
           }

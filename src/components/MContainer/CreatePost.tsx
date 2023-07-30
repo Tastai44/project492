@@ -125,6 +125,7 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
     emoji: "",
     owner: "",
     shareUsers: [],
+    reportPost: [],
   }
   const [post, setPost] = React.useState<Post>(initialState);
   const clearState = () => {
@@ -158,6 +159,7 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
       emoji: emoji,
       owner: userId,
       shareUsers: [],
+      reportPost: [],
       comments: post.comments,
     };
   

@@ -62,6 +62,7 @@ export default function Login() {
           email: user?.email,
           friendList: [],
           posts: [],
+          userRole: "user",
           createdAt: new Date().toLocaleString(),
         };
         const docRef = doc(userCollection);

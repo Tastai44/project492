@@ -39,6 +39,7 @@ import ChatBox from "./Chat/ChatBox";
 import { User } from "../interface/User";
 import { collection, query, getDocs, where } from "firebase/firestore";
 import { dbFireStore } from "../config/firebase";
+import FlagIcon from '@mui/icons-material/Flag';
 
 interface IData {
   open: boolean;
@@ -468,6 +469,25 @@ export default function Navigation(props: IData & IFunction) {
                 }}
               >
                 <Diversity3Icon
+                  sx={{
+                    fontSize: "30px",
+                    "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
+                    borderRadius: "10px",
+                    padding: "10px",
+                  }}
+                />
+              </NavLink>
+              <NavLink
+                to="/report"
+                style={({ isActive, isPending }) => {
+                  return {
+                    fontWeight: isPending ? "bold" : "",
+                    color: isActive ? "white" : "white",
+                    borderBlockEnd: isActive ? "2px solid white" : "",
+                  };
+                }}
+              >
+                <FlagIcon
                   sx={{
                     fontSize: "30px",
                     "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },

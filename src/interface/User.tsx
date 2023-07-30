@@ -3,6 +3,7 @@ import { Post } from "./PostContent";
 export interface User {
     uid: string;
     username: string;
+    userRole: string;
     firstName: string;
     lastName: string;
     email: string;
