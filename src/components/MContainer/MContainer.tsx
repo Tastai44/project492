@@ -79,38 +79,24 @@ interface Idata {
   onwer: string;
   groupName?: string;
   groupId?: string;
+  reFreshInfo? : number;
 }
 
 interface IFunction {
   handleRefresh: () => void;
 }
 
-export default function MContainer({
-  caption,
-  hashTagTopic,
-  status,
-  createAt,
-  emoji,
-  photoPost,
-  likeNumber,
-  postId,
-  commentNumber,
-  likes,
-  onwer,
-  groupName,
-  groupId,
-  handleRefresh,
-}: Idata & IFunction) {
+export default function MContainer(props: Idata & IFunction) {
   const [iconStatus, setIconStatus] = React.useState("");
   React.useEffect(() => {
-    if (status === "Private") {
+    if (props.status === "Private") {
       setIconStatus("LockIcon");
-    } else if (status === "Friend") {
+    } else if (props.status === "Friend") {
       setIconStatus("GroupIcon");
-    } else if (status === "Public") {
+    } else if (props.status === "Public") {
       setIconStatus("PublicIcon");
     }
-  }, [iconStatus, status]);
+  }, [iconStatus, props.status]);
 
   const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
     const emoji = emojiData.find((data) => data.unified === emojiCode);
@@ -130,7 +116,7 @@ export default function MContainer({
   const [openPost, setOpenPost] = React.useState(false);
   const handletOpenPost = () => setOpenPost(true);
   const handleClosePost = () => {
-    handleRefresh();
+    props.handleRefresh();
     setOpenPost(false);
   };
 
@@ -157,7 +143,7 @@ export default function MContainer({
             .then(() => {
               alert("Post deleted successfully");
               console.log("Post deleted successfully");
-              handleRefresh();
+              props.handleRefresh();
             })
             .catch((error) => {
               console.error("Error deleting post: ", error);
@@ -177,21 +163,21 @@ export default function MContainer({
       likeBy: userId,
       createdAt: new Date().toLocaleString(),
     };
-    const postRef = doc(postsCollection, postId);
+    const postRef = doc(postsCollection, props.postId);
     updateDoc(postRef, {
       likes: arrayUnion(updateLike),
     })
       .then(() => {
-        handleRefresh();
+        props.handleRefresh();
       })
       .catch((error) => {
         console.error("Error adding likes: ", error);
       });
   };
 
-  const isLike = likes.some((f) => f.likeBy === userId);
+  const isLike = props.likes.some((f) => f.likeBy === userId);
   const decreaseLike = async (id: string) => {
-    const IndexLike = likes.findIndex((f) => f.likeBy === userId);
+    const IndexLike = props.likes.findIndex((f) => f.likeBy === userId);
     try {
       const q = query(collection(dbFireStore, "posts"), where("id", "==", id));
       const querySnapshot = await getDocs(q);
@@ -203,7 +189,7 @@ export default function MContainer({
         updatedLike.splice(IndexLike, 1);
         const updatedData = { ...postData, likes: updatedLike };
         await updateDoc(doc.ref, updatedData);
-        handleRefresh();
+        props.handleRefresh();
       } else {
         console.log("No post found with the specified ID");
       }
@@ -218,7 +204,7 @@ export default function MContainer({
       try {
         const q = query(
           collection(dbFireStore, "users"),
-          where("uid", "==", onwer)
+          where("uid", "==", props.onwer)
         );
         const querySnapshot = await getDocs(q);
         const queriedData = querySnapshot.docs.map(
@@ -234,7 +220,7 @@ export default function MContainer({
       }
     };
     fetchData();
-  }, [onwer]);
+  }, [props.onwer, props.reFreshInfo]);
 
   return (
     <Box>
@@ -249,11 +235,11 @@ export default function MContainer({
             <Box>
               <Paper sx={styleBoxPop}>
                 <Content
-                  postId={postId}
+                  postId={props.postId}
                   userId={userId}
                   handleClosePost={handleClosePost}
-                  handleRefreshData={handleRefresh}
-                  likes={likes}
+                  handleRefreshData={props.handleRefresh}
+                  likes={props.likes}
                 />
               </Paper>
             </Box>
@@ -268,14 +254,14 @@ export default function MContainer({
             <Box>
               <EditPost
                 handleCloseEditPost={handleCloseEditPost}
-                handleRefresh={handleRefresh}
-                handleRefreshData={handleRefresh}
-                oldStatus={status}
-                caption={caption}
-                hashTagTopic={hashTagTopic}
-                oldPhoto={photoPost}
-                oldEmoji={emoji !== undefined ? emoji : ""}
-                postId={postId}
+                handleRefresh={props.handleRefresh}
+                handleRefreshData={props.handleRefresh}
+                oldStatus={props.status}
+                caption={props.caption}
+                hashTagTopic={props.hashTagTopic}
+                oldPhoto={props.photoPost}
+                oldEmoji={props.emoji !== undefined ? props.emoji : ""}
+                postId={props.postId}
               />
             </Box>
           </Modal>
@@ -300,17 +286,17 @@ export default function MContainer({
                         <b>
                           {u.username}
                           <NavLink
-                            to={`/groupDetail/${groupId}`}
+                            to={`/groupDetail/${props.groupId}`}
                             style={{ color: themeApp.palette.primary.main }}
                           >
-                            {groupName ? ` (${groupName}) ` : ""}
+                            {props.groupName ? ` (${props.groupName}) ` : ""}
                           </NavLink>
                         </b>
-                        {emoji && (
+                        {props.emoji && (
                           <>
                             is feeling
-                            {String.fromCodePoint(parseInt(emoji, 16))}
-                            {convertEmojiCodeToName(emoji)?.toLocaleLowerCase()}
+                            {String.fromCodePoint(parseInt(props.emoji, 16))}
+                            {convertEmojiCodeToName(props.emoji)?.toLocaleLowerCase()}
                           </>
                         )}
                       </Box>
@@ -319,11 +305,11 @@ export default function MContainer({
                       <Typography
                         sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
                       >
-                        {createAt}
+                        {props.createAt}
                         {iconStatus === "LockIcon" && <LockIcon />}
                         {iconStatus === "GroupIcon" && <GroupIcon />}
                         {iconStatus === "PublicIcon" && <PublicIcon />}
-                        {status}
+                        {props.status}
                       </Typography>
                     }
                   />
@@ -360,7 +346,7 @@ export default function MContainer({
                           <BorderColorOutlinedIcon /> Edit
                         </Typography>
                       </MenuItem>
-                      <MenuItem onClick={() => handleDelete(postId)}>
+                      <MenuItem onClick={() => handleDelete(props.postId)}>
                         <Typography
                           textAlign="center"
                           sx={{
@@ -396,7 +382,7 @@ export default function MContainer({
                     color="text.secondary"
                     sx={{ textAlign: "justify" }}
                   >
-                    {caption}
+                    {props.caption}
                   </Typography>
                 </CardContent>
                 <Box
@@ -407,9 +393,9 @@ export default function MContainer({
                     margin: 1,
                   }}
                 >
-                  {hashTagTopic}
+                  {props.hashTagTopic}
                 </Box>
-                {photoPost.length == 1 ? (
+                {props.photoPost.length == 1 ? (
                   <ImageList
                     sx={{
                       width: "100%",
@@ -420,7 +406,7 @@ export default function MContainer({
                     cols={1}
                     onClick={handletOpenPost}
                   >
-                    {photoPost.map((image, index) => (
+                    {props.photoPost.map((image, index) => (
                       <ImageListItem key={index}>
                         <img
                           src={image}
@@ -437,7 +423,7 @@ export default function MContainer({
                     gap={2}
                     onClick={handletOpenPost}
                   >
-                    {photoPost.map((image, index) => (
+                    {props.photoPost.map((image, index) => (
                       <ImageListItem key={index}>
                         <img
                           src={image}
@@ -459,7 +445,7 @@ export default function MContainer({
                       color: isLike ? "purple" : !isLike ? "black" : "black",
                     }}
                     onClick={
-                      isLike ? () => decreaseLike(postId) : () => increaseLike()
+                      isLike ? () => decreaseLike(props.postId) : () => increaseLike()
                     }
                   >
                     <ThumbUpIcon sx={{ marginRight: 1 }} />
@@ -483,14 +469,14 @@ export default function MContainer({
                   sx={{ display: "flex", justifyContent: "space-between" }}
                 >
                   <Button aria-label="add to favorites" sx={{ color: "grey" }}>
-                    {likeNumber} Likes
+                    {props.likeNumber} Likes
                   </Button>
                   <Box>
                     <Button
                       aria-label="add to favorites"
                       sx={{ color: "grey" }}
                     >
-                      {commentNumber} Comments
+                      {props.commentNumber} Comments
                     </Button>
                     <Button
                       aria-label="add to favorites"

@@ -162,6 +162,7 @@ function App() {
                 open={open}
                 handleOpen={handleOpen}
                 handleClose={handleClose}
+                reFresh={reFresh}
               />
 
               <Grid sx={{ flexGrow: 1 }} container marginTop={5}>

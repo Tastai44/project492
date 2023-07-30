@@ -44,7 +44,7 @@ export default function Blog({reFreshInfo} : IData) {
     };
 
     fetchData();
-  }, [reFresh, userId]);
+  }, [reFresh, userId, reFreshInfo]);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -100,6 +100,7 @@ export default function Blog({reFreshInfo} : IData) {
                       likes={m.likes}
                       commentNumber={m.comments.length}
                       handleRefresh={handleRefresh}
+                      reFreshInfo={reFreshInfo}
                     />
                   </Box>
                 ))}

@@ -42,6 +42,7 @@ import { dbFireStore } from "../config/firebase";
 
 interface IData {
   open: boolean;
+  reFresh?: number;
 }
 interface IFunction {
   handleOpen: () => void;
@@ -87,11 +88,7 @@ export const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function Navigation({
-  open,
-  handleOpen,
-  handleClose,
-}: IData & IFunction) {
+export default function Navigation(props: IData & IFunction) {
   const navigate = useNavigate();
   const handleLogout = () => {
     signOut(auth)
@@ -132,7 +129,7 @@ export default function Navigation({
       }
     };
     fetchData();
-  }, [userInfo.uid]);
+  }, [userInfo.uid, props.reFresh]);
 
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -210,7 +207,7 @@ export default function Navigation({
         >
           <Avatar src={m.profilePhoto} /> 
           <Typography>
-            {m.username}
+            {`${m.firstName} ${m.lastName}`}
           </Typography>
         </MenuItem>
         ))}
@@ -320,13 +317,13 @@ export default function Navigation({
   return (
     <>
       <Modal
-        open={open}
-        onClose={handleClose}
+        open={props.open}
+        onClose={props.handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
         <Box>
-          <ChatBox handleClose={handleClose} />
+          <ChatBox handleClose={props.handleClose} />
         </Box>
       </Modal>
 
