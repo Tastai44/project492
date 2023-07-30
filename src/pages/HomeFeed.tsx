@@ -17,7 +17,7 @@ export default function HomeFeed() {
   const handleRefresh = () => {
     setReFresh((pre) => pre + 1);
   };
-  const [data, setData] = React.useState<Post[]>([]);
+  const [postData, setPostData] = React.useState<Post[]>([]);
   React.useEffect(() => {
     const fetchData = async () => {
       try {
@@ -27,7 +27,7 @@ export default function HomeFeed() {
         );
         const querySnapshot = await getDocs(q);
         const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
-        setData(queriedData);
+        setPostData(queriedData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -36,7 +36,7 @@ export default function HomeFeed() {
     fetchData();
   }, [reFresh]);
 
-  React.useEffect(() => {
+  React.useMemo(() => {
     const fetchData = async () => {
       try {
         const q = query(
@@ -65,28 +65,35 @@ export default function HomeFeed() {
         <PostForm handdleReFresh={handleRefresh} inFoUser={inFoUser} />
       </Item>
       <Item sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        {data.map((m) => (
-          <Box key={m.id}>
-            {(m.status === "Public" || m.status === "Friend") && (
-              <MContainer
-              onwer={m.owner}
-              postId={m.id}
-              caption={m.caption}
-              hashTagTopic={m.hashTagTopic}
-              status={m.status}
-              createAt={m.createAt}
-              emoji={m.emoji}
-              photoPost={m.photoPost}
-              likeNumber={m.likes.length}
-              likes={m.likes}
-              commentNumber={m.comments.length}
-              groupName={m.groupName}
-              groupId={m.groupId}
-              handleRefresh={handleRefresh}
-            />
-            )}
-          </Box>
-        ))}
+        {postData
+          .filter(
+            (post) =>
+              inFoUser.some((user) =>
+                user.friendList?.some((friend) => friend.friendId == post.owner)
+              ) || post.owner === userInfo.uid
+          )
+          .map((m) => (
+            <Box key={m.id}>
+              {(m.status === "Public" || m.status === "Friend") && (
+                <MContainer
+                  onwer={m.owner}
+                  postId={m.id}
+                  caption={m.caption}
+                  hashTagTopic={m.hashTagTopic}
+                  status={m.status}
+                  createAt={m.createAt}
+                  emoji={m.emoji}
+                  photoPost={m.photoPost}
+                  likeNumber={m.likes.length}
+                  likes={m.likes}
+                  commentNumber={m.comments.length}
+                  groupName={m.groupName}
+                  groupId={m.groupId}
+                  handleRefresh={handleRefresh}
+                />
+              )}
+            </Box>
+          ))}
       </Item>
     </>
   );

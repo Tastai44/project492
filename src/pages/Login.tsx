@@ -60,7 +60,9 @@ export default function Login() {
         const newUser = {
           uid: user?.uid,
           email: user?.email,
-          displayName: user?.displayName,
+          friendList: [],
+          posts: [],
+          createdAt: new Date().toLocaleString(),
         };
         const docRef = doc(userCollection);
         await setDoc(docRef, newUser);

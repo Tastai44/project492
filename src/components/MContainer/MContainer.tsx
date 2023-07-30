@@ -308,8 +308,8 @@ export default function MContainer({
                         </b>
                         {emoji && (
                           <>
-                            is feeling{" "}
-                            {String.fromCodePoint(parseInt(emoji, 16))}{" "}
+                            is feeling
+                            {String.fromCodePoint(parseInt(emoji, 16))}
                             {convertEmojiCodeToName(emoji)?.toLocaleLowerCase()}
                           </>
                         )}

@@ -26,6 +26,30 @@ interface IData {
 
 export default function FriendCard(props: IData) {
   const { userId } = useParams();
+  const unFriendOtherSide = async (id: string) => {
+    const IndexFriend = props.friendList.findIndex((index) => index.friendId === id);
+    try {
+      const q = query(collection(dbFireStore, "users"), where("uid", "==", props.uid));
+      const querySnapshot = await getDocs(q);
+
+      const doc = querySnapshot.docs[0];
+      if (doc.exists()) {
+        const friendData = { uid: doc.id, ...doc.data() } as User;
+        if(friendData.friendList !== undefined) {
+          const updateFriend = [...friendData.friendList];
+          updateFriend.splice(IndexFriend, 1);
+          const updatedData = { ...friendData, friendList: updateFriend };
+          await updateDoc(doc.ref, updatedData);
+        }
+        props.handleRefresh();
+      } else {
+        console.log("No post found with the specified ID");
+      }
+    } catch (error) {
+      console.error("Error deleting friend:", error);
+    }
+  };
+
   const unFriend = async (id: string) => {
     const IndexFriend = props.friendList.findIndex((index) => index.friendId === id);
     try {
@@ -41,6 +65,7 @@ export default function FriendCard(props: IData) {
           const updatedData = { ...friendData, friendList: updateFriend };
           await updateDoc(doc.ref, updatedData);
         }
+        unFriendOtherSide(userId ? userId : "");
         props.handleRefresh();
       } else {
         console.log("No post found with the specified ID");

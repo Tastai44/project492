@@ -64,9 +64,9 @@ export default function LeftSide() {
       <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
         <Box gridColumn="span 12">
         <NavLink to={`/profileBlog/${userInfo.uid}`}>
-          {inFoUser.map((m) => (
+          {inFoUser.map((user) => (
           <Item
-          key={m.uid}
+          key={user.uid}
             sx={{
               display: "flex",
               alignItems: "center",
@@ -74,8 +74,8 @@ export default function LeftSide() {
               fontWeight: "bold",
             }}
           >
-            <Avatar alt="Remy Sharp" src={m.profilePhoto} />
-            {m.username}
+            <Avatar alt="Remy Sharp" src={user.profilePhoto} />
+            {user.firstName} {user.lastName}
           </Item>
           ))}
           </NavLink>

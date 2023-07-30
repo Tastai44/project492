@@ -16,6 +16,7 @@ export interface User {
     year?: string;
     posts?: Post[];
     friendList?: IFriendList[];
+    createdAt?: string;
 }
 
 export interface IFriendList{

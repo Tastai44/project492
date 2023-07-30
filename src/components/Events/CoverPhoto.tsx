@@ -287,7 +287,6 @@ export default function ProCoverImage(props: IData & IFunction) {
               <Box sx={{ display: "flex", gap: 1, m: 1, alignItems: "center" }}>
                 <DateRangeIcon />
                 <div>
-                  {" "}
                   <b>Start:</b> {props.startDate}, {props.startTime} | <b>End:</b> {props.endDate}
                   , {props.endTime}
                 </div>

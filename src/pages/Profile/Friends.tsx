@@ -20,8 +20,8 @@ export default function Friends() {
   const [refresh, setRefresh] = React.useState(0);
 
   const handleRefresh = () => {
-    setRefresh(pre => pre+1);
-  }
+    setRefresh((pre) => pre + 1);
+  };
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -29,7 +29,7 @@ export default function Friends() {
         const queryData = query(
           collection(dbFireStore, "users"),
           where("uid", "==", userId),
-          orderBy("firstName", "desc")
+          orderBy("createdAt", "desc")
         );
         const querySnapshot = await getDocs(queryData);
         const queriedData = querySnapshot.docs.map((doc) => doc.data() as User);
@@ -77,37 +77,35 @@ export default function Friends() {
           </Search>
         </Box>
         <Divider light sx={{ background: "grey", mb: 1 }} />
-        <Grid sx={{ flexGrow: 1, gap: 1 }} container>
-          {user.map((user) => (
-            <Box key={user.uid}>
-              {user.friendList?.length !== 0 ? (
-                <>
-                  {user.friendList?.map((friend) => (
-                    <FriendCard
-                      key={friend.friendId}
-                      username={friend.username}
-                      profilePhoto={friend.profilePhoto}
-                      uid={friend.friendId}
-                      friendList={user.friendList ? user.friendList : []}
-                      handleRefresh={handleRefresh}
-                    />
-                  ))}
-                </>
-              ) : (
-                <>
-                  <Typography
-                    sx={{
-                      color: "primary.contrastText",
-                      ml:1
-                    }}
-                  >
-                    You have no friend...
-                  </Typography>
-                </>
-              )}
-            </Box>
-          ))}
-        </Grid>
+        {user.map((user) => (
+          <Grid sx={{ flexGrow: 1, gap: 1 }} container key={user.uid}>
+            {user.friendList?.length !== 0 ? (
+              <>
+                {user.friendList?.map((friend) => (
+                  <FriendCard
+                    key={friend.friendId}
+                    username={friend.username}
+                    profilePhoto={friend.profilePhoto}
+                    uid={friend.friendId}
+                    friendList={user.friendList ? user.friendList : []}
+                    handleRefresh={handleRefresh}
+                  />
+                ))}
+              </>
+            ) : (
+              <>
+                <Typography
+                  sx={{
+                    color: "primary.contrastText",
+                    ml: 1,
+                  }}
+                >
+                  You have no friend...
+                </Typography>
+              </>
+            )}
+          </Grid>
+        ))}
       </Paper>
     </Box>
   );

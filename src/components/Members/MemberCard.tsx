@@ -1,3 +1,4 @@
+import * as React from "react";
 import Card from "@mui/material/Card";
 import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
@@ -15,7 +16,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
-import { IFriendList } from "../../interface/User";
+import { IFriendList, User } from "../../interface/User";
 
 interface IData {
   username: string;
@@ -28,8 +29,52 @@ interface IFunction {
 
 export default function MemberCard(props: IData & IFunction) {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+  const [user, setUser] = React.useState<User[]>([]);
+  React.useEffect(() => {
+    const fetchUSerData = async () => {
+      try {
+        const queryData = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", userInfo.uid)
+        );
+        const querySnapshot = await getDocs(queryData);
+        const queriedData = querySnapshot.docs.map((doc) => doc.data() as User);
+        setUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchUSerData();
+  }, [user, userInfo.uid]);
+
+  const AddFriendOtherSide = async () => {
+    const addFriend: IFriendList[] = user.map((m) => ({
+      status: true,
+      friendId: userInfo.uid,
+      username: m.firstName + m.lastName,
+      profilePhoto: m.profilePhoto,
+      createdAt: new Date().toLocaleString(),
+    }));
+    const querySnapshot = await getDocs(
+      query(collection(dbFireStore, "users"), where("uid", "==", props.uId))
+    );
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0];
+      const userRef = doc(dbFireStore, "users", userDoc.id);
+      updateDoc(userRef, {
+        friendList: addFriend,
+      })
+        .then(() => {
+          props.handleRefresh();
+          console.log("Successfully added friend to the friendList.");
+        })
+        .catch((error) => {
+          console.error("Error adding friend to the friendList: ", error);
+        });
+    }
+  };
   const handleAddFriend = async () => {
-    const addFriend : IFriendList = {
+    const addFriend: IFriendList = {
       status: true,
       friendId: props.uId,
       username: props.username,
@@ -46,6 +91,7 @@ export default function MemberCard(props: IData & IFunction) {
         friendList: arrayUnion(addFriend),
       })
         .then(() => {
+          AddFriendOtherSide();
           props.handleRefresh();
           console.log("Successfully added friend to the friendList.");
         })

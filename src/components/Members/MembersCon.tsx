@@ -17,7 +17,6 @@ export default function MembersCon() {
   const [otherMembers, setOtherMembers] = React.useState<User[]>([]);
   const [user, setUser] = React.useState<User[]>([]);
   const [refresh, setRefresh] = React.useState(0);
-  const [isFriend, setIsFriend] = React.useState<boolean>();
 
   const handleRefresh = () => {
     setRefresh((pre) => pre + 1);
@@ -54,24 +53,26 @@ export default function MembersCon() {
     };
     fetchUSerData();
     fetchData();
-
-    setIsFriend(
-      user.some((u) =>
-        u.friendList?.some(
-          (friend) =>
-            otherMembers.some((other) => friend.friendId === other.uid) ||
-            u.friendList?.length !== 0
-        )
-      )
-    );
   }, [userInfo.uid, refresh, user, otherMembers]);
-
+  // console.log(otherMembers.filter((f) =>
+  //   !user.some((m) =>
+  //     m.friendList?.some((s) => f.uid === s.friendId)
+  //   )
+  // ));
   return (
     <Box
       sx={{ display: "flex", flexDirection: "column", gap: 5, color: "black" }}
     >
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems:"end" }}>
-        <Typography sx={{ fontSize: "30px", color: "primary.main", fontWeight: 500 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "end",
+        }}
+      >
+        <Typography
+          sx={{ fontSize: "30px", color: "primary.main", fontWeight: 500 }}
+        >
           People who you may know
         </Typography>
         <Search
@@ -91,19 +92,22 @@ export default function MembersCon() {
         </Search>
       </Box>
       <Grid sx={{ flexGrow: 1, gap: "30px" }} container>
-        {!isFriend && (
-          <>
-            {otherMembers.map((user) => (
-              <MemberCard
-                key={user.uid}
-                username={`${user.firstName} ${user.lastName}`}
-                profilePhoto={user.profilePhoto ? user.profilePhoto : ""}
-                uId={user.uid}
-                handleRefresh={handleRefresh}
-              />
-            ))}
-          </>
-        )}
+        {otherMembers
+          .filter(
+            (f) =>
+              !user.some((m) => m.friendList?.some((s) => f.uid === s.friendId))
+          )
+          .map((otherUser) => (
+            <MemberCard
+              key={otherUser.uid}
+              username={`${otherUser.firstName} ${otherUser.lastName}`}
+              profilePhoto={
+                otherUser.profilePhoto ? otherUser.profilePhoto : ""
+              }
+              uId={otherUser.uid}
+              handleRefresh={handleRefresh}
+            />
+          ))}
       </Grid>
     </Box>
   );

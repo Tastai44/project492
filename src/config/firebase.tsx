@@ -10,6 +10,12 @@ const firebaseConfig = {
   storageBucket: "seniorproject-610c9.appspot.com",
   messagingSenderId: "872436042169",
   appId: "1:872436042169:web:4716ec629782a588748e68"
+  // apiKey: "AIzaSyCBeJBHNw8ynGxpmuwRqHE76L-LDAnAd-c",
+  // authDomain: "projectcmu-a0473.firebaseapp.com",
+  // projectId: "projectcmu-a0473",
+  // storageBucket: "projectcmu-a0473.appspot.com",
+  // messagingSenderId: "388603808028",
+  // appId: "1:388603808028:web:3fcb14a6c3201f52a012d9"
 };
 
 const app: FirebaseApp = initializeApp(firebaseConfig);
