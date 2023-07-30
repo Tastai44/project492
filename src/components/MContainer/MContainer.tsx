@@ -51,7 +51,7 @@ import {
   deleteDoc,
   getDoc,
 } from "firebase/firestore";
-import { Like, Post } from "../../interface/PostContent";
+import { Like, Post, ShareUser } from "../../interface/PostContent";
 import { styleBoxPop } from "../../utils/styleBox";
 import { User } from "../../interface/User";
 import { NavLink } from "react-router-dom";
@@ -76,10 +76,11 @@ interface Idata {
   postId: string;
   commentNumber: number;
   likes: Like[];
+  shareUsers: ShareUser[];
   onwer: string;
   groupName?: string;
   groupId?: string;
-  reFreshInfo? : number;
+  reFreshInfo: number;
 }
 
 interface IFunction {
@@ -198,6 +199,29 @@ export default function MContainer(props: Idata & IFunction) {
     }
   };
 
+  const isShare = props.shareUsers.some((share) => share.uid === userId);
+  const handleShare = async () => {
+    try {
+      const postsCollection = collection(dbFireStore, "posts");
+      const updateShare = {
+        uid: userId,
+        createdAt: new Date().toLocaleString(),
+      };
+      const postRef = doc(postsCollection, props.postId);
+      updateDoc(postRef, {
+        shareUsers: arrayUnion(updateShare),
+      })
+        .then(() => {
+          props.handleRefresh();
+        })
+        .catch((error) => {
+          console.error("Error share", error);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   React.useEffect(() => {
     const fetchData = async () => {
@@ -296,7 +320,9 @@ export default function MContainer(props: Idata & IFunction) {
                           <>
                             is feeling
                             {String.fromCodePoint(parseInt(props.emoji, 16))}
-                            {convertEmojiCodeToName(props.emoji)?.toLocaleLowerCase()}
+                            {convertEmojiCodeToName(
+                              props.emoji
+                            )?.toLocaleLowerCase()}
                           </>
                         )}
                       </Box>
@@ -445,7 +471,9 @@ export default function MContainer(props: Idata & IFunction) {
                       color: isLike ? "purple" : !isLike ? "black" : "black",
                     }}
                     onClick={
-                      isLike ? () => decreaseLike(props.postId) : () => increaseLike()
+                      isLike
+                        ? () => decreaseLike(props.postId)
+                        : () => increaseLike()
                     }
                   >
                     <ThumbUpIcon sx={{ marginRight: 1 }} />
@@ -458,7 +486,13 @@ export default function MContainer(props: Idata & IFunction) {
                   >
                     <CommentIcon sx={{ marginRight: 1 }} /> Comment
                   </Button>
-                  <Button aria-label="share" sx={{ color: "black" }}>
+                  <Button
+                    onClick={handleShare}
+                    aria-label="share"
+                    sx={{
+                      color: isShare ? "purple" : !isShare ? "black" : "black",
+                    }}
+                  >
                     <ScreenShareIcon sx={{ marginRight: 1 }} /> Share
                   </Button>
                 </CardActions>
@@ -482,7 +516,7 @@ export default function MContainer(props: Idata & IFunction) {
                       aria-label="add to favorites"
                       sx={{ color: "grey" }}
                     >
-                      100 Shares
+                      {props.shareUsers.length} Shares
                     </Button>
                   </Box>
                 </CardActions>

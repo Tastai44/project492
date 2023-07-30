@@ -90,7 +90,9 @@ export default function HomeFeed() {
                   groupName={m.groupName}
                   groupId={m.groupId}
                   handleRefresh={handleRefresh}
-                />
+                  shareUsers={m.shareUsers} 
+                  reFreshInfo={0}                
+                  />
               )}
             </Box>
           ))}

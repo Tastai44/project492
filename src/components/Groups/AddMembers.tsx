@@ -25,8 +25,6 @@ import {
   updateDoc,
   arrayUnion,
 } from "firebase/firestore";
-import { Search, SearchIconWrapper, StyledInputBase } from "../Navigation";
-import SearchIcon from "@mui/icons-material/Search";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -131,20 +129,6 @@ export default function AddMembers(props: IFunction & IData) {
           >
             Add Members
           </Typography>
-          <Search
-            sx={{
-              backgroundColor: "#F1F1F1",
-              "&:hover": { backgroundColor: "#C5C5C5" },
-            }}
-          >
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-            />
-          </Search>
         </Box>
         <Divider sx={{ background: "grey" }} />
         <Box sx={{ display: "flex", gap: 1, mt: 1, mb: 1 }}>

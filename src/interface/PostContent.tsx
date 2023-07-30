@@ -29,6 +29,10 @@ export interface Like {
   likeBy: string;
   createdAt: Date;
 }
+export interface ShareUser {
+  uid: string;
+  createdAt: string;
+}
 
 export interface Post {
   id: string;
@@ -48,4 +52,5 @@ export interface Post {
   owner: string;
   groupName?:string;
   groupId?: string;
+  shareUsers: ShareUser[];
 }

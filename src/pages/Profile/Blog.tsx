@@ -32,7 +32,6 @@ export default function Blog({reFreshInfo} : IData) {
       try {
         const q = query(
           collection(dbFireStore, "posts"),
-          where("owner", "==", userId),
           orderBy("createAt", "desc")
         );
         const querySnapshot = await getDocs(q);
@@ -85,7 +84,7 @@ export default function Blog({reFreshInfo} : IData) {
                   gap: 2,
                 }}
               >
-                {data.map((m) => (
+                {data.filter((f) => f.owner === userId || f.shareUsers?.some((share) => share.uid === userId)).map((m) => (
                   <Box key={m.id}>
                     <MContainer
                       onwer={m.owner}
@@ -101,6 +100,7 @@ export default function Blog({reFreshInfo} : IData) {
                       commentNumber={m.comments.length}
                       handleRefresh={handleRefresh}
                       reFreshInfo={reFreshInfo}
+                      shareUsers={m.shareUsers}
                     />
                   </Box>
                 ))}
