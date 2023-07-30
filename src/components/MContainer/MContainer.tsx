@@ -56,6 +56,7 @@ import { styleBoxPop } from "../../utils/styleBox";
 import { User } from "../../interface/User";
 import { NavLink } from "react-router-dom";
 import { themeApp } from "../../utils/Theme";
+import PopupAlert from "../PopupAlert";
 
 export const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -170,6 +171,7 @@ export default function MContainer(props: Idata & IFunction) {
     })
       .then(() => {
         props.handleRefresh();
+        PopupAlert("Liked", "success");
       })
       .catch((error) => {
         console.error("Error adding likes: ", error);
