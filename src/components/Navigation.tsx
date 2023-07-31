@@ -131,7 +131,7 @@ export default function Navigation(props: IData & IFunction) {
     };
     fetchData();
   }, [userInfo.uid, props.reFresh]);
-
+  const IsAdmin = inFoUser.some((user) => (user.userRole === "admin"))
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -477,7 +477,8 @@ export default function Navigation(props: IData & IFunction) {
                   }}
                 />
               </NavLink>
-              <NavLink
+              {IsAdmin && (
+                <NavLink
                 to="/report"
                 style={({ isActive, isPending }) => {
                   return {
@@ -496,6 +497,8 @@ export default function Navigation(props: IData & IFunction) {
                   }}
                 />
               </NavLink>
+              )}
+              
             </Box>
             {/* Middle */}
 

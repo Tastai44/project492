@@ -57,6 +57,7 @@ import { User } from "../../interface/User";
 import { NavLink } from "react-router-dom";
 import { themeApp } from "../../utils/Theme";
 import PopupAlert from "../PopupAlert";
+import ReportCard from "../Report/ReportCard";
 
 export const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -128,6 +129,13 @@ export default function MContainer(props: Idata & IFunction) {
     handleCloseUserMenu();
   };
   const handleCloseEditPost = () => setOpenEditPost(false);
+
+  const [openReportPost, setOpenReportPost] = React.useState(false);
+  const handletOpenReport = () => {
+    setOpenReportPost(true);
+    handleCloseUserMenu();
+  };
+  const handleCloseReport = () => setOpenReportPost(false);
 
   const [userId, setUserId] = React.useState("");
   React.useEffect(() => {
@@ -313,6 +321,19 @@ export default function MContainer(props: Idata & IFunction) {
             </Box>
           </Modal>
 
+          <Modal
+            open={openReportPost}
+            onClose={handleCloseReport}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box>
+              <ReportCard 
+                handleCloseReport={handleCloseReport}
+              />
+            </Box>
+          </Modal>
+
           <Box sx={{ width: "100%" }}>
             <Stack spacing={2}>
               <Item sx={{ display: "flex", flexDirection: "column" }}>
@@ -408,7 +429,7 @@ export default function MContainer(props: Idata & IFunction) {
                           <DeleteOutlineOutlinedIcon /> Delete
                         </Typography>
                       </MenuItem>
-                      <MenuItem onClick={handleCloseUserMenu}>
+                      <MenuItem onClick={handletOpenReport}>
                         <Typography
                           textAlign="center"
                           sx={{

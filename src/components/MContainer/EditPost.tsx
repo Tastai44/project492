@@ -146,6 +146,8 @@ export default function CreatePost({
     likes: [],
     emoji: "",
     owner: "",
+    shareUsers: [],
+    reportPost: [],
   };
   const [post, setPost] = React.useState<Post>(initialState);
   const clearState = () => {
