@@ -18,7 +18,6 @@ import {
   Typography,
   MenuItem,
   IconButton,
-
 } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import LockIcon from "@mui/icons-material/Lock";
@@ -38,12 +37,14 @@ import {
   where,
   deleteDoc,
   getDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { User } from "../../interface/User";
 import { NavLink } from "react-router-dom";
 import { themeApp } from "../../utils/Theme";
 import PopupAlert from "../PopupAlert";
-import AddTaskIcon from '@mui/icons-material/AddTask';
+import AddTaskIcon from "@mui/icons-material/AddTask";
+import { Post, PostReport } from "../../interface/PostContent";
 
 export const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -66,6 +67,7 @@ interface Idata {
   groupId?: string;
   reFreshInfo: number;
   reportNumber: number;
+  reportPost: PostReport[];
 }
 
 interface IFunction {
@@ -107,27 +109,41 @@ export default function Content(props: Idata & IFunction) {
 
   const handleDelete = (pId: string) => {
     const postRef = doc(dbFireStore, "posts", pId);
-    getDoc(postRef)
-      .then((docSnap) => {
-        if (docSnap.exists() && docSnap.data().owner === userId) {
-          deleteDoc(postRef)
-            .then(() => {
-              PopupAlert("Post deleted successfully","success")
-              console.log("Post deleted successfully");
-              props.handleRefresh();
-            })
-            .catch((error) => {
-              PopupAlert("Error deleting post","error")
-              console.error("Error deleting post: ", error);
-            });
-        } else {
-          console.log("You don't have permission to delete this post");
-        }
+    getDoc(postRef);
+    deleteDoc(postRef)
+      .then(() => {
+        PopupAlert("Post deleted successfully", "success");
+        console.log("Post deleted successfully");
+        props.handleRefresh();
       })
       .catch((error) => {
-        console.error("Error fetching post: ", error);
+        PopupAlert("Error deleting post", "error");
+        console.error("Error deleting post: ", error);
       });
   };
+
+  const handleApprove = async (id: string) => {
+    const IndexReport = props.reportPost.findIndex((index) => index.postId === props.postId);
+    try {
+      const queryPost = query(collection(dbFireStore, "posts"), where("id", "==", id));
+      const querySnapshot = await getDocs(queryPost);
+
+      const doc = querySnapshot.docs[0];
+      if(doc.exists()) {
+        const postData = {id: doc.id, ...doc.data() } as Post;
+        const updateReport = [...postData.reportPost];
+        updateReport.splice(IndexReport, 1);
+        const updatedData = { ...postData, reportPost: updateReport };
+        await updateDoc(doc.ref, updatedData);
+        props.handleRefresh();
+        PopupAlert("Report approved successfully", "success");
+      } else {
+        PopupAlert("No post found with the specified ID", "error");
+      }
+    } catch (error) {
+      console.error("Error approving report:", error);
+    }
+  }
 
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   React.useEffect(() => {
@@ -154,7 +170,7 @@ export default function Content(props: Idata & IFunction) {
   }, [props.onwer, props.reFreshInfo]);
 
   return (
-    <Box sx={{mb:5}}>
+    <Box sx={{ mb: 5 }}>
       {inFoUser.map((u) => (
         <Box key={u.uid}>
           <Box sx={{ width: "100%" }}>
@@ -226,7 +242,7 @@ export default function Content(props: Idata & IFunction) {
                       open={Boolean(anchorElUser)}
                       onClose={handleCloseUserMenu}
                     >
-                      <MenuItem>
+                      <MenuItem onClick={() => handleApprove(props.postId)}>
                         <Typography
                           textAlign="center"
                           sx={{
@@ -260,7 +276,7 @@ export default function Content(props: Idata & IFunction) {
                   <Typography
                     variant="body1"
                     color="text.secondary"
-                    sx={{ textAlign: "justify", fontSize:"25px" }}
+                    sx={{ textAlign: "justify", fontSize: "25px" }}
                   >
                     {props.caption}
                   </Typography>
@@ -273,7 +289,9 @@ export default function Content(props: Idata & IFunction) {
                     margin: 1,
                   }}
                 >
-                  {props.hashTagTopic.startsWith("#") ? props.hashTagTopic : `#${props.hashTagTopic}`}
+                  {props.hashTagTopic.startsWith("#")
+                    ? props.hashTagTopic
+                    : `#${props.hashTagTopic}`}
                 </Box>
                 {props.photoPost.length == 1 ? (
                   <ImageList
@@ -296,11 +314,7 @@ export default function Content(props: Idata & IFunction) {
                     ))}
                   </ImageList>
                 ) : (
-                  <ImageList
-                    variant="masonry"
-                    cols={2}
-                    gap={2}
-                  >
+                  <ImageList variant="masonry" cols={2} gap={2}>
                     {props.photoPost.map((image, index) => (
                       <ImageListItem key={index}>
                         <img

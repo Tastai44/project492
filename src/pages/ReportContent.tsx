@@ -1,4 +1,4 @@
-import { Box, Grid, Stack } from "@mui/material";
+import { Box, Grid, Stack, Typography } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { Item } from "../App";
 import {
@@ -16,7 +16,7 @@ import Content from "../components/Report/Content";
 export default function ReportContent() {
   const [reFresh, setReFresh] = React.useState(0);
   const [postData, setPostData] = React.useState<Post[]>([]);
-  
+
   const handleRefresh = () => {
     setReFresh((pre) => pre + 1);
   };
@@ -66,26 +66,37 @@ export default function ReportContent() {
             />
           </Search>
         </Item>
-        <Box sx={{display:"flex", justifyContent:"center"}}>
-        <Grid item xs={12}>
-          {postData.filter((item) => item.reportPost.length !== 0).map((post) => (
-            <Content
-              onwer={post.owner}
-              postId={post.id}
-              caption={post.caption}
-              hashTagTopic={post.hashTagTopic}
-              status={post.status}
-              createAt={post.createAt}
-              emoji={post.emoji}
-              photoPost={post.photoPost}
-              groupName={post.groupName}
-              groupId={post.groupId}
-              reportNumber={post.reportPost.length}
-              handleRefresh={handleRefresh}
-              reFreshInfo={0}                
-            />
-          ))}
-        </Grid>
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Grid item xs={10}>
+            {postData.some((s) => s.reportPost.length !== 0) ? (
+              <>
+                {postData
+                  .filter((item) => item.reportPost.length !== 0)
+                  .map((post) => (
+                    <Content
+                      onwer={post.owner}
+                      postId={post.id}
+                      caption={post.caption}
+                      hashTagTopic={post.hashTagTopic}
+                      status={post.status}
+                      createAt={post.createAt}
+                      emoji={post.emoji}
+                      photoPost={post.photoPost}
+                      groupName={post.groupName}
+                      groupId={post.groupId}
+                      reportNumber={post.reportPost.length}
+                      handleRefresh={handleRefresh}
+                      reFreshInfo={0}
+                      reportPost={post.reportPost}
+                    />
+                  ))}
+              </>
+            ) : (
+              <Typography variant="h4" sx={{ color: "black" }}>
+                There is no report post.
+              </Typography>
+            )}
+          </Grid>
         </Box>
       </Stack>
     </Box>

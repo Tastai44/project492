@@ -23,6 +23,7 @@ export default function ReportCard(props: IFunction & IData) {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const initialState = {
     uid: "",
+    postId: "",
     reason: "",
     createAt: "",
   };
@@ -45,6 +46,7 @@ export default function ReportCard(props: IFunction & IData) {
     const postsCollection = collection(dbFireStore, "posts");
     const newComment = {
       uid: userInfo.uid,
+      postId: props.postId,
       reason: report.reason,
       createAt: new Date().toLocaleString(),
     };

@@ -1,6 +1,5 @@
 import * as React from "react";
 import { styled } from "@mui/material/styles";
-import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Luffy from "/images/Luffy.webp";
 import {
@@ -19,6 +18,7 @@ import {
   Button,
   CardActions,
   Modal,
+  Box,
 } from "@mui/material";
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";
 import CommentIcon from "@mui/icons-material/Comment";
@@ -51,6 +51,8 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import EditPost from "./EditPost";
+import PopupAlert from "../PopupAlert";
+import ReportCard from "../Report/ReportCard";
 
 const Item = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -62,6 +64,7 @@ const Item = styled(Box)(({ theme }) => ({
 interface IData {
   postId: string;
   userId: string;
+  onwer?: string;
   likes: Like[];
 }
 interface IFunction {
@@ -69,13 +72,7 @@ interface IFunction {
   handleRefreshData: () => void;
 }
 
-export default function Content({
-  postId,
-  userId,
-  likes,
-  handleClosePost,
-  handleRefreshData
-}: IData & IFunction) {
+export default function Content( props : IData & IFunction) {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -121,7 +118,6 @@ export default function Content({
     text: "",
     createdAt: "",
     author: "",
-    // likeNumber: 0,
   };
 
   const [comment, setComment] = React.useState<Comment>(initialState);
@@ -142,10 +138,10 @@ export default function Content({
     const postsCollection = collection(dbFireStore, "posts");
     const newComment = {
       text: comment.text,
-      author: userId,
+      author: props.userId,
       createdAt: new Date().toLocaleString(),
     };
-    const postRef = doc(postsCollection, postId);
+    const postRef = doc(postsCollection, props.postId);
     updateDoc(postRef, {
       comments: arrayUnion(newComment),
     })
@@ -162,18 +158,18 @@ export default function Content({
   React.useEffect(() => {
     setIsLike(
       data.some(
-        (d) => d.id === postId && d.likes.some((l) => l.likeBy === userId)
+        (d) => d.id === props.postId && d.likes.some((l) => l.likeBy === props.userId)
       )
     );
-  }, [data, postId, userId]);
+  }, [data, props.postId, props.userId]);
 
   const increaseLike = () => {
     const postsCollection = collection(dbFireStore, "posts");
     const updateLike = {
-      likeBy: userId,
+      likeBy: props.userId,
       createdAt: new Date().toLocaleString(),
     };
-    const postRef = doc(postsCollection, postId);
+    const postRef = doc(postsCollection, props.postId);
     updateDoc(postRef, {
       likes: arrayUnion(updateLike),
     })
@@ -185,7 +181,7 @@ export default function Content({
       });
   };
   const decreaseLike = async (id: string) => {
-    const IndexLike = likes.findIndex((f) => f.likeBy === userId);
+    const IndexLike = props.likes.findIndex((f) => f.likeBy === props.userId);
     try {
       const q = query(
         collection(dbFireStore, "posts"),
@@ -219,17 +215,21 @@ export default function Content({
     const postRef = doc(dbFireStore, "posts", pId);
     getDoc(postRef)
       .then((docSnap) => {
-        if (docSnap.exists() && docSnap.data().owner === userId) {
+        if (docSnap.exists() && docSnap.data().owner === props.userId) {
           deleteDoc(postRef)
             .then(() => {
               handleRefresh();
-              handleRefreshData();
-              handleClosePost();
+              props.handleRefreshData();
+              props.handleClosePost();
             })
             .catch((error) => {
               console.error("Error deleting post: ", error);
             });
         } else {
+          PopupAlert(
+            "You don't have permission to delete this post",
+            "warning"
+          );
           console.log("You don't have permission to delete this post");
         }
       })
@@ -238,13 +238,33 @@ export default function Content({
       });
   };
 
+  const [openReportPost, setOpenReportPost] = React.useState(false);
+  const handletOpenReport = () => {
+    setOpenReportPost(true);
+    handleCloseUserMenu();
+  };
+  const handleCloseReport = () => setOpenReportPost(false);
+
   return (
     <Box>
-      <IconButton onClick={handleClosePost}>
+      <Modal
+            open={openReportPost}
+            onClose={handleCloseReport}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box>
+              <ReportCard
+                handleCloseReport={handleCloseReport}
+                postId={props.postId}
+              />
+            </Box>
+          </Modal>
+      <IconButton onClick={props.handleClosePost}>
         <CancelIcon />
       </IconButton>
       {data
-        .filter((f) => f.id === postId)
+        .filter((f) => f.id === props.postId)
         .map((m) => (
           <Box key={m.id} sx={{ flexGrow: 1, p: 1 }}>
             <Modal
@@ -257,13 +277,13 @@ export default function Content({
                 <EditPost
                   handleCloseEditPost={handleCloseEditPost}
                   handleRefresh={handleRefresh}
-                  handleRefreshData={handleRefreshData}
+                  handleRefreshData={props.handleRefreshData}
                   oldStatus={m.status}
                   caption={m.caption}
                   hashTagTopic={m.hashTagTopic}
                   oldPhoto={m.photoPost}
                   oldEmoji={m.emoji !== undefined ? m.emoji : ""}
-                  postId={postId}
+                  postId={props.postId}
                 />
               </Box>
             </Modal>
@@ -371,33 +391,39 @@ export default function Content({
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                           >
-                            <MenuItem onClick={handletOpenEditPost}>
-                              <Typography
-                                textAlign="center"
-                                sx={{
-                                  display: "flex",
-                                  gap: 1,
-                                  alignItems: "start",
-                                  fontSize: "18px",
-                                }}
-                              >
-                                <BorderColorOutlinedIcon /> Edit
-                              </Typography>
-                            </MenuItem>
-                            <MenuItem onClick={() => handleDelete(postId)}>
-                              <Typography
-                                textAlign="center"
-                                sx={{
-                                  display: "flex",
-                                  gap: 1,
-                                  alignItems: "start",
-                                  fontSize: "18px",
-                                }}
-                              >
-                                <DeleteOutlineOutlinedIcon /> Delete
-                              </Typography>
-                            </MenuItem>
-                            <MenuItem onClick={handleCloseUserMenu}>
+                            {props.onwer === props.userId && (
+                              <>
+                                <MenuItem onClick={handletOpenEditPost}>
+                                  <Typography
+                                    textAlign="center"
+                                    sx={{
+                                      display: "flex",
+                                      gap: 1,
+                                      alignItems: "start",
+                                      fontSize: "18px",
+                                    }}
+                                  >
+                                    <BorderColorOutlinedIcon /> Edit
+                                  </Typography>
+                                </MenuItem>
+                                <MenuItem
+                                  onClick={() => handleDelete(props.postId)}
+                                >
+                                  <Typography
+                                    textAlign="center"
+                                    sx={{
+                                      display: "flex",
+                                      gap: 1,
+                                      alignItems: "start",
+                                      fontSize: "18px",
+                                    }}
+                                  >
+                                    <DeleteOutlineOutlinedIcon /> Delete
+                                  </Typography>
+                                </MenuItem>
+                              </>
+                            )}
+                            <MenuItem onClick={handletOpenReport}>
                               <Typography
                                 textAlign="center"
                                 sx={{
@@ -450,7 +476,7 @@ export default function Content({
                         }}
                         onClick={
                           isLike
-                            ? () => decreaseLike(postId)
+                            ? () => decreaseLike(props.postId)
                             : () => increaseLike()
                         }
                       >
@@ -546,7 +572,7 @@ export default function Content({
                                 commentIndex={index}
                                 postId={m.id}
                                 handleRefresh={handleRefresh}
-                                userId={userId}
+                                userId={props.userId}
                               />
                             </Box>
                           ))}

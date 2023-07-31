@@ -137,18 +137,13 @@ export default function MContainer(props: Idata & IFunction) {
   };
   const handleCloseReport = () => setOpenReportPost(false);
 
-  const [userId, setUserId] = React.useState("");
-  React.useEffect(() => {
-    const getUerInfo = localStorage.getItem("user");
-    const tmp = JSON.parse(getUerInfo ? getUerInfo : "");
-    setUserId(tmp.uid);
-  }, [userId]);
+  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
   const handleDelete = (pId: string) => {
     const postRef = doc(dbFireStore, "posts", pId);
     getDoc(postRef)
       .then((docSnap) => {
-        if (docSnap.exists() && docSnap.data().owner === userId) {
+        if (docSnap.exists() && docSnap.data().owner === userInfo.uid) {
           deleteDoc(postRef)
             .then(() => {
               alert("Post deleted successfully");
@@ -159,6 +154,10 @@ export default function MContainer(props: Idata & IFunction) {
               console.error("Error deleting post: ", error);
             });
         } else {
+          PopupAlert(
+            "You don't have permission to delete this post",
+            "warning"
+          );
           console.log("You don't have permission to delete this post");
         }
       })
@@ -170,7 +169,7 @@ export default function MContainer(props: Idata & IFunction) {
   const increaseLike = () => {
     const postsCollection = collection(dbFireStore, "posts");
     const updateLike = {
-      likeBy: userId,
+      likeBy: userInfo.uid,
       createdAt: new Date().toLocaleString(),
     };
     const postRef = doc(postsCollection, props.postId);
@@ -179,16 +178,15 @@ export default function MContainer(props: Idata & IFunction) {
     })
       .then(() => {
         props.handleRefresh();
-        PopupAlert("Liked", "success");
       })
       .catch((error) => {
         console.error("Error adding likes: ", error);
       });
   };
 
-  const isLike = props.likes.some((f) => f.likeBy === userId);
+  const isLike = props.likes.some((f) => f.likeBy === userInfo.uid);
   const decreaseLike = async (id: string) => {
-    const IndexLike = props.likes.findIndex((f) => f.likeBy === userId);
+    const IndexLike = props.likes.findIndex((f) => f.likeBy === userInfo.uid);
     try {
       const q = query(collection(dbFireStore, "posts"), where("id", "==", id));
       const querySnapshot = await getDocs(q);
@@ -205,16 +203,16 @@ export default function MContainer(props: Idata & IFunction) {
         console.log("No post found with the specified ID");
       }
     } catch (error) {
-      console.error("Error deleting like:", error);
+      console.error("Error dislike:", error);
     }
   };
 
-  const isShare = props.shareUsers.some((share) => share.uid === userId);
+  const isShare = props.shareUsers.some((share) => share.uid === userInfo.uid);
   const handleShare = async () => {
     try {
       const postsCollection = collection(dbFireStore, "posts");
       const updateShare = {
-        uid: userId,
+        uid: userInfo.uid,
         createdAt: new Date().toLocaleString(),
       };
       const postRef = doc(postsCollection, props.postId);
@@ -232,26 +230,31 @@ export default function MContainer(props: Idata & IFunction) {
     }
   };
   const unShare = async (id: string) => {
-    const IndexShare = props.shareUsers.findIndex((index) => index.uid === userId);
+    const IndexShare = props.shareUsers.findIndex(
+      (index) => index.uid === userInfo.uid
+    );
     try {
-      const queyShare = query(collection(dbFireStore, "posts"), where("id", "==", id));
+      const queyShare = query(
+        collection(dbFireStore, "posts"),
+        where("id", "==", id)
+      );
       const querySnapshot = await getDocs(queyShare);
 
       const doc = querySnapshot.docs[0];
-      if(doc.exists()) {
-        const postData = { id: doc.id, ...doc.data()} as Post;
+      if (doc.exists()) {
+        const postData = { id: doc.id, ...doc.data() } as Post;
         const updateShare = [...postData.shareUsers];
         updateShare.splice(IndexShare, 1);
-        const updateData = {...postData, shareUsers: updateShare};
+        const updateData = { ...postData, shareUsers: updateShare };
         await updateDoc(doc.ref, updateData);
         props.handleRefresh();
       } else {
         console.log("No post found with the specified ID");
       }
-    }catch (error) {
-      console.error(error)
+    } catch (error) {
+      console.error(error);
     }
-  }
+  };
 
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   React.useEffect(() => {
@@ -291,10 +294,11 @@ export default function MContainer(props: Idata & IFunction) {
               <Paper sx={styleBoxPop}>
                 <Content
                   postId={props.postId}
-                  userId={userId}
+                  userId={userInfo.uid}
                   handleClosePost={handleClosePost}
                   handleRefreshData={props.handleRefresh}
                   likes={props.likes}
+                  onwer={props.onwer}
                 />
               </Paper>
             </Box>
@@ -328,7 +332,7 @@ export default function MContainer(props: Idata & IFunction) {
             aria-describedby="modal-modal-description"
           >
             <Box>
-              <ReportCard 
+              <ReportCard
                 handleCloseReport={handleCloseReport}
                 postId={props.postId}
               />
@@ -404,32 +408,36 @@ export default function MContainer(props: Idata & IFunction) {
                       open={Boolean(anchorElUser)}
                       onClose={handleCloseUserMenu}
                     >
-                      <MenuItem onClick={handletOpenEditPost}>
-                        <Typography
-                          textAlign="center"
-                          sx={{
-                            display: "flex",
-                            gap: 1,
-                            alignItems: "start",
-                            fontSize: "18px",
-                          }}
-                        >
-                          <BorderColorOutlinedIcon /> Edit
-                        </Typography>
-                      </MenuItem>
-                      <MenuItem onClick={() => handleDelete(props.postId)}>
-                        <Typography
-                          textAlign="center"
-                          sx={{
-                            display: "flex",
-                            gap: 1,
-                            alignItems: "start",
-                            fontSize: "18px",
-                          }}
-                        >
-                          <DeleteOutlineOutlinedIcon /> Delete
-                        </Typography>
-                      </MenuItem>
+                      {props.onwer === userInfo.uid && (
+                        <>
+                          <MenuItem onClick={handletOpenEditPost}>
+                            <Typography
+                              textAlign="center"
+                              sx={{
+                                display: "flex",
+                                gap: 1,
+                                alignItems: "start",
+                                fontSize: "18px",
+                              }}
+                            >
+                              <BorderColorOutlinedIcon /> Edit
+                            </Typography>
+                          </MenuItem>
+                          <MenuItem onClick={() => handleDelete(props.postId)}>
+                            <Typography
+                              textAlign="center"
+                              sx={{
+                                display: "flex",
+                                gap: 1,
+                                alignItems: "start",
+                                fontSize: "18px",
+                              }}
+                            >
+                              <DeleteOutlineOutlinedIcon /> Delete
+                            </Typography>
+                          </MenuItem>
+                        </>
+                      )}
                       <MenuItem onClick={handletOpenReport}>
                         <Typography
                           textAlign="center"
@@ -464,7 +472,9 @@ export default function MContainer(props: Idata & IFunction) {
                     margin: 1,
                   }}
                 >
-                  {props.hashTagTopic.startsWith("#") ? props.hashTagTopic : `#${props.hashTagTopic}`}
+                  {props.hashTagTopic.startsWith("#")
+                    ? props.hashTagTopic
+                    : `#${props.hashTagTopic}`}
                 </Box>
                 {props.photoPost.length == 1 ? (
                   <ImageList
@@ -534,8 +544,8 @@ export default function MContainer(props: Idata & IFunction) {
                   <Button
                     onClick={
                       isShare
-                      ? () => unShare(props.postId)
-                      : () => handleShare()
+                        ? () => unShare(props.postId)
+                        : () => handleShare()
                     }
                     aria-label="share"
                     sx={{

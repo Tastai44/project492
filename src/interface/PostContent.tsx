@@ -36,6 +36,7 @@ export interface ShareUser {
 
 export interface PostReport {
   uid: string;
+  postId: string;
   reason: string;
   createAt: string;
 }
