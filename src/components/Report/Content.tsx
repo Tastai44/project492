@@ -65,6 +65,7 @@ interface Idata {
   groupName?: string;
   groupId?: string;
   reFreshInfo: number;
+  reportNumber: number;
 }
 
 interface IFunction {
@@ -172,7 +173,7 @@ export default function Content(props: Idata & IFunction) {
                   </ListItemAvatar>
                   <ListItemText
                     primary={
-                      <Box sx={{ fontSize: "16px" }}>
+                      <Box sx={{ fontSize: "20px" }}>
                         <b>
                           {u.username}
                           <NavLink
@@ -259,20 +260,20 @@ export default function Content(props: Idata & IFunction) {
                   <Typography
                     variant="body1"
                     color="text.secondary"
-                    sx={{ textAlign: "justify" }}
+                    sx={{ textAlign: "justify", fontSize:"25px" }}
                   >
                     {props.caption}
                   </Typography>
                 </CardContent>
                 <Box
                   sx={{
-                    fontSize: "16px",
+                    fontSize: "25px",
                     display: "flex",
                     justifyContent: "start",
                     margin: 1,
                   }}
                 >
-                  {props.hashTagTopic}
+                  {props.hashTagTopic.startsWith("#") ? props.hashTagTopic : `#${props.hashTagTopic}`}
                 </Box>
                 {props.photoPost.length == 1 ? (
                   <ImageList
@@ -325,7 +326,7 @@ export default function Content(props: Idata & IFunction) {
                       aria-label="add to favorites"
                       sx={{ color: "grey" }}
                     >
-                      10 Report
+                      {props.reportNumber} Reports
                     </Button>
                   </Box>
                 </CardActions>

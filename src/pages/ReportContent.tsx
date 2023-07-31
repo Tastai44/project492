@@ -67,22 +67,23 @@ export default function ReportContent() {
           </Search>
         </Item>
         <Box sx={{display:"flex", justifyContent:"center"}}>
-        <Grid item xs={10}>
-          {postData.map((post) => (
+        <Grid item xs={12}>
+          {postData.filter((item) => item.reportPost.length !== 0).map((post) => (
             <Content
-                  onwer={post.owner}
-                  postId={post.id}
-                  caption={post.caption}
-                  hashTagTopic={post.hashTagTopic}
-                  status={post.status}
-                  createAt={post.createAt}
-                  emoji={post.emoji}
-                  photoPost={post.photoPost}
-                  groupName={post.groupName}
-                  groupId={post.groupId}
-                  handleRefresh={handleRefresh}
-                  reFreshInfo={0}                
-                  />
+              onwer={post.owner}
+              postId={post.id}
+              caption={post.caption}
+              hashTagTopic={post.hashTagTopic}
+              status={post.status}
+              createAt={post.createAt}
+              emoji={post.emoji}
+              photoPost={post.photoPost}
+              groupName={post.groupName}
+              groupId={post.groupId}
+              reportNumber={post.reportPost.length}
+              handleRefresh={handleRefresh}
+              reFreshInfo={0}                
+            />
           ))}
         </Grid>
         </Box>

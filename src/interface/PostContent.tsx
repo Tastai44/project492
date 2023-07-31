@@ -34,7 +34,7 @@ export interface ShareUser {
   createdAt: string;
 }
 
-export interface ReportList {
+export interface PostReport {
   uid: string;
   reason: string;
   createAt: string;
@@ -59,5 +59,5 @@ export interface Post {
   groupName?:string;
   groupId?: string;
   shareUsers: ShareUser[];
-  reportPost: ReportList[];
+  reportPost: PostReport[];
 }

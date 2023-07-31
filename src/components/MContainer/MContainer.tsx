@@ -330,6 +330,7 @@ export default function MContainer(props: Idata & IFunction) {
             <Box>
               <ReportCard 
                 handleCloseReport={handleCloseReport}
+                postId={props.postId}
               />
             </Box>
           </Modal>
@@ -463,7 +464,7 @@ export default function MContainer(props: Idata & IFunction) {
                     margin: 1,
                   }}
                 >
-                  {props.hashTagTopic}
+                  {props.hashTagTopic.startsWith("#") ? props.hashTagTopic : `#${props.hashTagTopic}`}
                 </Box>
                 {props.photoPost.length == 1 ? (
                   <ImageList
