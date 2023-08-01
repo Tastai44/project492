@@ -2,22 +2,19 @@ import * as React from "react";
 import {
   Box,
   Button,
-  Chip,
   Divider,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  OutlinedInput,
-  Select,
-  SelectChangeEvent,
-  Theme,
+  TextField,
   Typography,
-  useTheme,
 } from "@mui/material";
 import { styleBox } from "../../utils/styleBox";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { User } from "../../interface/User";
+import Checkbox from '@mui/material/Checkbox';
+import Autocomplete from '@mui/material/Autocomplete';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import PopupAlert from "../PopupAlert";
 import {
   collection,
   getDocs,
@@ -25,25 +22,9 @@ import {
   updateDoc,
   arrayUnion,
 } from "firebase/firestore";
+import { ChangeEvent } from "react";
+import { IMember } from "../../interface/Group";
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-function getStyles(name: string, personName: readonly string[], theme: Theme) {
-  return {
-    fontWeight:
-      personName.indexOf(name) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
-  };
-}
 
 interface IFunction {
   handleClose: () => void;
@@ -52,19 +33,19 @@ interface IFunction {
 
 interface IData {
   gId: string;
+  members: IMember[];
 }
 
 export default function AddMembers(props: IFunction & IData) {
-  const theme = useTheme();
   const [member, setMember] = React.useState<string[]>([]);
   const [users, setUsers] = React.useState<User[]>([]);
   // const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
-  const handleAddMember = (event: SelectChangeEvent<typeof member>) => {
-    const {
-      target: { value },
-    } = event;
-    setMember(typeof value === "string" ? value.split(",") : value);
+  const handleAddMember = (
+    _event: ChangeEvent<unknown>,
+    newValue: string[]
+  ) => {
+    setMember(newValue);
   };
 
   React.useEffect(() => {
@@ -102,6 +83,7 @@ export default function AddMembers(props: IFunction & IData) {
       members: arrayUnion(...tmp2),
     })
       .then(() => {
+        PopupAlert("Added member(s) successfully","success")
         props.handleRefresh();
         props.handleClose();
       })
@@ -132,41 +114,38 @@ export default function AddMembers(props: IFunction & IData) {
         </Box>
         <Divider sx={{ background: "grey" }} />
         <Box sx={{ display: "flex", gap: 1, mt: 1, mb: 1 }}>
-          <FormControl sx={{ width: "100%" }}>
-            <InputLabel id="demo-multiple-checkbox-label">Members</InputLabel>
-            <Select
-              labelId="demo-multiple-chip-label"
-              id="demo-multiple-chip"
+        <Autocomplete
               multiple
               value={member}
               onChange={handleAddMember}
-              input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-              renderValue={(selected) => (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                  {selected.map((value) => {
-                    const temp = JSON.parse(value);
-                    return (
-                      <Chip
-                        key={temp.uid}
-                        label={`${temp.firstName} ${temp.lastName}`}
-                      />
-                    );
-                  })}
-                </Box>
+              id="checkboxes-tags-demo"
+              options={users
+                .filter((user) => !props.members.some((member) => member.uid === user.uid))
+                .map((e) => JSON.stringify(e))}
+              disableCloseOnSelect
+              getOptionLabel={(option) => {
+                const temp = JSON.parse(option);
+                return `${temp.firstName + " " + temp.lastName}`;
+              }}
+              renderOption={(props, option, { selected }) => {
+                const temp = JSON.parse(option);
+                return (
+                  <li {...props}>
+                    <Checkbox
+                      icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+                      checkedIcon={<CheckBoxIcon fontSize="small" />}
+                      checked={selected}
+                      style={{ marginRight: 8 }}
+                    />
+                    {`${temp.firstName} ${temp.lastName}`}
+                  </li>
+                );
+              }}
+              style={{ width: 500 }}
+              renderInput={(params) => (
+                <TextField {...params} label="Members" placeholder="Members" />
               )}
-              MenuProps={MenuProps}
-            >
-              {users.map((e) => (
-                <MenuItem
-                  key={e.uid}
-                  value={JSON.stringify(e)}
-                  style={getStyles(e.firstName, member, theme)}
-                >
-                  {`${e.firstName} ${e.lastName}`}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+            />
         </Box>
         <Box
           sx={{ mt: 1, display: "flex", justifyContent: "flex-end", gap: 1 }}

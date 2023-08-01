@@ -58,6 +58,7 @@ export default function InterestedContainer(props: IData & IFunction) {
         <Box>
           <AddMembers
             gId={props.gId}
+            members={props.members}
             handleClose={handleCloseAdd}
             handleRefresh={props.handleRefresh}
           />

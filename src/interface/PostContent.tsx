@@ -29,8 +29,13 @@ export interface Like {
   likeBy: string;
   createdAt: Date;
 }
+
 export interface ShareUser {
-  uid: string;
+  shareBy: string;
+  shareTo: {
+    uid: string;
+  }[];
+  status: string;
   createdAt: string;
 }
 

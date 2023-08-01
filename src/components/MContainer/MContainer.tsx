@@ -57,6 +57,7 @@ import { NavLink } from "react-router-dom";
 import { themeApp } from "../../utils/Theme";
 import PopupAlert from "../PopupAlert";
 import ReportCard from "../Report/ReportCard";
+import ShareCard from "./ShareCard";
 
 export const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -207,55 +208,6 @@ export default function MContainer(props: Idata & IFunction) {
     }
   };
 
-  const isShare = props.shareUsers.some((share) => share.uid === userInfo.uid);
-  const handleShare = async () => {
-    try {
-      const postsCollection = collection(dbFireStore, "posts");
-      const updateShare = {
-        uid: userInfo.uid,
-        createdAt: new Date().toLocaleString(),
-      };
-      const postRef = doc(postsCollection, props.postId);
-      updateDoc(postRef, {
-        shareUsers: arrayUnion(updateShare),
-      })
-        .then(() => {
-          props.handleRefresh();
-        })
-        .catch((error) => {
-          console.error("Error share", error);
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const unShare = async (id: string) => {
-    const IndexShare = props.shareUsers.findIndex(
-      (index) => index.uid === userInfo.uid
-    );
-    try {
-      const queyShare = query(
-        collection(dbFireStore, "posts"),
-        where("id", "==", id)
-      );
-      const querySnapshot = await getDocs(queyShare);
-
-      const doc = querySnapshot.docs[0];
-      if (doc.exists()) {
-        const postData = { id: doc.id, ...doc.data() } as Post;
-        const updateShare = [...postData.shareUsers];
-        updateShare.splice(IndexShare, 1);
-        const updateData = { ...postData, shareUsers: updateShare };
-        await updateDoc(doc.ref, updateData);
-        props.handleRefresh();
-      } else {
-        console.log("No post found with the specified ID");
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   React.useMemo(() => {
     const fetchData = async () => {
@@ -279,6 +231,10 @@ export default function MContainer(props: Idata & IFunction) {
     };
     fetchData();
   }, [props.owner]);
+
+  const [openShare, setOpenShare] = React.useState(false);
+  const handleOpenShare = () => setOpenShare(true);
+  const handleCloseShare = () => setOpenShare(false);
 
   return (
     <Box>
@@ -542,15 +498,14 @@ export default function MContainer(props: Idata & IFunction) {
                     <CommentIcon sx={{ marginRight: 1 }} /> Comment
                   </Button>
                   <Button
-                    onClick={
-                      isShare
-                        ? () => unShare(props.postId)
-                        : () => handleShare()
-                    }
+                    onClick={handleOpenShare}
+                    // onClick={
+                    //   isShare
+                    //     ? () => unShare(props.postId)
+                    //     : () => handleShare()
+                    // }
+                    sx={{ color: "black" }}
                     aria-label="share"
-                    sx={{
-                      color: isShare ? "purple" : !isShare ? "black" : "black",
-                    }}
                   >
                     <ScreenShareIcon sx={{ marginRight: 1 }} /> Share
                   </Button>
@@ -591,6 +546,11 @@ export default function MContainer(props: Idata & IFunction) {
                       gap: "10px",
                     }}
                   >
+                    <ShareCard
+                      openShare={openShare}
+                      handleCloseShare={handleCloseShare}
+                      friendList={user.friendList}
+                    />
                     <Avatar
                       alt="User"
                       src={user.profilePhoto}

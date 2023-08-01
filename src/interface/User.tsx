@@ -16,7 +16,7 @@ export interface User {
     status?: string;
     year?: string;
     posts?: Post[];
-    friendList?: IFriendList[];
+    friendList: IFriendList[];
     createdAt?: string;
 }
 
