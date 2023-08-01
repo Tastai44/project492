@@ -76,7 +76,7 @@ export default function HomeFeed() {
             <Box key={m.id}>
               {(m.status === "Public" || m.status === "Friend") && (
                 <MContainer
-                  onwer={m.owner}
+                  owner={m.owner}
                   postId={m.id}
                   caption={m.caption}
                   hashTagTopic={m.hashTagTopic}
@@ -91,7 +91,8 @@ export default function HomeFeed() {
                   groupId={m.groupId}
                   handleRefresh={handleRefresh}
                   shareUsers={m.shareUsers} 
-                  reFreshInfo={0}                
+                  reFreshInfo={0}   
+                  userInfo={inFoUser}          
                   />
               )}
             </Box>

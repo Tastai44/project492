@@ -87,7 +87,7 @@ export default function Blog({reFreshInfo} : IData) {
                 {data.filter((f) => f.owner === userId || f.shareUsers?.some((share) => share.uid === userId)).map((m) => (
                   <Box key={m.id}>
                     <MContainer
-                      onwer={m.owner}
+                      owner={m.owner}
                       postId={m.id}
                       caption={m.caption}
                       hashTagTopic={m.hashTagTopic}
@@ -101,6 +101,7 @@ export default function Blog({reFreshInfo} : IData) {
                       handleRefresh={handleRefresh}
                       reFreshInfo={reFreshInfo}
                       shareUsers={m.shareUsers}
+                      userInfo={inFoUser} 
                     />
                   </Box>
                 ))}

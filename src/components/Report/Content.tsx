@@ -45,6 +45,7 @@ import { themeApp } from "../../utils/Theme";
 import PopupAlert from "../PopupAlert";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import { Post, PostReport } from "../../interface/PostContent";
+import ReasonContainer from "./ReasonContainer";
 
 export const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -62,7 +63,7 @@ interface Idata {
   photoPost: string[];
   emoji?: string;
   postId: string;
-  onwer: string;
+  owner: string;
   groupName?: string;
   groupId?: string;
   reFreshInfo: number;
@@ -75,6 +76,9 @@ interface IFunction {
 }
 
 export default function Content(props: Idata & IFunction) {
+  const [openReason, setOpenReason] = React.useState(false);
+  const handleOpenReason = () => {setOpenReason(true)}
+  const handleCloseReason = () => {setOpenReason(false)}
   const [iconStatus, setIconStatus] = React.useState("");
   React.useEffect(() => {
     if (props.status === "Private") {
@@ -151,7 +155,7 @@ export default function Content(props: Idata & IFunction) {
       try {
         const q = query(
           collection(dbFireStore, "users"),
-          where("uid", "==", props.onwer)
+          where("uid", "==", props.owner)
         );
         const querySnapshot = await getDocs(q);
         const queriedData = querySnapshot.docs.map(
@@ -167,10 +171,18 @@ export default function Content(props: Idata & IFunction) {
       }
     };
     fetchData();
-  }, [props.onwer, props.reFreshInfo]);
+  }, [props.owner, props.reFreshInfo]);
 
   return (
     <Box sx={{ mb: 5 }}>
+      <ReasonContainer 
+        postId={props.postId}
+        openReason={openReason}
+        handleCloseReason={handleCloseReason}
+        handleRefresh={props.handleRefresh}
+        reportPost={props.reportPost}
+        owner={props.owner}
+      />
       {inFoUser.map((u) => (
         <Box key={u.uid}>
           <Box sx={{ width: "100%" }}>
@@ -337,6 +349,7 @@ export default function Content(props: Idata & IFunction) {
                   </Button>
                   <Box>
                     <Button
+                    onClick={handleOpenReason}
                       aria-label="add to favorites"
                       sx={{ color: "grey" }}
                     >

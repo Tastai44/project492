@@ -74,7 +74,7 @@ export default function ReportContent() {
                   .filter((item) => item.reportPost.length !== 0)
                   .map((post) => (
                     <Content
-                      onwer={post.owner}
+                      owner={post.owner}
                       postId={post.id}
                       caption={post.caption}
                       hashTagTopic={post.hashTagTopic}

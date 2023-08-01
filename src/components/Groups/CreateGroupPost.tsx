@@ -131,6 +131,8 @@ export default function CreateGroupPost({
     createAt: "",
     emoji: "",
     owner: "",
+    shareUsers: [],
+    reportPost: [],
   };
   const [post, setPost] = React.useState<Post>(initialState);
   const clearState = () => {
@@ -160,11 +162,14 @@ export default function CreateGroupPost({
       photoPost: previewImages,
       likes: [],
       createAt: new Date().toLocaleString(),
+      date: new Date().toLocaleDateString("en-US"),
       emoji: emoji,
       owner: userId,
       comments: post.comments,
       groupName: groupName,
       groupId: groupId,
+      shareUsers: [],
+      reportPost: [],
     };
 
     try {

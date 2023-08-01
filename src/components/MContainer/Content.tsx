@@ -53,6 +53,7 @@ import {
 import EditPost from "./EditPost";
 import PopupAlert from "../PopupAlert";
 import ReportCard from "../Report/ReportCard";
+import { User } from "../../interface/User";
 
 const Item = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -64,7 +65,7 @@ const Item = styled(Box)(({ theme }) => ({
 interface IData {
   postId: string;
   userId: string;
-  onwer?: string;
+  owner?: string;
   likes: Like[];
 }
 interface IFunction {
@@ -72,7 +73,7 @@ interface IFunction {
   handleRefreshData: () => void;
 }
 
-export default function Content( props : IData & IFunction) {
+export default function Content(props: IData & IFunction) {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -91,7 +92,10 @@ export default function Content( props : IData & IFunction) {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const q = query(collection(dbFireStore, "posts"));
+        const q = query(
+          collection(dbFireStore, "posts"),
+          where("id", "==", props.postId)
+        );
         const querySnapshot = await getDocs(q);
         const queriedData = querySnapshot.docs.map(
           (doc) =>
@@ -106,7 +110,7 @@ export default function Content( props : IData & IFunction) {
       }
     };
     fetchData();
-  }, [reFresh]);
+  }, [props.postId, reFresh]);
 
   const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
     const emoji = emojiData.find((data) => data.unified === emojiCode);
@@ -158,7 +162,9 @@ export default function Content( props : IData & IFunction) {
   React.useEffect(() => {
     setIsLike(
       data.some(
-        (d) => d.id === props.postId && d.likes.some((l) => l.likeBy === props.userId)
+        (d) =>
+          d.id === props.postId &&
+          d.likes.some((l) => l.likeBy === props.userId)
       )
     );
   }, [data, props.postId, props.userId]);
@@ -245,69 +251,77 @@ export default function Content( props : IData & IFunction) {
   };
   const handleCloseReport = () => setOpenReportPost(false);
 
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+  React.useMemo(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", props.owner)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [props.owner])
+
   return (
     <Box>
       <Modal
-            open={openReportPost}
-            onClose={handleCloseReport}
+        open={openReportPost}
+        onClose={handleCloseReport}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box>
+          <ReportCard
+            handleCloseReport={handleCloseReport}
+            postId={props.postId}
+          />
+        </Box>
+      </Modal>
+      <IconButton onClick={props.handleClosePost}>
+        <CancelIcon />
+      </IconButton>
+      {data.map((m) => (
+        <Box key={m.id} sx={{ flexGrow: 1, p: 1 }}>
+          <Modal
+            open={openEditPost}
+            onClose={handleCloseEditPost}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
             <Box>
-              <ReportCard
-                handleCloseReport={handleCloseReport}
+              <EditPost
+                handleCloseEditPost={handleCloseEditPost}
+                handleRefresh={handleRefresh}
+                handleRefreshData={props.handleRefreshData}
+                oldStatus={m.status}
+                caption={m.caption}
+                hashTagTopic={m.hashTagTopic}
+                oldPhoto={m.photoPost}
+                oldEmoji={m.emoji !== undefined ? m.emoji : ""}
                 postId={props.postId}
               />
             </Box>
           </Modal>
-      <IconButton onClick={props.handleClosePost}>
-        <CancelIcon />
-      </IconButton>
-      {data
-        .filter((f) => f.id === props.postId)
-        .map((m) => (
-          <Box key={m.id} sx={{ flexGrow: 1, p: 1 }}>
-            <Modal
-              open={openEditPost}
-              onClose={handleCloseEditPost}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <Box>
-                <EditPost
-                  handleCloseEditPost={handleCloseEditPost}
-                  handleRefresh={handleRefresh}
-                  handleRefreshData={props.handleRefreshData}
-                  oldStatus={m.status}
-                  caption={m.caption}
-                  hashTagTopic={m.hashTagTopic}
-                  oldPhoto={m.photoPost}
-                  oldEmoji={m.emoji !== undefined ? m.emoji : ""}
-                  postId={props.postId}
-                />
-              </Box>
-            </Modal>
-            <Grid container spacing={1}>
-              <Grid item xs={6}>
-                <Item>
-                  <Box sx={{ height: "auto", maxWidth: "lg", minWidth: "sm" }}>
-                    {m.photoPost.length == 1 ? (
-                      <>
-                        <ImageList variant="masonry" cols={1}>
-                          {m.photoPost.map((image, index) => (
-                            <ImageListItem key={index}>
-                              <img
-                                src={image}
-                                srcSet={image}
-                                alt={`${index}`}
-                                loading="lazy"
-                              />
-                            </ImageListItem>
-                          ))}
-                        </ImageList>
-                      </>
-                    ) : (
-                      <ImageList variant="masonry" cols={2} gap={10}>
+          <Grid container spacing={1}>
+            <Grid item xs={6}>
+              <Item>
+                <Box sx={{ height: "auto", maxWidth: "lg", minWidth: "sm" }}>
+                  {m.photoPost.length == 1 ? (
+                    <>
+                      <ImageList variant="masonry" cols={1}>
                         {m.photoPost.map((image, index) => (
                           <ImageListItem key={index}>
                             <img
@@ -319,274 +333,287 @@ export default function Content( props : IData & IFunction) {
                           </ImageListItem>
                         ))}
                       </ImageList>
-                    )}
-                  </Box>
-                </Item>
-              </Grid>
-              <Grid item xs={6}>
-                <Item>
-                  <Box sx={{ display: "flex", flexDirection: "column" }}>
-                    <Box>
-                      <ListItem>
-                        <ListItemAvatar>
-                          <Avatar
-                            src={Luffy}
-                            sx={{
-                              width: "60px",
-                              height: "60px",
-                              marginRight: "10px",
-                            }}
+                    </>
+                  ) : (
+                    <ImageList variant="masonry" cols={2} gap={10}>
+                      {m.photoPost.map((image, index) => (
+                        <ImageListItem key={index}>
+                          <img
+                            src={image}
+                            srcSet={image}
+                            alt={`${index}`}
+                            loading="lazy"
                           />
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={
-                            <Typography sx={{ fontSize: "16px" }}>
-                              <b>User Name</b>
-                              {m.emoji && (
-                                <>
-                                  is feeling
-                                  {String.fromCodePoint(
-                                    parseInt(m.emoji, 16)
-                                  )}{" "}
-                                  {convertEmojiCodeToName(
-                                    m.emoji
-                                  )?.toLocaleLowerCase()}
-                                </>
-                              )}
-                            </Typography>
-                          }
-                          secondary={
-                            <Typography
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 0.5,
-                              }}
-                            >
-                              {m.createAt}
-                              {m.status === "Private" && <LockIcon />}
-                              {m.status === "Friend" && <GroupIcon />}
-                              {m.status === "Public" && <PublicIcon />}
-                              {m.status}
-                            </Typography>
-                          }
+                        </ImageListItem>
+                      ))}
+                    </ImageList>
+                  )}
+                </Box>
+              </Item>
+            </Grid>
+            <Grid item xs={6}>
+              <Item>
+                <Box sx={{ display: "flex", flexDirection: "column" }}>
+                  <Box>
+                    {inFoUser.map((user) => (
+                      <ListItem>
+                      <ListItemAvatar>
+                        <Avatar
+                          src={user.profilePhoto}
+                          sx={{
+                            width: "60px",
+                            height: "60px",
+                            marginRight: "10px",
+                          }}
                         />
-                        <ListItemAvatar>
-                          <IconButton onClick={handleOpenUserMenu}>
-                            <MoreHorizIcon />
-                          </IconButton>
-                          <Menu
-                            sx={{ mt: "30px" }}
-                            id="menu-appbar"
-                            anchorEl={anchorElUser}
-                            anchorOrigin={{
-                              vertical: "top",
-                              horizontal: "right",
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                              vertical: "top",
-                              horizontal: "right",
-                            }}
-                            open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
-                          >
-                            {props.onwer === props.userId && (
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={
+                          <Typography sx={{ fontSize: "16px" }}>
+                            <b>{user.firstName} {user.lastName}</b>
+                            {m.emoji && (
                               <>
-                                <MenuItem onClick={handletOpenEditPost}>
-                                  <Typography
-                                    textAlign="center"
-                                    sx={{
-                                      display: "flex",
-                                      gap: 1,
-                                      alignItems: "start",
-                                      fontSize: "18px",
-                                    }}
-                                  >
-                                    <BorderColorOutlinedIcon /> Edit
-                                  </Typography>
-                                </MenuItem>
-                                <MenuItem
-                                  onClick={() => handleDelete(props.postId)}
-                                >
-                                  <Typography
-                                    textAlign="center"
-                                    sx={{
-                                      display: "flex",
-                                      gap: 1,
-                                      alignItems: "start",
-                                      fontSize: "18px",
-                                    }}
-                                  >
-                                    <DeleteOutlineOutlinedIcon /> Delete
-                                  </Typography>
-                                </MenuItem>
+                                is feeling
+                                {String.fromCodePoint(
+                                  parseInt(m.emoji, 16)
+                                )}{" "}
+                                {convertEmojiCodeToName(
+                                  m.emoji
+                                )?.toLocaleLowerCase()}
                               </>
                             )}
-                            <MenuItem onClick={handletOpenReport}>
-                              <Typography
-                                textAlign="center"
-                                sx={{
-                                  display: "flex",
-                                  gap: 1,
-                                  alignItems: "start",
-                                  fontSize: "18px",
-                                }}
-                              >
-                                <FlagOutlinedIcon /> Report
-                              </Typography>
-                            </MenuItem>
-                          </Menu>
-                        </ListItemAvatar>
-                      </ListItem>
-
-                      <CardContent>
-                        <Typography
-                          variant="body1"
-                          color="text.secondary"
-                          sx={{ textAlign: "justify" }}
-                        >
-                          {m.caption}
-                        </Typography>
-                      </CardContent>
-                      <Box
-                        sx={{
-                          fontSize: "16px",
-                          display: "flex",
-                          justifyContent: "start",
-                          margin: 1,
-                        }}
-                      >
-                        {m.hashTagTopic}
-                      </Box>
-                    </Box>
-                    <Divider />
-                    <CardActions
-                      disableSpacing
-                      sx={{ display: "flex", justifyContent: "space-between" }}
-                    >
-                      <Button
-                        aria-label="add to favorites"
-                        sx={{
-                          color: isLike
-                            ? "purple"
-                            : !isLike
-                            ? "black"
-                            : "black",
-                        }}
-                        onClick={
-                          isLike
-                            ? () => decreaseLike(props.postId)
-                            : () => increaseLike()
+                          </Typography>
                         }
-                      >
-                        <ThumbUpIcon sx={{ marginRight: 1 }} />
-                        Like
-                      </Button>
-                      <Button
-                        aria-label="add to favorites"
-                        sx={{ color: "black" }}
-                      >
-                        <CommentIcon sx={{ marginRight: 1 }} /> Comment
-                      </Button>
-                      <Button aria-label="share" sx={{ color: "black" }}>
-                        <ScreenShareIcon sx={{ marginRight: 1 }} /> Share
-                      </Button>
-                    </CardActions>
-                    <Divider />
-                    <Box
-                      sx={{
-                        p: 1,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <Typography>{m.likes.length} likes</Typography>
-                      <Typography>{m.comments.length} comments</Typography>
-                      <Typography>10 shares</Typography>
-                    </Box>
-                    <Divider />
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "start",
-                        justifyContent: "space-evenly",
-                        mt: 2,
-                        gap: "10px",
-                      }}
-                    >
-                      <Avatar
-                        alt="User"
-                        src={Luffy}
-                        sx={{ width: "45px", height: "45px" }}
+                        secondary={
+                          <Typography
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 0.5,
+                            }}
+                          >
+                            {m.createAt}
+                            {m.status === "Private" && <LockIcon />}
+                            {m.status === "Friend" && <GroupIcon />}
+                            {m.status === "Public" && <PublicIcon />}
+                            {m.status}
+                          </Typography>
+                        }
                       />
-                      <Box sx={{ width: "98%", display: "flex", gap: 2 }}>
-                        <TextField
-                          name="text"
-                          size="small"
-                          id="outlined-basic"
-                          label="Comment something..."
-                          variant="outlined"
-                          multiline
-                          maxRows={4}
-                          sx={{ width: "99%" }}
-                          value={comment.text}
-                          onChange={handleChangeComment}
-                        />
-                        <Button
-                          size="small"
-                          variant="contained"
-                          onClick={postComment}
-                          sx={{
-                            backgroundColor: "#8E51E2",
-                            color: "white",
-                            "&:hover": {
-                              color: "black",
-                              backgroundColor: "#E1E1E1",
-                            },
-                            maxHeight: "40px",
+                      <ListItemAvatar>
+                        <IconButton onClick={handleOpenUserMenu}>
+                          <MoreHorizIcon />
+                        </IconButton>
+                        <Menu
+                          sx={{ mt: "30px" }}
+                          id="menu-appbar"
+                          anchorEl={anchorElUser}
+                          anchorOrigin={{
+                            vertical: "top",
+                            horizontal: "right",
                           }}
-                          type="submit"
+                          keepMounted
+                          transformOrigin={{
+                            vertical: "top",
+                            horizontal: "right",
+                          }}
+                          open={Boolean(anchorElUser)}
+                          onClose={handleCloseUserMenu}
                         >
-                          Comment
-                        </Button>
-                      </Box>
-                    </Box>
+                          {props.owner === props.userId && (
+                            <>
+                              <MenuItem onClick={handletOpenEditPost}>
+                                <Typography
+                                  textAlign="center"
+                                  sx={{
+                                    display: "flex",
+                                    gap: 1,
+                                    alignItems: "start",
+                                    fontSize: "18px",
+                                  }}
+                                >
+                                  <BorderColorOutlinedIcon /> Edit
+                                </Typography>
+                              </MenuItem>
+                              <MenuItem
+                                onClick={() => handleDelete(props.postId)}
+                              >
+                                <Typography
+                                  textAlign="center"
+                                  sx={{
+                                    display: "flex",
+                                    gap: 1,
+                                    alignItems: "start",
+                                    fontSize: "18px",
+                                  }}
+                                >
+                                  <DeleteOutlineOutlinedIcon /> Delete
+                                </Typography>
+                              </MenuItem>
+                            </>
+                          )}
+                          <MenuItem onClick={handletOpenReport}>
+                            <Typography
+                              textAlign="center"
+                              sx={{
+                                display: "flex",
+                                gap: 1,
+                                alignItems: "start",
+                                fontSize: "18px",
+                              }}
+                            >
+                              <FlagOutlinedIcon /> Report
+                            </Typography>
+                          </MenuItem>
+                        </Menu>
+                      </ListItemAvatar>
+                    </ListItem>
+                    ))}
+                    
+
+                    <CardContent>
+                      <Typography
+                        variant="body1"
+                        color="text.secondary"
+                        sx={{ textAlign: "justify" }}
+                      >
+                        {m.caption}
+                      </Typography>
+                    </CardContent>
                     <Box
                       sx={{
-                        mt: 2,
-                        mb: 2,
-                        height: "380px",
-                        maxHeight: "500px",
-                        overflowY: "auto",
+                        fontSize: "16px",
+                        display: "flex",
+                        justifyContent: "start",
+                        margin: 1,
                       }}
                     >
-                      {m.comments.length !== 0 ? (
-                        <>
-                          {m.comments.map((comment, index) => (
-                            <Box key={index}>
-                              <CommentContent
-                                text={comment.text}
-                                createAt={comment.createdAt}
-                                commentIndex={index}
-                                postId={m.id}
-                                handleRefresh={handleRefresh}
-                                userId={props.userId}
-                              />
-                            </Box>
-                          ))}
-                        </>
-                      ) : (
-                        <Box>There are comment!</Box>
-                      )}
+                      {m.hashTagTopic}
                     </Box>
                   </Box>
-                </Item>
-              </Grid>
+                  <Divider />
+                  <CardActions
+                    disableSpacing
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <Button
+                      aria-label="add to favorites"
+                      sx={{
+                        color: isLike ? "purple" : !isLike ? "black" : "black",
+                      }}
+                      onClick={
+                        isLike
+                          ? () => decreaseLike(props.postId)
+                          : () => increaseLike()
+                      }
+                    >
+                      <ThumbUpIcon sx={{ marginRight: 1 }} />
+                      Like
+                    </Button>
+                    <Button
+                      aria-label="add to favorites"
+                      sx={{ color: "black" }}
+                    >
+                      <CommentIcon sx={{ marginRight: 1 }} /> Comment
+                    </Button>
+                    <Button aria-label="share" sx={{ color: "black" }}>
+                      <ScreenShareIcon sx={{ marginRight: 1 }} /> Share
+                    </Button>
+                  </CardActions>
+                  <Divider />
+                  <Box
+                    sx={{
+                      p: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Typography>{m.likes.length} likes</Typography>
+                    <Typography>{m.comments.length} comments</Typography>
+                    <Typography>10 shares</Typography>
+                  </Box>
+                  <Divider />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "start",
+                      justifyContent: "space-evenly",
+                      mt: 2,
+                      gap: "10px",
+                    }}
+                  >
+                    <Avatar
+                      alt="User"
+                      src={Luffy}
+                      sx={{ width: "45px", height: "45px" }}
+                    />
+                    <Box sx={{ width: "98%", display: "flex", gap: 2 }}>
+                      <TextField
+                        name="text"
+                        size="small"
+                        id="outlined-basic"
+                        label="Comment something..."
+                        variant="outlined"
+                        multiline
+                        maxRows={4}
+                        sx={{ width: "99%" }}
+                        value={comment.text}
+                        onChange={handleChangeComment}
+                      />
+                      <Button
+                        size="small"
+                        variant="contained"
+                        onClick={postComment}
+                        sx={{
+                          backgroundColor: "#8E51E2",
+                          color: "white",
+                          "&:hover": {
+                            color: "black",
+                            backgroundColor: "#E1E1E1",
+                          },
+                          maxHeight: "40px",
+                        }}
+                        type="submit"
+                      >
+                        Comment
+                      </Button>
+                    </Box>
+                  </Box>
+                  <Box
+                    sx={{
+                      mt: 2,
+                      mb: 2,
+                      height: "380px",
+                      maxHeight: "500px",
+                      overflowY: "auto",
+                    }}
+                  >
+                    {m.comments.length !== 0 ? (
+                      <>
+                        {m.comments.map((comment, index) => (
+                          <Box key={index}>
+                            <CommentContent
+                              text={comment.text}
+                              createAt={comment.createdAt}
+                              commentIndex={index}
+                              postId={m.id}
+                              handleRefresh={handleRefresh}
+                              userId={props.userId}
+                            />
+                          </Box>
+                        ))}
+                      </>
+                    ) : (
+                      <Box>There are comment!</Box>
+                    )}
+                  </Box>
+                </Box>
+              </Item>
             </Grid>
-          </Box>
-        ))}
+          </Grid>
+        </Box>
+      ))}
     </Box>
   );
 }

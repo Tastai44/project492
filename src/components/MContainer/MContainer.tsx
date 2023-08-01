@@ -20,7 +20,6 @@ import {
   IconButton,
   Modal,
 } from "@mui/material";
-import Luffy from "/images/Luffy.webp";
 
 import TextField from "@mui/material/TextField";
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";
@@ -79,10 +78,11 @@ interface Idata {
   commentNumber: number;
   likes: Like[];
   shareUsers: ShareUser[];
-  onwer: string;
+  owner: string;
   groupName?: string;
   groupId?: string;
   reFreshInfo: number;
+  userInfo: User[];
 }
 
 interface IFunction {
@@ -257,12 +257,12 @@ export default function MContainer(props: Idata & IFunction) {
   };
 
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-  React.useEffect(() => {
+  React.useMemo(() => {
     const fetchData = async () => {
       try {
         const q = query(
           collection(dbFireStore, "users"),
-          where("uid", "==", props.onwer)
+          where("uid", "==", props.owner)
         );
         const querySnapshot = await getDocs(q);
         const queriedData = querySnapshot.docs.map(
@@ -278,7 +278,7 @@ export default function MContainer(props: Idata & IFunction) {
       }
     };
     fetchData();
-  }, [props.onwer, props.reFreshInfo]);
+  }, [props.owner]);
 
   return (
     <Box>
@@ -298,7 +298,7 @@ export default function MContainer(props: Idata & IFunction) {
                   handleClosePost={handleClosePost}
                   handleRefreshData={props.handleRefresh}
                   likes={props.likes}
-                  onwer={props.onwer}
+                  owner={props.owner}
                 />
               </Paper>
             </Box>
@@ -408,7 +408,7 @@ export default function MContainer(props: Idata & IFunction) {
                       open={Boolean(anchorElUser)}
                       onClose={handleCloseUserMenu}
                     >
-                      {props.onwer === userInfo.uid && (
+                      {props.owner === userInfo.uid && (
                         <>
                           <MenuItem onClick={handletOpenEditPost}>
                             <Typography
@@ -580,33 +580,35 @@ export default function MContainer(props: Idata & IFunction) {
                   </Box>
                 </CardActions>
                 <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-evenly",
-                    mb: 1,
-                    gap: "10px",
-                  }}
-                >
-                  <Avatar
-                    alt="User"
-                    src={Luffy}
-                    sx={{ width: "45px", height: "45px" }}
-                  />
-                  <Box style={{ width: "98%" }}>
-                    <TextField
-                      id="outlined-basic"
-                      label="Comment something..."
-                      variant="outlined"
-                      multiline
-                      maxRows={4}
-                      sx={{ width: "99%" }}
-                      onClick={handletOpenPost}
+                {props.userInfo.map((user) => (
+                  <Box
+                    key={user.uid}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-evenly",
+                      mb: 1,
+                      gap: "10px",
+                    }}
+                  >
+                    <Avatar
+                      alt="User"
+                      src={user.profilePhoto}
+                      sx={{ width: "45px", height: "45px" }}
                     />
+                    <Box style={{ width: "98%" }}>
+                      <TextField
+                        id="outlined-basic"
+                        label="Comment something..."
+                        variant="outlined"
+                        multiline
+                        maxRows={4}
+                        sx={{ width: "99%" }}
+                        onClick={handletOpenPost}
+                      />
+                    </Box>
                   </Box>
-                </Box>
+                ))}
               </Item>
             </Stack>
           </Box>

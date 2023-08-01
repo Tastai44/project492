@@ -144,7 +144,7 @@ export default function GroupDetails() {
                               {data.map((m) => (
                                 <Box key={m.id}>
                                   <MContainer
-                                    onwer={m.owner}
+                                    owner={m.owner}
                                     postId={m.id}
                                     caption={m.caption}
                                     hashTagTopic={m.hashTagTopic}
@@ -159,7 +159,8 @@ export default function GroupDetails() {
                                     groupId={m.groupId}
                                     handleRefresh={handleRefresh}
                                     reFreshInfo={0} 
-                                    shareUsers={m.shareUsers}                                  
+                                    shareUsers={m.shareUsers}   
+                                    userInfo={inFoUser}                               
                                   />
                                 </Box>
                               ))}
