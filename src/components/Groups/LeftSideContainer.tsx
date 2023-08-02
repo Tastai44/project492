@@ -17,7 +17,12 @@ export default function LeftSideContainer(props: IData & IFunction) {
     <div>
       <Box sx={{ display: "flex", flexDirection: "column" }}>
         <Host hostId={props.hostId} />
-        <InterestedContainer members={props.members} gId={props.gId} handleRefresh={props.handleRefresh} />
+        <InterestedContainer
+          hostId={props.hostId}
+          members={props.members}
+          gId={props.gId}
+          handleRefresh={props.handleRefresh}
+        />
       </Box>
     </div>
   );

@@ -364,36 +364,39 @@ export default function MContainer(props: Idata & IFunction) {
                       open={Boolean(anchorElUser)}
                       onClose={handleCloseUserMenu}
                     >
-                      {props.owner === userInfo.uid && (
-                        <>
-                          <MenuItem onClick={handletOpenEditPost}>
-                            <Typography
-                              textAlign="center"
-                              sx={{
-                                display: "flex",
-                                gap: 1,
-                                alignItems: "start",
-                                fontSize: "18px",
-                              }}
-                            >
-                              <BorderColorOutlinedIcon /> Edit
-                            </Typography>
-                          </MenuItem>
-                          <MenuItem onClick={() => handleDelete(props.postId)}>
-                            <Typography
-                              textAlign="center"
-                              sx={{
-                                display: "flex",
-                                gap: 1,
-                                alignItems: "start",
-                                fontSize: "18px",
-                              }}
-                            >
-                              <DeleteOutlineOutlinedIcon /> Delete
-                            </Typography>
-                          </MenuItem>
-                        </>
-                      )}
+                      <MenuItem
+                        disabled={props.owner !== userInfo.uid}
+                        onClick={handletOpenEditPost}
+                      >
+                        <Typography
+                          textAlign="center"
+                          sx={{
+                            display: "flex",
+                            gap: 1,
+                            alignItems: "start",
+                            fontSize: "18px",
+                          }}
+                        >
+                          <BorderColorOutlinedIcon /> Edit
+                        </Typography>
+                      </MenuItem>
+                      <MenuItem 
+                        disabled={props.owner !== userInfo.uid}
+                        onClick={() => handleDelete(props.postId)}
+                      >
+                        <Typography
+                          textAlign="center"
+                          sx={{
+                            display: "flex",
+                            gap: 1,
+                            alignItems: "start",
+                            fontSize: "18px",
+                          }}
+                        >
+                          <DeleteOutlineOutlinedIcon /> Delete
+                        </Typography>
+                      </MenuItem>
+
                       <MenuItem onClick={handletOpenReport}>
                         <Typography
                           textAlign="center"

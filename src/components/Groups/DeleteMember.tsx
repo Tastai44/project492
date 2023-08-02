@@ -1,13 +1,24 @@
 import Box from "@mui/material/Box";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
 import { styleTable } from "../../utils/styleBox";
 import { IMember } from "../../interface/Group";
 import { Avatar, Button, Typography, Divider } from "@mui/material";
 import { Search, SearchIconWrapper, StyledInputBase } from "../Navigation";
 import SearchIcon from "@mui/icons-material/Search";
+import React from "react";
+import "firebase/database";
+import { dbFireStore } from "../../config/firebase";
+import {
+  collection,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
+import PopupAlert from "../PopupAlert";
+
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", flex: 1 },
+  { field: "uid" },
   {
     field: "profilePhoto",
     headerName: "Profile Photo",
@@ -31,17 +42,47 @@ const columns: GridColDef[] = [
 
 interface IData {
   members: IMember[];
+  gId: string;
 }
 interface IFunction {
   handleCloseDelete: () => void;
+  handleRefresh: () => void;
 }
 
 export default function DeleteMember(props: IData & IFunction) {
-  const rows = props.members.map((row) => ({
-    id: row.uid,
+
+  const rows = props.members.map((row, index) => ({
+    id: `${row.uid}_${index}`,
+    uid: row.uid,
     username: row.username,
     profilePhoto: row.profilePhoto,
   }));
+  console.log(rows)
+  const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
+  const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
+    setSelectedRows(selectionModel);
+  };
+  
+  const DeleteMember = () => {
+    const postsCollection = collection(dbFireStore, "groups");
+    const filteredData = rows.filter((row) => !selectedRows.includes(row.id));
+    // setRows(filteredData);
+    const groupRef = doc(postsCollection, props.gId);
+    updateDoc(groupRef, {
+      members: filteredData.map((m) => ({
+        uid: m.uid,
+        username: m.username,
+        profilePhoto: m.profilePhoto
+      })),
+    })
+      .then(() => {
+        props.handleRefresh();
+        PopupAlert("Deleted member(s) successfully", "success");
+      })
+      .catch((error) => {
+        console.error("Error adding likes: ", error);
+      });
+  }
   return (
     <Box sx={styleTable}>
       <Box
@@ -75,6 +116,8 @@ export default function DeleteMember(props: IData & IFunction) {
       <DataGrid
         rows={rows}
         columns={columns}
+        rowSelectionModel={selectedRows}
+        onRowSelectionModelChange={handleSelectionModelChange}
         initialState={{
           pagination: {
             paginationModel: {
@@ -84,6 +127,7 @@ export default function DeleteMember(props: IData & IFunction) {
           columns: {
             columnVisibilityModel: {
               id: false,
+              uid: false,
             },
           },
         }}
@@ -106,6 +150,7 @@ export default function DeleteMember(props: IData & IFunction) {
           Cancle
         </Button>
         <Button
+        onClick={DeleteMember}
           sx={{
             backgroundColor: "#8E51E2",
             color: "white",

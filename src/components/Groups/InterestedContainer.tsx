@@ -19,12 +19,14 @@ import AddMembers from "./AddMembers";
 import DeleteMember from "./DeleteMember";
 interface IData {
   members: IMember[];
+  hostId: string;
   gId: string;
 }
 interface IFunction {
   handleRefresh: () => void;
 }
 export default function InterestedContainer(props: IData & IFunction) {
+  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const [openAdd, setOpenAdd] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
@@ -72,7 +74,12 @@ export default function InterestedContainer(props: IData & IFunction) {
         aria-describedby="modal-modal-description"
       >
         <Box>
-          <DeleteMember members={props.members} handleCloseDelete={handleCloseDelete}/>
+          <DeleteMember
+            gId={props.gId}
+            members={props.members}
+            handleCloseDelete={handleCloseDelete}
+            handleRefresh={props.handleRefresh}
+          />
         </Box>
       </Modal>
 
@@ -115,7 +122,9 @@ export default function InterestedContainer(props: IData & IFunction) {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem onClick={handleOpenAdd}>
+              <MenuItem 
+                disabled={props.hostId !== userInfo.uid}
+                onClick={handleOpenAdd}>
                 <Typography
                   textAlign="center"
                   sx={{
@@ -128,7 +137,10 @@ export default function InterestedContainer(props: IData & IFunction) {
                   <AddCircleOutlineOutlinedIcon /> Add
                 </Typography>
               </MenuItem>
-              <MenuItem onClick={handleOpenDelete}>
+              <MenuItem 
+                disabled={props.hostId !== userInfo.uid}
+                onClick={handleOpenDelete}
+              >
                 <Typography
                   textAlign="center"
                   sx={{
@@ -145,10 +157,10 @@ export default function InterestedContainer(props: IData & IFunction) {
           </Box>
         </Box>
         <Divider light />
-        {props.members.map((m) => (
-          <Box key={m.uid}>
+        {props.members.map((m, index) => (
+          <Box key={m.uid + index}>
             <NavLink to={`/profileBlog/${m.uid}`} style={{ color: "black" }}>
-              <UserCard username={m.username} profilePhoto={m.profilePhoto}/>
+              <UserCard username={m.username} profilePhoto={m.profilePhoto} />
             </NavLink>
           </Box>
         ))}
