@@ -18,21 +18,18 @@ import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
 import { Like, Post } from "../../interface/PostContent";
 import Content from "../MContainer/Content";
 import { styleBoxPop } from "../../utils/styleBox";
+import { User } from "../../interface/User";
 
 export default function TopicContainer() {
-  const [userId, setUserId] = React.useState("");
   const [dateType, setDateType] = React.useState("All");
   const [dataPost, setPosts] = React.useState<Post[]>([]);
   const [postId, setPostId] = React.useState("");
   const [reFresh, setReFresh] = React.useState(0);
   const [openPost, setOpenPost] = React.useState(false);
   const [likes, setLikes] = React.useState<Like[]>([]);
+  const [postOwner, setPostOwner] = React.useState("");
 
-  React.useEffect(() => {
-    const getUerInfo = localStorage.getItem("user");
-    const tmp = JSON.parse(getUerInfo ? getUerInfo : "");
-    setUserId(tmp.uid);
-  }, []);
+  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
   const handleRefresh = () => {
     setReFresh((pre) => pre + 1);
@@ -55,10 +52,11 @@ export default function TopicContainer() {
     fetchData();
   }, [reFresh]);
 
-  const handletOpenPost = (id: string, likeData: Like[]) => {
+  const handletOpenPost = (id: string, likeData: Like[], owner: string) => {
     setOpenPost(true);
     setPostId(id);
     setLikes(likeData);
+    setPostOwner(owner)
   };
   const handleClosePost = () => {
     setOpenPost(false);
@@ -86,12 +84,14 @@ export default function TopicContainer() {
     const today = new Date();
     const firstDayOfWeek = new Date(today);
     const dayOfWeek = today.getDay();
-  
-    firstDayOfWeek.setDate(today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1));
-  
+
+    firstDayOfWeek.setDate(
+      today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1)
+    );
+
     const lastDayOfWeek = new Date(firstDayOfWeek);
     lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
-  
+
     const fetchWeeklyData = async () => {
       try {
         const startDate = firstDayOfWeek.toLocaleDateString("en-US");
@@ -109,15 +109,19 @@ export default function TopicContainer() {
         console.error("Error fetching data:", error);
       }
     };
-  
+
     fetchWeeklyData();
   };
 
   const handleMonthly = () => {
     const today = new Date();
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-  
+    const lastDayOfMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      0
+    );
+
     const fetchData = async () => {
       try {
         const startOfMonth = firstDayOfMonth.toLocaleDateString("en-US");
@@ -141,6 +145,30 @@ export default function TopicContainer() {
     setDateType(e.target.value as string);
   };
 
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+  React.useMemo(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", userInfo.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [userInfo.uid]);
+
   return (
     <div>
       <Modal
@@ -153,8 +181,9 @@ export default function TopicContainer() {
           <Paper sx={styleBoxPop}>
             <Content
               postId={postId}
-              userId={userId}
+              userId={userInfo.uid}
               likes={likes}
+              owner={postOwner}
               handleClosePost={handleClosePost}
               handleRefreshData={handleRefresh}
             />
@@ -203,14 +232,22 @@ export default function TopicContainer() {
           </Box>
         </Box>
         <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
-        {dataPost.map((posts) => (
-          <Box
-            key={posts.id}
-            onClick={() => handletOpenPost(posts.id, posts.likes)}
-          >
-            <EachTopic hashTag={posts.hashTagTopic} />
-          </Box>
-        ))}
+        {dataPost
+          .filter(
+            (item) =>
+              item.owner == userInfo.uid ||
+              item.status == "Public" ||
+              (item.status == "Friend" &&
+                inFoUser.some((user) => user.uid === item.owner))
+          )
+          .map((posts) => (
+            <Box
+              key={posts.id}
+              onClick={() => handletOpenPost(posts.id, posts.likes, posts.owner)}
+            >
+              <EachTopic hashTag={posts.hashTagTopic} />
+            </Box>
+          ))}
       </Box>
     </div>
   );

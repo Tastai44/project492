@@ -54,6 +54,8 @@ import EditPost from "./EditPost";
 import PopupAlert from "../PopupAlert";
 import ReportCard from "../Report/ReportCard";
 import { User } from "../../interface/User";
+import { themeApp } from "../../utils/Theme";
+import { NavLink } from "react-router-dom";
 
 const Item = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -371,7 +373,14 @@ export default function Content(props: IData & IFunction) {
                       <ListItemText
                         primary={
                           <Typography sx={{ fontSize: "16px" }}>
-                            <b>{user.firstName} {user.lastName}</b>
+                            <b>{user.firstName} {user.lastName}
+                            <NavLink
+                              to={`/groupDetail/${m.groupId}`}
+                              style={{ color: themeApp.palette.primary.main }}
+                            >
+                              {m.groupName ? ` (${m.groupName}) ` : ""}
+                            </NavLink>
+                            </b>
                             {m.emoji && (
                               <>
                                 is feeling

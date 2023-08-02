@@ -21,7 +21,6 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import CancelIcon from "@mui/icons-material/Cancel";
 import LockIcon from "@mui/icons-material/Lock";
-import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
 import emojiData from "emoji-datasource-facebook";
 
@@ -284,17 +283,6 @@ export default function CreateGroupPost({
                           }}
                         >
                           <LockIcon /> Private
-                        </Box>
-                      </MenuItem>
-                      <MenuItem value={"Friend"}>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignContent: "end",
-                            gap: 0.5,
-                          }}
-                        >
-                          <GroupIcon /> Friend
                         </Box>
                       </MenuItem>
                       <MenuItem value={"Public"}>

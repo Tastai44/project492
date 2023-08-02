@@ -84,7 +84,7 @@ export default function Blog({reFreshInfo} : IData) {
                   gap: 2,
                 }}
               >
-                {data.filter((f) => f.owner === userId || f.shareUsers?.some((share) => share.uid === userId)).map((m) => (
+                {data.filter((f) => f.owner === userId).map((m) => (
                   <Box key={m.id}>
                     <MContainer
                       owner={m.owner}

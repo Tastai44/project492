@@ -1,19 +1,13 @@
 import * as React from "react";
-import {
-  Box,
-  Button,
-  Divider,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Divider, TextField, Typography } from "@mui/material";
 import { styleBox } from "../../utils/styleBox";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { User } from "../../interface/User";
-import Checkbox from '@mui/material/Checkbox';
-import Autocomplete from '@mui/material/Autocomplete';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import Checkbox from "@mui/material/Checkbox";
+import Autocomplete from "@mui/material/Autocomplete";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import PopupAlert from "../PopupAlert";
 import {
   collection,
@@ -25,7 +19,6 @@ import {
 import { ChangeEvent } from "react";
 import { IMember } from "../../interface/Group";
 
-
 interface IFunction {
   handleClose: () => void;
   handleRefresh: () => void;
@@ -33,6 +26,7 @@ interface IFunction {
 
 interface IData {
   gId: string;
+  hostId: string;
   members: IMember[];
 }
 
@@ -83,7 +77,7 @@ export default function AddMembers(props: IFunction & IData) {
       members: arrayUnion(...tmp2),
     })
       .then(() => {
-        PopupAlert("Added member(s) successfully","success")
+        PopupAlert("Added member(s) successfully", "success");
         props.handleRefresh();
         props.handleClose();
       })
@@ -101,7 +95,7 @@ export default function AddMembers(props: IFunction & IData) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            mb:1
+            mb: 1,
           }}
         >
           <Typography
@@ -114,38 +108,41 @@ export default function AddMembers(props: IFunction & IData) {
         </Box>
         <Divider sx={{ background: "grey" }} />
         <Box sx={{ display: "flex", gap: 1, mt: 1, mb: 1 }}>
-        <Autocomplete
-              multiple
-              value={member}
-              onChange={handleAddMember}
-              id="checkboxes-tags-demo"
-              options={users
-                .filter((user) => !props.members.some((member) => member.uid === user.uid))
-                .map((e) => JSON.stringify(e))}
-              disableCloseOnSelect
-              getOptionLabel={(option) => {
-                const temp = JSON.parse(option);
-                return `${temp.firstName + " " + temp.lastName}`;
-              }}
-              renderOption={(props, option, { selected }) => {
-                const temp = JSON.parse(option);
-                return (
-                  <li {...props}>
-                    <Checkbox
-                      icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
-                      checkedIcon={<CheckBoxIcon fontSize="small" />}
-                      checked={selected}
-                      style={{ marginRight: 8 }}
-                    />
-                    {`${temp.firstName} ${temp.lastName}`}
-                  </li>
-                );
-              }}
-              style={{ width: 500 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Members" placeholder="Members" />
-              )}
-            />
+          <Autocomplete
+            multiple
+            value={member}
+            onChange={handleAddMember}
+            id="checkboxes-tags-demo"
+            options={users
+              .filter(
+                (user) =>
+                  !props.members.some((member) => member.uid === user.uid) && (user.uid !== props.hostId)
+              )
+              .map((e) => JSON.stringify(e))}
+            disableCloseOnSelect
+            getOptionLabel={(option) => {
+              const temp = JSON.parse(option);
+              return `${temp.firstName + " " + temp.lastName}`;
+            }}
+            renderOption={(props, option, { selected }) => {
+              const temp = JSON.parse(option);
+              return (
+                <li {...props}>
+                  <Checkbox
+                    icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+                    checkedIcon={<CheckBoxIcon fontSize="small" />}
+                    checked={selected}
+                    style={{ marginRight: 8 }}
+                  />
+                  {`${temp.firstName} ${temp.lastName}`}
+                </li>
+              );
+            }}
+            style={{ width: 500 }}
+            renderInput={(params) => (
+              <TextField {...params} label="Members" placeholder="Members" />
+            )}
+          />
         </Box>
         <Box
           sx={{ mt: 1, display: "flex", justifyContent: "flex-end", gap: 1 }}

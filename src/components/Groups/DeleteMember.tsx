@@ -57,7 +57,6 @@ export default function DeleteMember(props: IData & IFunction) {
     username: row.username,
     profilePhoto: row.profilePhoto,
   }));
-  console.log(rows)
   const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
   const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
     setSelectedRows(selectionModel);
@@ -66,7 +65,6 @@ export default function DeleteMember(props: IData & IFunction) {
   const DeleteMember = () => {
     const postsCollection = collection(dbFireStore, "groups");
     const filteredData = rows.filter((row) => !selectedRows.includes(row.id));
-    // setRows(filteredData);
     const groupRef = doc(postsCollection, props.gId);
     updateDoc(groupRef, {
       members: filteredData.map((m) => ({

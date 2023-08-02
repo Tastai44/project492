@@ -1,3 +1,4 @@
+import * as React from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { Divider, Paper, Typography } from "@mui/material";
@@ -8,38 +9,43 @@ import {
 } from "../../components/Navigation";
 import SearchIcon from "@mui/icons-material/Search";
 import FriendCard from "../../components/Profile/FriendCard";
-import * as React from "react";
-import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
+import "firebase/database";
+import { collection, query, getDocs, where } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
 import { useParams } from "react-router-dom";
 import { User } from "../../interface/User";
 
 export default function Friends() {
   const { userId } = useParams();
-  const [user, setUser] = React.useState<User[]>([]);
   const [refresh, setRefresh] = React.useState(0);
 
   const handleRefresh = () => {
     setRefresh((pre) => pre + 1);
   };
 
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const queryData = query(
+        const q = query(
           collection(dbFireStore, "users"),
-          where("uid", "==", userId),
-          orderBy("createdAt", "desc")
+          where("uid", "==", userId)
         );
-        const querySnapshot = await getDocs(queryData);
-        const queriedData = querySnapshot.docs.map((doc) => doc.data() as User);
-        setUser(queriedData);
-      } catch (err) {
-        console.log("Error fetching data:", err);
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
     };
     fetchData();
-  }, [userId, refresh]);
+  }, [refresh, userId]);
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -77,7 +83,7 @@ export default function Friends() {
           </Search>
         </Box>
         <Divider light sx={{ background: "grey", mb: 1 }} />
-        {user.map((user) => (
+        {inFoUser.map((user) => (
           <Grid sx={{ flexGrow: 1, gap: 1 }} container key={user.uid}>
             {user.friendList?.length !== 0 ? (
               <>
