@@ -147,8 +147,7 @@ export default function MContainer(props: Idata & IFunction) {
         if (docSnap.exists() && docSnap.data().owner === userInfo.uid) {
           deleteDoc(postRef)
             .then(() => {
-              alert("Post deleted successfully");
-              console.log("Post deleted successfully");
+              PopupAlert("Post deleted successfully", "success")
               props.handleRefresh();
             })
             .catch((error) => {

@@ -32,6 +32,7 @@ import { dbFireStore } from "../../config/firebase";
 import { Post } from "../../interface/PostContent";
 import {doc} from "firebase/firestore"
 import { collection, setDoc } from "firebase/firestore";
+import PopupAlert from "../PopupAlert";
 
 const styleBoxPop = {
   position: "absolute",
@@ -172,7 +173,7 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
       setPost(updatedPost);
       clearState();
       handdleReFresh();
-      alert("Success!");
+      PopupAlert("Content was posted successfully", "success")
     } catch (error) {
       console.error("Error adding post: ", error);
     }

@@ -227,6 +227,7 @@ export default function Content(props: IData & IFunction) {
               handleRefresh();
               props.handleRefreshData();
               props.handleClosePost();
+              PopupAlert("Post deleted successfully", "success")
             })
             .catch((error) => {
               console.error("Error deleting post: ", error);

@@ -31,6 +31,7 @@ import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { Post } from "../../interface/PostContent";
 import { doc, updateDoc, collection, getDoc } from "firebase/firestore";
+import PopupAlert from "../PopupAlert";
 
 const styleBoxPop = {
   position: "absolute",
@@ -189,8 +190,9 @@ export default function CreatePost({
             handleRefresh();
             handleRefreshData();
             handleCloseEditPost();
+            PopupAlert("Post has edited successfully", "success")
           } else {
-            console.log("You don't have permission to delete this post");
+            PopupAlert("You don't have permission to delete this post", "warning")
           }
         })
         .catch((error) => {
