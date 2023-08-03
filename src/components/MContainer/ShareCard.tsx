@@ -1,6 +1,6 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
 import { styleTable } from "../../utils/styleBox";
 import {
   Avatar,
@@ -20,9 +20,23 @@ import { IFriendList } from "../../interface/User";
 import LockIcon from "@mui/icons-material/Lock";
 import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
+import "firebase/database";
+import { dbFireStore } from "../../config/firebase";
+import {
+  collection,
+  updateDoc,
+  doc,
+  arrayUnion,
+  getDocs,
+  where,
+  query,
+} from "firebase/firestore";
+import PopupAlert from "../PopupAlert";
+import { Post } from "../../interface/PostContent";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", flex: 1 },
+  { field: "uid" },
   {
     field: "profilePhoto",
     headerName: "Profile Photo",
@@ -42,43 +56,94 @@ const columns: GridColDef[] = [
     width: 150,
     flex: 1,
   },
+  {
+    field: "IsShare",
+    headerName: "IsShare",
+    width: 150,
+    flex: 1,
+  },
 ];
 
 interface IData {
   friendList: IFriendList[];
   openShare: boolean;
+  postId: string;
 }
 interface IFunction {
   handleCloseShare: () => void;
+  handleRefresh: () => void;
 }
 
 export default function ShareCard(props: IData & IFunction) {
+  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+
+  const [postData, setPostData] = React.useState<Post[]>([]);
+  React.useMemo(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "posts"),
+          where("id", "==" , props.postId)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
+        setPostData(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [props.postId]);
+
+  const rows = props.friendList.map((row, index) => ({
+    id: `${row.friendId}_${index}`,
+    uid: row.friendId,
+    username: row.username,
+    profilePhoto: row.profilePhoto,
+    IsShare: postData.some((post) =>
+    post.shareUsers.some((shareUser) =>
+      shareUser.shareTo.some((item) => item.uid === row.friendId)
+    )),
+  }));
+
   const [status, setStatus] = React.useState("");
   const handleChange = (event: SelectChangeEvent) => {
     setStatus(event.target.value as string);
   };
+  const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
+  const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
+    setSelectedRows(selectionModel);
+  };
+
   // const isShare = props.shareUsers.some((share) => share.shareBy === userInfo.uid);
-  // const handleShare = async () => {
-  //   try {
-  //     const postsCollection = collection(dbFireStore, "posts");
-  //     const updateShare = {
-  //       shareBy: userInfo.uid,
-  //       createdAt: new Date().toLocaleString(),
-  //     };
-  //     const postRef = doc(postsCollection, props.postId);
-  //     updateDoc(postRef, {
-  //       shareUsers: arrayUnion(updateShare),
-  //     })
-  //       .then(() => {
-  //         props.handleRefresh();
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error share", error);
-  //       });
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  const handleShare = async () => {
+    try {
+      const postsCollection = collection(dbFireStore, "posts");
+      const getRowsId = selectedRows.map((rowId) => rowId);
+      const filterRowsData = rows.filter((row) =>
+      getRowsId.includes(row.id ? row.id : "")
+    );
+      const updateShare = {
+        shareBy: userInfo.uid,
+        shareTo: filterRowsData.map((user) => ({ uid: user.uid})),
+        createdAt: new Date().toLocaleString(),
+      };
+      const postRef = doc(postsCollection, props.postId);
+      updateDoc(postRef, {
+        shareUsers: arrayUnion(updateShare),
+      })
+        .then(() => {
+          props.handleRefresh();
+          PopupAlert("Share successfully","success");
+        })
+        .catch((error) => {
+          console.error("Error share", error);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   // const unShare = async (id: string) => {
   //   const IndexShare = props.shareUsers.findIndex(
   //     (index) => index.shareBy === userInfo.uid
@@ -105,11 +170,7 @@ export default function ShareCard(props: IData & IFunction) {
   //     console.error(error);
   //   }
   // };
-  const rows = props.friendList.map((row) => ({
-    id: row.friendId,
-    username: row.username,
-    profilePhoto: row.profilePhoto,
-  }));
+  
   return (
     <Modal open={props.openShare} onClose={props.handleCloseShare}>
       <Box sx={styleTable}>
@@ -208,6 +269,7 @@ export default function ShareCard(props: IData & IFunction) {
                 columns: {
                   columnVisibilityModel: {
                     id: false,
+                    uid: false,
                   },
                 },
               }}
@@ -223,6 +285,8 @@ export default function ShareCard(props: IData & IFunction) {
             <DataGrid
               rows={rows}
               columns={columns}
+              rowSelectionModel={selectedRows}
+              onRowSelectionModelChange={handleSelectionModelChange}
               initialState={{
                 pagination: {
                   paginationModel: {
@@ -232,6 +296,7 @@ export default function ShareCard(props: IData & IFunction) {
                 columns: {
                   columnVisibilityModel: {
                     id: false,
+                    uid: false,
                   },
                 },
               }}
@@ -259,6 +324,7 @@ export default function ShareCard(props: IData & IFunction) {
             Cancle
           </Button>
           <Button
+            onClick={handleShare}
             sx={{
               backgroundColor: "#8E51E2",
               color: "white",

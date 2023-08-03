@@ -18,6 +18,7 @@ export interface User {
     posts?: Post[];
     friendList: IFriendList[];
     createdAt?: string;
+    // shareStatus: boolean
 }
 
 export interface IFriendList{

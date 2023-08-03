@@ -359,7 +359,7 @@ export default function Content(props: IData & IFunction) {
                 <Box sx={{ display: "flex", flexDirection: "column" }}>
                   <Box>
                     {inFoUser.map((user) => (
-                      <ListItem>
+                      <ListItem key={user.uid}>
                       <ListItemAvatar>
                         <Avatar
                           src={user.profilePhoto}
