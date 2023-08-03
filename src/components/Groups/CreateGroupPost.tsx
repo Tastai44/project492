@@ -31,6 +31,7 @@ import { doc } from "firebase/firestore";
 import Emoji from "../MContainer/Emoji";
 import { User } from "../../interface/User";
 import { collection, query, getDocs, where, setDoc } from "firebase/firestore";
+import PopupAlert from "../PopupAlert";
 
 const styleBoxPop = {
   position: "absolute",
@@ -180,7 +181,7 @@ export default function CreateGroupPost({
       setPost(updatedPost);
       clearState();
       handdleReFresh();
-      alert("Success!");
+      PopupAlert("Content was posted successfully", "success")
     } catch (error) {
       console.error("Error adding post: ", error);
     }

@@ -1,3 +1,4 @@
+import * as React from "react";
 import Box from "@mui/material/Box";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { styleTable } from "../../utils/styleBox";
@@ -11,6 +12,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  SelectChangeEvent,
 } from "@mui/material";
 import { Search, SearchIconWrapper, StyledInputBase } from "../Navigation";
 import SearchIcon from "@mui/icons-material/Search";
@@ -51,6 +53,10 @@ interface IFunction {
 }
 
 export default function ShareCard(props: IData & IFunction) {
+  const [status, setStatus] = React.useState("");
+  const handleChange = (event: SelectChangeEvent) => {
+    setStatus(event.target.value as string);
+  };
   // const isShare = props.shareUsers.some((share) => share.shareBy === userInfo.uid);
   // const handleShare = async () => {
   //   try {
@@ -123,15 +129,15 @@ export default function ShareCard(props: IData & IFunction) {
           >
             Share Lists
           </Typography>
-          <Box sx={{display:"flex"}}>
+          <Box sx={{ display: "flex" }}>
             <FormControl size="small" sx={{ width: "120px" }}>
               <InputLabel id="demo-simple-select">Status</InputLabel>
               <Select
                 label="Status"
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                // value={status}
-                // onChange={handleChange}
+                value={status}
+                onChange={handleChange}
               >
                 <MenuItem value={"Private"}>
                   <Box
@@ -185,25 +191,57 @@ export default function ShareCard(props: IData & IFunction) {
           </Box>
         </Box>
         <Divider sx={{ background: "grey", mb: 1 }} />
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
-            },
-            columns: {
-              columnVisibilityModel: {
-                id: false,
-              },
-            },
-          }}
-          pageSizeOptions={[5]}
-          checkboxSelection
-          disableRowSelectionOnClick
-        />
+
+        {status === "Public" || status === "Private" || status === "" ? (
+          <Box
+            sx={{ minHeight: 100, height: 300, maxHeight: 500, width: "100%" }}
+          >
+            <DataGrid
+              rows={[]}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 5,
+                  },
+                },
+                columns: {
+                  columnVisibilityModel: {
+                    id: false,
+                  },
+                },
+              }}
+              pageSizeOptions={[5]}
+              checkboxSelection
+              disableRowSelectionOnClick
+            />
+          </Box>
+        ) : (
+          <Box
+            sx={{ minHeight: 100, height: 300, maxHeight: 500, width: "100%" }}
+          >
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 5,
+                  },
+                },
+                columns: {
+                  columnVisibilityModel: {
+                    id: false,
+                  },
+                },
+              }}
+              pageSizeOptions={[5]}
+              checkboxSelection
+              disableRowSelectionOnClick
+            />
+          </Box>
+        )}
+
         <Box
           sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 1 }}
         >
