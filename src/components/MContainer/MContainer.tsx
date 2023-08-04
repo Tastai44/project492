@@ -553,7 +553,7 @@ export default function MContainer(props: Idata & IFunction) {
                       handleCloseShare={handleCloseShare}
                       friendList={user.friendList}
                       postId={props.postId}
-                      handleRefresh={props.handleRefresh}
+                      handleReUserfresh={props.handleRefresh}
                     />
                     <Avatar
                       alt="User"

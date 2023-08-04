@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { Search, SearchIconWrapper, StyledInputBase } from "../Navigation";
 import SearchIcon from "@mui/icons-material/Search";
-import { IFriendList } from "../../interface/User";
+import { IFriendList, User } from "../../interface/User";
 import LockIcon from "@mui/icons-material/Lock";
 import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
@@ -71,41 +71,42 @@ interface IData {
 }
 interface IFunction {
   handleCloseShare: () => void;
-  handleRefresh: () => void;
+  handleReUserfresh: () => void;
 }
 
 export default function ShareCard(props: IData & IFunction) {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+  // const [postData, setPostData] = React.useState<Post[]>([]);
+  // const [reFresh, setReFresh] = React.useState(0);
 
-  const [postData, setPostData] = React.useState<Post[]>([]);
-  React.useMemo(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "posts"),
-          where("id", "==" , props.postId)
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
-        setPostData(queriedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, [props.postId]);
+  // const handleRefresh = () => {
+  //   setReFresh((pre) => pre + 1);
+  // };
+  // React.useMemo(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const q = query(
+  //         collection(dbFireStore, "posts"),
+  //         where("id", "==", props.postId)
+  //       );
+  //       const querySnapshot = await getDocs(q);
+  //       const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
+  //       setPostData(queriedData);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [props.postId]);
 
   const rows = props.friendList.map((row, index) => ({
     id: `${row.friendId}_${index}`,
     uid: row.friendId,
     username: row.username,
     profilePhoto: row.profilePhoto,
-    IsShare: postData.some((post) =>
-    post.shareUsers.some((shareUser) =>
-      shareUser.shareTo.some((item) => item.uid === row.friendId)
-    )),
+    IsShare: false
   }));
+
 
   const [status, setStatus] = React.useState("");
   const handleChange = (event: SelectChangeEvent) => {
@@ -122,11 +123,16 @@ export default function ShareCard(props: IData & IFunction) {
       const postsCollection = collection(dbFireStore, "posts");
       const getRowsId = selectedRows.map((rowId) => rowId);
       const filterRowsData = rows.filter((row) =>
-      getRowsId.includes(row.id ? row.id : "")
-    );
+        getRowsId.includes(row.id ? row.id : "")
+      );
+
       const updateShare = {
         shareBy: userInfo.uid,
-        shareTo: filterRowsData.map((user) => ({ uid: user.uid})),
+        shareTo:
+          status === "Friend"
+            ? filterRowsData.map((user) => ({ uid: user.uid }))
+            : [{ uid: userInfo.uid }],
+        status: status,
         createdAt: new Date().toLocaleString(),
       };
       const postRef = doc(postsCollection, props.postId);
@@ -134,8 +140,9 @@ export default function ShareCard(props: IData & IFunction) {
         shareUsers: arrayUnion(updateShare),
       })
         .then(() => {
-          props.handleRefresh();
-          PopupAlert("Share successfully","success");
+          // handleRefresh();
+          props.handleReUserfresh();
+          PopupAlert("Share successfully", "success");
         })
         .catch((error) => {
           console.error("Error share", error);
@@ -170,7 +177,7 @@ export default function ShareCard(props: IData & IFunction) {
   //     console.error(error);
   //   }
   // };
-  
+
   return (
     <Modal open={props.openShare} onClose={props.handleCloseShare}>
       <Box sx={styleTable}>
