@@ -32,9 +32,7 @@ export interface Like {
 
 export interface ShareUser {
   shareBy: string;
-  shareTo: {
-    uid: string;
-  }[];
+  shareTo: string;
   status: string;
   createdAt: string;
 }

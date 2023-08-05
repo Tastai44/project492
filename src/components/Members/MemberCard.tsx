@@ -17,6 +17,7 @@ import {
 } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
 import { IFriendList, User } from "../../interface/User";
+import { NavLink } from "react-router-dom";
 
 interface IData {
   username: string;
@@ -123,17 +124,18 @@ export default function MemberCard(props: IData & IFunction) {
         >
           Add Friend
         </Button>
-        {/* <Button
-          sx={{
-            fontSize: "14px",
-            color: "white",
-            borderRadius: "5px",
-            backgroundColor: "grey",
-            "&:hover": { color: "black", backgroundColor: "#F1F1F1" },
-          }}
-        >
-          UnKnow
-        </Button> */}
+        <NavLink to={`/profileBlog/${props.uId}`}>
+          <Button
+            sx={{
+              color: "white",
+              borderRadius: "5px",
+              backgroundColor: "grey",
+              "&:hover": { backgroundColor: "#F1F1F1", color: "black" },
+            }}
+          >
+            View
+          </Button>
+        </NavLink>
       </CardActions>
       {props.profilePhoto ? (
         <CardMedia

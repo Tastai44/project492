@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
 import { IFriendList, User } from "../../interface/User";
+import PopupAlert from "../PopupAlert";
 
 interface IData {
   username: string;
@@ -67,6 +68,7 @@ export default function FriendCard(props: IData) {
         }
         unFriendOtherSide(userId ? userId : "");
         props.handleRefresh();
+        PopupAlert("Unfriend successfully", "success")
       } else {
         console.log("No post found with the specified ID");
       }

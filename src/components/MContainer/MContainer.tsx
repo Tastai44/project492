@@ -91,16 +91,6 @@ interface IFunction {
 }
 
 export default function MContainer(props: Idata & IFunction) {
-  const [iconStatus, setIconStatus] = React.useState("");
-  React.useEffect(() => {
-    if (props.status === "Private") {
-      setIconStatus("LockIcon");
-    } else if (props.status === "Friend") {
-      setIconStatus("GroupIcon");
-    } else if (props.status === "Public") {
-      setIconStatus("PublicIcon");
-    }
-  }, [iconStatus, props.status]);
 
   const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
     const emoji = emojiData.find((data) => data.unified === emojiCode);
@@ -336,9 +326,9 @@ export default function MContainer(props: Idata & IFunction) {
                         sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
                       >
                         {props.createAt}
-                        {iconStatus === "LockIcon" && <LockIcon />}
-                        {iconStatus === "GroupIcon" && <GroupIcon />}
-                        {iconStatus === "PublicIcon" && <PublicIcon />}
+                        {props.status === "Private" && <LockIcon />}
+                        {props.status === "Friend" && <GroupIcon />}
+                        {props.status === "Public" && <PublicIcon />}
                         {props.status}
                       </Typography>
                     }

@@ -2,7 +2,14 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
-import { Typography } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Typography,
+} from "@mui/material";
 import MContainer from "../../components/MContainer/MContainer";
 import PostForm from "../../components/MContainer/PostForm";
 import { useParams } from "react-router-dom";
@@ -12,17 +19,22 @@ import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
 import { Post } from "../../interface/PostContent";
 import { User } from "../../interface/User";
 import { Item } from "../../App";
+import ShareContent from "./ShareContent";
 
 interface IData {
   reFreshInfo: number;
 }
 
-export default function Blog({reFreshInfo} : IData) {
+export default function Blog({ reFreshInfo }: IData) {
   const { userId } = useParams();
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   const [reFresh, setReFresh] = React.useState(0);
+  const [type, setType] = React.useState("General");
 
+  const handleChangeType = (event: SelectChangeEvent) => {
+    setType(event.target.value as string);
+  };
   const handleRefresh = () => {
     setReFresh((pre) => pre + 1);
   };
@@ -77,38 +89,115 @@ export default function Blog({reFreshInfo} : IData) {
               <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
                 <PostForm handdleReFresh={handleRefresh} inFoUser={inFoUser} />
               </Item>
-              <Item
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 2,
-                }}
-              >
-                {data.filter((f) => f.owner === userId).map((m) => (
-                  <Box key={m.id}>
-                    <MContainer
-                      owner={m.owner}
-                      postId={m.id}
-                      caption={m.caption}
-                      hashTagTopic={m.hashTagTopic}
-                      status={m.status}
-                      createAt={m.createAt}
-                      emoji={m.emoji}
-                      photoPost={m.photoPost}
-                      likeNumber={m.likes.length}
-                      likes={m.likes}
-                      commentNumber={m.comments.length}
-                      handleRefresh={handleRefresh}
-                      reFreshInfo={reFreshInfo}
-                      shareUsers={m.shareUsers}
-                      userInfo={inFoUser} 
-                    />
-                  </Box>
-                ))}
-              </Item>
+              {type === "General" ? (
+                <Item
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                  }}
+                >
+                  {data
+                    .filter((f) => f.owner === userId)
+                    .map((m) => (
+                      <Box key={m.id}>
+                        <MContainer
+                          owner={m.owner}
+                          postId={m.id}
+                          caption={m.caption}
+                          hashTagTopic={m.hashTagTopic}
+                          status={m.status}
+                          createAt={m.createAt}
+                          emoji={m.emoji}
+                          photoPost={m.photoPost}
+                          likeNumber={m.likes.length}
+                          likes={m.likes}
+                          commentNumber={m.comments.length}
+                          handleRefresh={handleRefresh}
+                          reFreshInfo={reFreshInfo}
+                          shareUsers={m.shareUsers}
+                          userInfo={inFoUser}
+                        />
+                      </Box>
+                    ))}
+                </Item>
+              ) : (
+                <>
+                  {data.some((f) =>
+                    f.shareUsers.some(
+                      (share) =>
+                        share.shareBy == userId &&
+                        (share.status == "Private" || share.status == "Public")
+                    )
+                  ) ? (
+                    <Item
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                      }}
+                    >
+                      {data
+                        .filter((f) =>
+                          f.shareUsers.some(
+                            (share) =>
+                              share.shareBy == userId &&
+                              (share.status == "Private" ||
+                                share.status == "Public")
+                          )
+                        )
+                        .map((m) => (
+                          <Box key={m.id}>
+                            <ShareContent
+                              userId = {userId}
+                              postId={m.id}
+                              handleRefresh={handleRefresh}
+                              reFreshInfo={reFreshInfo}
+                              shareUsers={m.shareUsers.filter((share) => share.status == "Private" || share.status == "Public")}
+                            />
+                            <MContainer
+                              owner={m.owner}
+                              postId={m.id}
+                              caption={m.caption}
+                              hashTagTopic={m.hashTagTopic}
+                              status={m.status}
+                              createAt={m.createAt}
+                              emoji={m.emoji}
+                              photoPost={m.photoPost}
+                              likeNumber={m.likes.length}
+                              likes={m.likes}
+                              commentNumber={m.comments.length}
+                              handleRefresh={handleRefresh}
+                              reFreshInfo={reFreshInfo}
+                              shareUsers={m.shareUsers}
+                              userInfo={inFoUser}
+                            />
+                          </Box>
+                        ))}
+                    </Item>
+                  ) : (
+                    <Typography>This no data to show!</Typography>
+                  )}
+                </>
+              )}
             </Grid>
             <Grid item xs={3}>
               <Item>
+                <FormControl fullWidth sx={{ mb: 1, backgroundColor: "white" }}>
+                  <InputLabel id="demo-simple-select-label">
+                    Content type
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={type}
+                    label="Content type"
+                    onChange={handleChangeType}
+                  >
+                    <MenuItem value={"General"}>General</MenuItem>
+                    <MenuItem value={"Share"}>Share</MenuItem>
+                  </Select>
+                </FormControl>
                 <Paper>
                   <Typography
                     sx={{

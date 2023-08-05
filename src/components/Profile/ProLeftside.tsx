@@ -31,6 +31,7 @@ import { dbFireStore } from "../../config/firebase";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { stylePreviewPhoto } from "../../utils/styleBox";
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
+import PopupAlert from "../PopupAlert";
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
@@ -142,6 +143,60 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
       }
     } catch (error) {
       console.error("Error updating profile: ", error);
+    }
+  };
+
+  const unFriendOtherSide = async (id: string) => {
+    const IndexFriend = inFoUser.map((user) => user.friendList.findIndex((index) => index.friendId === id)).flat();
+    try {
+      const q = query(collection(dbFireStore, "users"), where("uid", "==", userId));
+      const querySnapshot = await getDocs(q);
+
+      const doc = querySnapshot.docs[0];
+      if (doc.exists()) {
+        const friendData = { uid: doc.id, ...doc.data() } as User;
+        if(friendData.friendList !== undefined) {
+          const updateFriend = [...friendData.friendList];
+          IndexFriend.forEach((index) => {
+            updateFriend.splice(index, 1);
+          });
+          const updatedData = { ...friendData, friendList: updateFriend };
+          await updateDoc(doc.ref, updatedData);
+        }
+        handleRefresh();
+      } else {
+        console.log("No post found with the specified ID");
+      }
+    } catch (error) {
+      console.error("Error deleting friend:", error);
+    }
+  };
+
+  const unFriend = async (id: string) => {
+    const IndexFriend = inFoUser.map((user) => user.friendList.findIndex((index) => index.friendId === id)).flat();
+    try {
+      const q = query(collection(dbFireStore, "users"), where("uid", "==", userInfo.uid));
+      const querySnapshot = await getDocs(q);
+
+      const doc = querySnapshot.docs[0];
+      if (doc.exists()) {
+        const friendData = { uid: doc.id, ...doc.data() } as User;
+        if(friendData.friendList !== undefined) {
+          const updateFriend = [...friendData.friendList];
+          IndexFriend.forEach((index) => {
+            updateFriend.splice(index, 1);
+          });
+          const updatedData = { ...friendData, friendList: updateFriend };
+          await updateDoc(doc.ref, updatedData);
+        }
+        unFriendOtherSide(userId ? userId : "");
+        PopupAlert("Unfriend successfully", "success")
+        handleRefresh();
+      } else {
+        console.log("No post found with the specified ID");
+      }
+    } catch (error) {
+      console.error("Error deleting friend:", error);
     }
   };
 
@@ -302,6 +357,22 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
                       onClick={handleOpen}
                     >
                       Edit
+                    </Button>
+                  ) : ( m.friendList.some((friend) => friend.friendId === userInfo.uid)) ? (
+                    <Button
+                      onClick={() => unFriend(userId ?? "")}
+                      size="small"
+                      sx={{
+                        width: "100px",
+                        backgroundColor: "#8E51E2",
+                        color: "white",
+                        "&:hover": {
+                          color: "black",
+                          backgroundColor: "white",
+                        },
+                      }}
+                    >
+                      UnFriend
                     </Button>
                   ) : (
                     <Button

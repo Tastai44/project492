@@ -104,9 +104,8 @@ export default function ShareCard(props: IData & IFunction) {
     uid: row.friendId,
     username: row.username,
     profilePhoto: row.profilePhoto,
-    IsShare: false
+    IsShare: false,
   }));
-
 
   const [status, setStatus] = React.useState("");
   const handleChange = (event: SelectChangeEvent) => {
@@ -126,31 +125,56 @@ export default function ShareCard(props: IData & IFunction) {
         getRowsId.includes(row.id ? row.id : "")
       );
 
-      const updateShare = {
-        shareBy: userInfo.uid,
-        shareTo:
-          status === "Friend"
-            ? filterRowsData.map((user) => ({ uid: user.uid }))
-            : [{ uid: userInfo.uid }],
-        status: status,
-        createdAt: new Date().toLocaleString(),
-      };
-      const postRef = doc(postsCollection, props.postId);
-      updateDoc(postRef, {
-        shareUsers: arrayUnion(updateShare),
-      })
-        .then(() => {
-          // handleRefresh();
-          props.handleReUserfresh();
+      if (filterRowsData.length !== 0) {
+        try {
+          for (let i = 0; i < filterRowsData.length; i++) {
+            const updateShare = {
+              shareBy: userInfo.uid,
+              shareTo: status === "Friend" ? filterRowsData[i].uid : "",
+              status: status,
+              createdAt: new Date().toLocaleString(),
+            };
+            const postRef = doc(postsCollection, props.postId);
+            await updateDoc(postRef, {
+              shareUsers: arrayUnion(updateShare),
+            })
+              .then(() => {
+                // handleRefresh();
+                props.handleReUserfresh();
+              })
+              .catch((error) => {
+                console.error("Error share", error);
+              });
+          }
           PopupAlert("Share successfully", "success");
-        })
-        .catch((error) => {
+        } catch (error) {
           console.error("Error share", error);
-        });
+        }
+      } else {
+        const updateShare = {
+          shareBy: userInfo.uid,
+          shareTo: userInfo.uid,
+          status: status,
+          createdAt: new Date().toLocaleString(),
+        };
+        const postRef = doc(postsCollection, props.postId);
+        updateDoc(postRef, {
+          shareUsers: arrayUnion(updateShare),
+        })
+          .then(() => {
+            // handleRefresh();
+            props.handleReUserfresh();
+            PopupAlert("Share successfully", "success");
+          })
+          .catch((error) => {
+            console.error("Error share", error);
+          });
+      }
     } catch (error) {
       console.log(error);
     }
   };
+
   // const unShare = async (id: string) => {
   //   const IndexShare = props.shareUsers.findIndex(
   //     (index) => index.shareBy === userInfo.uid
