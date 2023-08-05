@@ -149,11 +149,70 @@ export default function Blog({ reFreshInfo }: IData) {
                         .map((m) => (
                           <Box key={m.id}>
                             <ShareContent
-                              userId = {userId}
+                              userId={userId}
                               postId={m.id}
                               handleRefresh={handleRefresh}
                               reFreshInfo={reFreshInfo}
-                              shareUsers={m.shareUsers.filter((share) => share.status == "Private" || share.status == "Public")}
+                              shareUsers={m.shareUsers.filter(
+                                (share) =>
+                                  share.status == "Private" ||
+                                  (share.status == "Public" &&
+                                    share.shareBy == userId)
+                              )}
+                            />
+                            <MContainer
+                              owner={m.owner}
+                              postId={m.id}
+                              caption={m.caption}
+                              hashTagTopic={m.hashTagTopic}
+                              status={m.status}
+                              createAt={m.createAt}
+                              emoji={m.emoji}
+                              photoPost={m.photoPost}
+                              likeNumber={m.likes.length}
+                              likes={m.likes}
+                              commentNumber={m.comments.length}
+                              handleRefresh={handleRefresh}
+                              reFreshInfo={reFreshInfo}
+                              shareUsers={m.shareUsers}
+                              userInfo={inFoUser}
+                            />
+                          </Box>
+                        ))}
+                    </Item>
+                  ) : data.some((f) =>
+                      f.shareUsers.some(
+                        (share) =>
+                          share.shareTo == userId && share.status == "Friend"
+                      )
+                    ) ? (
+                    <Item
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                      }}
+                    >
+                      {data
+                        .filter((f) =>
+                          f.shareUsers.some(
+                            (share) =>
+                              share.shareTo == userId &&
+                              share.status == "Friend"
+                          )
+                        )
+                        .map((m) => (
+                          <Box key={m.id}>
+                            <ShareContent
+                              userId={userId}
+                              postId={m.id}
+                              handleRefresh={handleRefresh}
+                              reFreshInfo={reFreshInfo}
+                              shareUsers={m.shareUsers.filter(
+                                (share) =>
+                                  share.status == "Friend" &&
+                                  share.shareTo == userId
+                              )}
                             />
                             <MContainer
                               owner={m.owner}
