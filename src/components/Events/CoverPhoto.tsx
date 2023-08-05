@@ -50,6 +50,7 @@ interface IData {
 
 interface IFunction {
   handleRefresh: () => void;
+  handleOpenShare: () => void;
 }
 
 export default function ProCoverImage(props: IData & IFunction) {
@@ -200,7 +201,7 @@ export default function ProCoverImage(props: IData & IFunction) {
               <Box
                 sx={{ display: "flex", gap: 0.5, m: 1, alignItems: "center" }}
               >
-                <IconButton size="large">
+                <IconButton size="large" onClick={props.handleOpenShare}>
                   <ShareIcon />
                 </IconButton>
                 <Button

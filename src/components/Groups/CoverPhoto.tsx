@@ -5,11 +5,9 @@ import {
   Card,
   CardMedia,
   Divider,
-  IconButton,
   Modal,
 } from "@mui/material";
 import MessageIcon from "@mui/icons-material/Message";
-import ShareIcon from "@mui/icons-material/Share";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import GroupsIcon from "@mui/icons-material/Groups";
 import { IMember } from "../../interface/Group";
@@ -121,9 +119,6 @@ export default function ProCoverImage(
               <Box
                 sx={{ display: "flex", gap: 0.5, m: 1, alignItems: "center" }}
               >
-                <IconButton size="large">
-                  <ShareIcon />
-                </IconButton>
                 <Button
                   sx={{
                     fontSize: "16px",

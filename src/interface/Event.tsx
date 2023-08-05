@@ -1,4 +1,4 @@
-import { Address } from "./PostContent";
+import { Address, ShareUser } from "./PostContent";
 
 export interface Interest {
     eventId: number;
@@ -20,6 +20,7 @@ export interface EventPost {
     status: string;
     coverPhoto: string[];
     interest: Interest[];
+    shareUsers: ShareUser[];
     owner: string;
     createAt?: string;
     updateAt?: string;

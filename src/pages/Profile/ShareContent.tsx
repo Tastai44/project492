@@ -31,7 +31,8 @@ import { NavLink } from "react-router-dom";
 import PopupAlert from "../../components/PopupAlert";
 
 interface Idata {
-  postId: string;
+  postId?: string;
+  eventId?: string;
   shareUsers: ShareUser[];
   reFreshInfo: number;
   userId?: string;
@@ -68,14 +69,42 @@ export default function ShareContent(props: Idata & IFunction) {
     fetchData();
   }, [props.shareUsers]);
 
-  const handleDeleteShare = async () => {
+  const handleDeleteShare = async (postId?: string) => {
     const IndexShare = props.shareUsers.findIndex(
       (index) => index.shareBy == userInfo.uid || index.shareTo == userInfo.uid
     );
     try {
       const queryData = query(
         collection(dbFireStore, "posts"),
-        where("id", "==", props.postId)
+        where("id", "==", postId)
+      );
+      const querySnapshot = await getDocs(queryData);
+      const doc = querySnapshot.docs[0];
+      if (doc.exists()) {
+        const postData = { id: doc.id, ...doc.data() } as Post;
+        const updateShare = [...postData.shareUsers];
+        updateShare.splice(IndexShare, 1);
+        const updateData = { ...postData, shareUsers: updateShare };
+        await updateDoc(doc.ref, updateData);
+        props.handleRefresh();
+        PopupAlert("Deleted share content succussfully", "success");
+      } else {
+        PopupAlert("There is no share to delete!", "warning");
+        console.log("No share to delete.");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDeleteEventShare = async (eventId?: string) => {
+    const IndexShare = props.shareUsers.findIndex(
+      (index) => index.shareBy == userInfo.uid || index.shareTo == userInfo.uid
+    );
+    try {
+      const queryData = query(
+        collection(dbFireStore, "events"),
+        where("id", "==", eventId)
       );
       const querySnapshot = await getDocs(queryData);
       const doc = querySnapshot.docs[0];
@@ -114,10 +143,14 @@ export default function ShareContent(props: Idata & IFunction) {
             primary={
               <Box sx={{ fontSize: "16px" }}>
                 <b>Shared by</b>{" "}
-                <NavLink to={`/profileBlog/${inFoUser.find((user) => user.firstName)?.uid}`}>
-                {`${inFoUser.find((user) => user.firstName)?.firstName} ${
-                  inFoUser.find((user) => user.firstName)?.lastName
-                }`}
+                <NavLink
+                  to={`/profileBlog/${
+                    inFoUser.find((user) => user.firstName)?.uid
+                  }`}
+                >
+                  {`${inFoUser.find((user) => user.firstName)?.firstName} ${
+                    inFoUser.find((user) => user.firstName)?.lastName
+                  }`}
                 </NavLink>
               </Box>
             }
@@ -144,7 +177,11 @@ export default function ShareContent(props: Idata & IFunction) {
                       share.shareTo == props.userId)
                 )
               }
-              onClick={handleDeleteShare}
+              onClick={
+                props.postId
+                  ? () => handleDeleteShare(props.postId)
+                  : () => handleDeleteEventShare(props.eventId)
+              }
             >
               <DeleteOutlineOutlinedIcon />
             </IconButton>

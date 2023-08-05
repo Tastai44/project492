@@ -13,6 +13,8 @@ import { dbFireStore } from "../../config/firebase";
 import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
 import { useParams } from "react-router-dom";
 import { EventPost } from "../../interface/Event";
+import ShareCard from "../../components/MContainer/ShareCard";
+import { User } from "../../interface/User";
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
@@ -23,6 +25,9 @@ const Item = styled(Box)(({ theme }) => ({
 export default function EventDetail() {
   const { eventId } = useParams();
   const [reFresh, setReFresh] = React.useState(0);
+  const [openShare, setOpenShare] = React.useState(false);
+  const handleOpenShare = () => setOpenShare(true);
+  const handleCloseShare = () => setOpenShare(false);
   const handleRefresh = () => {
     setReFresh((pre) => pre + 1);
   };
@@ -47,70 +52,103 @@ export default function EventDetail() {
 
     fetchData();
   }, [reFresh, eventId]);
+
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+  React.useMemo(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", userInfo.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [userInfo.uid]);
+
   return (
     <div>
       {data.map((e) => (
-      <Grid key={e.id} sx={{ flexGrow: 1 }} container marginTop={5}>
-        <Grid
-          container
-          justifyContent="space-between"
-          paddingLeft={5}
-          paddingRight={5}
-          spacing={10}
-        >
-          <Grid item xs={12}>
-            <Item>
-              <Box sx={{ width: "100%" }}>
-                <Stack>
-                  <Item sx={{ mb: 0 }}>
-                    <CoverPhoto 
-                      coverPhoto={e.coverPhoto}
-                      title={e.title}
-                      startDate={e.startDate}
-                      startTime={e.startTime}
+        <Grid key={e.id} sx={{ flexGrow: 1 }} container marginTop={5}>
+          <Grid
+            container
+            justifyContent="space-between"
+            paddingLeft={5}
+            paddingRight={5}
+            spacing={10}
+          >
+            <Grid item xs={12}>
+              <Item>
+                <Box sx={{ width: "100%" }}>
+                  <Stack>
+                    <Item sx={{ mb: 0 }}>
+                      <CoverPhoto
+                        coverPhoto={e.coverPhoto}
+                        title={e.title}
+                        startDate={e.startDate}
+                        startTime={e.startTime}
+                        eventId={e.id}
+                        endDate={e.endDate}
+                        endTime={e.endTime}
+                        topic={e.topic}
+                        ageRage={e.ageRage}
+                        interest={e.interest}
+                        owner={e.owner}
+                        handleRefresh={handleRefresh}
+                        handleOpenShare={handleOpenShare}
+                        details={e.details}
+                        status={e.status}
+                      />
+                    </Item>
+                    <ShareCard
+                      openShare={openShare}
+                      handleCloseShare={handleCloseShare}
+                      friendList={
+                        inFoUser.find((user) => user.friendList)?.friendList ??
+                        []
+                      }
                       eventId={e.id}
-                      endDate= {e.endDate}
-                      endTime= {e.endTime}
-                      topic={e.topic}
-                      ageRage={e.ageRage}
-                      interest={e.interest}
-                      owner={e.owner}
-                      handleRefresh={handleRefresh}
-                      details={e.details}
-                      status={e.status}
+                      handleReUserfresh={handleRefresh}
                     />
-                  </Item>
-                  <Item>
-                    <Box sx={{ flexGrow: 1 }}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={2.5}>
-                          <Item>
-                            <LeftSideContainer 
-                              evenetData={data}
-                            />
-                          </Item>
+                    <Item>
+                      <Box sx={{ flexGrow: 1 }}>
+                        <Grid container spacing={2}>
+                          <Grid item xs={2.5}>
+                            <Item>
+                              <LeftSideContainer evenetData={data} />
+                            </Item>
+                          </Grid>
+                          <Grid item xs={7}>
+                            <Item>
+                              <DetailCard details={e.details} />
+                            </Item>
+                          </Grid>
+                          <Grid item xs={2.5}>
+                            <Item>
+                              <HeldMap />
+                            </Item>
+                          </Grid>
                         </Grid>
-                        <Grid item xs={7}>
-                          <Item>
-                            <DetailCard 
-                              details={e.details}
-                            />
-                          </Item>
-                        </Grid>
-                        <Grid item xs={2.5}>
-                          <Item>
-                            <HeldMap />
-                          </Item>
-                        </Grid>
-                      </Grid>
-                    </Box>
-                  </Item>
-                </Stack>
-              </Box>
-            </Item>
+                      </Box>
+                    </Item>
+                  </Stack>
+                </Box>
+              </Item>
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
       ))}
     </div>
   );

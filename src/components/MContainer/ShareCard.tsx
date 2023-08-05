@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { Search, SearchIconWrapper, StyledInputBase } from "../Navigation";
 import SearchIcon from "@mui/icons-material/Search";
-import { IFriendList, User } from "../../interface/User";
+import { IFriendList } from "../../interface/User";
 import LockIcon from "@mui/icons-material/Lock";
 import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
@@ -27,12 +27,8 @@ import {
   updateDoc,
   doc,
   arrayUnion,
-  getDocs,
-  where,
-  query,
 } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
-import { Post } from "../../interface/PostContent";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", flex: 1 },
@@ -67,7 +63,8 @@ const columns: GridColDef[] = [
 interface IData {
   friendList: IFriendList[];
   openShare: boolean;
-  postId: string;
+  postId?: string;
+  eventId?: string;
 }
 interface IFunction {
   handleCloseShare: () => void;
@@ -76,29 +73,6 @@ interface IFunction {
 
 export default function ShareCard(props: IData & IFunction) {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-  // const [postData, setPostData] = React.useState<Post[]>([]);
-  // const [reFresh, setReFresh] = React.useState(0);
-
-  // const handleRefresh = () => {
-  //   setReFresh((pre) => pre + 1);
-  // };
-  // React.useMemo(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const q = query(
-  //         collection(dbFireStore, "posts"),
-  //         where("id", "==", props.postId)
-  //       );
-  //       const querySnapshot = await getDocs(q);
-  //       const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
-  //       setPostData(queriedData);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [props.postId]);
-
   const rows = props.friendList.map((row, index) => ({
     id: `${row.friendId}_${index}`,
     uid: row.friendId,
@@ -116,7 +90,6 @@ export default function ShareCard(props: IData & IFunction) {
     setSelectedRows(selectionModel);
   };
 
-  // const isShare = props.shareUsers.some((share) => share.shareBy === userInfo.uid);
   const handleShare = async () => {
     try {
       const postsCollection = collection(dbFireStore, "posts");
@@ -139,7 +112,6 @@ export default function ShareCard(props: IData & IFunction) {
               shareUsers: arrayUnion(updateShare),
             })
               .then(() => {
-                // handleRefresh();
                 props.handleReUserfresh();
               })
               .catch((error) => {
@@ -162,7 +134,6 @@ export default function ShareCard(props: IData & IFunction) {
           shareUsers: arrayUnion(updateShare),
         })
           .then(() => {
-            // handleRefresh();
             props.handleReUserfresh();
             PopupAlert("Share successfully", "success");
           })
@@ -171,36 +142,65 @@ export default function ShareCard(props: IData & IFunction) {
           });
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
-  // const unShare = async (id: string) => {
-  //   const IndexShare = props.shareUsers.findIndex(
-  //     (index) => index.shareBy === userInfo.uid
-  //   );
-  //   try {
-  //     const queyShare = query(
-  //       collection(dbFireStore, "posts"),
-  //       where("id", "==", id)
-  //     );
-  //     const querySnapshot = await getDocs(queyShare);
+  const handleShareEvent = async () => {
+    try {
+      const eventCollection = collection(dbFireStore, "events");
+      const getRowsId = selectedRows.map((rowId) => rowId);
+      const filterRowsData = rows.filter((row) =>
+        getRowsId.includes(row.id ? row.id : "")
+      );
 
-  //     const doc = querySnapshot.docs[0];
-  //     if (doc.exists()) {
-  //       const postData = { id: doc.id, ...doc.data() } as Post;
-  //       const updateShare = [...postData.shareUsers];
-  //       updateShare.splice(IndexShare, 1);
-  //       const updateData = { ...postData, shareUsers: updateShare };
-  //       await updateDoc(doc.ref, updateData);
-  //       props.handleRefresh();
-  //     } else {
-  //       console.log("No post found with the specified ID");
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+      if (filterRowsData.length !== 0) {
+        try {
+          for (let i = 0; i < filterRowsData.length; i++) {
+            const updatedEvent = {
+              shareBy: userInfo.uid,
+              shareTo: status === "Friend" ? filterRowsData[i].uid : "",
+              status: status,
+              createdAt: new Date().toLocaleString(),
+            };
+            const eventRef = doc(eventCollection, props.eventId);
+            await updateDoc(eventRef, {
+              shareUsers: arrayUnion(updatedEvent),
+            })
+              .then(() => {
+                props.handleReUserfresh();
+              })
+              .catch((error) => {
+                console.error("Error share", error);
+              });
+          }
+          PopupAlert("Share successfully", "success");
+        } catch (error) {
+          console.error("Error share", error);
+        }
+      } else {
+        const updatedEvent = {
+          shareBy: userInfo.uid,
+          shareTo: userInfo.uid,
+          status: status,
+          createdAt: new Date().toLocaleString(),
+        };
+        const eventRef = doc(eventCollection, props.eventId);
+        updateDoc(eventRef, {
+          shareUsers: arrayUnion(updatedEvent),
+        })
+          .then(() => {
+            props.handleReUserfresh();
+            PopupAlert("Share successfully", "success");
+          })
+          .catch((error) => {
+            console.error("Error share", error);
+          });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Modal open={props.openShare} onClose={props.handleCloseShare}>
@@ -355,7 +355,7 @@ export default function ShareCard(props: IData & IFunction) {
             Cancle
           </Button>
           <Button
-            onClick={handleShare}
+            onClick={props.postId ? () => handleShare : handleShareEvent}
             sx={{
               backgroundColor: "#8E51E2",
               color: "white",

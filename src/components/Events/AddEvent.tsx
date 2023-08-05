@@ -107,6 +107,7 @@ export default function AddEvent({ closeAdd, handleRefresh }: Ihandle) {
     interest: [],
     owner: "",
     createAt: "",
+    shareUsers: []
   };
   const [event, setEvent] = React.useState<EventPost>(initialState);
   const clearState = () => {
@@ -154,6 +155,7 @@ export default function AddEvent({ closeAdd, handleRefresh }: Ihandle) {
       coverPhoto: previewImages,
       status: status,
       interest: [],
+      shareUsers: [],
       createAt: new Date().toLocaleString(),
       owner: userId,
     };
