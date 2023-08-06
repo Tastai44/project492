@@ -355,7 +355,7 @@ export default function ShareCard(props: IData & IFunction) {
             Cancle
           </Button>
           <Button
-            onClick={props.postId ? () => handleShare : handleShareEvent}
+            onClick={props.postId ? () => handleShare() :() => handleShareEvent()}
             sx={{
               backgroundColor: "#8E51E2",
               color: "white",

@@ -103,6 +103,11 @@ export default function Blog({ reFreshInfo }: IData) {
     fetchData();
   }, [reFresh]);
 
+  console.log(
+    data.some((post) => post.shareUsers),
+    eventData.some((event) => event.shareUsers)
+  );
+
   return (
     <div>
       {inFoUser.map((m) => (
@@ -146,232 +151,226 @@ export default function Blog({ reFreshInfo }: IData) {
                 </Item>
               ) : (
                 <>
-                  {data.length !== 0 || eventData.length !== 0 ? (
-                    <>
-                      {data.some((f) =>
-                        f.shareUsers.some(
-                          (share) =>
-                            share.shareBy == userId &&
-                            (share.status == "Private" ||
-                              share.status == "Public")
+                  {data.some((f) =>
+                    f.shareUsers.some(
+                      (share) =>
+                        share.shareBy == userId &&
+                        (share.status == "Private" || share.status == "Public")
+                    )
+                  ) ? (
+                    <Item
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                      }}
+                    >
+                      {data
+                        .filter((f) =>
+                          f.shareUsers.some(
+                            (share) =>
+                              share.shareBy == userId &&
+                              (share.status == "Private" ||
+                                share.status == "Public")
+                          )
                         )
-                      ) ? (
-                        <Item
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 2,
-                          }}
-                        >
-                          {data
-                            .filter((f) =>
-                              f.shareUsers.some(
+                        .map((m) => (
+                          <Box key={m.id}>
+                            <ShareContent
+                              userId={userId}
+                              postId={m.id}
+                              handleRefresh={handleRefresh}
+                              reFreshInfo={reFreshInfo}
+                              shareUsers={m.shareUsers.filter(
                                 (share) =>
-                                  share.shareBy == userId &&
-                                  (share.status == "Private" ||
-                                    share.status == "Public")
-                              )
-                            )
-                            .map((m) => (
-                              <Box key={m.id}>
-                                <ShareContent
-                                  userId={userId}
-                                  postId={m.id}
-                                  handleRefresh={handleRefresh}
-                                  reFreshInfo={reFreshInfo}
-                                  shareUsers={m.shareUsers.filter(
-                                    (share) =>
-                                      share.status == "Private" ||
-                                      (share.status == "Public" &&
-                                        share.shareBy == userId)
-                                  )}
-                                />
-                                <MContainer
-                                  owner={m.owner}
-                                  postId={m.id}
-                                  caption={m.caption}
-                                  hashTagTopic={m.hashTagTopic}
-                                  status={m.status}
-                                  createAt={m.createAt}
-                                  emoji={m.emoji}
-                                  photoPost={m.photoPost}
-                                  likeNumber={m.likes.length}
-                                  likes={m.likes}
-                                  commentNumber={m.comments.length}
-                                  handleRefresh={handleRefresh}
-                                  reFreshInfo={reFreshInfo}
-                                  shareUsers={m.shareUsers}
-                                  userInfo={inFoUser}
-                                />
-                              </Box>
-                            ))}
-                        </Item>
-                      ) : data.some((f) =>
+                                  share.status == "Private" ||
+                                  (share.status == "Public" &&
+                                    share.shareBy == userId)
+                              )}
+                            />
+                            <MContainer
+                              owner={m.owner}
+                              postId={m.id}
+                              caption={m.caption}
+                              hashTagTopic={m.hashTagTopic}
+                              status={m.status}
+                              createAt={m.createAt}
+                              emoji={m.emoji}
+                              photoPost={m.photoPost}
+                              likeNumber={m.likes.length}
+                              likes={m.likes}
+                              commentNumber={m.comments.length}
+                              handleRefresh={handleRefresh}
+                              reFreshInfo={reFreshInfo}
+                              shareUsers={m.shareUsers}
+                              userInfo={inFoUser}
+                              groupName={m.groupName}
+                              groupId={m.groupId}
+                            />
+                          </Box>
+                        ))}
+                    </Item>
+                  ) : data.some((f) =>
+                      f.shareUsers.some(
+                        (share) =>
+                          share.shareTo == userId && share.status == "Friend"
+                      )
+                    ) ? (
+                    <Item
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                      }}
+                    >
+                      {data
+                        .filter((f) =>
                           f.shareUsers.some(
                             (share) =>
                               share.shareTo == userId &&
                               share.status == "Friend"
                           )
-                        ) ? (
-                        <Item
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 2,
-                          }}
-                        >
-                          {data
-                            .filter((f) =>
-                              f.shareUsers.some(
-                                (share) =>
-                                  share.shareTo == userId &&
-                                  share.status == "Friend"
-                              )
-                            )
-                            .map((m) => (
-                              <Box key={m.id}>
-                                <ShareContent
-                                  userId={userId}
-                                  postId={m.id}
-                                  handleRefresh={handleRefresh}
-                                  reFreshInfo={reFreshInfo}
-                                  shareUsers={m.shareUsers.filter(
-                                    (share) =>
-                                      share.status == "Friend" &&
-                                      share.shareTo == userId
-                                  )}
-                                />
-                                <MContainer
-                                  owner={m.owner}
-                                  postId={m.id}
-                                  caption={m.caption}
-                                  hashTagTopic={m.hashTagTopic}
-                                  status={m.status}
-                                  createAt={m.createAt}
-                                  emoji={m.emoji}
-                                  photoPost={m.photoPost}
-                                  likeNumber={m.likes.length}
-                                  likes={m.likes}
-                                  commentNumber={m.comments.length}
-                                  handleRefresh={handleRefresh}
-                                  reFreshInfo={reFreshInfo}
-                                  shareUsers={m.shareUsers}
-                                  userInfo={inFoUser}
-                                />
-                              </Box>
-                            ))}
-                        </Item>
-                      ) : (
-                        <Typography>This no data to show!</Typography>
-                      )}
-
-                      {eventData.some((f) =>
-                        f.shareUsers.some(
-                          (share) =>
-                            share.shareBy == userId &&
-                            (share.status == "Private" ||
-                              share.status == "Public")
                         )
-                      ) ? (
-                        <Item
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 2,
-                          }}
-                        >
-                          {eventData
-                            .filter((f) =>
-                              f.shareUsers.some(
+                        .map((m) => (
+                          <Box key={m.id}>
+                            <ShareContent
+                              userId={userId}
+                              postId={m.id}
+                              handleRefresh={handleRefresh}
+                              reFreshInfo={reFreshInfo}
+                              shareUsers={m.shareUsers.filter(
                                 (share) =>
-                                  share.shareBy == userId &&
-                                  (share.status == "Private" ||
-                                    share.status == "Public")
-                              )
-                            )
-                            .map((m) => (
-                              <Box key={m.id}>
-                                <ShareContent
-                                  userId={userId}
-                                  eventId={m.id}
-                                  handleRefresh={handleRefresh}
-                                  reFreshInfo={reFreshInfo}
-                                  shareUsers={m.shareUsers.filter(
-                                    (share) =>
-                                      share.status == "Private" ||
-                                      (share.status == "Public" &&
-                                        share.shareBy == userId)
-                                  )}
-                                />
-                                <ShareEvent
-                                  eventId={m.id}
-                                  startDate={m.startDate}
-                                  startTime={m.startTime}
-                                  title={m.title}
-                                  endDate={m.endDate}
-                                  endTime={m.endTime}
-                                  userId={m.owner}
-                                  coverPhoto={m.coverPhoto}
-                                  handleRefresh={handleRefresh}
-                                />
-                              </Box>
-                            ))}
-                        </Item>
-                      ) : eventData.some((f) =>
-                          f.shareUsers.some(
-                            (share) =>
-                              share.shareTo == userId &&
-                              share.status == "Friend"
-                          )
-                        ) ? (
-                        <Item
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 2,
-                          }}
-                        >
-                          {eventData
-                            .filter((f) =>
-                              f.shareUsers.some(
-                                (share) =>
-                                  share.shareTo == userId &&
-                                  share.status == "Friend"
-                              )
-                            )
-                            .map((m) => (
-                              <Box key={m.id}>
-                                <ShareContent
-                                  userId={userId}
-                                  eventId={m.id}
-                                  handleRefresh={handleRefresh}
-                                  reFreshInfo={reFreshInfo}
-                                  shareUsers={m.shareUsers.filter(
-                                    (share) =>
-                                      share.status == "Friend" &&
-                                      share.shareTo == userId
-                                  )}
-                                />
-                                <ShareEvent
-                                  eventId={m.id}
-                                  startDate={m.startDate}
-                                  startTime={m.startTime}
-                                  title={m.title}
-                                  endDate={m.endDate}
-                                  endTime={m.endTime}
-                                  userId={m.owner}
-                                  coverPhoto={m.coverPhoto}
-                                  handleRefresh={handleRefresh}
-                                />
-                              </Box>
-                            ))}
-                        </Item>
-                      ) : (
-                        <Typography>This no data to show!</Typography>
-                      )}
-                    </>
+                                  share.status == "Friend" &&
+                                  share.shareTo == userId
+                              )}
+                            />
+                            <MContainer
+                              owner={m.owner}
+                              postId={m.id}
+                              caption={m.caption}
+                              hashTagTopic={m.hashTagTopic}
+                              status={m.status}
+                              createAt={m.createAt}
+                              emoji={m.emoji}
+                              photoPost={m.photoPost}
+                              likeNumber={m.likes.length}
+                              likes={m.likes}
+                              commentNumber={m.comments.length}
+                              handleRefresh={handleRefresh}
+                              reFreshInfo={reFreshInfo}
+                              shareUsers={m.shareUsers}
+                              userInfo={inFoUser}
+                              groupName={m.groupName}
+                              groupId={m.groupId}
+                            />
+                          </Box>
+                        ))}
+                    </Item>
                   ) : (
-                    <Typography>This no data to show!</Typography>
+                    <Typography>This no post share data to show!</Typography>
+                  )}
+
+                  {eventData.some((f) =>
+                    f.shareUsers.some(
+                      (share) =>
+                        share.shareBy == userId &&
+                        (share.status == "Private" || share.status == "Public")
+                    )
+                  ) ? (
+                    <Item
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                      }}
+                    >
+                      {eventData
+                        .filter((f) =>
+                          f.shareUsers.some(
+                            (share) =>
+                              share.shareBy == userId &&
+                              (share.status == "Private" ||
+                                share.status == "Public")
+                          )
+                        )
+                        .map((m) => (
+                          <Box key={m.id}>
+                            <ShareContent
+                              userId={userId}
+                              eventId={m.id}
+                              handleRefresh={handleRefresh}
+                              reFreshInfo={reFreshInfo}
+                              shareUsers={m.shareUsers.filter(
+                                (share) =>
+                                  share.status == "Private" ||
+                                  (share.status == "Public" &&
+                                    share.shareBy == userId)
+                              )}
+                            />
+                            <ShareEvent
+                              eventId={m.id}
+                              startDate={m.startDate}
+                              startTime={m.startTime}
+                              title={m.title}
+                              endDate={m.endDate}
+                              endTime={m.endTime}
+                              userId={m.owner}
+                              coverPhoto={m.coverPhoto}
+                              handleRefresh={handleRefresh}
+                            />
+                          </Box>
+                        ))}
+                    </Item>
+                  ) : eventData.some((f) =>
+                      f.shareUsers.some(
+                        (share) =>
+                          share.shareTo == userId && share.status == "Friend"
+                      )
+                    ) ? (
+                    <Item
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                      }}
+                    >
+                      {eventData
+                        .filter((f) =>
+                          f.shareUsers.some(
+                            (share) =>
+                              share.shareTo == userId &&
+                              share.status == "Friend"
+                          )
+                        )
+                        .map((m) => (
+                          <Box key={m.id}>
+                            <ShareContent
+                              userId={userId}
+                              eventId={m.id}
+                              handleRefresh={handleRefresh}
+                              reFreshInfo={reFreshInfo}
+                              shareUsers={m.shareUsers.filter(
+                                (share) =>
+                                  share.status == "Friend" &&
+                                  share.shareTo == userId
+                              )}
+                            />
+                            <ShareEvent
+                              eventId={m.id}
+                              startDate={m.startDate}
+                              startTime={m.startTime}
+                              title={m.title}
+                              endDate={m.endDate}
+                              endTime={m.endTime}
+                              userId={m.owner}
+                              coverPhoto={m.coverPhoto}
+                              handleRefresh={handleRefresh}
+                            />
+                          </Box>
+                        ))}
+                    </Item>
+                  ) : (
+                    <Typography>This no event share data to show!</Typography>
                   )}
                 </>
               )}

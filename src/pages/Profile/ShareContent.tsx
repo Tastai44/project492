@@ -178,7 +178,7 @@ export default function ShareContent(props: Idata & IFunction) {
                 )
               }
               onClick={
-                props.postId
+                (props.postId !== undefined)
                   ? () => handleDeleteShare(props.postId)
                   : () => handleDeleteEventShare(props.eventId)
               }

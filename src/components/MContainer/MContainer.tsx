@@ -312,7 +312,7 @@ export default function MContainer(props: Idata & IFunction) {
                         </b>
                         {props.emoji && (
                           <>
-                            is feeling
+                            {" "}is feeling
                             {String.fromCodePoint(parseInt(props.emoji, 16))}
                             {convertEmojiCodeToName(
                               props.emoji
