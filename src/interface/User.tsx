@@ -15,6 +15,7 @@ export interface User {
     instagram: string;
     status?: string;
     year?: string;
+    isActive: boolean;
     posts?: Post[];
     friendList: IFriendList[];
     createdAt?: string;

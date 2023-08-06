@@ -71,7 +71,7 @@ function App() {
 
                       <Grid item xs={2}>
                         <Box style={{ position: "fixed" }}>
-                          <RightContainer handleOpen={handleOpen} />
+                          <RightContainer />
                         </Box>
                       </Grid>
                     </Grid>
@@ -143,7 +143,7 @@ function App() {
 
                     <Grid item xs={2}>
                       <div style={{ position: "fixed" }}>
-                        <RightContainer handleOpen={handleOpen} />
+                        <RightContainer />
                       </div>
                     </Grid>
                   </Grid>
@@ -406,7 +406,7 @@ function App() {
 
                     <Grid item xs={2}>
                       <div style={{ position: "fixed" }}>
-                        <RightContainer handleOpen={handleOpen} />
+                        <RightContainer />
                       </div>
                     </Grid>
                   </Grid>

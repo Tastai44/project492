@@ -92,13 +92,18 @@ export default function UserCard(props: IData) {
               key={u.uid}
               sx={{ display: "flex", alignItems: "center", gap: 1 }}
             >
-              <StyledBadge
-                overlap="circular"
-                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                variant="dot"
-              >
+              {u.isActive ? (
+                <StyledBadge
+                  overlap="circular"
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  variant="dot"
+                >
+                  <Avatar alt="Remy Sharp" src={u.profilePhoto} />
+                </StyledBadge>
+              ) : (
                 <Avatar alt="Remy Sharp" src={u.profilePhoto} />
-              </StyledBadge>
+              )}
+
               <Typography sx={{ fontSize: "16px" }}>
                 {u.username !== null ? u.firstName + " " + u.lastName : ""}
               </Typography>
