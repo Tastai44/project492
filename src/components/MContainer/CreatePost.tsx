@@ -54,8 +54,6 @@ interface IHandle {
 
 export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHandle) {
 
-  const [userId, setUserId] = React.useState("");
-
   const [status, setStatus] = React.useState("");
   const handleChange = (event: SelectChangeEvent) => {
     setStatus(event.target.value as string);
@@ -67,13 +65,7 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
 
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const [previewImages, setPreviewImages] = React.useState<string[]>([]);
-
-
-  React.useEffect (() => {
-    const getUerInfo = localStorage.getItem("user");
-    const tmp = JSON.parse(getUerInfo ? getUerInfo : '')
-    setUserId(tmp.uid)
-  }, [])
+  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
   const handleClearImage = () => {
     setPreviewImages([]);
@@ -158,7 +150,7 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
       createAt: new Date().toLocaleString(),
       date: new Date().toLocaleDateString("en-US"),
       emoji: emoji,
-      owner: userId,
+      owner: userInfo.uid,
       shareUsers: [],
       reportPost: [],
       comments: post.comments,

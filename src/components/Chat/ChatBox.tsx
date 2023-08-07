@@ -4,6 +4,8 @@ import {
   Box,
   Chip,
   IconButton,
+  ImageList,
+  ImageListItem,
   ListItem,
   ListItemAvatar,
   ListItemText,
@@ -46,6 +48,42 @@ export default function ChatBox(props: IFunction & IData) {
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const [message, setMessage] = React.useState("");
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+  const [previewImages, setPreviewImages] = React.useState<string[]>([]);
+
+  const handleClearImage = () => {
+    setPreviewImages([]);
+  };
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = event.target.files;
+    if (files) {
+      try {
+        const selectedFiles = Array.from(files);
+        const readerPromises = selectedFiles.map((file) => {
+          return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              resolve(reader.result as string);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+        });
+
+        const base64Images = await Promise.all(readerPromises);
+        setPreviewImages(base64Images);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
   const chatContainerRef = React.useRef<HTMLDivElement>(null);
   const handleMessage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -80,7 +118,8 @@ export default function ChatBox(props: IFunction & IData) {
 
   React.useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
   React.useEffect(() => {
@@ -203,7 +242,7 @@ export default function ChatBox(props: IFunction & IData) {
               .filter(
                 (item) =>
                   (item.receiver_id === userInfo.uid ||
-                  item.sender_id === userInfo.uid) &&
+                    item.sender_id === userInfo.uid) &&
                   (item.receiver_id === props.uId ||
                     item.sender_id === props.uId)
               )
@@ -242,54 +281,88 @@ export default function ChatBox(props: IFunction & IData) {
               alignContent: "center",
             }}
           >
-            <Box>
-              <IconButton>
+            <Box sx={{ width: "30%" }}>
+              <IconButton size="large" onClick={handleUploadClick}>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  multiple
+                  hidden
+                />
                 <CameraAltOutlinedIcon
-                  sx={{ color: "primary.main", fontSize: "16px" }}
+                  sx={{ color: "primary.main", fontSize: "20px" }}
                 />
               </IconButton>
               <IconButton>
                 <EmojiEmotionsIcon
-                  sx={{ color: "primary.main", fontSize: "16px" }}
+                  sx={{ color: "primary.main", fontSize: "20px" }}
                 />
               </IconButton>
             </Box>
-            <Box>
-              <TextField
-                size="small"
-                name="caption"
-                variant="outlined"
-                multiline
-                maxRows={1}
-                sx={{
-                  borderRadius: "10px",
-                  backgroundColor: "primary.contrastText",
-                  overflow: "auto",
-                  width: "100%",
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "transparent",
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "transparent",
-                    },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "transparent",
-                    },
+            <TextField
+              size="small"
+              name="caption"
+              variant="outlined"
+              multiline
+              maxRows={1}
+              sx={{
+                borderRadius: "10px",
+                backgroundColor: "primary.contrastText",
+                overflow: "auto",
+                width: "100%",
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: "transparent",
                   },
-                }}
-                value={message}
-                onChange={handleMessage}
-              />
-            </Box>
+                  "&:hover fieldset": {
+                    borderColor: "transparent",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "transparent",
+                  },
+                },
+              }}
+              value={message}
+              onChange={handleMessage}
+            />
             <Box>
               <IconButton onClick={handleSendMessage}>
                 <SendOutlinedIcon
-                  sx={{ color: "primary.main", fontSize: "16px" }}
+                  sx={{ color: "primary.main", fontSize: "20px" }}
                 />
               </IconButton>
             </Box>
           </Box>
+          {previewImages.length !== 0 && (
+            <Box>
+              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <IconButton onClick={handleClearImage}>
+                  <CancelIcon />
+                </IconButton>
+              </Box>
+              <ImageList
+                sx={{
+                  width: "100%",
+                  height: "auto",
+                  maxHeight: "500px",
+                  // display: "flex",
+                  // flexDirection: "row",
+                  // flexWrap: "wrap",
+                  // justifyContent: "center",
+                  // alignItems: "center", 
+                }}
+                cols={3}
+                rowHeight={100}
+              >
+                {previewImages.map((image, index) => (
+                  <ImageListItem key={index}>
+                    <img src={image} alt={`Preview ${index}`} loading="lazy" />
+                  </ImageListItem>
+                ))}
+              </ImageList>
+            </Box>
+          )}
         </Box>
       </Paper>
     </div>
