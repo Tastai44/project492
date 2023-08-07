@@ -12,6 +12,7 @@ import { dbFireStore } from "../../config/firebase";
 import { User } from "../../interface/User";
 import { IGroup } from "../../interface/Group";
 import ChatBox from "../Chat/ChatBox";
+import GroupChatBox from "../GroupChat/GroupChatBox";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -25,6 +26,7 @@ export default function RightContainer() {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   const [userId, setUserId] = React.useState("");
+  const [groupId, setGroupId] = React.useState("");
   const [groupData, setGroupData] = React.useState<IGroup[]>([]);
   const [openChat, setOpenChat] = React.useState(false);
   const handleOpenChat = (id: string) => {
@@ -32,6 +34,13 @@ export default function RightContainer() {
     setUserId(id);
   };
   const handleCloseChat = () => setOpenChat(false);
+
+  const [openGroupChat, setOpenGroupChat] = React.useState(false);
+  const handleOpenGroupChat = (id: string) => {
+    setOpenGroupChat(true);
+    setGroupId(id);
+  };
+  const handleCloseGroupChat = () => setOpenGroupChat(false);
 
   React.useMemo(() => {
     const fetchData = async () => {
@@ -78,7 +87,17 @@ export default function RightContainer() {
         aria-describedby="modal-modal-description"
       >
         <Box>
-          <ChatBox openChat={openChat} uId={userId} handleClose={handleCloseChat} />
+          <ChatBox uId={userId} handleClose={handleCloseChat} />
+        </Box>
+      </Modal>
+      <Modal
+        open={openGroupChat}
+        onClose={handleCloseGroupChat}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box>
+          <GroupChatBox groupId={groupId} handleClose={handleCloseGroupChat} />
         </Box>
       </Modal>
       <Stack spacing={2}>
@@ -120,9 +139,7 @@ export default function RightContainer() {
                       sx={{ cursor: "pointer" }}
                       key={friend.friendId}
                     >
-                      <UserCard
-                        userId={friend.friendId}
-                      />
+                      <UserCard userId={friend.friendId} />
                     </Box>
                   ))
                 )}
@@ -172,7 +189,7 @@ export default function RightContainer() {
                   )
                   .map((group) => (
                     <Box
-                      onClick={() => handleOpenChat(group.gId)}
+                      onClick={() => handleOpenGroupChat(group.gId)}
                       sx={{ cursor: "pointer" }}
                       key={group.gId}
                     >
