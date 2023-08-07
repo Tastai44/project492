@@ -111,10 +111,10 @@ export default function RightContainer() {
           </div>
           <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
           <Box>
-            {inFoUser.some((user) => user.friendList.length !== 0) ? (
+            {inFoUser.some((user) => user.friendList?.length !== 0) ? (
               <Box>
                 {inFoUser.map((user) =>
-                  user.friendList.map((friend) => (
+                  user.friendList?.map((friend) => (
                     <Box
                       onClick={() => handleOpenChat(friend.friendId)}
                       sx={{ cursor: "pointer" }}

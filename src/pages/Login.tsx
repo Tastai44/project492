@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import community from "/images/communityPic.png";
 
 import "firebase/database";
-import { doc, getDocs, query, where } from "firebase/firestore";
+import { doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { collection, setDoc } from "firebase/firestore";
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -41,6 +41,24 @@ export default function Login() {
   //       console.error("Error creating user:", error);
   //     }
   //   };
+  const handleActiveUser = async (userId: string) => {
+    try {
+      const q = query(
+        collection(dbFireStore, "users"),
+        where("uid", "==", userId)
+      );
+      const querySnapshot = await getDocs(q);
+      const doc = querySnapshot.docs[0];
+
+      if (doc.exists()) {
+        await updateDoc(doc.ref, {isActive: true});
+      } else {
+        console.log("Profile does not exist");
+      }
+    } catch (error) {
+      console.error("Error updating profile: ", error);
+    }
+};
   const handleSignIn = async () => {
     const userCollection = collection(dbFireStore, "users");
     try {
@@ -55,6 +73,7 @@ export default function Login() {
       const docUser = querySnapshot.docs[0];
   
       if (docUser) {
+        handleActiveUser(user?.uid ?? "")
         navigate("/");
       } else {
         const newUser = {
