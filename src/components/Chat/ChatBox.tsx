@@ -9,6 +9,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Modal,
   Paper,
   TextField,
   Typography,
@@ -20,6 +21,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import CameraAltOutlinedIcon from "@mui/icons-material/CameraAltOutlined";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
+import emojiData from "emoji-datasource-facebook";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import {
@@ -34,6 +36,7 @@ import {
 import { User } from "../../interface/User";
 import { Message } from "../../interface/Chat";
 import { compareAsc } from "date-fns";
+import Emoji from "../MContainer/Emoji";
 
 interface IFunction {
   handleClose: () => void;
@@ -50,9 +53,19 @@ export default function ChatBox(props: IFunction & IData) {
   const [message, setMessage] = React.useState("");
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const [previewImages, setPreviewImages] = React.useState<string[]>([]);
-
+  const [openEmoji, setOpenEmoji] = React.useState(false);
+  const handletOpenEmoji = () => setOpenEmoji(true);
+  const handleCloseEmoji = () => setOpenEmoji(false);
   const handleClearImage = () => {
     setPreviewImages([]);
+  };
+  const [emoji, setEmoji] = React.useState("");
+  const handleChangeEmoji = (e: string) => {
+    setEmoji(e);
+  };
+  const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
+    const emoji = emojiData.find((data) => data.unified === emojiCode);
+    return emoji ? emoji.name : undefined;
   };
   const handleUploadClick = () => {
     if (fileInputRef.current) {
@@ -140,6 +153,8 @@ export default function ChatBox(props: IFunction & IData) {
       sender_id: userInfo.uid,
       receiver_id: props.uId,
       content: message,
+      photoMessage: previewImages,
+      emoji: emoji,
       timestamp: new Date().toISOString(),
     };
     try {
@@ -149,6 +164,8 @@ export default function ChatBox(props: IFunction & IData) {
       await setDoc(docRef, updatedMessage)
         .then(() => {
           setMessage("");
+          setEmoji("");
+          setPreviewImages([]);
         })
         .catch((error) => {
           console.error("Error sending message:", error);
@@ -160,6 +177,19 @@ export default function ChatBox(props: IFunction & IData) {
 
   return (
     <div>
+      <Modal
+        open={openEmoji}
+        onClose={handleCloseEmoji}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box>
+          <Emoji
+            handleClose={handleCloseEmoji}
+            handleChangeEmoji={handleChangeEmoji}
+          />
+        </Box>
+      </Modal>
       <Paper sx={styleBoxChat}>
         <Box
           sx={{
@@ -261,13 +291,49 @@ export default function ChatBox(props: IFunction & IData) {
                     mr: mess.sender_id === userInfo.uid ? 1 : 0,
                   }}
                 >
-                  <Chip
-                    color="primary"
-                    label={mess.content}
-                    variant={
-                      mess.sender_id === userInfo.uid ? "filled" : "outlined"
-                    }
-                  />
+                  {mess.content && (
+                    <Chip
+                      color="primary"
+                      label={mess.content}
+                      variant={
+                        mess.sender_id === userInfo.uid ? "filled" : "outlined"
+                      }
+                    />
+                  )}
+
+                  {mess.emoji && (
+                    <Chip
+                      color="primary"
+                      label={
+                          <Box>
+                            {String.fromCodePoint(parseInt(mess.emoji, 16))}
+                          </Box>
+                      }
+                      variant={
+                        mess.sender_id === userInfo.uid ? "filled" : "outlined"
+                      }
+                    />
+                  )}
+
+                  {mess.photoMessage.length !== 0 && (
+                    <ImageList
+                      sx={{
+                        width: "50%",
+                        height: "auto",
+                      }}
+                      cols={1}
+                    >
+                      {mess.photoMessage.map((image, index) => (
+                        <ImageListItem key={index}>
+                          <img
+                            src={image}
+                            alt={`Preview ${index}`}
+                            loading="lazy"
+                          />
+                        </ImageListItem>
+                      ))}
+                    </ImageList>
+                  )}
                 </Box>
               ))}
           </Box>
@@ -294,7 +360,7 @@ export default function ChatBox(props: IFunction & IData) {
                   sx={{ color: "primary.main", fontSize: "20px" }}
                 />
               </IconButton>
-              <IconButton>
+              <IconButton onClick={handletOpenEmoji}>
                 <EmojiEmotionsIcon
                   sx={{ color: "primary.main", fontSize: "20px" }}
                 />
@@ -334,6 +400,12 @@ export default function ChatBox(props: IFunction & IData) {
               </IconButton>
             </Box>
           </Box>
+          {emoji !== "" && (
+            <Box sx={{ backgroundColor: "gray", pl: 1 }}>
+              Emoji: {String.fromCodePoint(parseInt(emoji, 16))}{" "}
+              {convertEmojiCodeToName(emoji)}
+            </Box>
+          )}
           {previewImages.length !== 0 && (
             <Box>
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
@@ -350,7 +422,7 @@ export default function ChatBox(props: IFunction & IData) {
                   // flexDirection: "row",
                   // flexWrap: "wrap",
                   // justifyContent: "center",
-                  // alignItems: "center", 
+                  // alignItems: "center",
                 }}
                 cols={3}
                 rowHeight={100}
