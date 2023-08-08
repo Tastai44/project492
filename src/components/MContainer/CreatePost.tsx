@@ -49,10 +49,9 @@ const styleBoxPop = {
 
 interface IHandle {
   handleCloseCratePost: () => void;
-  handdleReFresh: () => void;
 }
 
-export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHandle) {
+export default function CreatePost({ handleCloseCratePost }: IHandle) {
 
   const [status, setStatus] = React.useState("");
   const handleChange = (event: SelectChangeEvent) => {
@@ -164,7 +163,6 @@ export default function CreatePost({ handleCloseCratePost, handdleReFresh }: IHa
     
       setPost(updatedPost);
       clearState();
-      handdleReFresh();
       PopupAlert("Content was posted successfully", "success")
     } catch (error) {
       console.error("Error adding post: ", error);

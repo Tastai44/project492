@@ -41,10 +41,6 @@ interface IData {
   userId: string;
 }
 
-interface IFunction {
-  handleRefresh: () => void;
-}
-
 const styleBoxPop = {
   position: "absolute",
   top: "50%",
@@ -63,8 +59,7 @@ export default function CommentContent({
   commentIndex,
   postId,
   userId,
-  handleRefresh,
-}: IData & IFunction) {
+}: IData) {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -97,7 +92,6 @@ export default function CommentContent({
           updatedComments.splice(comId, 1);
           const updatedData = { ...postData, comments: updatedComments };
           await updateDoc(doc.ref, updatedData);
-          handleRefresh();
           handleCloseUserMenu();
         } else {
             handleCloseUserMenu();
@@ -153,7 +147,6 @@ export default function CommentContent({
     });
     updateCommentPromise
       .then(() => {
-        handleRefresh();
         handleCloseEditCom();
       })
       .catch((error) => {

@@ -6,17 +6,13 @@ import * as React from "react";
 import CreatePost from "./CreatePost";
 import { User } from "../../interface/User";
 
-interface IFunction {
-  handdleReFresh: () => void;
-}
 interface IData {
   inFoUser: User[];
 }
 
 export default function PostForm({
-  handdleReFresh,
   inFoUser,
-}: IFunction & IData) {
+}: IData) {
   const [openCreatePost, setOpenCreatePost] = React.useState(false);
   const handletOpenCratePost = () => setOpenCreatePost(true);
   const handleCloseCratePost = () => setOpenCreatePost(false);
@@ -32,7 +28,6 @@ export default function PostForm({
         <Box>
           <CreatePost
             handleCloseCratePost={handleCloseCratePost}
-            handdleReFresh={handdleReFresh}
           />
         </Box>
       </Modal>

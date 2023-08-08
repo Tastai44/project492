@@ -48,8 +48,6 @@ const styleBoxPop = {
 
 interface IHandle {
   handleCloseEditPost: () => void;
-  handleRefresh: () => void;
-  handleRefreshData: () => void;
 }
 interface Idata {
   postId: string;
@@ -68,8 +66,6 @@ interface Idata {
 
 export default function CreatePost({
   handleCloseEditPost,
-  handleRefresh,
-  handleRefreshData,
   caption,
   oldStatus,
   hashTagTopic,
@@ -187,8 +183,6 @@ export default function CreatePost({
           if (docSnap.exists() && docSnap.data().owner === userId) {
             await updateDoc(docRef, updatedPost);
             clearState();
-            handleRefresh();
-            handleRefreshData();
             handleCloseEditPost();
             PopupAlert("Post has edited successfully", "success")
           } else {
