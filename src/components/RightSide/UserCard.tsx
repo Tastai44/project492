@@ -5,7 +5,7 @@ import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import { Typography, Box } from "@mui/material";
 import { dbFireStore } from "../../config/firebase";
-import { collection, query, getDocs, where } from "firebase/firestore";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { User } from "../../interface/User";
 
 export const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -52,22 +52,20 @@ export default function UserCard(props: IData) {
           collection(dbFireStore, "users"),
           where("uid", "==", props.userId)
         );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
+        onSnapshot(q, (querySnapshot) => {
+          const queriedData = querySnapshot.docs.map(
+            (doc) => ({
               uid: doc.id,
               ...doc.data(),
-            } as User)
-        );
-        setInFoUser(queriedData);
+            }) as User
+          );
+          setInFoUser(queriedData);
+        });
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-    if (props.userId) {
-      fetchData();
-    }
+    fetchData();
   }, [props.userId]);
 
   return (

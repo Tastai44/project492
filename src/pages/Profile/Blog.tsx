@@ -15,7 +15,7 @@ import PostForm from "../../components/MContainer/PostForm";
 import { useParams } from "react-router-dom";
 
 import { dbFireStore } from "../../config/firebase";
-import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
+import { collection, query, orderBy, getDocs, where, onSnapshot } from "firebase/firestore";
 import { Post } from "../../interface/PostContent";
 import { User } from "../../interface/User";
 import { Item } from "../../App";
@@ -42,22 +42,26 @@ export default function Blog({ reFreshInfo }: IData) {
   };
   const [data, setData] = React.useState<Post[]>([]);
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "posts"),
-          orderBy("createAt", "desc")
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
+    const q = query(
+      collection(dbFireStore, "posts"),
+      orderBy("createAt", "desc")
+    );
+  
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
         setData(queriedData);
-      } catch (error) {
+      },
+      (error) => {
         console.error("Error fetching data:", error);
       }
+    );
+  
+    return () => {
+      unsubscribe();
     };
-
-    fetchData();
-  }, [reFresh, userId, reFreshInfo]);
+  }, []);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -66,21 +70,24 @@ export default function Blog({ reFreshInfo }: IData) {
           collection(dbFireStore, "users"),
           where("uid", "==", userInfo.uid)
         );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              uid: doc.id,
-              ...doc.data(),
-            } as User)
-        );
-        setInFoUser(queriedData);
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          const queriedData = querySnapshot.docs.map(
+            (doc) =>
+              ({
+                uid: doc.id,
+                ...doc.data(),
+              } as User)
+          );
+          setInFoUser(queriedData);
+        });
+  
+        return () => unsubscribe();
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
     fetchData();
-  }, [userInfo.uid, reFreshInfo]);
+  }, [userInfo.uid]);
 
   const [eventData, setEventData] = React.useState<EventPost[]>([]);
   React.useEffect(() => {
@@ -115,7 +122,7 @@ export default function Blog({ reFreshInfo }: IData) {
           <Grid container spacing={2}>
             <Grid item xs={9}>
               <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
-                <PostForm handdleReFresh={handleRefresh} inFoUser={inFoUser} />
+                <PostForm inFoUser={inFoUser} />
               </Item>
               {type === "General" ? (
                 <Item
@@ -141,7 +148,6 @@ export default function Blog({ reFreshInfo }: IData) {
                           likeNumber={m.likes.length}
                           likes={m.likes}
                           commentNumber={m.comments.length}
-                          handleRefresh={handleRefresh}
                           reFreshInfo={reFreshInfo}
                           shareUsers={m.shareUsers}
                           userInfo={inFoUser}
@@ -200,7 +206,6 @@ export default function Blog({ reFreshInfo }: IData) {
                               likeNumber={m.likes.length}
                               likes={m.likes}
                               commentNumber={m.comments.length}
-                              handleRefresh={handleRefresh}
                               reFreshInfo={reFreshInfo}
                               shareUsers={m.shareUsers}
                               userInfo={inFoUser}
@@ -256,7 +261,6 @@ export default function Blog({ reFreshInfo }: IData) {
                               likeNumber={m.likes.length}
                               likes={m.likes}
                               commentNumber={m.comments.length}
-                              handleRefresh={handleRefresh}
                               reFreshInfo={reFreshInfo}
                               shareUsers={m.shareUsers}
                               userInfo={inFoUser}

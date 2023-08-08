@@ -7,7 +7,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { styled } from "@mui/material/styles";
 import UserCard from "./UserCard";
 import "firebase/database";
-import { collection, query, getDocs, where } from "firebase/firestore";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
 import { User } from "../../interface/User";
 import { IGroup } from "../../interface/Group";
@@ -42,38 +42,41 @@ export default function RightContainer() {
   };
   const handleCloseGroupChat = () => setOpenGroupChat(false);
 
-  React.useMemo(() => {
+  React.useEffect(() => {
     const fetchData = async () => {
       try {
         const q = query(
           collection(dbFireStore, "users"),
           where("uid", "==", userInfo.uid)
         );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
+        onSnapshot(q, (querySnapshot) => {
+          const queriedData = querySnapshot.docs.map(
+            (doc) => ({
               uid: doc.id,
               ...doc.data(),
-            } as User)
-        );
-        setInFoUser(queriedData);
+            }) as User
+          );
+          setInFoUser(queriedData);
+        });
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
+
     const fetchGroupData = async () => {
       try {
         const q = query(collection(dbFireStore, "groups"));
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) => doc.data() as IGroup
-        );
-        setGroupData(queriedData);
+        onSnapshot(q, (querySnapshot) => {
+          const queriedData = querySnapshot.docs.map(
+            (doc) => doc.data() as IGroup
+          );
+          setGroupData(queriedData);
+        });
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
+
     fetchGroupData();
     fetchData();
   }, [userInfo.uid]);
