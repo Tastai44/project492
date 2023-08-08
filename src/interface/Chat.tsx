@@ -14,6 +14,17 @@ export interface Message {
   emoji: string;
   timestamp: string;
 }
+export interface GroupMessage {
+  _id: string;
+  conversation_id: string;
+  sender_id: string;
+  ownerContent_id: string;
+  receiver_id: string;
+  content: string;
+  photoMessage: string[];
+  emoji: string;
+  timestamp: string;
+}
 
 export interface Chat {
   chatId: string;

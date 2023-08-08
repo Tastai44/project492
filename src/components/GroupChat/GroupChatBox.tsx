@@ -25,8 +25,7 @@ import {
   setDoc,
   onSnapshot,
 } from "firebase/firestore";
-import { User } from "../../interface/User";
-import { Message } from "../../interface/Chat";
+import { GroupMessage } from "../../interface/Chat";
 
 import Emoji from "../MContainer/Emoji";
 import Header from "./Header";
@@ -123,7 +122,7 @@ export default function GroupChatBox
     fetchData();
   }, [props.groupId]);
 
-  const [messages, setMessages] = React.useState<Message[]>([]);
+  const [messages, setMessages] = React.useState<GroupMessage[]>([]);
   const chatContainerRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     if (chatContainerRef.current) {
@@ -132,10 +131,10 @@ export default function GroupChatBox
     }
   }, [messages]);
   React.useEffect(() => {
-    const messagesCollectionRef = collection(dbFireStore, "messages");
+    const messagesCollectionRef = collection(dbFireStore, "groupMessages");
     const unsubscribe = onSnapshot(messagesCollectionRef, (querySnapshot) => {
       const messagesData = querySnapshot.docs.map(
-        (doc) => doc.data() as Message
+        (doc) => doc.data() as GroupMessage
       );
       setMessages(messagesData);
     });
@@ -143,10 +142,11 @@ export default function GroupChatBox
   }, []);
 
   const handleSendMessage = async () => {
-    const messagesCollection = collection(dbFireStore, "messages");
+    const messagesCollection = collection(dbFireStore, "groupMessages");
     const newMessage = {
       conversation_id: "",
       sender_id: userInfo.uid,
+      ownerContent_id: userInfo.uid,
       receiver_id: props.groupId,
       content: message,
       photoMessage: previewImages,
@@ -222,13 +222,10 @@ export default function GroupChatBox
             }}
             ref={chatContainerRef}
           >
-            {/* <MessageBody
+            <MessageBody
               messages={messages}
-              uId={props.uId}
-              userProfile={
-                inFoUser.find((item) => item.profilePhoto)?.profilePhoto
-              }
-            /> */}
+              groupId={props.groupId}
+            />
           </Box>
           <Box
             sx={{
