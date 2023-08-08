@@ -590,6 +590,7 @@ export default function Content(props: IData & IFunction) {
                               createAt={comment.createdAt}
                               commentIndex={index}
                               postId={m.id}
+                              author={comment.author}
                               userId={props.userId}
                             />
                           </Box>

@@ -247,8 +247,6 @@ export default function MContainer(props: Idata) {
             <Box>
               <EditPost
                 handleCloseEditPost={handleCloseEditPost}
-                handleRefresh={props.handleRefresh}
-                handleRefreshData={props.handleRefresh}
                 oldStatus={props.status}
                 caption={props.caption}
                 hashTagTopic={props.hashTagTopic}
