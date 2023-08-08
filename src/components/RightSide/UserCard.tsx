@@ -54,10 +54,11 @@ export default function UserCard(props: IData) {
         );
         onSnapshot(q, (querySnapshot) => {
           const queriedData = querySnapshot.docs.map(
-            (doc) => ({
-              uid: doc.id,
-              ...doc.data(),
-            }) as User
+            (doc) =>
+              ({
+                uid: doc.id,
+                ...doc.data(),
+              } as User)
           );
           setInFoUser(queriedData);
         });
@@ -65,7 +66,9 @@ export default function UserCard(props: IData) {
         console.error("Error fetching data:", error);
       }
     };
-    fetchData();
+    if (props.userId) {
+      fetchData();
+    }
   }, [props.userId]);
 
   return (

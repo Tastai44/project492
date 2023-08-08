@@ -1,4 +1,11 @@
-import { Box, Avatar, Chip, ImageList, ImageListItem } from "@mui/material";
+import {
+  Box,
+  Avatar,
+  Chip,
+  ImageList,
+  ImageListItem,
+  Typography,
+} from "@mui/material";
 import { GroupMessage } from "../../interface/Chat";
 import { compareAsc } from "date-fns";
 import React from "react";
@@ -12,15 +19,12 @@ interface IData {
 }
 
 export default function MessageBody(props: IData) {
-  console.log(props.messages)
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const q = query(
-          collection(dbFireStore, "users"),
-        );
+        const q = query(collection(dbFireStore, "users"));
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
           const queriedData = querySnapshot.docs.map(
             (doc) =>
@@ -31,7 +35,7 @@ export default function MessageBody(props: IData) {
           );
           setInFoUser(queriedData);
         });
-  
+
         return () => unsubscribe();
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -43,10 +47,7 @@ export default function MessageBody(props: IData) {
   return (
     <div>
       {props.messages
-        .filter(
-          (item) =>
-            (item.receiver_id === props.groupId)
-        )
+        .filter((item) => item.receiver_id === props.groupId)
         .sort((a, b) =>
           compareAsc(new Date(a.timestamp), new Date(b.timestamp))
         )
@@ -65,31 +66,77 @@ export default function MessageBody(props: IData) {
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 {mess.sender_id !== userInfo.uid && (
                   <Avatar
-                    src={inFoUser.filter((item) => item.uid == mess.ownerContent_id).find((user) => user.profilePhoto)?.profilePhoto}
+                    src={
+                      inFoUser.find((user) => user.uid === mess.ownerContent_id)
+                        ?.profilePhoto
+                    }
                     sx={{ width: "25px", height: "25px", mr: 1 }}
                   />
                 )}
-
-                <Chip
-                  color="primary"
-                  label={mess.content}
-                  variant={
-                    mess.sender_id === userInfo.uid ? "filled" : "outlined"
-                  }
-                />
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    color: "grey",
+                  }}
+                >
+                  {mess.sender_id !== userInfo.uid && (
+                    <Typography sx={{ ml: 1 }} fontSize={12}>
+                      {inFoUser
+                        .filter((user) => user.uid === mess.ownerContent_id)
+                        .map((user) => `${user.firstName} ${user.lastName}`)}
+                    </Typography>
+                  )}
+                  <Chip
+                    color="primary"
+                    label={mess.content}
+                    variant={
+                      mess.sender_id === userInfo.uid ? "filled" : "outlined"
+                    }
+                  />
+                </Box>
               </Box>
             )}
 
             {mess.emoji && (
-              <Chip
-                color="primary"
-                label={
-                  <Box>{String.fromCodePoint(parseInt(mess.emoji, 16))}</Box>
-                }
-                variant={
-                  mess.sender_id === userInfo.uid ? "filled" : "outlined"
-                }
-              />
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                {mess.sender_id !== userInfo.uid && (
+                  <Avatar
+                    src={
+                      inFoUser
+                        .filter((item) => item.uid == mess.ownerContent_id)
+                        .find((user) => user.profilePhoto)?.profilePhoto
+                    }
+                    sx={{ width: "25px", height: "25px", mr: 1 }}
+                  />
+                )}
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    color: "grey",
+                  }}
+                >
+                  {mess.sender_id !== userInfo.uid && (
+                    <Typography sx={{ ml: 1 }} fontSize={12}>
+                      {inFoUser
+                        .filter((user) => user.uid === mess.ownerContent_id)
+                        .map((user) => `${user.firstName} ${user.lastName}`)}
+                    </Typography>
+                  )}
+                  <Chip
+                    color="primary"
+                    label={
+                      <Box>
+                        {String.fromCodePoint(parseInt(mess.emoji, 16))}
+                      </Box>
+                    }
+                    variant={
+                      mess.sender_id === userInfo.uid ? "filled" : "outlined"
+                    }
+                  />
+                </Box>
+              </Box>
             )}
 
             {mess.photoMessage.length !== 0 && (
@@ -107,6 +154,53 @@ export default function MessageBody(props: IData) {
                 ))}
               </ImageList>
             )}
+
+            {/* {mess.photoMessage.length !== 0 && (
+              <>
+                {mess.sender_id !== userInfo.uid && (
+                  <Avatar
+                    src={
+                      inFoUser
+                        .filter((item) => item.uid == mess.ownerContent_id)
+                        .find((user) => user.profilePhoto)?.profilePhoto
+                    }
+                    sx={{ width: "25px", height: "25px", mr: 1 }}
+                  />
+                )}
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    color: "grey",
+                  }}
+                >
+                  {mess.sender_id !== userInfo.uid && (
+                    <Typography sx={{ ml: 1, color: "grey" }} fontSize={12}>
+                      {inFoUser
+                        .filter((user) => user.uid === mess.ownerContent_id)
+                        .map((user) => `${user.firstName} ${user.lastName}`)}
+                    </Typography>
+                  )}
+                  <ImageList
+                    sx={{
+                      width: "50%",
+                      height: "auto",
+                    }}
+                    cols={1}
+                  >
+                    {mess.photoMessage.map((image, index) => (
+                      <ImageListItem key={index}>
+                        <img
+                          src={image}
+                          alt={`Preview ${index}`}
+                          loading="lazy"
+                        />
+                      </ImageListItem>
+                    ))}
+                  </ImageList>
+                </Box>
+              </>
+            )} */}
           </Box>
         ))}
     </div>

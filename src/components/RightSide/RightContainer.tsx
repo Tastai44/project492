@@ -183,12 +183,14 @@ export default function RightContainer() {
           <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
           <Box>
             {groupData.some((group) =>
-              group.members.some((member) => member.uid == userInfo.uid)
+              group.members.some((member) => member.uid == userInfo.uid) ||
+              group.hostId == userInfo.uid
             ) ? (
               <Box>
                 {groupData
                   .filter((item) =>
-                    item.members.some((member) => member.uid == userInfo.uid)
+                    item.members.some((member) => member.uid == userInfo.uid) ||
+                    item.hostId == userInfo.uid
                   )
                   .map((group) => (
                     <Box
