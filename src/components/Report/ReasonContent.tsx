@@ -25,11 +25,7 @@ interface IData {
   userId: string;
 }
 
-interface IFunction {
-  handleRefresh: () => void;
-}
-
-export default function ReasonContent(props: IData & IFunction) {
+export default function ReasonContent(props: IData) {
 
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   React.useMemo(() => {

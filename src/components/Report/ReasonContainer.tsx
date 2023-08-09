@@ -40,7 +40,9 @@ import {
   where,
   getDoc,
   deleteDoc,
-  updateDoc
+  updateDoc,
+  onSnapshot,
+  orderBy
 } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import { styleBoxPop } from "../../utils/styleBox";
@@ -75,31 +77,31 @@ export default function ReasonContainer(props: IData & IFunction) {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  const [reFresh, setReFresh] = React.useState(0);
-  const handleRefresh = () => {
-    setReFresh((pre) => pre + 1);
-  };
-
-  const [data, setData] = React.useState<Post[]>([]);
+  // query(collection(dbFireStore, "posts"), where("id", "==", props.postId)),
+  const [postData, setPostData] = React.useState<Post[]>([]);
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(collection(dbFireStore, "posts"), where("id", "==", props.postId));
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              id: doc.id,
-              ...doc.data(),
-            } as Post)
-        );
-        setData(queriedData);
-      } catch (error) {
+    const q = query(
+      collection(dbFireStore, "posts"),
+      where("id", "==", props.postId),
+      orderBy("createAt", "desc")
+    );
+  
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
+        setPostData(queriedData);
+      },
+      (error) => {
         console.error("Error fetching data:", error);
       }
+    );
+  
+    return () => {
+      unsubscribe();
     };
-    fetchData();
-  }, [props.postId, reFresh]);
+  }, [props.postId]);
+  
 
   const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
     const emoji = emojiData.find((data) => data.unified === emojiCode);
@@ -179,7 +181,7 @@ export default function ReasonContainer(props: IData & IFunction) {
           <IconButton onClick={props.handleCloseReason}>
             <CancelIcon />
           </IconButton>
-          {data
+          {postData
             .map((post) => (
               <Box key={post.id} sx={{ flexGrow: 1, p: 1 }}>
                 <Grid container spacing={1}>
@@ -389,7 +391,6 @@ export default function ReasonContainer(props: IData & IFunction) {
                                   <ReasonContent
                                     text={report.reason}
                                     createAt={report.createAt}
-                                    handleRefresh={handleRefresh}
                                     userId={report.uid}
                                   />
                                 </Box>
