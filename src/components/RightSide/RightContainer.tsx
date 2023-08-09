@@ -201,6 +201,7 @@ export default function RightContainer() {
                       <UserCard
                         username={group.groupName}
                         profilePhoto={group.coverPhoto}
+                        members={group.members}
                       />
                     </Box>
                   ))}

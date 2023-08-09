@@ -7,6 +7,7 @@ import { Typography, Box } from "@mui/material";
 import { dbFireStore } from "../../config/firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { User } from "../../interface/User";
+import { IMember } from "../../interface/Group";
 
 export const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -40,6 +41,7 @@ export const StyledBadge = styled(Badge)(({ theme }) => ({
 interface IData {
   username?: string;
   userId?: string;
+  members?: IMember[];
   profilePhoto?: string;
 }
 
@@ -49,8 +51,8 @@ export default function UserCard(props: IData) {
     const fetchData = async () => {
       try {
         const q = query(
-          collection(dbFireStore, "users"),
-          where("uid", "==", props.userId)
+          collection(dbFireStore, "users")
+          // where("uid", "==", props.userId)
         );
         onSnapshot(q, (querySnapshot) => {
           const queriedData = querySnapshot.docs.map(
@@ -86,30 +88,28 @@ export default function UserCard(props: IData) {
         },
       }}
     >
-      {inFoUser.length !== 0 ? (
+      {inFoUser.filter((item) => item.uid == props.userId).length !== 0 ? (
         <>
-          {inFoUser.map((u) => (
-            <Box
-              key={u.uid}
-              sx={{ display: "flex", alignItems: "center", gap: 1 }}
-            >
-              {u.isActive ? (
+          {inFoUser
+            .filter((item) => item.uid == props.userId)
+            .map((u) => (
+              <Box
+                key={u.uid}
+                sx={{ display: "flex", alignItems: "center", gap: 1 }}
+              >
                 <StyledBadge
                   overlap="circular"
                   anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                  variant="dot"
+                  variant={u.isActive ? "dot" : "standard"}
                 >
                   <Avatar alt="Remy Sharp" src={u.profilePhoto} />
                 </StyledBadge>
-              ) : (
-                <Avatar alt="Remy Sharp" src={u.profilePhoto} />
-              )}
 
-              <Typography sx={{ fontSize: "16px" }}>
-                {u.username !== null ? u.firstName + " " + u.lastName : ""}
-              </Typography>
-            </Box>
-          ))}
+                <Typography sx={{ fontSize: "16px" }}>
+                  {u.username !== null ? u.firstName + " " + u.lastName : ""}
+                </Typography>
+              </Box>
+            ))}
         </>
       ) : (
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>

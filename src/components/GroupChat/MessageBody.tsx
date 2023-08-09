@@ -140,19 +140,60 @@ export default function MessageBody(props: IData) {
             )}
 
             {mess.photoMessage.length !== 0 && (
-              <ImageList
+              <Box
                 sx={{
-                  width: "50%",
-                  height: "auto",
+                  display: "flex",
+                  flexDirection: "column",
                 }}
-                cols={1}
               >
-                {mess.photoMessage.map((image, index) => (
-                  <ImageListItem key={index}>
-                    <img src={image} alt={`Preview ${index}`} loading="lazy" />
-                  </ImageListItem>
-                ))}
-              </ImageList>
+                <Box sx={{ display: "flex", mb: -1.5 }}>
+                  {mess.sender_id !== userInfo.uid && (
+                    <Avatar
+                      src={
+                        inFoUser
+                          .filter((item) => item.uid == mess.ownerContent_id)
+                          .find((user) => user.profilePhoto)?.profilePhoto
+                      }
+                      sx={{ width: "25px", height: "25px", mr: 1 }}
+                    />
+                  )}
+                  {mess.sender_id !== userInfo.uid && (
+                    <Typography
+                      sx={{ ml: 1, color: "grey", mb: -2 }}
+                      fontSize={12}
+                    >
+                      {inFoUser
+                        .filter((user) => user.uid === mess.ownerContent_id)
+                        .map((user) => `${user.firstName} ${user.lastName}`)}
+                    </Typography>
+                  )}
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent:
+                      mess.sender_id === userInfo.uid ? "end" : "start",
+                  }}
+                >
+                  <ImageList
+                    sx={{
+                      width: "50%",
+                      height: "auto",
+                    }}
+                    cols={1}
+                  >
+                    {mess.photoMessage.map((image, index) => (
+                      <ImageListItem key={index}>
+                        <img
+                          src={image}
+                          alt={`Preview ${index}`}
+                          loading="lazy"
+                        />
+                      </ImageListItem>
+                    ))}
+                  </ImageList>
+                </Box>
+              </Box>
             )}
 
             {/* {mess.photoMessage.length !== 0 && (

@@ -1,12 +1,5 @@
 import * as React from "react";
-import {
-  Box,
-  Button,
-  Card,
-  CardMedia,
-  Divider,
-  Modal,
-} from "@mui/material";
+import { Box, Button, Card, CardMedia, Divider, Modal } from "@mui/material";
 import MessageIcon from "@mui/icons-material/Message";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -17,6 +10,7 @@ import { dbFireStore } from "../../config/firebase";
 import { doc, deleteDoc, getDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import EditGroup from "./EditGroup";
+import GroupChatBox from "../GroupChat/GroupChatBox";
 
 interface IData {
   coverPhoto: string;
@@ -40,6 +34,14 @@ export default function ProCoverImage(
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const navigate = useNavigate();
+  const [groupId, setGroupId] = React.useState("");
+  const [openGroupChat, setOpenGroupChat] = React.useState(false);
+  const handleOpenGroupChat = (id: string) => {
+    setOpenGroupChat(true);
+    setGroupId(id);
+  };
+  const handleCloseGroupChat = () => setOpenGroupChat(false);
+
   const handleDelete = () => {
     const postRef = doc(dbFireStore, "groups", props.gId);
     getDoc(postRef)
@@ -63,6 +65,16 @@ export default function ProCoverImage(
   };
   return (
     <div>
+      <Modal
+        open={openGroupChat}
+        onClose={handleCloseGroupChat}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box>
+          <GroupChatBox groupId={groupId} handleClose={handleCloseGroupChat} />
+        </Box>
+      </Modal>
       <Modal
         open={open}
         onClose={handleClose}
@@ -120,6 +132,7 @@ export default function ProCoverImage(
                 sx={{ display: "flex", gap: 0.5, m: 1, alignItems: "center" }}
               >
                 <Button
+                  onClick={() => handleOpenGroupChat(props.gId)}
                   sx={{
                     fontSize: "16px",
                     backgroundColor: "#8E51E2",
@@ -186,7 +199,9 @@ export default function ProCoverImage(
               </Box>
               <Box sx={{ display: "flex", gap: 1, m: 1, alignItems: "center" }}>
                 <GroupsIcon />
-                <div>{props.members.length} members | {props.status}</div>
+                <div>
+                  {props.members.length} members | {props.status}
+                </div>
               </Box>
             </Box>
           </Box>
