@@ -112,7 +112,7 @@ export default function ReportCard(props: IFunction & IData) {
             }}
             onClick={submitReport}
           >
-            Save
+            Send
           </Button>
         </Box>
     </Box>

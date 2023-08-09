@@ -24,10 +24,10 @@ import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { doc, updateDoc, collection, getDoc } from "firebase/firestore";
 import { styleBox } from "../../utils/styleBox";
+import PopupAlert from "../PopupAlert";
 
 interface Ihandle {
   closeEdit: () => void;
-  handleRefresh: () => void;
 }
 interface IData {
   gId: string;
@@ -125,9 +125,9 @@ export default function EditGroup(props: IData & Ihandle) {
             await updateDoc(docRef, updatedGroup);
             clearState();
             props.closeEdit();
-            props.handleRefresh();
+            PopupAlert("Group edited successfully","success")
           } else {
-            console.log("You don't have permission to delete this post");
+            PopupAlert("You don't have permission to delete this post", "warning");
           }
         })
         .catch((error) => {

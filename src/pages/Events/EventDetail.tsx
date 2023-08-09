@@ -10,7 +10,7 @@ import HeldMap from "../../components/Events/HeldMap";
 import CoverPhoto from "../../components/Events/CoverPhoto";
 
 import { dbFireStore } from "../../config/firebase";
-import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
+import { collection, query, orderBy, getDocs, where, onSnapshot } from "firebase/firestore";
 import { useParams } from "react-router-dom";
 import { EventPost } from "../../interface/Event";
 import ShareCard from "../../components/MContainer/ShareCard";
@@ -24,34 +24,31 @@ const Item = styled(Box)(({ theme }) => ({
 
 export default function EventDetail() {
   const { eventId } = useParams();
-  const [reFresh, setReFresh] = React.useState(0);
   const [openShare, setOpenShare] = React.useState(false);
   const handleOpenShare = () => setOpenShare(true);
   const handleCloseShare = () => setOpenShare(false);
-  const handleRefresh = () => {
-    setReFresh((pre) => pre + 1);
-  };
   const [data, setData] = React.useState<EventPost[]>([]);
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "events"),
-          where("id", "==", eventId),
-          orderBy("createAt", "desc")
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) => doc.data() as EventPost
-        );
+    const fetchData = query(
+      collection(dbFireStore, "events"),
+      where("id", "==", eventId),
+      orderBy("createAt", "desc")
+    );
+    const unsubscribe = onSnapshot(
+      fetchData,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as EventPost);
         setData(queriedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      },
+      (error) => {
+        console.error("Error fetching data", error);
       }
-    };
+    );
+    return () => {
+      unsubscribe();
+    }
 
-    fetchData();
-  }, [reFresh, eventId]);
+  }, [eventId]);
 
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
@@ -106,7 +103,6 @@ export default function EventDetail() {
                         ageRage={e.ageRage}
                         interest={e.interest}
                         owner={e.owner}
-                        handleRefresh={handleRefresh}
                         handleOpenShare={handleOpenShare}
                         details={e.details}
                         status={e.status}
@@ -120,7 +116,6 @@ export default function EventDetail() {
                         []
                       }
                       eventId={e.id}
-                      handleReUserfresh={handleRefresh}
                     />
                     <Item>
                       <Box sx={{ flexGrow: 1 }}>

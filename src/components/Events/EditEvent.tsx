@@ -24,6 +24,7 @@ import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { doc } from "firebase/firestore";
 import { collection, getDoc, updateDoc } from "firebase/firestore";
+import PopupAlert from "../PopupAlert";
 
 const style = {
   position: "absolute",
@@ -39,7 +40,6 @@ const style = {
 
 interface Ihandle {
   closeAdd: () => void;
-  handleRefresh: () => void;
 }
 
 interface IData {
@@ -64,7 +64,7 @@ export default function EditEvent(props:IData & Ihandle ) {
     setUserId(tmp.uid);
   }, []);
 
-  const [status, setStatus] = React.useState("");
+  const [status, setStatus] = React.useState(`${props.status}`);
   const handleChange = (event: SelectChangeEvent) => {
     setStatus(event.target.value as string);
   };
@@ -172,9 +172,8 @@ export default function EditEvent(props:IData & Ihandle ) {
             if (docSnap.exists() && docSnap.data().owner === userId) {
               await updateDoc(docRef, updatedEvent);
               clearState();
-              props.handleRefresh();
               props.closeAdd();
-            //   handleRefreshData();
+              PopupAlert("Event has edited successfully", "success")
             } else {
               console.log("You don't have permission to delete this post");
             }

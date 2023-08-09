@@ -14,7 +14,7 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { dbFireStore } from "../../config/firebase";
-import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
+import { collection, query, orderBy, getDocs, where, onSnapshot } from "firebase/firestore";
 import { Like, Post } from "../../interface/PostContent";
 import Content from "../MContainer/Content";
 import { styleBoxPop } from "../../utils/styleBox";
@@ -35,28 +35,30 @@ export default function TopicContainer() {
     setReFresh((pre) => pre + 1);
   };
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "posts"),
-          orderBy("createAt", "desc")
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
+    const fetchData = query(
+      collection(dbFireStore, "posts"),
+      orderBy("createAt", "desc")
+    );
+    const unsubscribe = onSnapshot(
+      fetchData,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as Post)
         setPosts(queriedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      },
+      (error) => {
+        console.error("Error fetching data", error);
       }
-    };
-
-    fetchData();
+    );
+    return () => {
+      unsubscribe();
+    }
   }, [reFresh]);
 
   const handletOpenPost = (id: string, likeData: Like[], owner: string) => {
     setOpenPost(true);
     setPostId(id);
     setLikes(likeData);
-    setPostOwner(owner)
+    setPostOwner(owner);
   };
   const handleClosePost = () => {
     setOpenPost(false);
@@ -185,7 +187,6 @@ export default function TopicContainer() {
               likes={likes}
               owner={postOwner}
               handleClosePost={handleClosePost}
-              handleRefreshData={handleRefresh}
             />
           </Paper>
         </Box>
@@ -243,7 +244,9 @@ export default function TopicContainer() {
           .map((posts) => (
             <Box
               key={posts.id}
-              onClick={() => handletOpenPost(posts.id, posts.likes, posts.owner)}
+              onClick={() =>
+                handletOpenPost(posts.id, posts.likes, posts.owner)
+              }
             >
               <EachTopic hashTag={posts.hashTagTopic} />
             </Box>

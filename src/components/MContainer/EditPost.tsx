@@ -73,8 +73,6 @@ export default function CreatePost({
   oldEmoji,
   postId,
 }: IHandle & Idata) {
-  const [userId, setUserId] = React.useState("");
-
   const [status, setStatus] = React.useState(`${oldStatus}`);
   const handleChange = (event: SelectChangeEvent) => {
     setStatus(event.target.value as string);
@@ -87,11 +85,7 @@ export default function CreatePost({
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const [previewImages, setPreviewImages] = React.useState<string[]>(oldPhoto);
 
-  React.useEffect(() => {
-    const getUerInfo = localStorage.getItem("user");
-    const tmp = JSON.parse(getUerInfo ? getUerInfo : "");
-    setUserId(tmp.uid);
-  }, []);
+  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
   const handleClearImage = () => {
     setPreviewImages([]);
@@ -173,14 +167,14 @@ export default function CreatePost({
       photoPost: previewImages,
       updateAt: new Date().toLocaleString(),
       emoji: emoji,
-      owner: userId,
+      owner: userInfo.uid,
     };
 
     try {
       const docRef = doc(postCollection, postId);
       getDoc(docRef)
         .then(async (docSnap) => {
-          if (docSnap.exists() && docSnap.data().owner === userId) {
+          if (docSnap.exists() && docSnap.data().owner === userInfo.uid) {
             await updateDoc(docRef, updatedPost);
             clearState();
             handleCloseEditPost();

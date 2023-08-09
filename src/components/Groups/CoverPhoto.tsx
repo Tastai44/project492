@@ -11,6 +11,7 @@ import { doc, deleteDoc, getDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import EditGroup from "./EditGroup";
 import GroupChatBox from "../GroupChat/GroupChatBox";
+import PopupAlert from "../PopupAlert";
 
 interface IData {
   coverPhoto: string;
@@ -22,12 +23,9 @@ interface IData {
   status: string;
   details: string;
 }
-interface IFunction {
-  handleRefresh: () => void;
-}
+
 export default function ProCoverImage(
   props: IData,
-  { handleRefresh }: IFunction
 ) {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const [open, setOpen] = React.useState(false);
@@ -50,7 +48,7 @@ export default function ProCoverImage(
           deleteDoc(postRef)
             .then(() => {
               navigate("/groups");
-              console.log("Post deleted successfully");
+              PopupAlert("Group deleted successfully","success")
             })
             .catch((error) => {
               console.error("Error deleting Event: ", error);
@@ -84,7 +82,6 @@ export default function ProCoverImage(
         <Box>
           <EditGroup
             closeEdit={handleClose}
-            handleRefresh={handleRefresh}
             gId={props.gId}
             groupName={props.title}
             status={props.status}

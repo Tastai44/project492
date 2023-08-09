@@ -31,6 +31,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import { useNavigate } from "react-router-dom";
 import EditEvent from "./EditEvent";
+import PopupAlert from "../PopupAlert";
 
 interface IData {
   eventId: string;
@@ -49,7 +50,6 @@ interface IData {
 }
 
 interface IFunction {
-  handleRefresh: () => void;
   handleOpenShare: () => void;
 }
 
@@ -63,22 +63,16 @@ export default function ProCoverImage(props: IData & IFunction) {
   const handleClose = () => setOpen(false);
 
   const navigate = useNavigate();
-  const increaseInterest = () => {
+  const increaseInterest = async () => {
     const eventtsCollection = collection(dbFireStore, "events");
     const updateInterest = {
       interestBy: userInfo.uid,
       createdAt: new Date().toLocaleString(),
     };
     const postRef = doc(eventtsCollection, props.eventId);
-    updateDoc(postRef, {
+    await updateDoc(postRef, {
       interest: arrayUnion(updateInterest),
-    })
-      .then(() => {
-        props.handleRefresh();
-      })
-      .catch((error) => {
-        console.error("Error adding interest: ", error);
-      });
+    });
   };
 
   const decreaseInterest = async (id: string) => {
@@ -86,7 +80,7 @@ export default function ProCoverImage(props: IData & IFunction) {
     try {
       const q = query(
         collection(dbFireStore, "events"),
-        where("__name__", "==", id)
+        where("id", "==", id)
       );
       const querySnapshot = await getDocs(q);
       const doc = querySnapshot.docs[0];
@@ -96,7 +90,6 @@ export default function ProCoverImage(props: IData & IFunction) {
         updatedLike.splice(IndexLike, 1);
         const updatedData = { ...postData, interest: updatedLike };
         await updateDoc(doc.ref, updatedData);
-        props.handleRefresh();
       } else {
         console.log("No event found with the specified ID");
       }
@@ -113,8 +106,7 @@ export default function ProCoverImage(props: IData & IFunction) {
           deleteDoc(postRef)
             .then(() => {
               navigate("/events");
-              console.log("Post deleted successfully");
-              props.handleRefresh();
+              PopupAlert("Deleted an event successfully","success");
             })
             .catch((error) => {
               console.error("Error deleting Event: ", error);
@@ -139,7 +131,6 @@ export default function ProCoverImage(props: IData & IFunction) {
         <Box>
           <EditEvent
             closeAdd={handleClose}
-            handleRefresh={props.handleRefresh}
             eventId={props.eventId}
             startDate={props.startDate}
             startTime={props.startTime}
@@ -219,10 +210,10 @@ export default function ProCoverImage(props: IData & IFunction) {
                       : !isInterest
                       ? "black"
                       : "black",
-                    border: "1px solid",
+                      border: "1px soild",
                     "&:hover": {
                       color: "white",
-                      border: "1px solid",
+                      border: "1px soild",
                       backgroundColor: "primary.main",
                     },
                   }}
@@ -240,15 +231,13 @@ export default function ProCoverImage(props: IData & IFunction) {
                     <Button
                       onClick={handleOpen}
                       size="small"
-                      variant="outlined"
+                      variant="text"
                       sx={{
                         fontSize: "16px",
                         backgroundColor: "primary.main",
                         color: "white",
-                        border: "1px solid",
                         "&:hover": {
                           color: "white",
-                          border: "1px solid",
                           backgroundColor: "grey",
                         },
                       }}
@@ -261,16 +250,14 @@ export default function ProCoverImage(props: IData & IFunction) {
                     <Button
                       onClick={() => handleDelete(props.eventId)}
                       size="small"
-                      variant="outlined"
+                      variant="text"
                       sx={{
                         fontSize: "16px",
-                        backgroundColor: "primary.main",
+                        backgroundColor: "grey",
                         color: "white",
-                        border: "1px solid",
                         "&:hover": {
-                          color: "white",
-                          border: "1px solid",
-                          backgroundColor: "grey",
+                          color: "black",
+                          backgroundColor: "primary.contrastText",
                         },
                       }}
                       startIcon={

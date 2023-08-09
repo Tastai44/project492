@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import InterestedContainer from "./InterestedContainer";
+import Members from "./Members";
 import Host from "../Events/Host";
 import { IMember } from "../../interface/Group";
 
@@ -17,7 +17,7 @@ export default function LeftSideContainer(props: IData & IFunction) {
     <div>
       <Box sx={{ display: "flex", flexDirection: "column" }}>
         <Host hostId={props.hostId} />
-        <InterestedContainer
+        <Members
           hostId={props.hostId}
           members={props.members}
           gId={props.gId}

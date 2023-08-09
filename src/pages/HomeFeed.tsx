@@ -14,13 +14,13 @@ export default function HomeFeed() {
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   const [postData, setPostData] = React.useState<Post[]>([]);
   React.useEffect(() => {
-    const q = query(
+    const queryData = query(
       collection(dbFireStore, "posts"),
       orderBy("createAt", "desc")
     );
   
     const unsubscribe = onSnapshot(
-      q,
+      queryData,
       (snapshot) => {
         const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
         setPostData(queriedData);

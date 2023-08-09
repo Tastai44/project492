@@ -18,11 +18,6 @@ export default function Events() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const [reFresh, setReFresh] = React.useState(0);
-  const handleRefresh = () => {
-    setReFresh((pre) => pre + 1);
-  };
-
   return (
     <>
       <Modal
@@ -34,7 +29,6 @@ export default function Events() {
         <Box>
           <AddEvent 
             closeAdd={handleClose} 
-            handleRefresh={handleRefresh}
           />
         </Box>
       </Modal>
@@ -67,9 +61,7 @@ export default function Events() {
             </Button>
           </Item>
           <Item sx={{ display: "flex", justifyContent: "center" }}>
-            <EventContainer 
-              reFresh={reFresh}
-            />
+            <EventContainer />
           </Item>
         </Stack>
       </Box>

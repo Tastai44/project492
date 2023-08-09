@@ -25,6 +25,7 @@ import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { doc } from "firebase/firestore";
 import { collection, setDoc } from "firebase/firestore";
+import PopupAlert from "../PopupAlert";
 
 const style = {
   position: "absolute",
@@ -40,10 +41,9 @@ const style = {
 
 interface Ihandle {
   closeAdd: () => void;
-  handleRefresh: () => void;
 }
 
-export default function AddEvent({ closeAdd, handleRefresh }: Ihandle) {
+export default function AddEvent({ closeAdd }: Ihandle) {
   const [userId, setUserId] = React.useState("");
   React.useEffect(() => {
     const getUerInfo = localStorage.getItem("user");
@@ -169,8 +169,7 @@ export default function AddEvent({ closeAdd, handleRefresh }: Ihandle) {
       setEvent(updatedEvent);
       clearState();
       closeAdd();
-      handleRefresh();
-      alert("Success!");
+      PopupAlert("Added an event successfully","success");
     } catch (error) {
       console.error("Error adding post: ", error);
     }

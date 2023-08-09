@@ -35,10 +35,9 @@ import PopupAlert from "../PopupAlert";
 
 interface Ihandle {
   closeEdit: () => void;
-  handleRefresh: () => void;
 }
 
-export default function AddGroup({ closeEdit, handleRefresh }: Ihandle) {
+export default function AddGroup({ closeEdit }: Ihandle) {
   const [member, setMember] = React.useState<string[]>([]);
   const [users, setUsers] = React.useState<User[]>([]);
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
@@ -167,7 +166,6 @@ export default function AddGroup({ closeEdit, handleRefresh }: Ihandle) {
       setGroup(updatedPost);
       clearState();
       PopupAlert("Group Successfully Added","success")
-      handleRefresh();
       closeEdit();
     } catch (error) {
       console.error("Error adding post: ", error);
@@ -198,7 +196,7 @@ export default function AddGroup({ closeEdit, handleRefresh }: Ihandle) {
               value={member}
               onChange={handleAddMember}
               id="checkboxes-tags-demo"
-              options={users.map((e) => JSON.stringify(e))}
+              options={users.filter((user) => user.uid !== userInfo.uid).map((e) => JSON.stringify(e))}
               disableCloseOnSelect
               getOptionLabel={(option) => {
                 const temp = JSON.parse(option);

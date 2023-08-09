@@ -25,7 +25,7 @@ interface IData {
 interface IFunction {
   handleRefresh: () => void;
 }
-export default function InterestedContainer(props: IData & IFunction) {
+export default function Members(props: IData & IFunction) {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const [openAdd, setOpenAdd] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
