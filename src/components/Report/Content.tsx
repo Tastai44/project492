@@ -104,12 +104,6 @@ export default function Content(props: Idata & IFunction) {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  const [userId, setUserId] = React.useState("");
-  React.useEffect(() => {
-    const getUerInfo = localStorage.getItem("user");
-    const tmp = JSON.parse(getUerInfo ? getUerInfo : "");
-    setUserId(tmp.uid);
-  }, [userId]);
 
   const handleDelete = (pId: string) => {
     const postRef = doc(dbFireStore, "posts", pId);

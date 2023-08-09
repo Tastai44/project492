@@ -326,7 +326,6 @@ export default function ReasonContainer(props: IData & IFunction) {
                           </ListItem>
                           ))}
                           
-
                           <CardContent>
                             <Typography
                               variant="body1"
