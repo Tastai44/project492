@@ -5,7 +5,7 @@ import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import { Typography, Box } from "@mui/material";
 import { dbFireStore } from "../../config/firebase";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { collection, query, onSnapshot } from "firebase/firestore";
 import { User } from "../../interface/User";
 import { IMember } from "../../interface/Group";
 
