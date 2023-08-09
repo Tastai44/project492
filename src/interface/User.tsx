@@ -3,7 +3,7 @@ import { Post } from "./PostContent";
 export interface User {
     uid: string;
     username: string;
-    userRole: string;
+    userRole?: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -15,8 +15,9 @@ export interface User {
     instagram: string;
     status?: string;
     year?: string;
+    isActive?: boolean;
     posts?: Post[];
-    friendList: IFriendList[];
+    friendList?: IFriendList[];
     createdAt?: string;
     // shareStatus: boolean
 }

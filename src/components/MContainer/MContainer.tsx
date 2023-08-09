@@ -86,12 +86,7 @@ interface Idata {
   userInfo: User[];
 }
 
-interface IFunction {
-  handleRefresh: () => void;
-}
-
-export default function MContainer(props: Idata & IFunction) {
-
+export default function MContainer(props: Idata) {
   const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
     const emoji = emojiData.find((data) => data.unified === emojiCode);
     return emoji ? emoji.name : undefined;
@@ -110,7 +105,6 @@ export default function MContainer(props: Idata & IFunction) {
   const [openPost, setOpenPost] = React.useState(false);
   const handletOpenPost = () => setOpenPost(true);
   const handleClosePost = () => {
-    props.handleRefresh();
     setOpenPost(false);
   };
 
@@ -137,8 +131,7 @@ export default function MContainer(props: Idata & IFunction) {
         if (docSnap.exists() && docSnap.data().owner === userInfo.uid) {
           deleteDoc(postRef)
             .then(() => {
-              PopupAlert("Post deleted successfully", "success")
-              props.handleRefresh();
+              PopupAlert("Post deleted successfully", "success");
             })
             .catch((error) => {
               console.error("Error deleting post: ", error);
@@ -156,22 +149,20 @@ export default function MContainer(props: Idata & IFunction) {
       });
   };
 
-  const increaseLike = () => {
+  const increaseLike = async () => {
     const postsCollection = collection(dbFireStore, "posts");
     const updateLike = {
       likeBy: userInfo.uid,
       createdAt: new Date().toLocaleString(),
     };
-    const postRef = doc(postsCollection, props.postId);
-    updateDoc(postRef, {
-      likes: arrayUnion(updateLike),
-    })
-      .then(() => {
-        props.handleRefresh();
-      })
-      .catch((error) => {
-        console.error("Error adding likes: ", error);
+    try {
+      const postRef = doc(postsCollection, props.postId);
+      await updateDoc(postRef, {
+        likes: arrayUnion(updateLike),
       });
+    } catch (err) {
+      console.error("Like error: ", err);
+    }
   };
 
   const isLike = props.likes.some((f) => f.likeBy === userInfo.uid);
@@ -188,7 +179,6 @@ export default function MContainer(props: Idata & IFunction) {
         updatedLike.splice(IndexLike, 1);
         const updatedData = { ...postData, likes: updatedLike };
         await updateDoc(doc.ref, updatedData);
-        props.handleRefresh();
       } else {
         console.log("No post found with the specified ID");
       }
@@ -241,7 +231,6 @@ export default function MContainer(props: Idata & IFunction) {
                   postId={props.postId}
                   userId={userInfo.uid}
                   handleClosePost={handleClosePost}
-                  handleRefreshData={props.handleRefresh}
                   likes={props.likes}
                   owner={props.owner}
                 />
@@ -258,8 +247,6 @@ export default function MContainer(props: Idata & IFunction) {
             <Box>
               <EditPost
                 handleCloseEditPost={handleCloseEditPost}
-                handleRefresh={props.handleRefresh}
-                handleRefreshData={props.handleRefresh}
                 oldStatus={props.status}
                 caption={props.caption}
                 hashTagTopic={props.hashTagTopic}
@@ -312,7 +299,8 @@ export default function MContainer(props: Idata & IFunction) {
                         </b>
                         {props.emoji && (
                           <>
-                            {" "}is feeling
+                            {" "}
+                            is feeling
                             {String.fromCodePoint(parseInt(props.emoji, 16))}
                             {convertEmojiCodeToName(
                               props.emoji
@@ -369,7 +357,7 @@ export default function MContainer(props: Idata & IFunction) {
                           <BorderColorOutlinedIcon /> Edit
                         </Typography>
                       </MenuItem>
-                      <MenuItem 
+                      <MenuItem
                         disabled={props.owner !== userInfo.uid}
                         onClick={() => handleDelete(props.postId)}
                       >
@@ -541,9 +529,8 @@ export default function MContainer(props: Idata & IFunction) {
                     <ShareCard
                       openShare={openShare}
                       handleCloseShare={handleCloseShare}
-                      friendList={user.friendList}
+                      friendList={user.friendList ?? []}
                       postId={props.postId}
-                      handleReUserfresh={props.handleRefresh}
                     />
                     <Avatar
                       alt="User"

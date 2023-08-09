@@ -22,12 +22,7 @@ import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
-import {
-  collection,
-  updateDoc,
-  doc,
-  arrayUnion,
-} from "firebase/firestore";
+import { collection, updateDoc, doc, arrayUnion } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 
 const columns: GridColDef[] = [
@@ -68,7 +63,6 @@ interface IData {
 }
 interface IFunction {
   handleCloseShare: () => void;
-  handleReUserfresh: () => void;
 }
 
 export default function ShareCard(props: IData & IFunction) {
@@ -110,13 +104,7 @@ export default function ShareCard(props: IData & IFunction) {
             const postRef = doc(postsCollection, props.postId);
             await updateDoc(postRef, {
               shareUsers: arrayUnion(updateShare),
-            })
-              .then(() => {
-                props.handleReUserfresh();
-              })
-              .catch((error) => {
-                console.error("Error share", error);
-              });
+            });
           }
           PopupAlert("Share successfully", "success");
         } catch (error) {
@@ -130,16 +118,10 @@ export default function ShareCard(props: IData & IFunction) {
           createdAt: new Date().toLocaleString(),
         };
         const postRef = doc(postsCollection, props.postId);
-        updateDoc(postRef, {
+        await updateDoc(postRef, {
           shareUsers: arrayUnion(updateShare),
-        })
-          .then(() => {
-            props.handleReUserfresh();
-            PopupAlert("Share successfully", "success");
-          })
-          .catch((error) => {
-            console.error("Error share", error);
-          });
+        });
+        PopupAlert("Share successfully", "success");
       }
     } catch (error) {
       console.error(error);
@@ -166,13 +148,7 @@ export default function ShareCard(props: IData & IFunction) {
             const eventRef = doc(eventCollection, props.eventId);
             await updateDoc(eventRef, {
               shareUsers: arrayUnion(updatedEvent),
-            })
-              .then(() => {
-                props.handleReUserfresh();
-              })
-              .catch((error) => {
-                console.error("Error share", error);
-              });
+            });
           }
           PopupAlert("Share successfully", "success");
         } catch (error) {
@@ -186,16 +162,10 @@ export default function ShareCard(props: IData & IFunction) {
           createdAt: new Date().toLocaleString(),
         };
         const eventRef = doc(eventCollection, props.eventId);
-        updateDoc(eventRef, {
+        await updateDoc(eventRef, {
           shareUsers: arrayUnion(updatedEvent),
-        })
-          .then(() => {
-            props.handleReUserfresh();
-            PopupAlert("Share successfully", "success");
-          })
-          .catch((error) => {
-            console.error("Error share", error);
-          });
+        });
+        PopupAlert("Share successfully", "success");
       }
     } catch (error) {
       console.error(error);
@@ -355,7 +325,9 @@ export default function ShareCard(props: IData & IFunction) {
             Cancle
           </Button>
           <Button
-            onClick={props.postId ? () => handleShare() :() => handleShareEvent()}
+            onClick={
+              props.postId ? () => handleShare() : () => handleShareEvent()
+            }
             sx={{
               backgroundColor: "#8E51E2",
               color: "white",

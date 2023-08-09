@@ -49,6 +49,7 @@ import {
   where,
   getDoc,
   deleteDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import EditPost from "./EditPost";
 import PopupAlert from "../PopupAlert";
@@ -72,7 +73,6 @@ interface IData {
 }
 interface IFunction {
   handleClosePost: () => void;
-  handleRefreshData: () => void;
 }
 
 export default function Content(props: IData & IFunction) {
@@ -85,34 +85,28 @@ export default function Content(props: IData & IFunction) {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  const [reFresh, setReFresh] = React.useState(0);
-  const handleRefresh = () => {
-    setReFresh((pre) => pre + 1);
-  };
 
-  const [data, setData] = React.useState<Post[]>([]);
+  const [postData, setPostData] = React.useState<Post[]>([]);
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "posts"),
-          where("id", "==", props.postId)
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              id: doc.id,
-              ...doc.data(),
-            } as Post)
-        );
-        setData(queriedData);
-      } catch (error) {
+    const q = query(
+      collection(dbFireStore, "posts"),
+    );
+  
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
+        setPostData(queriedData);
+      },
+      (error) => {
         console.error("Error fetching data:", error);
       }
+    );
+  
+    return () => {
+      unsubscribe();
     };
-    fetchData();
-  }, [props.postId, reFresh]);
+  }, []);
 
   const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
     const emoji = emojiData.find((data) => data.unified === emojiCode);
@@ -153,7 +147,6 @@ export default function Content(props: IData & IFunction) {
     })
       .then(() => {
         clearState();
-        handleRefresh();
       })
       .catch((error) => {
         console.error("Error adding comment: ", error);
@@ -163,30 +156,24 @@ export default function Content(props: IData & IFunction) {
   const [isLike, setIsLike] = React.useState(false);
   React.useEffect(() => {
     setIsLike(
-      data.some(
+      postData.some(
         (d) =>
           d.id === props.postId &&
           d.likes.some((l) => l.likeBy === props.userId)
       )
     );
-  }, [data, props.postId, props.userId]);
+  }, [postData, props.postId, props.userId]);
 
-  const increaseLike = () => {
+  const increaseLike = async () => {
     const postsCollection = collection(dbFireStore, "posts");
     const updateLike = {
       likeBy: props.userId,
       createdAt: new Date().toLocaleString(),
     };
     const postRef = doc(postsCollection, props.postId);
-    updateDoc(postRef, {
+    await updateDoc(postRef, {
       likes: arrayUnion(updateLike),
     })
-      .then(() => {
-        handleRefresh();
-      })
-      .catch((error) => {
-        console.error("Error adding likes: ", error);
-      });
   };
   const decreaseLike = async (id: string) => {
     const IndexLike = props.likes.findIndex((f) => f.likeBy === props.userId);
@@ -203,7 +190,6 @@ export default function Content(props: IData & IFunction) {
         updatedLike.splice(IndexLike, 1);
         const updatedData = { ...postData, likes: updatedLike };
         await updateDoc(doc.ref, updatedData);
-        handleRefresh();
       } else {
         console.log("No post found with the specified ID");
       }
@@ -226,8 +212,6 @@ export default function Content(props: IData & IFunction) {
         if (docSnap.exists() && docSnap.data().owner === props.userId) {
           deleteDoc(postRef)
             .then(() => {
-              handleRefresh();
-              props.handleRefreshData();
               props.handleClosePost();
               PopupAlert("Post deleted successfully", "success")
             })
@@ -296,7 +280,7 @@ export default function Content(props: IData & IFunction) {
       <IconButton onClick={props.handleClosePost}>
         <CancelIcon />
       </IconButton>
-      {data.map((m) => (
+      {postData.map((m) => (
         <Box key={m.id} sx={{ flexGrow: 1, p: 1 }}>
           <Modal
             open={openEditPost}
@@ -307,8 +291,6 @@ export default function Content(props: IData & IFunction) {
             <Box>
               <EditPost
                 handleCloseEditPost={handleCloseEditPost}
-                handleRefresh={handleRefresh}
-                handleRefreshData={props.handleRefreshData}
                 oldStatus={m.status}
                 caption={m.caption}
                 hashTagTopic={m.hashTagTopic}
@@ -608,7 +590,7 @@ export default function Content(props: IData & IFunction) {
                               createAt={comment.createdAt}
                               commentIndex={index}
                               postId={m.id}
-                              handleRefresh={handleRefresh}
+                              author={comment.author}
                               userId={props.userId}
                             />
                           </Box>

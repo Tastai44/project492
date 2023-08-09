@@ -37,7 +37,7 @@ import { auth } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import ChatBox from "./Chat/ChatBox";
 import { User } from "../interface/User";
-import { collection, query, getDocs, where } from "firebase/firestore";
+import { collection, query, getDocs, where, updateDoc } from "firebase/firestore";
 import { dbFireStore } from "../config/firebase";
 import FlagIcon from '@mui/icons-material/Flag';
 
@@ -90,7 +90,22 @@ export const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function Navigation(props: IData & IFunction) {
   const navigate = useNavigate();
-  const handleLogout = () => {
+  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+  const handleActiveUser = async (userId: string) => {
+    try {
+      const q = query(
+        collection(dbFireStore, "users"),
+        where("uid", "==", userId)
+      );
+      const querySnapshot = await getDocs(q);
+      const doc = querySnapshot.docs[0];
+      await updateDoc(doc.ref, {isActive: false});
+    } catch (error) {
+      console.error("Error updating profile: ", error);
+    }
+};
+  const handleLogout = async () => {
+    await handleActiveUser(userInfo.uid)
     signOut(auth)
       .then(() => {
         localStorage.removeItem("user");
@@ -100,7 +115,6 @@ export default function Navigation(props: IData & IFunction) {
         console.log(error);
       });
   };
-  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
@@ -316,7 +330,7 @@ export default function Navigation(props: IData & IFunction) {
 
   return (
     <>
-      <Modal
+      {/* <Modal
         open={props.open}
         onClose={props.handleClose}
         aria-labelledby="modal-modal-title"
@@ -325,7 +339,7 @@ export default function Navigation(props: IData & IFunction) {
         <Box>
           <ChatBox handleClose={props.handleClose} />
         </Box>
-      </Modal>
+      </Modal> */}
 
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="fixed" sx={{ backgroundColor: "#8E51E2" }}>

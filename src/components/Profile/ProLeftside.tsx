@@ -52,11 +52,6 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
   const handleOpenPre = () => setOpenPre(true);
   const handleClosePre = () => setOpenPre(false);
 
-  const [reFresh, setReFresh] = React.useState(0);
-  const handleRefresh = () => {
-    setReFresh((pre) => pre + 1);
-  };
-
   const { userId } = useParams();
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
@@ -82,7 +77,7 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
       }
     };
     fetchData();
-  }, [userId, reFresh]);
+  }, [userId]);
 
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const [previewImages, setPreviewImages] = React.useState<string[]>([]);
@@ -136,7 +131,6 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
           profilePhoto: previewImages[0],
         });
         handleClearImage();
-        handleRefresh();
         handleRefreshData();
       } else {
         console.log("Profile does not exist");
@@ -147,7 +141,7 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
   };
 
   const unFriendOtherSide = async (id: string) => {
-    const IndexFriend = inFoUser.map((user) => user.friendList.findIndex((index) => index.friendId === id)).flat();
+    const IndexFriend = inFoUser.map((user) => user.friendList?.findIndex((index) => index.friendId === id)).flat();
     try {
       const q = query(collection(dbFireStore, "users"), where("uid", "==", userId));
       const querySnapshot = await getDocs(q);
@@ -158,12 +152,11 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
         if(friendData.friendList !== undefined) {
           const updateFriend = [...friendData.friendList];
           IndexFriend.forEach((index) => {
-            updateFriend.splice(index, 1);
+            updateFriend.splice(index??0, 1);
           });
           const updatedData = { ...friendData, friendList: updateFriend };
           await updateDoc(doc.ref, updatedData);
         }
-        handleRefresh();
       } else {
         console.log("No post found with the specified ID");
       }
@@ -173,7 +166,7 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
   };
 
   const unFriend = async (id: string) => {
-    const IndexFriend = inFoUser.map((user) => user.friendList.findIndex((index) => index.friendId === id)).flat();
+    const IndexFriend = inFoUser.map((user) => user.friendList?.findIndex((index) => index.friendId === id)).flat();
     try {
       const q = query(collection(dbFireStore, "users"), where("uid", "==", userInfo.uid));
       const querySnapshot = await getDocs(q);
@@ -184,14 +177,13 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
         if(friendData.friendList !== undefined) {
           const updateFriend = [...friendData.friendList];
           IndexFriend.forEach((index) => {
-            updateFriend.splice(index, 1);
+            updateFriend.splice(index?? 0, 1);
           });
           const updatedData = { ...friendData, friendList: updateFriend };
           await updateDoc(doc.ref, updatedData);
         }
         unFriendOtherSide(userId ? userId : "");
         PopupAlert("Unfriend successfully", "success")
-        handleRefresh();
       } else {
         console.log("No post found with the specified ID");
       }
@@ -273,8 +265,6 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
             <Box>
               <EditProfile
                 closeEdit={handleClose}
-                handleRefresh={handleRefresh}
-                handleRefreshData={handleRefreshData}
                 userId={userId}
                 username={m.username}
                 firstName={m.firstName}
@@ -358,7 +348,7 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
                     >
                       Edit
                     </Button>
-                  ) : ( m.friendList.some((friend) => friend.friendId === userInfo.uid)) ? (
+                  ) : ( m.friendList?.some((friend) => friend.friendId === userInfo.uid)) ? (
                     <Button
                       onClick={() => unFriend(userId ?? "")}
                       size="small"

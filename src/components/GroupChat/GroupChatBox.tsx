@@ -25,23 +25,24 @@ import {
   setDoc,
   onSnapshot,
 } from "firebase/firestore";
-import { User } from "../../interface/User";
-import { Message } from "../../interface/Chat";
+import { GroupMessage } from "../../interface/Chat";
 
 import Emoji from "../MContainer/Emoji";
 import Header from "./Header";
 import MessageBody from "./MessageBody";
+import { IGroup } from "../../interface/Group";
 
 interface IFunction {
   handleClose: () => void;
 }
 
 interface IData {
-  uId: string;
+  groupId: string;
 }
 
-export default function ChatBox(props: IFunction & IData) {
-  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+export default function GroupChatBox
+(props: IFunction & IData) {
+  const [groupData, setGroupData] = React.useState<IGroup[]>([]);
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const [message, setMessage] = React.useState("");
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
@@ -97,30 +98,31 @@ export default function ChatBox(props: IFunction & IData) {
     const { value } = event.target;
     setMessage(value);
   };
+
   React.useMemo(() => {
     const fetchData = async () => {
       try {
         const q = query(
-          collection(dbFireStore, "users"),
-          where("uid", "==", props.uId)
+          collection(dbFireStore, "groups"),
+          where("gId", "==", props.groupId)
         );
         const querySnapshot = await getDocs(q);
         const queriedData = querySnapshot.docs.map(
           (doc) =>
             ({
-              uid: doc.id,
+              gId: doc.id,
               ...doc.data(),
-            } as User)
+            } as IGroup)
         );
-        setInFoUser(queriedData);
+        setGroupData(queriedData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
     fetchData();
-  }, [props.uId]);
+  }, [props.groupId]);
 
-  const [messages, setMessages] = React.useState<Message[]>([]);
+  const [messages, setMessages] = React.useState<GroupMessage[]>([]);
   const chatContainerRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     if (chatContainerRef.current) {
@@ -129,10 +131,10 @@ export default function ChatBox(props: IFunction & IData) {
     }
   }, [messages]);
   React.useEffect(() => {
-    const messagesCollectionRef = collection(dbFireStore, "messages");
+    const messagesCollectionRef = collection(dbFireStore, "groupMessages");
     const unsubscribe = onSnapshot(messagesCollectionRef, (querySnapshot) => {
       const messagesData = querySnapshot.docs.map(
-        (doc) => doc.data() as Message
+        (doc) => doc.data() as GroupMessage
       );
       setMessages(messagesData);
     });
@@ -140,11 +142,12 @@ export default function ChatBox(props: IFunction & IData) {
   }, []);
 
   const handleSendMessage = async () => {
-    const messagesCollection = collection(dbFireStore, "messages");
+    const messagesCollection = collection(dbFireStore, "groupMessages");
     const newMessage = {
       conversation_id: "",
       sender_id: userInfo.uid,
-      receiver_id: props.uId,
+      ownerContent_id: userInfo.uid,
+      receiver_id: props.groupId,
       content: message,
       photoMessage: previewImages,
       emoji: emoji,
@@ -202,7 +205,7 @@ export default function ChatBox(props: IFunction & IData) {
               pl: 0.5,
             }}
           >
-            <Header inFoUser={inFoUser} />
+            <Header groupData={groupData} />
             <Box sx={{ p: 0.2 }}>
               <IconButton size="small" onClick={props.handleClose}>
                 <CancelIcon sx={{ color: "white", fontSize: "20px" }} />
@@ -221,10 +224,7 @@ export default function ChatBox(props: IFunction & IData) {
           >
             <MessageBody
               messages={messages}
-              uId={props.uId}
-              userProfile={
-                inFoUser.find((item) => item.profilePhoto)?.profilePhoto
-              }
+              groupId={props.groupId}
             />
           </Box>
           <Box

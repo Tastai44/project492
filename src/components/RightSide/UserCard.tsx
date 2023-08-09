@@ -5,8 +5,9 @@ import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import { Typography, Box } from "@mui/material";
 import { dbFireStore } from "../../config/firebase";
-import { collection, query, getDocs, where } from "firebase/firestore";
+import { collection, query, onSnapshot } from "firebase/firestore";
 import { User } from "../../interface/User";
+import { IMember } from "../../interface/Group";
 
 export const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -40,6 +41,7 @@ export const StyledBadge = styled(Badge)(({ theme }) => ({
 interface IData {
   username?: string;
   userId?: string;
+  members?: IMember[];
   profilePhoto?: string;
 }
 
@@ -49,18 +51,19 @@ export default function UserCard(props: IData) {
     const fetchData = async () => {
       try {
         const q = query(
-          collection(dbFireStore, "users"),
-          where("uid", "==", props.userId)
+          collection(dbFireStore, "users")
+          // where("uid", "==", props.userId)
         );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              uid: doc.id,
-              ...doc.data(),
-            } as User)
-        );
-        setInFoUser(queriedData);
+        onSnapshot(q, (querySnapshot) => {
+          const queriedData = querySnapshot.docs.map(
+            (doc) =>
+              ({
+                uid: doc.id,
+                ...doc.data(),
+              } as User)
+          );
+          setInFoUser(queriedData);
+        });
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -85,25 +88,28 @@ export default function UserCard(props: IData) {
         },
       }}
     >
-      {inFoUser.length !== 0 ? (
+      {inFoUser.filter((item) => item.uid == props.userId).length !== 0 ? (
         <>
-          {inFoUser.map((u) => (
-            <Box
-              key={u.uid}
-              sx={{ display: "flex", alignItems: "center", gap: 1 }}
-            >
-              <StyledBadge
-                overlap="circular"
-                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                variant="dot"
+          {inFoUser
+            .filter((item) => item.uid == props.userId)
+            .map((u) => (
+              <Box
+                key={u.uid}
+                sx={{ display: "flex", alignItems: "center", gap: 1 }}
               >
-                <Avatar alt="Remy Sharp" src={u.profilePhoto} />
-              </StyledBadge>
-              <Typography sx={{ fontSize: "16px" }}>
-                {u.username !== null ? u.firstName + " " + u.lastName : ""}
-              </Typography>
-            </Box>
-          ))}
+                <StyledBadge
+                  overlap="circular"
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  variant={u.isActive ? "dot" : "standard"}
+                >
+                  <Avatar alt="Remy Sharp" src={u.profilePhoto} />
+                </StyledBadge>
+
+                <Typography sx={{ fontSize: "16px" }}>
+                  {u.username !== null ? u.firstName + " " + u.lastName : ""}
+                </Typography>
+              </Box>
+            ))}
         </>
       ) : (
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>

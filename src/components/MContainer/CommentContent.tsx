@@ -14,7 +14,6 @@ import {
   Button,
   TextField,
 } from "@mui/material";
-import Luffy from "/images/Luffy.webp";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
@@ -32,6 +31,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { Post } from "../../interface/PostContent";
+import { User } from "../../interface/User";
 
 interface IData {
   text: string;
@@ -39,10 +39,7 @@ interface IData {
   commentIndex: number;
   postId: string;
   userId: string;
-}
-
-interface IFunction {
-  handleRefresh: () => void;
+  author: string;
 }
 
 const styleBoxPop = {
@@ -57,14 +54,7 @@ const styleBoxPop = {
   overflow: "auto",
 };
 
-export default function CommentContent({
-  text,
-  createAt,
-  commentIndex,
-  postId,
-  userId,
-  handleRefresh,
-}: IData & IFunction) {
+export default function CommentContent(props: IData) {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -93,11 +83,10 @@ export default function CommentContent({
       if (doc.exists()) {
         const postData = { id: doc.id, ...doc.data() } as Post;
         const updatedComments = [...postData.comments];
-        if(updatedComments[comId].author === userId) {
+        if(updatedComments[comId].author === props.userId) {
           updatedComments.splice(comId, 1);
           const updatedData = { ...postData, comments: updatedComments };
           await updateDoc(doc.ref, updatedData);
-          handleRefresh();
           handleCloseUserMenu();
         } else {
             handleCloseUserMenu();
@@ -113,7 +102,7 @@ export default function CommentContent({
   };
 
   const [comment, setComment] = React.useState({
-    text:text
+    text:props.text
   });
   const handleChangeComment = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -127,17 +116,17 @@ export default function CommentContent({
 
   const editComment = () => {
     const postsCollection = collection(dbFireStore, "posts");
-    const postRef = doc(postsCollection, postId);
+    const postRef = doc(postsCollection, props.postId);
     const getDocPromise = getDoc(postRef);
     const updateCommentPromise = getDocPromise.then((doc) => {
       if (doc.exists()) {
         const comments = doc.data().comments;
-        if (commentIndex >= 0 && commentIndex < comments.length) {
-          if(comments[commentIndex].author === userId) {
-            comments[commentIndex].text = comment.text;
-            comments[commentIndex].updateAt = new Date().toLocaleString();
+        if (props.commentIndex >= 0 && props.commentIndex < comments.length) {
+          if(comments[props.commentIndex].author === props.userId) {
+            comments[props.commentIndex].text = comment.text;
+            comments[props.commentIndex].updateAt = new Date().toLocaleString();
           }else {
-            setComment({text: comments[commentIndex].text});
+            setComment({text: comments[props.commentIndex].text});
             alert("You don't have permission to edit this comment")
             return;
           }
@@ -153,13 +142,36 @@ export default function CommentContent({
     });
     updateCommentPromise
       .then(() => {
-        handleRefresh();
         handleCloseEditCom();
       })
       .catch((error) => {
         console.error("Error updating comment: ", error);
       });
   };
+
+  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+  React.useMemo(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(dbFireStore, "users"),
+          where("uid", "==", props.author)
+        );
+        const querySnapshot = await getDocs(q);
+        const queriedData = querySnapshot.docs.map(
+          (doc) =>
+            ({
+              uid: doc.id,
+              ...doc.data(),
+            } as User)
+        );
+        setInFoUser(queriedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [props.author]);
 
   return (
     <Box>
@@ -232,14 +244,15 @@ export default function CommentContent({
         </Box>
       </Modal>
       <Paper sx={{ backgroundColor: "primary.contrastText", mb: 1 }}>
-        <ListItem>
+        {inFoUser.map((user) => (
+        <ListItem key={user.uid}>
           <ListItemAvatar>
-            <Avatar src={Luffy} sx={{ width: "40px", height: "40px" }} />
+            <Avatar src={user.profilePhoto} sx={{ width: "40px", height: "40px" }} />
           </ListItemAvatar>
           <ListItemText
             primary={
               <Box sx={{ fontSize: "16px" }}>
-                <b>User Name</b>
+                <b>{user.firstName} {user.lastName}</b>
               </Box>
             }
             secondary={
@@ -251,7 +264,7 @@ export default function CommentContent({
                   fontSize: "12px",
                 }}
               >
-                {createAt}
+                {props.createAt}
               </Typography>
             }
           />
@@ -288,7 +301,7 @@ export default function CommentContent({
                   <BorderColorOutlinedIcon /> Edit
                 </Typography>
               </MenuItem>
-              <MenuItem onClick={() => handleDelete(postId, commentIndex)}>
+              <MenuItem onClick={() => handleDelete(props.postId, props.commentIndex)}>
                 <Typography
                   textAlign="center"
                   sx={{
@@ -317,7 +330,8 @@ export default function CommentContent({
             </Menu>
           </ListItemAvatar>
         </ListItem>
-        <Box sx={{ ml: 1, pb: 1 }}>{text}</Box>
+        ))}
+        <Box sx={{ ml: 1, pb: 1 }}>{props.text}</Box>
       </Paper>
     </Box>
   );
