@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { Box, Button, TextField } from "@mui/material";
 import { styleBox } from "../../utils/styleBox";
-import { PostReport } from '../../interface/PostContent';
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import {
@@ -11,59 +10,58 @@ import {
   updateDoc
 } from "firebase/firestore";
 import PopupAlert from '../PopupAlert';
+import { EventReport } from '../../interface/Event';
 
 interface IFunction {
   handleCloseReport: () => void;
 }
 interface IData {
-  postId: string;
+  eventId: string;
 }
 
-export default function ReportCard(props: IFunction & IData) {
+export default function EventReportCard(props: IFunction & IData) {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-  const initialPostState = {
-    uid: "",
-    postId: "",
+  const initialEventState = {
+    reportBy: "",
+    eventId: "",
     reason: "",
     createAt: "",
   };
-  const [report, setReport] = React.useState<PostReport>(initialPostState);
+  const [reportEvent, setReportEvent] = React.useState<EventReport>(initialEventState);
   const clearState = () => {
-    setReport({ ...initialPostState });
+    setReportEvent({ ...initialEventState });
   };
   const handleChangeReport = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = event.target;
-    setReport((prevComment) => ({
-      ...prevComment,
+    setReportEvent((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
 
   const submitPostReport = () => {
-    const postsCollection = collection(dbFireStore, "posts");
-    const newComment = {
-      uid: userInfo.uid,
-      postId: props.postId,
-      reason: report.reason,
+    const eventCollection = collection(dbFireStore, "events");
+    const newReason = {
+      reportBy: userInfo.uid,
+      eventId: props.eventId,
+      reason: reportEvent.reason,
       createAt: new Date().toLocaleString(),
     };
-    const postRef = doc(postsCollection, props.postId);
+    const postRef = doc(eventCollection, props.eventId);
     updateDoc(postRef, {
-      reportPost: arrayUnion(newComment),
+      reportPost: arrayUnion(newReason),
     })
       .then(() => {
         clearState();
-        PopupAlert("This post has been successfully reported","success")
+        PopupAlert("This event has been successfully reported","success")
         props.handleCloseReport()
       })
       .catch((error) => {
         console.error("Error adding comment: ", error);
       });
   };
-
-
 
   return (
     <Box sx={styleBox}>
@@ -83,7 +81,7 @@ export default function ReportCard(props: IFunction & IData) {
         multiline
         maxRows={3}
         sx={{ width: "100%" }}
-        value={report.reason}
+        value={reportEvent.reason}
         onChange={handleChangeReport}
       />
       <Box

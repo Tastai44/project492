@@ -77,7 +77,6 @@ export default function ReasonContainer(props: IData & IFunction) {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  // query(collection(dbFireStore, "posts"), where("id", "==", props.postId)),
   const [postData, setPostData] = React.useState<Post[]>([]);
   React.useEffect(() => {
     const q = query(

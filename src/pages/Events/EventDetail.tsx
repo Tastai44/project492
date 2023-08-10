@@ -127,7 +127,7 @@ export default function EventDetail() {
                           </Grid>
                           <Grid item xs={7}>
                             <Item>
-                              <DetailCard details={e.details} />
+                              <DetailCard details={e.details} eventId={e.id}/>
                             </Item>
                           </Grid>
                           <Grid item xs={2.5}>

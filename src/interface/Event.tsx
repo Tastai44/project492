@@ -6,6 +6,13 @@ export interface Interest {
     createdAt: Date;
   }
 
+  export interface EventReport {
+    reportBy: string;
+    eventId: string;
+    reason: string;
+    createAt: string;
+  }
+
 export interface EventPost {
     id: string;
     title: string;
@@ -24,5 +31,6 @@ export interface EventPost {
     owner: string;
     createAt?: string;
     updateAt?: string;
+    reportEvent: EventReport[];
 }
 

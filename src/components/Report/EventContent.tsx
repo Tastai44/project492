@@ -62,7 +62,7 @@ interface Idata {
   createAt?: string;
   photoPost: string[];
   emoji?: string;
-  postId: string;
+  eventId: string;
   owner: string;
   groupName?: string;
   groupId?: string;
@@ -75,14 +75,10 @@ interface IFunction {
   handleRefresh: () => void;
 }
 
-export default function ReportContent(props: Idata & IFunction) {
+export default function EventContent(props: Idata & IFunction) {
   const [openReason, setOpenReason] = React.useState(false);
-  const handleOpenReason = () => {
-    setOpenReason(true);
-  };
-  const handleCloseReason = () => {
-    setOpenReason(false);
-  };
+  const handleOpenReason = () => {setOpenReason(true)}
+  const handleCloseReason = () => {setOpenReason(false)}
   const [iconStatus, setIconStatus] = React.useState("");
   React.useEffect(() => {
     if (props.status === "Private") {
@@ -125,19 +121,14 @@ export default function ReportContent(props: Idata & IFunction) {
   };
 
   const handleApprove = async (id: string) => {
-    const IndexReport = props.reportPost.findIndex(
-      (index) => index.postId === props.postId
-    );
+    const IndexReport = props.reportPost.findIndex((index) => index.postId === props.eventId);
     try {
-      const queryPost = query(
-        collection(dbFireStore, "posts"),
-        where("id", "==", id)
-      );
+      const queryPost = query(collection(dbFireStore, "posts"), where("id", "==", id));
       const querySnapshot = await getDocs(queryPost);
 
       const doc = querySnapshot.docs[0];
-      if (doc.exists()) {
-        const postData = { id: doc.id, ...doc.data() } as Post;
+      if(doc.exists()) {
+        const postData = {id: doc.id, ...doc.data() } as Post;
         const updateReport = [...postData.reportPost];
         updateReport.splice(IndexReport, 1);
         const updatedData = { ...postData, reportPost: updateReport };
@@ -150,7 +141,7 @@ export default function ReportContent(props: Idata & IFunction) {
     } catch (error) {
       console.error("Error approving report:", error);
     }
-  };
+  }
 
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   React.useEffect(() => {
@@ -178,14 +169,14 @@ export default function ReportContent(props: Idata & IFunction) {
 
   return (
     <Box sx={{ mb: 5 }}>
-      <ReasonContainer
-        postId={props.postId}
+      {/* <ReasonContainer 
+        eventId={props.eventId}
         openReason={openReason}
         handleCloseReason={handleCloseReason}
         handleRefresh={props.handleRefresh}
         reportPost={props.reportPost}
         owner={props.owner}
-      />
+      /> */}
       {inFoUser.map((u) => (
         <Box key={u.uid}>
           <Box sx={{ width: "100%" }}>
@@ -257,7 +248,7 @@ export default function ReportContent(props: Idata & IFunction) {
                       open={Boolean(anchorElUser)}
                       onClose={handleCloseUserMenu}
                     >
-                      <MenuItem onClick={() => handleApprove(props.postId)}>
+                      <MenuItem onClick={() => handleApprove(props.eventId)}>
                         <Typography
                           textAlign="center"
                           sx={{
@@ -270,7 +261,7 @@ export default function ReportContent(props: Idata & IFunction) {
                           <AddTaskIcon /> Approve
                         </Typography>
                       </MenuItem>
-                      <MenuItem onClick={() => handleDelete(props.postId)}>
+                      <MenuItem onClick={() => handleDelete(props.eventId)}>
                         <Typography
                           textAlign="center"
                           sx={{
@@ -310,7 +301,6 @@ export default function ReportContent(props: Idata & IFunction) {
                 </Box>
                 {props.photoPost.length == 1 ? (
                   <ImageList
-                    onClick={handleOpenReason}
                     sx={{
                       width: "100%",
                       minHeight: "300px",
@@ -330,12 +320,7 @@ export default function ReportContent(props: Idata & IFunction) {
                     ))}
                   </ImageList>
                 ) : (
-                  <ImageList
-                    onClick={handleOpenReason}
-                    variant="masonry"
-                    cols={2}
-                    gap={2}
-                  >
+                  <ImageList variant="masonry" cols={2} gap={2}>
                     {props.photoPost.map((image, index) => (
                       <ImageListItem key={index}>
                         <img
@@ -358,7 +343,7 @@ export default function ReportContent(props: Idata & IFunction) {
                   </Button>
                   <Box>
                     <Button
-                      onClick={handleOpenReason}
+                    onClick={handleOpenReason}
                       aria-label="add to favorites"
                       sx={{ color: "grey" }}
                     >
