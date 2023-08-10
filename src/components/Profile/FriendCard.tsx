@@ -22,7 +22,6 @@ interface IData {
   profilePhoto?: string;
   uid: string;
   friendList: IFriendList[];
-  handleRefresh: () => void;
 }
 
 export default function FriendCard(props: IData) {
@@ -42,7 +41,6 @@ export default function FriendCard(props: IData) {
           const updatedData = { ...friendData, friendList: updateFriend };
           await updateDoc(doc.ref, updatedData);
         }
-        props.handleRefresh();
       } else {
         console.log("No post found with the specified ID");
       }
@@ -67,7 +65,6 @@ export default function FriendCard(props: IData) {
           await updateDoc(doc.ref, updatedData);
         }
         unFriendOtherSide(userId ? userId : "");
-        props.handleRefresh();
         PopupAlert("Unfriend successfully", "success")
       } else {
         console.log("No post found with the specified ID");

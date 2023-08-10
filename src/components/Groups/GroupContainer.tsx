@@ -13,7 +13,10 @@ interface IData {
   groupData: IGroup[];
 }
 
-export default function GroupContainer({ openAddGroup, groupData }: IFunction & IData) {
+export default function GroupContainer({
+  openAddGroup,
+  groupData,
+}: IFunction & IData) {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   return (
     <Box sx={{ width: "100%", bgcolor: "background.paper", color: "black" }}>
@@ -47,11 +50,18 @@ export default function GroupContainer({ openAddGroup, groupData }: IFunction & 
         </div>
       </div>
       <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
-      {groupData.filter((item) => (item.status === "Public" || item.hostId === userInfo.uid) || item.members.some((member) => member.uid === userInfo.uid)).map((g) => (
-        <NavLink key={g.gId} to={`/groupDetail/${g.gId}`}>
-          <EachGroup title={g.groupName}/>
-        </NavLink>
-      ))}
+      {groupData
+        .filter(
+          (item) =>
+            item.status === "Public" ||
+            (item.hostId === userInfo.uid) ||
+            item.members.some((member) => member.uid === userInfo.uid)
+        )
+        .map((g) => (
+          <NavLink key={g.gId} to={`/groupDetail/${g.gId}`}>
+            <EachGroup title={g.groupName} />
+          </NavLink>
+        ))}
     </Box>
   );
 }

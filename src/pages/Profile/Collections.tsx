@@ -18,42 +18,41 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { dbFireStore } from "../../config/firebase";
 import { Like, Post } from "../../interface/PostContent";
-import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
+import { collection, query, orderBy, where, onSnapshot } from "firebase/firestore";
 import Content from "../../components/MContainer/Content";
 import { styleBoxPop } from "../../utils/styleBox";
 
 
 export default function Collections() {
   const { userId } = useParams();
-  const [data, setData] = React.useState<Post[]>([]);
-
-  const [reFresh, setReFresh] = React.useState(0);
-  const handleRefresh = () => {
-    setReFresh((pre) => pre + 1);
-  };
-
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "posts"),
-          where("owner", "==", userId),
-          orderBy("createAt", "desc")
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
-        setData(queriedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, [userId, reFresh]);
-
+  const [postData, setPostData] = React.useState<Post[]>([]);
   const [openPost, setOpenPost] = React.useState(false);
   const [likes, setLikes] = React.useState<Like[]>([]);
   const [postId, setPostId] = React.useState("");
+
+  React.useEffect(() => {
+    const queryData = query(
+      collection(dbFireStore, "posts"),
+      where("owner", "==", userId),
+      orderBy("createAt", "desc")
+    );
+
+    const unsubscribe = onSnapshot(
+      queryData,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
+        setPostData(queriedData);
+      },
+      (error) => {
+        console.error("Error fetching data:", error);
+      }
+    );
+  
+    return () => {
+      unsubscribe();
+    };
+  }, [userId]);
+
   const handletOpenPost = (id: string, likeData: Like[]) => {
     setOpenPost(true);
     setPostId(id);
@@ -78,7 +77,6 @@ export default function Collections() {
               userId={userId || ""}
               likes={likes}
               handleClosePost={handleClosePost}
-              handleRefreshData={handleRefresh}
             />
           </Paper>
         </Box>
@@ -125,7 +123,7 @@ export default function Collections() {
               }}
               cols={4}
             >
-              {data.map((m) =>
+              {postData.map((m) =>
                 m.photoPost.map((img, index) => (
                   <ImageListItem
                     key={index}

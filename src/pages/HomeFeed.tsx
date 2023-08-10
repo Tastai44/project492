@@ -4,7 +4,7 @@ import PostForm from "../components/MContainer/PostForm";
 import Box from "@mui/material/Box";
 
 import { dbFireStore } from "../config/firebase";
-import { collection, query, orderBy, getDocs, where, onSnapshot } from "firebase/firestore";
+import { collection, query, orderBy, where, onSnapshot } from "firebase/firestore";
 import { Post } from "../interface/PostContent";
 import { User } from "../interface/User";
 import { Item } from "../App";
@@ -18,7 +18,7 @@ export default function HomeFeed() {
       collection(dbFireStore, "posts"),
       orderBy("createAt", "desc")
     );
-  
+
     const unsubscribe = onSnapshot(
       queryData,
       (snapshot) => {
@@ -35,27 +35,24 @@ export default function HomeFeed() {
     };
   }, []);
 
-  React.useMemo(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "users"),
-          where("uid", "==", userInfo.uid)
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              uid: doc.id,
-              ...doc.data(),
-            } as User)
-        );
+  React.useEffect(() => {
+    const queryData = query(
+      collection(dbFireStore, "users"),
+      where("uid", "==", userInfo.uid)
+    );
+     const unsubscribe = onSnapshot(
+      queryData,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as User);
         setInFoUser(queriedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      },
+      (error) => {
+        console.error("Error fetching data: ", error);
       }
+    );
+    return () => {
+      unsubscribe();
     };
-    fetchData();
   }, [userInfo.uid]);
 
   return (
@@ -66,7 +63,7 @@ export default function HomeFeed() {
       <Item sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         {postData
           .filter(
-            (post) =>
+            (post) => post.status == "Friend" || post.status == "Public" ||
               inFoUser.some((user) =>
                 user.friendList?.some((friend) => friend.friendId == post.owner)
               ) || post.owner === userInfo.uid
@@ -89,7 +86,6 @@ export default function HomeFeed() {
                   groupName={m.groupName}
                   groupId={m.groupId}
                   shareUsers={m.shareUsers} 
-                  reFreshInfo={0}   
                   userInfo={inFoUser}          
                   />
               )}

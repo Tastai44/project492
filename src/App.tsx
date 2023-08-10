@@ -19,7 +19,6 @@ import { Box, Grid, Stack } from "@mui/material";
 import LeftSide from "./components/LeftSide";
 import RightContainer from "./components/RightSide/RightContainer";
 
-
 import ProCoverImage from "./components/Profile/ProCoverImage";
 import ProLeftside from "./components/Profile/ProLeftside";
 import { styled } from "@mui/material/styles";
@@ -35,12 +34,7 @@ function App() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
-  const [reFresh, setReFresh] = React.useState(0);
-  const handleRefresh = () => {
-    setReFresh((pre) => pre + 1);
-  };
-
+  
   return (
     <>
       <Routes>
@@ -163,7 +157,6 @@ function App() {
                 open={open}
                 handleOpen={handleOpen}
                 handleClose={handleClose}
-                reFresh={reFresh}
               />
 
               <Grid sx={{ flexGrow: 1 }} container marginTop={5}>
@@ -177,7 +170,7 @@ function App() {
                   >
                     <Grid item xs={2}>
                       <Item sx={{ backgroundColor: "#EEECEF" }}>
-                        <ProLeftside handleRefreshData={handleRefresh} />
+                        <ProLeftside />
                       </Item>
                     </Grid>
                     <Grid item xs={10}>
@@ -188,7 +181,7 @@ function App() {
                               <ProCoverImage />
                             </Item>
                             <Item>
-                              <Blog reFreshInfo={reFresh}/>
+                              <Blog />
                             </Item>
                           </Stack>
                         </Box>
@@ -223,7 +216,7 @@ function App() {
                   >
                     <Grid item xs={2}>
                       <Item sx={{ backgroundColor: "#EEECEF" }}>
-                        <ProLeftside handleRefreshData={handleRefresh} />
+                        <ProLeftside />
                       </Item>
                     </Grid>
 
@@ -235,7 +228,7 @@ function App() {
                               <ProCoverImage />
                             </Item>
                             <Item>
-                              <AboutMe reFresh={reFresh} />
+                              <AboutMe />
                             </Item>
                           </Stack>
                         </Box>
@@ -269,7 +262,7 @@ function App() {
                   >
                     <Grid item xs={2}>
                       <Item sx={{ backgroundColor: "#EEECEF" }}>
-                        <ProLeftside handleRefreshData={handleRefresh} />
+                        <ProLeftside />
                       </Item>
                     </Grid>
 
@@ -315,7 +308,7 @@ function App() {
                   >
                     <Grid item xs={2}>
                       <Item sx={{ backgroundColor: "#EEECEF" }}>
-                        <ProLeftside handleRefreshData={handleRefresh} />
+                        <ProLeftside />
                       </Item>
                     </Grid>
 
@@ -444,7 +437,7 @@ function App() {
               {/* <Members /> */}
               <Grid sx={{ flexGrow: 1 }} container>
                 <Grid item xs={12}>
-                    <ReportContent />
+                  <ReportContent />
                 </Grid>
               </Grid>
               {/* </ProtectedRoute> */}

@@ -37,13 +37,12 @@ import { auth } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import ChatBox from "./Chat/ChatBox";
 import { User } from "../interface/User";
-import { collection, query, getDocs, where, updateDoc } from "firebase/firestore";
+import { collection, query, getDocs, where, updateDoc, onSnapshot } from "firebase/firestore";
 import { dbFireStore } from "../config/firebase";
 import FlagIcon from '@mui/icons-material/Flag';
 
 interface IData {
   open: boolean;
-  reFresh?: number;
 }
 interface IFunction {
   handleOpen: () => void;
@@ -123,27 +122,24 @@ export default function Navigation(props: IData & IFunction) {
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "users"),
-          where("uid", "==", userInfo.uid)
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              uid: doc.id,
-              ...doc.data(),
-            } as User)
-        );
+    const queryData = query(
+      collection(dbFireStore, "users"),
+      where("uid", "==", userInfo.uid)
+    );
+     const unsubscribe = onSnapshot(
+      queryData,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as User);
         setInFoUser(queriedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      },
+      (error) => {
+        console.error("Error fetching data: ", error);
       }
+    );
+    return () => {
+      unsubscribe();
     };
-    fetchData();
-  }, [userInfo.uid, props.reFresh]);
+  }, [userInfo.uid]);
   const IsAdmin = inFoUser.some((user) => (user.userRole === "admin"))
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {

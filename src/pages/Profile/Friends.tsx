@@ -10,42 +10,33 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import FriendCard from "../../components/Profile/FriendCard";
 import "firebase/database";
-import { collection, query, getDocs, where } from "firebase/firestore";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
 import { useParams } from "react-router-dom";
 import { User } from "../../interface/User";
 
 export default function Friends() {
   const { userId } = useParams();
-  const [refresh, setRefresh] = React.useState(0);
-
-  const handleRefresh = () => {
-    setRefresh((pre) => pre + 1);
-  };
-
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "users"),
-          where("uid", "==", userId)
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              uid: doc.id,
-              ...doc.data(),
-            } as User)
-        );
+    const queryData = query(
+      collection(dbFireStore, "users"),
+      where("uid", "==", userId)
+    );
+    const unsubscribe = onSnapshot(
+      queryData,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as User);
         setInFoUser(queriedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      },
+      (error) => {
+        console.error("Error fetching data: ", error);
       }
+    );
+    return () => {
+      unsubscribe();
     };
-    fetchData();
-  }, [refresh, userId]);
+  }, [userId]);
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -94,7 +85,6 @@ export default function Friends() {
                     profilePhoto={friend.profilePhoto}
                     uid={friend.friendId}
                     friendList={user.friendList ? user.friendList : []}
-                    handleRefresh={handleRefresh}
                   />
                 ))}
               </>

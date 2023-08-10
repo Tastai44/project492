@@ -30,11 +30,8 @@ interface Idata {
   coverPhoto: string[];
 }
 
-interface IFunction {
-  handleRefresh: () => void;
-}
 
-export default function ShareEvent(props: Idata & IFunction) {
+export default function ShareEvent(props: Idata) {
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   React.useEffect(() => {
     const fetchData = async () => {

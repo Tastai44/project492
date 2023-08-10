@@ -15,7 +15,13 @@ import PostForm from "../../components/MContainer/PostForm";
 import { useParams } from "react-router-dom";
 
 import { dbFireStore } from "../../config/firebase";
-import { collection, query, orderBy, getDocs, where, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  query,
+  orderBy,
+  where,
+  onSnapshot,
+} from "firebase/firestore";
 import { Post } from "../../interface/PostContent";
 import { User } from "../../interface/User";
 import { Item } from "../../App";
@@ -23,32 +29,24 @@ import ShareContent from "./ShareContent";
 import { EventPost } from "../../interface/Event";
 import ShareEvent from "../../components/Events/ShareEvent";
 
-interface IData {
-  reFreshInfo: number;
-}
-
-export default function Blog({ reFreshInfo }: IData) {
+export default function Blog() {
   const { userId } = useParams();
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-  const [reFresh, setReFresh] = React.useState(0);
   const [type, setType] = React.useState("General");
+  const [eventData, setEventData] = React.useState<EventPost[]>([]);
 
   const handleChangeType = (event: SelectChangeEvent) => {
     setType(event.target.value as string);
   };
-  const handleRefresh = () => {
-    setReFresh((pre) => pre + 1);
-  };
   const [data, setData] = React.useState<Post[]>([]);
   React.useEffect(() => {
-    const q = query(
+    const queryData = query(
       collection(dbFireStore, "posts"),
       orderBy("createAt", "desc")
     );
-  
     const unsubscribe = onSnapshot(
-      q,
+      queryData,
       (snapshot) => {
         const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
         setData(queriedData);
@@ -57,63 +55,48 @@ export default function Blog({ reFreshInfo }: IData) {
         console.error("Error fetching data:", error);
       }
     );
-  
+    const queryEventData = query(
+      collection(dbFireStore, "events"),
+      orderBy("createAt", "desc")
+    );
+    const eventUnsubscribe = onSnapshot(
+      queryEventData,
+      (snapshot) => {
+        const queriedEventData = snapshot.docs.map(
+          (doc) => doc.data() as EventPost
+        );
+        setEventData(queriedEventData);
+      },
+      (error) => {
+        console.error("Error fetching data:", error);
+      }
+    );
+
     return () => {
       unsubscribe();
+      eventUnsubscribe();
     };
   }, []);
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "users"),
-          where("uid", "==", userInfo.uid)
-        );
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
-          const queriedData = querySnapshot.docs.map(
-            (doc) =>
-              ({
-                uid: doc.id,
-                ...doc.data(),
-              } as User)
-          );
-          setInFoUser(queriedData);
-        });
-  
-        return () => unsubscribe();
-      } catch (error) {
-        console.error("Error fetching data:", error);
+    const queryData = query(
+      collection(dbFireStore, "users"),
+      where("uid", "==", userInfo.uid)
+    );
+    const unsubscribe = onSnapshot(
+      queryData,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as User);
+        setInFoUser(queriedData);
+      },
+      (error) => {
+        console.error("Error fetching data: ", error);
       }
+    );
+    return () => {
+      unsubscribe();
     };
-    fetchData();
   }, [userInfo.uid]);
-
-  const [eventData, setEventData] = React.useState<EventPost[]>([]);
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "events"),
-          orderBy("createAt", "desc")
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) => doc.data() as EventPost
-        );
-        setEventData(queriedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, [reFresh]);
-
-  console.log(
-    data.some((post) => post.shareUsers),
-    eventData.some((event) => event.shareUsers)
-  );
 
   return (
     <div>
@@ -138,6 +121,8 @@ export default function Blog({ reFreshInfo }: IData) {
                       <Box key={m.id}>
                         <MContainer
                           owner={m.owner}
+                          groupName={m.groupName}
+                          groupId={m.groupId}
                           postId={m.id}
                           caption={m.caption}
                           hashTagTopic={m.hashTagTopic}
@@ -148,7 +133,6 @@ export default function Blog({ reFreshInfo }: IData) {
                           likeNumber={m.likes.length}
                           likes={m.likes}
                           commentNumber={m.comments.length}
-                          reFreshInfo={reFreshInfo}
                           shareUsers={m.shareUsers}
                           userInfo={inFoUser}
                         />
@@ -185,8 +169,6 @@ export default function Blog({ reFreshInfo }: IData) {
                             <ShareContent
                               userId={userId}
                               postId={m.id}
-                              handleRefresh={handleRefresh}
-                              reFreshInfo={reFreshInfo}
                               shareUsers={m.shareUsers.filter(
                                 (share) =>
                                   share.status == "Private" ||
@@ -206,7 +188,6 @@ export default function Blog({ reFreshInfo }: IData) {
                               likeNumber={m.likes.length}
                               likes={m.likes}
                               commentNumber={m.comments.length}
-                              reFreshInfo={reFreshInfo}
                               shareUsers={m.shareUsers}
                               userInfo={inFoUser}
                               groupName={m.groupName}
@@ -241,8 +222,6 @@ export default function Blog({ reFreshInfo }: IData) {
                             <ShareContent
                               userId={userId}
                               postId={m.id}
-                              handleRefresh={handleRefresh}
-                              reFreshInfo={reFreshInfo}
                               shareUsers={m.shareUsers.filter(
                                 (share) =>
                                   share.status == "Friend" &&
@@ -261,7 +240,6 @@ export default function Blog({ reFreshInfo }: IData) {
                               likeNumber={m.likes.length}
                               likes={m.likes}
                               commentNumber={m.comments.length}
-                              reFreshInfo={reFreshInfo}
                               shareUsers={m.shareUsers}
                               userInfo={inFoUser}
                               groupName={m.groupName}
@@ -302,8 +280,6 @@ export default function Blog({ reFreshInfo }: IData) {
                             <ShareContent
                               userId={userId}
                               eventId={m.id}
-                              handleRefresh={handleRefresh}
-                              reFreshInfo={reFreshInfo}
                               shareUsers={m.shareUsers.filter(
                                 (share) =>
                                   share.status == "Private" ||
@@ -320,7 +296,6 @@ export default function Blog({ reFreshInfo }: IData) {
                               endTime={m.endTime}
                               userId={m.owner}
                               coverPhoto={m.coverPhoto}
-                              handleRefresh={handleRefresh}
                             />
                           </Box>
                         ))}
@@ -351,8 +326,6 @@ export default function Blog({ reFreshInfo }: IData) {
                             <ShareContent
                               userId={userId}
                               eventId={m.id}
-                              handleRefresh={handleRefresh}
-                              reFreshInfo={reFreshInfo}
                               shareUsers={m.shareUsers.filter(
                                 (share) =>
                                   share.status == "Friend" &&
@@ -368,7 +341,6 @@ export default function Blog({ reFreshInfo }: IData) {
                               endTime={m.endTime}
                               userId={m.owner}
                               coverPhoto={m.coverPhoto}
-                              handleRefresh={handleRefresh}
                             />
                           </Box>
                         ))}

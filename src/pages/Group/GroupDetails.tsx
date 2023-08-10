@@ -157,8 +157,6 @@ export default function GroupDetails() {
                                     commentNumber={m.comments.length}
                                     groupName={m.groupName}
                                     groupId={m.groupId}
-                                    handleRefresh={handleRefresh}
-                                    reFreshInfo={0} 
                                     shareUsers={m.shareUsers}   
                                     userInfo={inFoUser}                               
                                   />

@@ -34,15 +34,11 @@ interface Idata {
   postId?: string;
   eventId?: string;
   shareUsers: ShareUser[];
-  reFreshInfo: number;
   userId?: string;
 }
 
-interface IFunction {
-  handleRefresh: () => void;
-}
 
-export default function ShareContent(props: Idata & IFunction) {
+export default function ShareContent(props: Idata ) {
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   React.useMemo(() => {
@@ -86,7 +82,6 @@ export default function ShareContent(props: Idata & IFunction) {
         updateShare.splice(IndexShare, 1);
         const updateData = { ...postData, shareUsers: updateShare };
         await updateDoc(doc.ref, updateData);
-        props.handleRefresh();
         PopupAlert("Deleted share content succussfully", "success");
       } else {
         PopupAlert("There is no share to delete!", "warning");
@@ -114,7 +109,6 @@ export default function ShareContent(props: Idata & IFunction) {
         updateShare.splice(IndexShare, 1);
         const updateData = { ...postData, shareUsers: updateShare };
         await updateDoc(doc.ref, updateData);
-        props.handleRefresh();
         PopupAlert("Deleted share content succussfully", "success");
       } else {
         PopupAlert("There is no share to delete!", "warning");

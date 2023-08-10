@@ -49,6 +49,7 @@ import {
   arrayUnion,
   deleteDoc,
   getDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import { Like, Post, ShareUser } from "../../interface/PostContent";
 import { styleBoxPop } from "../../utils/styleBox";
@@ -82,7 +83,6 @@ interface Idata {
   owner: string;
   groupName?: string;
   groupId?: string;
-  reFreshInfo: number;
   userInfo: User[];
 }
 
@@ -188,27 +188,24 @@ export default function MContainer(props: Idata) {
   };
 
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-  React.useMemo(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "users"),
-          where("uid", "==", props.owner)
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              uid: doc.id,
-              ...doc.data(),
-            } as User)
-        );
+  React.useEffect(() => {
+    const queryData = query(
+      collection(dbFireStore, "users"),
+      where("uid", "==", props.owner)
+    );
+    const unsubscribe = onSnapshot(
+      queryData,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as User);
         setInFoUser(queriedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      },
+      (error) => {
+        console.error("Error fetching data: ", error);
       }
+    );
+    return () => {
+      unsubscribe();
     };
-    fetchData();
   }, [props.owner]);
 
   const [openShare, setOpenShare] = React.useState(false);
@@ -289,7 +286,12 @@ export default function MContainer(props: Idata) {
                     primary={
                       <Box sx={{ fontSize: "16px" }}>
                         <b>
-                          {u.username}
+                          <NavLink
+                            to={`/profileBlog/${u.uid}`}
+                            style={{ color: "black", fontWeight:"bold" }}
+                          >
+                            {`${u.firstName} ${u.lastName}`}
+                          </NavLink>
                           <NavLink
                             to={`/groupDetail/${props.groupId}`}
                             style={{ color: themeApp.palette.primary.main }}

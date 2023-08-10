@@ -40,11 +40,7 @@ const Item = styled(Box)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-interface IFunction {
-  handleRefreshData: () => void;
-}
-
-export default function ProLeftside({ handleRefreshData }: IFunction) {
+export default function ProLeftside() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -129,7 +125,6 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
           profilePhoto: previewImages[0],
         });
         handleClearImage();
-        handleRefreshData();
       } else {
         console.log("Profile does not exist");
       }

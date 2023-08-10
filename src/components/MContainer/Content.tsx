@@ -90,6 +90,7 @@ export default function Content(props: IData & IFunction) {
   React.useEffect(() => {
     const q = query(
       collection(dbFireStore, "posts"),
+      where("id", "==", props.postId)
     );
   
     const unsubscribe = onSnapshot(
@@ -106,7 +107,7 @@ export default function Content(props: IData & IFunction) {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [props.postId]);
 
   const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
     const emoji = emojiData.find((data) => data.unified === emojiCode);
@@ -239,28 +240,25 @@ export default function Content(props: IData & IFunction) {
   const handleCloseReport = () => setOpenReportPost(false);
 
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-  React.useMemo(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "users"),
-          where("uid", "==", props.owner)
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              uid: doc.id,
-              ...doc.data(),
-            } as User)
-        );
+  React.useEffect(() => {
+    const queryData = query(
+      collection(dbFireStore, "users"),
+      where("uid", "==", props.owner)
+    );
+     const unsubscribe = onSnapshot(
+      queryData,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as User);
         setInFoUser(queriedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      },
+      (error) => {
+        console.error("Error fetching data: ", error);
       }
+    );
+    return () => {
+      unsubscribe();
     };
-    fetchData();
-  }, [props.owner])
+  }, [props.owner]);
 
   return (
     <Box>
