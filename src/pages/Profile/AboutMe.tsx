@@ -4,39 +4,32 @@ import { Divider, Stack, Typography } from "@mui/material";
 import { User } from "../../interface/User";
 import { Item } from "../../App";
 
-import { collection, query, getDocs, where } from "firebase/firestore";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
 
-interface IData {
-  reFresh: number;
-}
-
-export default function AboutMe({reFresh} : IData) {
+export default function AboutMe() {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "users"),
-          where("uid", "==", userInfo.uid)
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              uid: doc.id,
-              ...doc.data(),
-            } as User)
-        );
+    const queryData = query(
+      collection(dbFireStore, "users"),
+      where("uid", "==", userInfo.uid)
+    );
+    const unsubscribe = onSnapshot(
+      queryData,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as User);
         setInFoUser(queriedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      },
+      (error) => {
+        console.error("Error fetching data: ", error);
       }
+    );
+    return () => {
+      unsubscribe();
     };
-    fetchData();
-  }, [userInfo.uid, reFresh]);
+  }, [userInfo.uid]);
 
   return (
     <div>

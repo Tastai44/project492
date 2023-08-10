@@ -20,7 +20,7 @@ import Diversity3Icon from "@mui/icons-material/Diversity3";
 import { NavLink } from "react-router-dom";
 
 import { User } from "../interface/User";
-import { collection, query, getDocs, where } from "firebase/firestore";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { dbFireStore } from "../config/firebase";
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -31,53 +31,49 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-
 export default function LeftSide() {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "users"),
-          where("uid", "==", userInfo.uid)
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              uid: doc.id,
-              ...doc.data(),
-            } as User)
-        );
+    const queryData = query(
+      collection(dbFireStore, "users"),
+      where("uid", "==", userInfo.uid)
+    );
+    const unsubscribe = onSnapshot(
+      queryData,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as User);
         setInFoUser(queriedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      },
+      (error) => {
+        console.error("Error fetching data: ", error);
       }
+    );
+    return () => {
+      unsubscribe();
     };
-    fetchData();
   }, [userInfo.uid]);
 
   return (
     <Box sx={{ width: "120%" }}>
       <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
         <Box gridColumn="span 12">
-        <NavLink to={`/profileBlog/${userInfo.uid}`}>
-          {inFoUser.map((user) => (
-          <Item
-          key={user.uid}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              fontWeight: "bold",
-            }}
-          >
-            <Avatar alt="Remy Sharp" src={user.profilePhoto} />
-            {user.firstName} {user.lastName}
-          </Item>
-          ))}
+          <NavLink to={`/profileBlog/${userInfo.uid}`}>
+            {inFoUser.map((user) => (
+              <Item
+                key={user.uid}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  fontWeight: "bold",
+                }}
+              >
+                <Avatar alt="Remy Sharp" src={user.profilePhoto} />
+                {user.firstName} {user.lastName}
+              </Item>
+            ))}
           </NavLink>
         </Box>
 
@@ -107,7 +103,7 @@ export default function LeftSide() {
                 </ListItem>
 
                 <ListItem disablePadding>
-                <NavLink
+                  <NavLink
                     to={`/friends/${userInfo.uid}`}
                     style={({ isActive, isPending }) => {
                       return {
@@ -118,12 +114,12 @@ export default function LeftSide() {
                       };
                     }}
                   >
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <PeopleAltIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Friends" />
-                  </ListItemButton>
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <PeopleAltIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="Friends" />
+                    </ListItemButton>
                   </NavLink>
                 </ListItem>
 

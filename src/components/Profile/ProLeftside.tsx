@@ -26,6 +26,7 @@ import {
   getDocs,
   where,
   updateDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -57,26 +58,23 @@ export default function ProLeftside({ handleRefreshData }: IFunction) {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "users"),
-          where("uid", "==", userId)
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              uid: doc.id,
-              ...doc.data(),
-            } as User)
-        );
+    const queryData = query(
+      collection(dbFireStore, "users"),
+      where("uid", "==", userId)
+    );
+     const unsubscribe = onSnapshot(
+      queryData,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as User);
         setInFoUser(queriedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      },
+      (error) => {
+        console.error("Error fetching data: ", error);
       }
+    );
+    return () => {
+      unsubscribe();
     };
-    fetchData();
   }, [userId]);
 
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
