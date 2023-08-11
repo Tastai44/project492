@@ -1,17 +1,17 @@
 export interface IMember {
-    uid: string;
-    username: string;
-    profilePhoto?: string;
+	uid: string;
+	username: string;
+	profilePhoto?: string;
 }
 
 export interface IGroup {
-    gId: string;
-    groupName: string;
-    hostId: string;
-    members: IMember[];
-    status: string;
-    details: string;
-    coverPhoto: string;
-    createAt: string;
-    updateAt?: string;
+	gId: string;
+	groupName: string;
+	hostId: string;
+	members: IMember[];
+	status: string;
+	details: string;
+	coverPhoto: string;
+	createAt: string;
+	updateAt?: string;
 }

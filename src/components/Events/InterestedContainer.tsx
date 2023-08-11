@@ -4,29 +4,29 @@ import { Interest } from "../../interface/Event";
 import { NavLink } from "react-router-dom";
 
 interface IData {
-  interestedPeople: Interest[];
+    interestedPeople: Interest[];
 }
 
 export default function InterestedContainer({ interestedPeople }: IData) {
-  return (
-    <Paper>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Box sx={{ p: 1, fontSize: "15px", fontWeight: "bold" }}>
-          People who are interested
-        </Box>
-      </Box>
-      <Divider light />
-      {interestedPeople.map((item) => (
-        <NavLink key={item.interestBy} to={`/profileBlog/${item.interestBy}`} style={{ color: "black" }}>
-          <UserCard key={item.interestBy} userId={item.interestBy} />
-        </NavLink>
-      ))}
-    </Paper>
-  );
+    return (
+        <Paper>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
+            >
+                <Box sx={{ p: 1, fontSize: "15px", fontWeight: "bold" }}>
+                    People who are interested
+                </Box>
+            </Box>
+            <Divider light />
+            {interestedPeople.map((item) => (
+                <NavLink key={item.interestBy} to={`/profileBlog/${item.interestBy}`} style={{ color: "black" }}>
+                    <UserCard key={item.interestBy} userId={item.interestBy} />
+                </NavLink>
+            ))}
+        </Paper>
+    );
 }

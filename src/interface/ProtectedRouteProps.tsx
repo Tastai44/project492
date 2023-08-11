@@ -1,4 +1,3 @@
 export interface ProtectedRouteProps {
-    children: React.ReactNode;
-  }
-  
+	children: React.ReactNode;
+}

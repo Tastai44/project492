@@ -25,428 +25,428 @@ import { styled } from "@mui/material/styles";
 import ReportContent from "./pages/ReportContent";
 
 export const Item = styled(Box)(({ theme }) => ({
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  color: theme.palette.text.secondary,
+	...theme.typography.body2,
+	padding: theme.spacing(1),
+	color: theme.palette.text.secondary,
 }));
 
 function App() {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  
-  return (
-    <>
-      <Routes>
-        <Route path={"/login"} element={<Login />} />
+	const [open, setOpen] = React.useState(false);
+	const handleOpen = () => setOpen(true);
+	const handleClose = () => setOpen(false);
 
-        <Route
-          path={"/"}
-          element={
-            <>
-              <ProtectedRoute>
-                <Navigation
-                  open={open}
-                  handleOpen={handleOpen}
-                  handleClose={handleClose}
-                />
-                <Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
-                  <Grid item xs={12}>
-                    <Grid container justifyContent="space-between">
-                      <Grid item xs={2}>
-                        <Box style={{ position: "fixed" }}>
-                          <LeftSide />
-                        </Box>
-                      </Grid>
+	return (
+		<>
+			<Routes>
+				<Route path={"/login"} element={<Login />} />
 
-                      <Grid item xs={7}>
-                        <HomeFeed />
-                      </Grid>
+				<Route
+					path={"/"}
+					element={
+						<>
+							<ProtectedRoute>
+								<Navigation
+									open={open}
+									handleOpen={handleOpen}
+									handleClose={handleClose}
+								/>
+								<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
+									<Grid item xs={12}>
+										<Grid container justifyContent="space-between">
+											<Grid item xs={2}>
+												<Box style={{ position: "fixed" }}>
+													<LeftSide />
+												</Box>
+											</Grid>
 
-                      <Grid item xs={2}>
-                        <Box style={{ position: "fixed" }}>
-                          <RightContainer />
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </ProtectedRoute>
-            </>
-          }
-        />
-        <Route
-          path={"/members"}
-          element={
-            <>
-              {/* <ProtectedRoute> */}
-              <Navigation
-                open={open}
-                handleOpen={handleOpen}
-                handleClose={handleClose}
-              />
-              {/* <Members /> */}
-              <Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
-                <Grid item xs={12}>
-                  <Grid
-                    container
-                    justifyContent="space-between"
-                    paddingLeft={5}
-                    paddingRight={5}
-                  >
-                    <Grid item xs={2}>
-                      <div style={{ position: "fixed" }}>
-                        <LeftSide />
-                      </div>
-                    </Grid>
-                    <Members />
-                  </Grid>
-                </Grid>
-              </Grid>
-              {/* </ProtectedRoute> */}
-            </>
-          }
-        />
-        <Route
-          path={"/topics"}
-          element={
-            <>
-              {/* <ProtectedRoute> */}
-              <Navigation
-                open={open}
-                handleOpen={handleOpen}
-                handleClose={handleClose}
-              />
-              <Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
-                <Grid item xs={12}>
-                  <Grid
-                    container
-                    justifyContent="space-between"
-                    paddingLeft={5}
-                    paddingRight={5}
-                  >
-                    <Grid item xs={2}>
-                      <div style={{ position: "fixed" }}>
-                        <LeftSide />
-                      </div>
-                    </Grid>
+											<Grid item xs={7}>
+												<HomeFeed />
+											</Grid>
 
-                    <Grid item xs={7}>
-                      <Topics />
-                    </Grid>
+											<Grid item xs={2}>
+												<Box style={{ position: "fixed" }}>
+													<RightContainer />
+												</Box>
+											</Grid>
+										</Grid>
+									</Grid>
+								</Grid>
+							</ProtectedRoute>
+						</>
+					}
+				/>
+				<Route
+					path={"/members"}
+					element={
+						<>
+							{/* <ProtectedRoute> */}
+							<Navigation
+								open={open}
+								handleOpen={handleOpen}
+								handleClose={handleClose}
+							/>
+							{/* <Members /> */}
+							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
+								<Grid item xs={12}>
+									<Grid
+										container
+										justifyContent="space-between"
+										paddingLeft={5}
+										paddingRight={5}
+									>
+										<Grid item xs={2}>
+											<div style={{ position: "fixed" }}>
+												<LeftSide />
+											</div>
+										</Grid>
+										<Members />
+									</Grid>
+								</Grid>
+							</Grid>
+							{/* </ProtectedRoute> */}
+						</>
+					}
+				/>
+				<Route
+					path={"/topics"}
+					element={
+						<>
+							{/* <ProtectedRoute> */}
+							<Navigation
+								open={open}
+								handleOpen={handleOpen}
+								handleClose={handleClose}
+							/>
+							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
+								<Grid item xs={12}>
+									<Grid
+										container
+										justifyContent="space-between"
+										paddingLeft={5}
+										paddingRight={5}
+									>
+										<Grid item xs={2}>
+											<div style={{ position: "fixed" }}>
+												<LeftSide />
+											</div>
+										</Grid>
 
-                    <Grid item xs={2}>
-                      <div style={{ position: "fixed" }}>
-                        <RightContainer />
-                      </div>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-              {/* </ProtectedRoute> */}
-            </>
-          }
-        />
-        {/* Profile */}
-        <Route
-          path={"/profileBlog/:userId"}
-          element={
-            <>
-              {/* <ProtectedRoute> */}
-              <Navigation
-                open={open}
-                handleOpen={handleOpen}
-                handleClose={handleClose}
-              />
+										<Grid item xs={7}>
+											<Topics />
+										</Grid>
 
-              <Grid sx={{ flexGrow: 1 }} container marginTop={5}>
-                <Grid item xs={12}>
-                  <Grid
-                    container
-                    justifyContent="space-between"
-                    paddingLeft={5}
-                    paddingRight={5}
-                    spacing={10}
-                  >
-                    <Grid item xs={2}>
-                      <Item sx={{ backgroundColor: "#EEECEF" }}>
-                        <ProLeftside />
-                      </Item>
-                    </Grid>
-                    <Grid item xs={10}>
-                      <Item>
-                        <Box sx={{ width: "100%" }}>
-                          <Stack spacing={2}>
-                            <Item>
-                              <ProCoverImage />
-                            </Item>
-                            <Item>
-                              <Blog />
-                            </Item>
-                          </Stack>
-                        </Box>
-                      </Item>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
+										<Grid item xs={2}>
+											<div style={{ position: "fixed" }}>
+												<RightContainer />
+											</div>
+										</Grid>
+									</Grid>
+								</Grid>
+							</Grid>
+							{/* </ProtectedRoute> */}
+						</>
+					}
+				/>
+				{/* Profile */}
+				<Route
+					path={"/profileBlog/:userId"}
+					element={
+						<>
+							{/* <ProtectedRoute> */}
+							<Navigation
+								open={open}
+								handleOpen={handleOpen}
+								handleClose={handleClose}
+							/>
 
-              {/* </ProtectedRoute> */}
-            </>
-          }
-        />
-        <Route
-          path={"/aboutMe/:userId"}
-          element={
-            <>
-              {/* <ProtectedRoute> */}
-              <Navigation
-                open={open}
-                handleOpen={handleOpen}
-                handleClose={handleClose}
-              />
-              <Grid sx={{ flexGrow: 1 }} container marginTop={5}>
-                <Grid item xs={12}>
-                  <Grid
-                    container
-                    justifyContent="space-between"
-                    paddingLeft={5}
-                    paddingRight={5}
-                    spacing={10}
-                  >
-                    <Grid item xs={2}>
-                      <Item sx={{ backgroundColor: "#EEECEF" }}>
-                        <ProLeftside />
-                      </Item>
-                    </Grid>
+							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
+								<Grid item xs={12}>
+									<Grid
+										container
+										justifyContent="space-between"
+										paddingLeft={5}
+										paddingRight={5}
+										spacing={10}
+									>
+										<Grid item xs={2}>
+											<Item sx={{ backgroundColor: "#EEECEF" }}>
+												<ProLeftside />
+											</Item>
+										</Grid>
+										<Grid item xs={10}>
+											<Item>
+												<Box sx={{ width: "100%" }}>
+													<Stack spacing={2}>
+														<Item>
+															<ProCoverImage />
+														</Item>
+														<Item>
+															<Blog />
+														</Item>
+													</Stack>
+												</Box>
+											</Item>
+										</Grid>
+									</Grid>
+								</Grid>
+							</Grid>
 
-                    <Grid item xs={10}>
-                      <Item>
-                        <Box sx={{ width: "100%" }}>
-                          <Stack spacing={2}>
-                            <Item>
-                              <ProCoverImage />
-                            </Item>
-                            <Item>
-                              <AboutMe />
-                            </Item>
-                          </Stack>
-                        </Box>
-                      </Item>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-              {/* </ProtectedRoute> */}
-            </>
-          }
-        />
-        <Route
-          path={"/friends/:userId"}
-          element={
-            <>
-              {/* <ProtectedRoute> */}
-              <Navigation
-                open={open}
-                handleOpen={handleOpen}
-                handleClose={handleClose}
-              />
-              <Grid sx={{ flexGrow: 1 }} container marginTop={5}>
-                <Grid item xs={12}>
-                  <Grid
-                    container
-                    justifyContent="space-between"
-                    paddingLeft={5}
-                    paddingRight={5}
-                    spacing={10}
-                  >
-                    <Grid item xs={2}>
-                      <Item sx={{ backgroundColor: "#EEECEF" }}>
-                        <ProLeftside />
-                      </Item>
-                    </Grid>
+							{/* </ProtectedRoute> */}
+						</>
+					}
+				/>
+				<Route
+					path={"/aboutMe/:userId"}
+					element={
+						<>
+							{/* <ProtectedRoute> */}
+							<Navigation
+								open={open}
+								handleOpen={handleOpen}
+								handleClose={handleClose}
+							/>
+							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
+								<Grid item xs={12}>
+									<Grid
+										container
+										justifyContent="space-between"
+										paddingLeft={5}
+										paddingRight={5}
+										spacing={10}
+									>
+										<Grid item xs={2}>
+											<Item sx={{ backgroundColor: "#EEECEF" }}>
+												<ProLeftside />
+											</Item>
+										</Grid>
 
-                    <Grid item xs={10}>
-                      <Item>
-                        <Box sx={{ width: "100%" }}>
-                          <Stack>
-                            <Item>
-                              <ProCoverImage />
-                            </Item>
-                            <Item>
-                              <Friends />
-                            </Item>
-                          </Stack>
-                        </Box>
-                      </Item>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-              {/* </ProtectedRoute> */}
-            </>
-          }
-        />
-        <Route
-          path={"/collections/:userId"}
-          element={
-            <>
-              {/* <ProtectedRoute> */}
-              <Navigation
-                open={open}
-                handleOpen={handleOpen}
-                handleClose={handleClose}
-              />
-              <Grid sx={{ flexGrow: 1 }} container marginTop={5}>
-                <Grid item xs={12}>
-                  <Grid
-                    container
-                    justifyContent="space-between"
-                    paddingLeft={5}
-                    paddingRight={5}
-                    spacing={10}
-                  >
-                    <Grid item xs={2}>
-                      <Item sx={{ backgroundColor: "#EEECEF" }}>
-                        <ProLeftside />
-                      </Item>
-                    </Grid>
+										<Grid item xs={10}>
+											<Item>
+												<Box sx={{ width: "100%" }}>
+													<Stack spacing={2}>
+														<Item>
+															<ProCoverImage />
+														</Item>
+														<Item>
+															<AboutMe />
+														</Item>
+													</Stack>
+												</Box>
+											</Item>
+										</Grid>
+									</Grid>
+								</Grid>
+							</Grid>
+							{/* </ProtectedRoute> */}
+						</>
+					}
+				/>
+				<Route
+					path={"/friends/:userId"}
+					element={
+						<>
+							{/* <ProtectedRoute> */}
+							<Navigation
+								open={open}
+								handleOpen={handleOpen}
+								handleClose={handleClose}
+							/>
+							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
+								<Grid item xs={12}>
+									<Grid
+										container
+										justifyContent="space-between"
+										paddingLeft={5}
+										paddingRight={5}
+										spacing={10}
+									>
+										<Grid item xs={2}>
+											<Item sx={{ backgroundColor: "#EEECEF" }}>
+												<ProLeftside />
+											</Item>
+										</Grid>
 
-                    <Grid item xs={10}>
-                      <Item>
-                        <Box sx={{ width: "100%" }}>
-                          <Stack>
-                            <Item>
-                              <ProCoverImage />
-                            </Item>
-                            <Item>
-                              <Collections />
-                            </Item>
-                          </Stack>
-                        </Box>
-                      </Item>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-              {/* </ProtectedRoute> */}
-            </>
-          }
-        />
-        {/* Profile */}
+										<Grid item xs={10}>
+											<Item>
+												<Box sx={{ width: "100%" }}>
+													<Stack>
+														<Item>
+															<ProCoverImage />
+														</Item>
+														<Item>
+															<Friends />
+														</Item>
+													</Stack>
+												</Box>
+											</Item>
+										</Grid>
+									</Grid>
+								</Grid>
+							</Grid>
+							{/* </ProtectedRoute> */}
+						</>
+					}
+				/>
+				<Route
+					path={"/collections/:userId"}
+					element={
+						<>
+							{/* <ProtectedRoute> */}
+							<Navigation
+								open={open}
+								handleOpen={handleOpen}
+								handleClose={handleClose}
+							/>
+							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
+								<Grid item xs={12}>
+									<Grid
+										container
+										justifyContent="space-between"
+										paddingLeft={5}
+										paddingRight={5}
+										spacing={10}
+									>
+										<Grid item xs={2}>
+											<Item sx={{ backgroundColor: "#EEECEF" }}>
+												<ProLeftside />
+											</Item>
+										</Grid>
 
-        {/* Event */}
-        <Route
-          path={"/events"}
-          element={
-            <>
-              {/* <ProtectedRoute> */}
-              <Navigation
-                open={open}
-                handleOpen={handleOpen}
-                handleClose={handleClose}
-              />
-              <Events />
-              {/* </ProtectedRoute> */}
-            </>
-          }
-        />
-        <Route
-          path={"/eventsDetail/:eventId"}
-          element={
-            <>
-              {/* <ProtectedRoute> */}
-              <Navigation
-                open={open}
-                handleOpen={handleOpen}
-                handleClose={handleClose}
-              />
-              <EventDetail />
-              {/* </ProtectedRoute> */}
-            </>
-          }
-        />
-        {/* Event */}
+										<Grid item xs={10}>
+											<Item>
+												<Box sx={{ width: "100%" }}>
+													<Stack>
+														<Item>
+															<ProCoverImage />
+														</Item>
+														<Item>
+															<Collections />
+														</Item>
+													</Stack>
+												</Box>
+											</Item>
+										</Grid>
+									</Grid>
+								</Grid>
+							</Grid>
+							{/* </ProtectedRoute> */}
+						</>
+					}
+				/>
+				{/* Profile */}
 
-        {/* Groups */}
-        <Route
-          path={"/groups"}
-          element={
-            <>
-              {/* <ProtectedRoute> */}
-              <Navigation
-                open={open}
-                handleOpen={handleOpen}
-                handleClose={handleClose}
-              />
-              <Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
-                <Grid item xs={12}>
-                  <Grid
-                    container
-                    justifyContent="space-between"
-                    paddingLeft={5}
-                    paddingRight={5}
-                  >
-                    <Grid item xs={2}>
-                      <div style={{ position: "fixed" }}>
-                        <LeftSide />
-                      </div>
-                    </Grid>
+				{/* Event */}
+				<Route
+					path={"/events"}
+					element={
+						<>
+							{/* <ProtectedRoute> */}
+							<Navigation
+								open={open}
+								handleOpen={handleOpen}
+								handleClose={handleClose}
+							/>
+							<Events />
+							{/* </ProtectedRoute> */}
+						</>
+					}
+				/>
+				<Route
+					path={"/eventsDetail/:eventId"}
+					element={
+						<>
+							{/* <ProtectedRoute> */}
+							<Navigation
+								open={open}
+								handleOpen={handleOpen}
+								handleClose={handleClose}
+							/>
+							<EventDetail />
+							{/* </ProtectedRoute> */}
+						</>
+					}
+				/>
+				{/* Event */}
 
-                    <Grid item xs={7}>
-                      <Groups />
-                    </Grid>
+				{/* Groups */}
+				<Route
+					path={"/groups"}
+					element={
+						<>
+							{/* <ProtectedRoute> */}
+							<Navigation
+								open={open}
+								handleOpen={handleOpen}
+								handleClose={handleClose}
+							/>
+							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
+								<Grid item xs={12}>
+									<Grid
+										container
+										justifyContent="space-between"
+										paddingLeft={5}
+										paddingRight={5}
+									>
+										<Grid item xs={2}>
+											<div style={{ position: "fixed" }}>
+												<LeftSide />
+											</div>
+										</Grid>
 
-                    <Grid item xs={2}>
-                      <div style={{ position: "fixed" }}>
-                        <RightContainer />
-                      </div>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-              {/* </ProtectedRoute> */}
-            </>
-          }
-        />
-        <Route
-          path={"/groupDetail/:groupId"}
-          element={
-            <>
-              {/* <ProtectedRoute> */}
-              <Navigation
-                open={open}
-                handleOpen={handleOpen}
-                handleClose={handleClose}
-              />
-              <GroupDetails />
-              {/* </ProtectedRoute> */}
-            </>
-          }
-        />
-        <Route
-          path={"/report"}
-          element={
-            <>
-              {/* <ProtectedRoute> */}
-              <Navigation
-                open={open}
-                handleOpen={handleOpen}
-                handleClose={handleClose}
-              />
-              {/* <Members /> */}
-              <Grid sx={{ flexGrow: 1 }} container>
-                <Grid item xs={12}>
-                  <ReportContent />
-                </Grid>
-              </Grid>
-              {/* </ProtectedRoute> */}
-            </>
-          }
-        />
-      </Routes>
-    </>
-  );
+										<Grid item xs={7}>
+											<Groups />
+										</Grid>
+
+										<Grid item xs={2}>
+											<div style={{ position: "fixed" }}>
+												<RightContainer />
+											</div>
+										</Grid>
+									</Grid>
+								</Grid>
+							</Grid>
+							{/* </ProtectedRoute> */}
+						</>
+					}
+				/>
+				<Route
+					path={"/groupDetail/:groupId"}
+					element={
+						<>
+							{/* <ProtectedRoute> */}
+							<Navigation
+								open={open}
+								handleOpen={handleOpen}
+								handleClose={handleClose}
+							/>
+							<GroupDetails />
+							{/* </ProtectedRoute> */}
+						</>
+					}
+				/>
+				<Route
+					path={"/report"}
+					element={
+						<>
+							{/* <ProtectedRoute> */}
+							<Navigation
+								open={open}
+								handleOpen={handleOpen}
+								handleClose={handleClose}
+							/>
+							{/* <Members /> */}
+							<Grid sx={{ flexGrow: 1 }} container>
+								<Grid item xs={12}>
+									<ReportContent />
+								</Grid>
+							</Grid>
+							{/* </ProtectedRoute> */}
+						</>
+					}
+				/>
+			</Routes>
+		</>
+	);
 }
 
 export default App;

@@ -1,33 +1,33 @@
-import { Box,Paper } from "@mui/material";
+import { Box, Paper } from "@mui/material";
 
 interface IData {
-  details: string;
+	details: string;
 }
 
-export default function AboutGroup({details} : IData) {
-  return (
-    <div>
-      <Paper>
-        <Box
-          sx={{
-            fontSize: "20px",
-            textAlign: "center",
-            padding: "5px",
-            fontWeight: "bold",
-          }}
-        >
-          About The Group
-        </Box>
-        <Box
-          sx={{
-            textAlign: "left",
-            padding: "10px",
-            color: "#727272",
-          }}
-        >
-          {details}
-        </Box>
-      </Paper>
-    </div>
-  );
+export default function AboutGroup({ details }: IData) {
+	return (
+		<div>
+			<Paper>
+				<Box
+					sx={{
+						fontSize: "20px",
+						textAlign: "center",
+						padding: "5px",
+						fontWeight: "bold",
+					}}
+				>
+					About The Group
+				</Box>
+				<Box
+					sx={{
+						textAlign: "left",
+						padding: "10px",
+						color: "#727272",
+					}}
+				>
+					{details}
+				</Box>
+			</Paper>
+		</div>
+	);
 }

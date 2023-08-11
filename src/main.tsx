@@ -8,13 +8,13 @@ import { ThemeProvider } from "@emotion/react";
 import { themeApp } from "./utils/Theme.tsx";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <ThemeProvider theme={themeApp}>
-    <React.StrictMode>
-      <BrowserRouter>
-        <SnackbarProvider>
-          <App />
-        </SnackbarProvider>
-      </BrowserRouter>
-    </React.StrictMode>
-  </ThemeProvider>
+	<ThemeProvider theme={themeApp}>
+		<React.StrictMode>
+			<BrowserRouter>
+				<SnackbarProvider>
+					<App />
+				</SnackbarProvider>
+			</BrowserRouter>
+		</React.StrictMode>
+	</ThemeProvider>
 );
