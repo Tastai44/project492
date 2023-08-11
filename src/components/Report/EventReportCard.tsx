@@ -51,7 +51,7 @@ export default function EventReportCard(props: IFunction & IData) {
     };
     const postRef = doc(eventCollection, props.eventId);
     updateDoc(postRef, {
-      reportPost: arrayUnion(newReason),
+      reportEvent: arrayUnion(newReason),
     })
       .then(() => {
         clearState();

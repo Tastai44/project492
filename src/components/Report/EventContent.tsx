@@ -23,7 +23,6 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import LockIcon from "@mui/icons-material/Lock";
 import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
-import emojiData from "emoji-datasource-facebook";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 
@@ -41,11 +40,10 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { User } from "../../interface/User";
-import { NavLink } from "react-router-dom";
-import { themeApp } from "../../utils/Theme";
+
 import PopupAlert from "../PopupAlert";
 import AddTaskIcon from "@mui/icons-material/AddTask";
-import ReasonContainer from "./ReasonContainer";
+import EventReasonContainer from "./EventReasonContainer";
 import { EventPost, EventReport } from "../../interface/Event";
 
 export const Item = styled(Paper)(({ theme }) => ({
@@ -71,8 +69,12 @@ interface Idata {
 
 export default function EventContent(props: Idata) {
   const [openReason, setOpenReason] = React.useState(false);
-  const handleOpenReason = () => {setOpenReason(true)}
-  const handleCloseReason = () => {setOpenReason(false)}
+  const handleOpenReason = () => {
+    setOpenReason(true);
+  };
+  const handleCloseReason = () => {
+    setOpenReason(false);
+  };
   const [iconStatus, setIconStatus] = React.useState("");
   React.useEffect(() => {
     if (props.status === "Private") {
@@ -84,11 +86,6 @@ export default function EventContent(props: Idata) {
     }
   }, [iconStatus, props.status]);
 
-  const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
-    const emoji = emojiData.find((data) => data.unified === emojiCode);
-    return emoji ? emoji.name : undefined;
-  };
-
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -99,8 +96,8 @@ export default function EventContent(props: Idata) {
     setAnchorElUser(null);
   };
 
-  const handleDelete = (pId: string) => {
-    const postRef = doc(dbFireStore, "posts", pId);
+  const handleDelete = (eId: string) => {
+    const postRef = doc(dbFireStore, "events", eId);
     getDoc(postRef);
     deleteDoc(postRef)
       .then(() => {
@@ -114,14 +111,19 @@ export default function EventContent(props: Idata) {
   };
 
   const handleApprove = async (id: string) => {
-    const IndexReport = props.reportEvent.findIndex((index) => index.eventId === props.eventId);
+    const IndexReport = props.reportEvent.findIndex(
+      (index) => index.eventId === props.eventId
+    );
     try {
-      const queryPost = query(collection(dbFireStore, "posts"), where("id", "==", id));
+      const queryPost = query(
+        collection(dbFireStore, "events"),
+        where("eventId", "==", id)
+      );
       const querySnapshot = await getDocs(queryPost);
 
       const doc = querySnapshot.docs[0];
-      if(doc.exists()) {
-        const eventData = {eventId: doc.id, ...doc.data() } as EventPost;
+      if (doc.exists()) {
+        const eventData = { eventId: doc.id, ...doc.data() } as EventPost;
         const updateReport = [...eventData.reportEvent];
         updateReport.splice(IndexReport, 1);
         const updatedData = { ...eventData, reportPost: updateReport };
@@ -133,7 +135,7 @@ export default function EventContent(props: Idata) {
     } catch (error) {
       console.error("Error approving report:", error);
     }
-  }
+  };
 
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   React.useEffect(() => {
@@ -158,14 +160,13 @@ export default function EventContent(props: Idata) {
 
   return (
     <Box sx={{ mb: 5 }}>
-      {/* <ReasonContainer 
+      <EventReasonContainer
         eventId={props.eventId}
         openReason={openReason}
         handleCloseReason={handleCloseReason}
-        handleRefresh={props.handleRefresh}
-        reportPost={props.reportPost}
-        owner={props.owner}
-      /> */}
+        reportEvent={props.reportEvent}
+        ownerId={props.ownerId}
+      />
       {inFoUser.map((u) => (
         <Box key={u.uid}>
           <Box sx={{ width: "100%" }}>
@@ -185,9 +186,8 @@ export default function EventContent(props: Idata) {
                   <ListItemText
                     primary={
                       <Box sx={{ fontSize: "20px" }}>
-                        <b>
-                          {u.username}
-                        </b>
+                        <b>{`${u.firstName} ${u.lastName} `}</b>
+                        {`(${props.title})`}
                       </Box>
                     }
                     secondary={
@@ -258,7 +258,7 @@ export default function EventContent(props: Idata) {
                     color="text.secondary"
                     sx={{ textAlign: "justify", fontSize: "25px" }}
                   >
-                    {props.title}
+                    {props.details}
                   </Typography>
                 </CardContent>
                 <Box
@@ -273,23 +273,23 @@ export default function EventContent(props: Idata) {
                     ? props.topic
                     : `#${props.topic}`}
                 </Box>
-                  <ImageList
-                    sx={{
-                      width: "100%",
-                      minHeight: "300px",
-                      maxHeight: "auto",
-                      justifyContent: "center",
-                    }}
-                    cols={1}
-                  >
-                      <ImageListItem>
-                        <img
-                          src={props.coverPhoto}
-                          alt={`Preview`}
-                          loading="lazy"
-                        />
-                      </ImageListItem>
-                  </ImageList>
+                <ImageList
+                  sx={{
+                    width: "100%",
+                    minHeight: "300px",
+                    maxHeight: "auto",
+                    justifyContent: "center",
+                  }}
+                  cols={1}
+                >
+                  <ImageListItem onClick={handleOpenReason}>
+                    <img
+                      src={props.coverPhoto}
+                      alt={`Preview`}
+                      loading="lazy"
+                    />
+                  </ImageListItem>
+                </ImageList>
                 <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
 
                 <CardActions
@@ -301,7 +301,7 @@ export default function EventContent(props: Idata) {
                   </Button>
                   <Box>
                     <Button
-                    onClick={handleOpenReason}
+                      onClick={handleOpenReason}
                       aria-label="add to favorites"
                       sx={{ color: "grey" }}
                     >

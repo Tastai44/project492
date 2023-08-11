@@ -106,15 +106,24 @@ export default function ReportContent() {
                       reportPost={post.reportPost}
                     />
                   ))}
-                  {/* {eventData.filter((item) => item.reportEvent.length !== 0).map((event) => (
+                  {eventData.filter((item) => item.reportEvent.length !== 0).map((event) => (
                     <EventContent 
-                    
+                      ownerId={event.owner}
+                      details={event.details}
+                      status={event.status}
+                      eventId={event.eventId}
+                      title={event.title}
+                      topic={event.topic}
+                      createAt={event.createAt ?? ""}
+                      coverPhoto={event.coverPhoto}
+                      reportNumber={event.reportEvent.length}
+                      reportEvent={event.reportEvent ?? []}
                     />
-                  ))} */}
+                  ))}
               </>
             ) : (
               <Typography variant="h4" sx={{ color: "black" }}>
-                There is no report post.
+                There is no report content.
               </Typography>
             )}
           </Grid>
