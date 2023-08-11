@@ -79,16 +79,6 @@ export default function ReportContent(props: Idata) {
 	const handleCloseReason = () => {
 		setOpenReason(false);
 	};
-	const [iconStatus, setIconStatus] = React.useState("");
-	React.useEffect(() => {
-		if (props.status === "Private") {
-			setIconStatus("LockIcon");
-		} else if (props.status === "Friend") {
-			setIconStatus("GroupIcon");
-		} else if (props.status === "Public") {
-			setIconStatus("PublicIcon");
-		}
-	}, [iconStatus, props.status]);
 
 	const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
 		const emoji = emojiData.find((data) => data.unified === emojiCode);
@@ -199,7 +189,12 @@ export default function ReportContent(props: Idata) {
 										primary={
 											<Box sx={{ fontSize: "20px" }}>
 												<b>
-													{`${u.firstName} ${u.lastName} `}
+													<NavLink
+														to={`/profileBlog/${props.owner}`}
+														style={{ color: "black", fontWeight: "bold" }}
+													>
+														{`${u.firstName} ${u.lastName} `}
+													</NavLink>
 													<NavLink
 														to={`/groupDetail/${props.groupId}`}
 														style={{ color: themeApp.palette.primary.main }}
@@ -223,9 +218,9 @@ export default function ReportContent(props: Idata) {
 												sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
 											>
 												{props.createAt}
-												{iconStatus === "LockIcon" && <LockIcon />}
-												{iconStatus === "GroupIcon" && <GroupIcon />}
-												{iconStatus === "PublicIcon" && <PublicIcon />}
+												{props.status === "Private" && <LockIcon />}
+												{props.status === "Friend" && <GroupIcon />}
+												{props.status === "Public" && <PublicIcon />}
 												{props.status}
 											</Typography>
 										}

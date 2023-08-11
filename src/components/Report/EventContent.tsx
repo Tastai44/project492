@@ -45,6 +45,8 @@ import PopupAlert from "../PopupAlert";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import EventReasonContainer from "./EventReasonContainer";
 import { EventPost, EventReport } from "../../interface/Event";
+import { NavLink } from "react-router-dom";
+import { themeApp } from "../../utils/Theme";
 
 export const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -186,8 +188,20 @@ export default function EventContent(props: Idata) {
                                     <ListItemText
                                         primary={
                                             <Box sx={{ fontSize: "20px" }}>
-                                                <b>{`${u.firstName} ${u.lastName} `}</b>
-                                                {`(${props.title})`}
+                                                <b>
+                                                    <NavLink
+                                                        to={`/profileBlog/${props.ownerId}`}
+                                                        style={{ color: "black", fontWeight: "bold" }}
+                                                    >
+                                                        {`${u.firstName} ${u.lastName} `}
+                                                    </NavLink>
+                                                </b>
+                                                <NavLink
+                                                    to={`/eventsDetail/${props.eventId}`}
+                                                    style={{ color: themeApp.palette.primary.main }}
+                                                >
+                                                    {`(${props.title})`}
+                                                </NavLink>
                                             </Box>
                                         }
                                         secondary={
