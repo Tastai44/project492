@@ -27,7 +27,7 @@ interface Idata {
 	endDate: string;
 	endTime: string;
 	userId: string;
-	coverPhoto: string[];
+	coverPhoto: string;
 }
 
 
@@ -62,14 +62,11 @@ export default function ShareEvent(props: Idata) {
 				<Stack spacing={2}>
 					<Item sx={{ display: "flex", flexDirection: "column" }}>
 						<NavLink to={`/eventsDetail/${props.eventId}`}>
-							{props.coverPhoto.map((cover, index) => (
-								<CardMedia
-									key={index}
-									sx={{ height: 300 }}
-									image={cover}
-									title="green iguana"
-								/>
-							))}
+							<CardMedia
+								sx={{ height: 300 }}
+								image={props.coverPhoto}
+								title="green iguana"
+							/>
 						</NavLink>
 						<CardContent sx={{ textAlign: "justify" }}>
 							<Typography

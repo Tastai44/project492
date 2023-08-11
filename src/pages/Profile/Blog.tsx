@@ -276,10 +276,10 @@ export default function Blog() {
 													)
 												)
 												.map((m) => (
-													<Box key={m.id}>
+													<Box key={m.eventId}>
 														<ShareContent
 															userId={userId}
-															eventId={m.id}
+															eventId={m.eventId}
 															shareUsers={m.shareUsers.filter(
 																(share) =>
 																	share.status == "Private" ||
@@ -288,7 +288,7 @@ export default function Blog() {
 															)}
 														/>
 														<ShareEvent
-															eventId={m.id}
+															eventId={m.eventId}
 															startDate={m.startDate}
 															startTime={m.startTime}
 															title={m.title}
@@ -322,10 +322,10 @@ export default function Blog() {
 													)
 												)
 												.map((m) => (
-													<Box key={m.id}>
+													<Box key={m.eventId}>
 														<ShareContent
 															userId={userId}
-															eventId={m.id}
+															eventId={m.eventId}
 															shareUsers={m.shareUsers.filter(
 																(share) =>
 																	share.status == "Friend" &&
@@ -333,7 +333,7 @@ export default function Blog() {
 															)}
 														/>
 														<ShareEvent
-															eventId={m.id}
+															eventId={m.eventId}
 															startDate={m.startDate}
 															startTime={m.startTime}
 															title={m.title}

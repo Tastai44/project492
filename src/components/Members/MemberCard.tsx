@@ -18,17 +18,15 @@ import {
 import { dbFireStore } from "../../config/firebase";
 import { IFriendList, User } from "../../interface/User";
 import { NavLink } from "react-router-dom";
+import PopupAlert from "../PopupAlert";
 
 interface IData {
     username: string;
     profilePhoto: string;
     uId: string;
 }
-interface IFunction {
-    handleRefresh: () => void;
-}
 
-export default function MemberCard(props: IData & IFunction) {
+export default function MemberCard(props: IData) {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const [user, setUser] = React.useState<User[]>([]);
     React.useEffect(() => {
@@ -48,7 +46,7 @@ export default function MemberCard(props: IData & IFunction) {
         fetchUSerData();
     }, [user, userInfo.uid]);
 
-    const AddFriendOtherSide = async () => {
+    const addFriendOtherSide = async () => {
         const addFriend: IFriendList[] = user.map((m) => ({
             status: true,
             friendId: userInfo.uid,
@@ -66,7 +64,6 @@ export default function MemberCard(props: IData & IFunction) {
                 friendList: addFriend,
             })
                 .then(() => {
-                    props.handleRefresh();
                     console.log("Successfully added friend to the friendList.");
                 })
                 .catch((error) => {
@@ -92,9 +89,8 @@ export default function MemberCard(props: IData & IFunction) {
                 friendList: arrayUnion(addFriend),
             })
                 .then(() => {
-                    AddFriendOtherSide();
-                    props.handleRefresh();
-                    console.log("Successfully added friend to the friendList.");
+                    addFriendOtherSide();
+                    PopupAlert("Successfully added friend to the friendList", "success");
                 })
                 .catch((error) => {
                     console.error("Error adding friend to the friendList: ", error);

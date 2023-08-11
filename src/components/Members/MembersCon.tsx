@@ -16,11 +16,6 @@ export default function MembersCon() {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const [otherMembers, setOtherMembers] = React.useState<User[]>([]);
     const [user, setUser] = React.useState<User[]>([]);
-    const [refresh, setRefresh] = React.useState(0);
-
-    const handleRefresh = () => {
-        setRefresh((pre) => pre + 1);
-    };
 
     React.useEffect(() => {
         const fetchData = async () => {
@@ -53,12 +48,8 @@ export default function MembersCon() {
         };
         fetchUSerData();
         fetchData();
-    }, [userInfo.uid, refresh, user, otherMembers]);
-    // console.log(otherMembers.filter((f) =>
-    //   !user.some((m) =>
-    //     m.friendList?.some((s) => f.uid === s.friendId)
-    //   )
-    // ));
+    }, [userInfo.uid, user, otherMembers]);
+
     return (
         <Box
             sx={{ display: "flex", flexDirection: "column", gap: 5, color: "black" }}
@@ -105,7 +96,6 @@ export default function MembersCon() {
                                 otherUser.profilePhoto ? otherUser.profilePhoto : ""
                             }
                             uId={otherUser.uid}
-                            handleRefresh={handleRefresh}
                         />
                     ))}
             </Grid>
