@@ -11,7 +11,7 @@ export default function LeftSideContainer({evenetData} : IData) {
   return (
     <div>
       {evenetData.map((e) => (
-        <Box sx={{display:"flex", flexDirection:"column"}} key={e.id}>
+        <Box sx={{display:"flex", flexDirection:"column"}} key={e.eventId}>
           <Host 
             hostId={e.owner}
           />

@@ -71,11 +71,7 @@ interface Idata {
   reportPost: PostReport[];
 }
 
-interface IFunction {
-  handleRefresh: () => void;
-}
-
-export default function ReportContent(props: Idata & IFunction) {
+export default function ReportContent(props: Idata) {
   const [openReason, setOpenReason] = React.useState(false);
   const handleOpenReason = () => {
     setOpenReason(true);
@@ -116,7 +112,6 @@ export default function ReportContent(props: Idata & IFunction) {
       .then(() => {
         PopupAlert("Post deleted successfully", "success");
         console.log("Post deleted successfully");
-        props.handleRefresh();
       })
       .catch((error) => {
         PopupAlert("Error deleting post", "error");
@@ -142,7 +137,6 @@ export default function ReportContent(props: Idata & IFunction) {
         updateReport.splice(IndexReport, 1);
         const updatedData = { ...postData, reportPost: updateReport };
         await updateDoc(doc.ref, updatedData);
-        props.handleRefresh();
         PopupAlert("Report approved successfully", "success");
       } else {
         PopupAlert("No post found with the specified ID", "error");
@@ -182,7 +176,6 @@ export default function ReportContent(props: Idata & IFunction) {
         postId={props.postId}
         openReason={openReason}
         handleCloseReason={handleCloseReason}
-        handleRefresh={props.handleRefresh}
         reportPost={props.reportPost}
         owner={props.owner}
       />
@@ -206,7 +199,7 @@ export default function ReportContent(props: Idata & IFunction) {
                     primary={
                       <Box sx={{ fontSize: "20px" }}>
                         <b>
-                          {u.username}
+                          {`${u.firstName} ${u.lastName} `}
                           <NavLink
                             to={`/groupDetail/${props.groupId}`}
                             style={{ color: themeApp.palette.primary.main }}

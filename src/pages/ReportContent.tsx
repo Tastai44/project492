@@ -8,35 +8,52 @@ import {
 } from "../components/Navigation";
 import React from "react";
 import "firebase/database";
-import { collection, orderBy, getDocs, query } from "firebase/firestore";
+import { collection, orderBy, query, onSnapshot } from "firebase/firestore";
 import { dbFireStore } from "../config/firebase";
 import { Post } from "../interface/PostContent";
 import Content from "../components/Report/Content";
+import { EventPost } from "../interface/Event";
+import EventContent from "../components/Report/EventContent";
 
 export default function ReportContent() {
-  const [reFresh, setReFresh] = React.useState(0);
   const [postData, setPostData] = React.useState<Post[]>([]);
-
-  const handleRefresh = () => {
-    setReFresh((pre) => pre + 1);
-  };
+  const [eventData, setEventData] = React.useState<EventPost[]>([]);
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "posts"),
-          orderBy("createAt", "desc")
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
+    const queryPostData = query(
+      collection(dbFireStore, "posts"),
+      orderBy("createAt", "desc")
+    );
+    const postUnsubscribe = onSnapshot(
+      queryPostData,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
         setPostData(queriedData);
-      } catch (error) {
+      },
+      (error) => {
         console.error("Error fetching data:", error);
       }
-    };
+    );
 
-    fetchData();
-  }, [reFresh]);
+    const queryEventData = query(
+      collection(dbFireStore, "events"),
+      orderBy("createAt", "desc")
+    );
+    const eventUnsubscribe = onSnapshot(
+      queryEventData,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as EventPost);
+        setEventData(queriedData);
+      },
+      (error) => {
+        console.error("Error fetching data:", error);
+      }
+    );
+
+    return () => {
+      postUnsubscribe();
+      eventUnsubscribe();
+    };
+  }, []);
   return (
     <Box sx={{ width: "100%", marginTop: 7 }}>
       <Stack spacing={2}>
@@ -85,11 +102,15 @@ export default function ReportContent() {
                       groupName={post.groupName}
                       groupId={post.groupId}
                       reportNumber={post.reportPost.length}
-                      handleRefresh={handleRefresh}
                       reFreshInfo={0}
                       reportPost={post.reportPost}
                     />
                   ))}
+                  {/* {eventData.filter((item) => item.reportEvent.length !== 0).map((event) => (
+                    <EventContent 
+                    
+                    />
+                  ))} */}
               </>
             ) : (
               <Typography variant="h4" sx={{ color: "black" }}>

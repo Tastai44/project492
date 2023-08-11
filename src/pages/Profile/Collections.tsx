@@ -29,7 +29,9 @@ export default function Collections() {
   const [openPost, setOpenPost] = React.useState(false);
   const [likes, setLikes] = React.useState<Like[]>([]);
   const [postId, setPostId] = React.useState("");
-
+  const [ownerId, setOwnerId] = React.useState("");
+  
+  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   React.useEffect(() => {
     const queryData = query(
       collection(dbFireStore, "posts"),
@@ -53,9 +55,10 @@ export default function Collections() {
     };
   }, [userId]);
 
-  const handletOpenPost = (id: string, likeData: Like[]) => {
+  const handletOpenPost = (id: string, likeData: Like[], ownerId: string) => {
     setOpenPost(true);
     setPostId(id);
+    setOwnerId(ownerId);
     setLikes(likeData);
   };
   const handleClosePost = () => {
@@ -74,9 +77,10 @@ export default function Collections() {
           <Paper sx={styleBoxPop}>
             <Content
               postId={postId}
-              userId={userId || ""}
               likes={likes}
+              userId={userInfo.uid}
               handleClosePost={handleClosePost}
+              owner={ownerId}
             />
           </Paper>
         </Box>
@@ -127,7 +131,7 @@ export default function Collections() {
                 m.photoPost.map((img, index) => (
                   <ImageListItem
                     key={index}
-                    onClick={() => handletOpenPost(m.id, m.likes)}
+                    onClick={() => handletOpenPost(m.id, m.likes, m.owner)}
                   >
                     <img src={img} alt={`Preview ${index}`} loading="lazy" />
                   </ImageListItem>

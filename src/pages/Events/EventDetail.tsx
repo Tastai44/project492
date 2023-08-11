@@ -31,7 +31,7 @@ export default function EventDetail() {
   React.useEffect(() => {
     const fetchData = query(
       collection(dbFireStore, "events"),
-      where("id", "==", eventId),
+      where("eventId", "==", eventId),
       orderBy("createAt", "desc")
     );
     const unsubscribe = onSnapshot(
@@ -78,7 +78,7 @@ export default function EventDetail() {
   return (
     <div>
       {data.map((e) => (
-        <Grid key={e.id} sx={{ flexGrow: 1 }} container marginTop={5}>
+        <Grid key={e.eventId} sx={{ flexGrow: 1 }} container marginTop={5}>
           <Grid
             container
             justifyContent="space-between"
@@ -96,7 +96,7 @@ export default function EventDetail() {
                         title={e.title}
                         startDate={e.startDate}
                         startTime={e.startTime}
-                        eventId={e.id}
+                        eventId={e.eventId}
                         endDate={e.endDate}
                         endTime={e.endTime}
                         topic={e.topic}
@@ -115,7 +115,7 @@ export default function EventDetail() {
                         inFoUser.find((user) => user.friendList)?.friendList ??
                         []
                       }
-                      eventId={e.id}
+                      eventId={e.eventId}
                     />
                     <Item>
                       <Box sx={{ flexGrow: 1 }}>
@@ -127,7 +127,7 @@ export default function EventDetail() {
                           </Grid>
                           <Grid item xs={7}>
                             <Item>
-                              <DetailCard details={e.details} eventId={e.id}/>
+                              <DetailCard details={e.details} eventId={e.eventId}/>
                             </Item>
                           </Grid>
                           <Grid item xs={2.5}>

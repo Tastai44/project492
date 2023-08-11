@@ -38,14 +38,15 @@ import {
   deleteDoc,
   getDoc,
   updateDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import { User } from "../../interface/User";
 import { NavLink } from "react-router-dom";
 import { themeApp } from "../../utils/Theme";
 import PopupAlert from "../PopupAlert";
 import AddTaskIcon from "@mui/icons-material/AddTask";
-import { Post, PostReport } from "../../interface/PostContent";
 import ReasonContainer from "./ReasonContainer";
+import { EventPost, EventReport } from "../../interface/Event";
 
 export const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -56,26 +57,19 @@ export const Item = styled(Paper)(({ theme }) => ({
 }));
 
 interface Idata {
-  caption: string;
-  hashTagTopic: string;
+  ownerId: string;
+  details: string;
   status: string;
-  createAt?: string;
-  photoPost: string[];
-  emoji?: string;
   eventId: string;
-  owner: string;
-  groupName?: string;
-  groupId?: string;
-  reFreshInfo: number;
+  title: string;
+  topic: string;
+  createAt: string;
+  coverPhoto: string;
   reportNumber: number;
-  reportPost: PostReport[];
+  reportEvent: EventReport[];
 }
 
-interface IFunction {
-  handleRefresh: () => void;
-}
-
-export default function EventContent(props: Idata & IFunction) {
+export default function EventContent(props: Idata) {
   const [openReason, setOpenReason] = React.useState(false);
   const handleOpenReason = () => {setOpenReason(true)}
   const handleCloseReason = () => {setOpenReason(false)}
@@ -112,7 +106,6 @@ export default function EventContent(props: Idata & IFunction) {
       .then(() => {
         PopupAlert("Post deleted successfully", "success");
         console.log("Post deleted successfully");
-        props.handleRefresh();
       })
       .catch((error) => {
         PopupAlert("Error deleting post", "error");
@@ -121,19 +114,18 @@ export default function EventContent(props: Idata & IFunction) {
   };
 
   const handleApprove = async (id: string) => {
-    const IndexReport = props.reportPost.findIndex((index) => index.postId === props.eventId);
+    const IndexReport = props.reportEvent.findIndex((index) => index.eventId === props.eventId);
     try {
       const queryPost = query(collection(dbFireStore, "posts"), where("id", "==", id));
       const querySnapshot = await getDocs(queryPost);
 
       const doc = querySnapshot.docs[0];
       if(doc.exists()) {
-        const postData = {id: doc.id, ...doc.data() } as Post;
-        const updateReport = [...postData.reportPost];
+        const eventData = {eventId: doc.id, ...doc.data() } as EventPost;
+        const updateReport = [...eventData.reportEvent];
         updateReport.splice(IndexReport, 1);
-        const updatedData = { ...postData, reportPost: updateReport };
+        const updatedData = { ...eventData, reportPost: updateReport };
         await updateDoc(doc.ref, updatedData);
-        props.handleRefresh();
         PopupAlert("Report approved successfully", "success");
       } else {
         PopupAlert("No post found with the specified ID", "error");
@@ -145,27 +137,24 @@ export default function EventContent(props: Idata & IFunction) {
 
   const [inFoUser, setInFoUser] = React.useState<User[]>([]);
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const q = query(
-          collection(dbFireStore, "users"),
-          where("uid", "==", props.owner)
-        );
-        const querySnapshot = await getDocs(q);
-        const queriedData = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              uid: doc.id,
-              ...doc.data(),
-            } as User)
-        );
+    const queryData = query(
+      collection(dbFireStore, "users"),
+      where("uid", "==", props.ownerId)
+    );
+    const unsubscribe = onSnapshot(
+      queryData,
+      (snapshot) => {
+        const queriedData = snapshot.docs.map((doc) => doc.data() as User);
         setInFoUser(queriedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      },
+      (error) => {
+        console.error("Error fetching data: ", error);
       }
+    );
+    return () => {
+      unsubscribe();
     };
-    fetchData();
-  }, [props.owner, props.reFreshInfo]);
+  }, [props.ownerId]);
 
   return (
     <Box sx={{ mb: 5 }}>
@@ -198,22 +187,7 @@ export default function EventContent(props: Idata & IFunction) {
                       <Box sx={{ fontSize: "20px" }}>
                         <b>
                           {u.username}
-                          <NavLink
-                            to={`/groupDetail/${props.groupId}`}
-                            style={{ color: themeApp.palette.primary.main }}
-                          >
-                            {props.groupName ? ` (${props.groupName}) ` : ""}
-                          </NavLink>
                         </b>
-                        {props.emoji && (
-                          <>
-                            is feeling
-                            {String.fromCodePoint(parseInt(props.emoji, 16))}
-                            {convertEmojiCodeToName(
-                              props.emoji
-                            )?.toLocaleLowerCase()}
-                          </>
-                        )}
                       </Box>
                     }
                     secondary={
@@ -284,7 +258,7 @@ export default function EventContent(props: Idata & IFunction) {
                     color="text.secondary"
                     sx={{ textAlign: "justify", fontSize: "25px" }}
                   >
-                    {props.caption}
+                    {props.title}
                   </Typography>
                 </CardContent>
                 <Box
@@ -295,11 +269,10 @@ export default function EventContent(props: Idata & IFunction) {
                     margin: 1,
                   }}
                 >
-                  {props.hashTagTopic.startsWith("#")
-                    ? props.hashTagTopic
-                    : `#${props.hashTagTopic}`}
+                  {props.topic.startsWith("#")
+                    ? props.topic
+                    : `#${props.topic}`}
                 </Box>
-                {props.photoPost.length == 1 ? (
                   <ImageList
                     sx={{
                       width: "100%",
@@ -309,29 +282,14 @@ export default function EventContent(props: Idata & IFunction) {
                     }}
                     cols={1}
                   >
-                    {props.photoPost.map((image, index) => (
-                      <ImageListItem key={index}>
+                      <ImageListItem>
                         <img
-                          src={image}
-                          alt={`Preview ${index}`}
+                          src={props.coverPhoto}
+                          alt={`Preview`}
                           loading="lazy"
                         />
                       </ImageListItem>
-                    ))}
                   </ImageList>
-                ) : (
-                  <ImageList variant="masonry" cols={2} gap={2}>
-                    {props.photoPost.map((image, index) => (
-                      <ImageListItem key={index}>
-                        <img
-                          src={image}
-                          alt={`Preview ${index}`}
-                          loading="lazy"
-                        />
-                      </ImageListItem>
-                    ))}
-                  </ImageList>
-                )}
                 <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
 
                 <CardActions

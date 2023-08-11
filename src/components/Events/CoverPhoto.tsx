@@ -40,7 +40,7 @@ interface IData {
   endDate: string;
   endTime: string;
   title: string;
-  coverPhoto: string[];
+  coverPhoto: string;
   topic: string;
   ageRage: number;
   interest: Interest[];
@@ -85,10 +85,10 @@ export default function ProCoverImage(props: IData & IFunction) {
       const querySnapshot = await getDocs(q);
       const doc = querySnapshot.docs[0];
       if (doc.exists()) {
-        const postData = { id: doc.id, ...doc.data() } as EventPost;
-        const updatedLike = [...postData.interest];
+        const eventData = { eventId: doc.id, ...doc.data() } as EventPost;
+        const updatedLike = [...eventData.interest];
         updatedLike.splice(IndexLike, 1);
-        const updatedData = { ...postData, interest: updatedLike };
+        const updatedData = { ...eventData, interest: updatedLike };
         await updateDoc(doc.ref, updatedData);
       } else {
         console.log("No event found with the specified ID");
@@ -147,14 +147,11 @@ export default function ProCoverImage(props: IData & IFunction) {
       </Modal>
 
       <Card sx={{ maxWidth: "100%" }}>
-        {props.coverPhoto.map((cover, index) => (
           <CardMedia
-            key={index}
             sx={{ height: 300 }}
-            image={cover}
+            image={props.coverPhoto}
             title="green iguana"
           />
-        ))}
       </Card>
       <Box
         sx={{

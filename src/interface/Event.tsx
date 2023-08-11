@@ -14,7 +14,7 @@ export interface Interest {
   }
 
 export interface EventPost {
-    id: string;
+    eventId: string;
     title: string;
     startDate: string;
     startTime: string;
@@ -25,7 +25,7 @@ export interface EventPost {
     ageRage: number;
     details: string;
     status: string;
-    coverPhoto: string[];
+    coverPhoto: string;
     interest: Interest[];
     shareUsers: ShareUser[];
     owner: string;

@@ -88,13 +88,13 @@ export default function Content(props: IData & IFunction) {
 
   const [postData, setPostData] = React.useState<Post[]>([]);
   React.useEffect(() => {
-    const q = query(
+    const queryData = query(
       collection(dbFireStore, "posts"),
       where("id", "==", props.postId)
     );
-  
+
     const unsubscribe = onSnapshot(
-      q,
+      queryData,
       (snapshot) => {
         const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
         setPostData(queriedData);
@@ -103,7 +103,7 @@ export default function Content(props: IData & IFunction) {
         console.error("Error fetching data:", error);
       }
     );
-  
+
     return () => {
       unsubscribe();
     };
@@ -174,15 +174,12 @@ export default function Content(props: IData & IFunction) {
     const postRef = doc(postsCollection, props.postId);
     await updateDoc(postRef, {
       likes: arrayUnion(updateLike),
-    })
+    });
   };
   const decreaseLike = async (id: string) => {
     const IndexLike = props.likes.findIndex((f) => f.likeBy === props.userId);
     try {
-      const q = query(
-        collection(dbFireStore, "posts"),
-        where("__name__", "==", id)
-      );
+      const q = query(collection(dbFireStore, "posts"), where("id", "==", id));
       const querySnapshot = await getDocs(q);
       const doc = querySnapshot.docs[0];
       if (doc.exists()) {
@@ -214,7 +211,7 @@ export default function Content(props: IData & IFunction) {
           deleteDoc(postRef)
             .then(() => {
               props.handleClosePost();
-              PopupAlert("Post deleted successfully", "success")
+              PopupAlert("Post deleted successfully", "success");
             })
             .catch((error) => {
               console.error("Error deleting post: ", error);
@@ -245,7 +242,7 @@ export default function Content(props: IData & IFunction) {
       collection(dbFireStore, "users"),
       where("uid", "==", props.owner)
     );
-     const unsubscribe = onSnapshot(
+    const unsubscribe = onSnapshot(
       queryData,
       (snapshot) => {
         const queriedData = snapshot.docs.map((doc) => doc.data() as User);
@@ -340,126 +337,128 @@ export default function Content(props: IData & IFunction) {
                   <Box>
                     {inFoUser.map((user) => (
                       <ListItem key={user.uid}>
-                      <ListItemAvatar>
-                        <Avatar
-                          src={user.profilePhoto}
-                          sx={{
-                            width: "60px",
-                            height: "60px",
-                            marginRight: "10px",
-                          }}
-                        />
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={
-                          <Typography sx={{ fontSize: "16px" }}>
-                            <b>{user.firstName} {user.lastName}
-                            <NavLink
-                              to={`/groupDetail/${m.groupId}`}
-                              style={{ color: themeApp.palette.primary.main }}
-                            >
-                              {m.groupName ? ` (${m.groupName}) ` : ""}
-                            </NavLink>
-                            </b>
-                            {m.emoji && (
-                              <>
-                                is feeling
-                                {String.fromCodePoint(
-                                  parseInt(m.emoji, 16)
-                                )}{" "}
-                                {convertEmojiCodeToName(
-                                  m.emoji
-                                )?.toLocaleLowerCase()}
-                              </>
-                            )}
-                          </Typography>
-                        }
-                        secondary={
-                          <Typography
+                        <ListItemAvatar>
+                          <Avatar
+                            src={user.profilePhoto}
                             sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 0.5,
+                              width: "60px",
+                              height: "60px",
+                              marginRight: "10px",
                             }}
-                          >
-                            {m.createAt}
-                            {m.status === "Private" && <LockIcon />}
-                            {m.status === "Friend" && <GroupIcon />}
-                            {m.status === "Public" && <PublicIcon />}
-                            {m.status}
-                          </Typography>
-                        }
-                      />
-                      <ListItemAvatar>
-                        <IconButton onClick={handleOpenUserMenu}>
-                          <MoreHorizIcon />
-                        </IconButton>
-                        <Menu
-                          sx={{ mt: "30px" }}
-                          id="menu-appbar"
-                          anchorEl={anchorElUser}
-                          anchorOrigin={{
-                            vertical: "top",
-                            horizontal: "right",
-                          }}
-                          keepMounted
-                          transformOrigin={{
-                            vertical: "top",
-                            horizontal: "right",
-                          }}
-                          open={Boolean(anchorElUser)}
-                          onClose={handleCloseUserMenu}
-                        >
-                          {props.owner === props.userId && (
-                            <>
-                              <MenuItem onClick={handletOpenEditPost}>
-                                <Typography
-                                  textAlign="center"
-                                  sx={{
-                                    display: "flex",
-                                    gap: 1,
-                                    alignItems: "start",
-                                    fontSize: "18px",
+                          />
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={
+                            <Typography sx={{ fontSize: "16px" }}>
+                              <b>
+                                {user.firstName} {user.lastName}
+                                <NavLink
+                                  to={`/groupDetail/${m.groupId}`}
+                                  style={{
+                                    color: themeApp.palette.primary.main,
                                   }}
                                 >
-                                  <BorderColorOutlinedIcon /> Edit
-                                </Typography>
-                              </MenuItem>
-                              <MenuItem
-                                onClick={() => handleDelete(props.postId)}
-                              >
-                                <Typography
-                                  textAlign="center"
-                                  sx={{
-                                    display: "flex",
-                                    gap: 1,
-                                    alignItems: "start",
-                                    fontSize: "18px",
-                                  }}
-                                >
-                                  <DeleteOutlineOutlinedIcon /> Delete
-                                </Typography>
-                              </MenuItem>
-                            </>
-                          )}
-                          <MenuItem onClick={handletOpenReport}>
+                                  {m.groupName ? ` (${m.groupName}) ` : ""}
+                                </NavLink>
+                              </b>
+                              {m.emoji && (
+                                <>
+                                  is feeling
+                                  {String.fromCodePoint(
+                                    parseInt(m.emoji, 16)
+                                  )}{" "}
+                                  {convertEmojiCodeToName(
+                                    m.emoji
+                                  )?.toLocaleLowerCase()}
+                                </>
+                              )}
+                            </Typography>
+                          }
+                          secondary={
                             <Typography
-                              textAlign="center"
                               sx={{
                                 display: "flex",
-                                gap: 1,
-                                alignItems: "start",
-                                fontSize: "18px",
+                                alignItems: "center",
+                                gap: 0.5,
                               }}
                             >
-                              <FlagOutlinedIcon /> Report
+                              {m.createAt}
+                              {m.status === "Private" && <LockIcon />}
+                              {m.status === "Friend" && <GroupIcon />}
+                              {m.status === "Public" && <PublicIcon />}
+                              {m.status}
                             </Typography>
-                          </MenuItem>
-                        </Menu>
-                      </ListItemAvatar>
-                    </ListItem>
+                          }
+                        />
+                        <ListItemAvatar>
+                          <IconButton onClick={handleOpenUserMenu}>
+                            <MoreHorizIcon />
+                          </IconButton>
+                          <Menu
+                            sx={{ mt: "30px" }}
+                            id="menu-appbar"
+                            anchorEl={anchorElUser}
+                            anchorOrigin={{
+                              vertical: "top",
+                              horizontal: "right",
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                              vertical: "top",
+                              horizontal: "right",
+                            }}
+                            open={Boolean(anchorElUser)}
+                            onClose={handleCloseUserMenu}
+                          >
+                            <MenuItem
+                              onClick={handletOpenEditPost}
+                              disabled={props.owner !== props.userId}
+                            >
+                              <Typography
+                                textAlign="center"
+                                sx={{
+                                  display: "flex",
+                                  gap: 1,
+                                  alignItems: "start",
+                                  fontSize: "18px",
+                                }}
+                              >
+                                <BorderColorOutlinedIcon /> Edit
+                              </Typography>
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() => handleDelete(props.postId)}
+                              disabled={props.owner !== props.userId}
+                            >
+                              <Typography
+                                textAlign="center"
+                                sx={{
+                                  display: "flex",
+                                  gap: 1,
+                                  alignItems: "start",
+                                  fontSize: "18px",
+                                }}
+                              >
+                                <DeleteOutlineOutlinedIcon /> Delete
+                              </Typography>
+                            </MenuItem>
+                            <MenuItem onClick={handletOpenReport}>
+                              <Typography
+                                textAlign="center"
+                                sx={{
+                                  display: "flex",
+                                  gap: 1,
+                                  alignItems: "start",
+                                  fontSize: "18px",
+                                }}
+                              >
+                                <FlagOutlinedIcon /> Report
+                              </Typography>
+                            </MenuItem>
+                          </Menu>
+                        </ListItemAvatar>
+                      </ListItem>
                     ))}
-                    
 
                     <CardContent>
                       <Typography

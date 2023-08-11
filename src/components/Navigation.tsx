@@ -23,6 +23,7 @@ import {
   ListItemIcon,
   ListItemText,
   Modal,
+  Tooltip,
 } from "@mui/material";
 import { Logout } from "@mui/icons-material";
 import HomeIcon from "@mui/icons-material/Home";
@@ -37,9 +38,16 @@ import { auth } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import ChatBox from "./Chat/ChatBox";
 import { User } from "../interface/User";
-import { collection, query, getDocs, where, updateDoc, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  query,
+  getDocs,
+  where,
+  updateDoc,
+  onSnapshot,
+} from "firebase/firestore";
 import { dbFireStore } from "../config/firebase";
-import FlagIcon from '@mui/icons-material/Flag';
+import FlagIcon from "@mui/icons-material/Flag";
 
 interface IData {
   open: boolean;
@@ -98,13 +106,13 @@ export default function Navigation(props: IData & IFunction) {
       );
       const querySnapshot = await getDocs(q);
       const doc = querySnapshot.docs[0];
-      await updateDoc(doc.ref, {isActive: false});
+      await updateDoc(doc.ref, { isActive: false });
     } catch (error) {
       console.error("Error updating profile: ", error);
     }
-};
+  };
   const handleLogout = async () => {
-    await handleActiveUser(userInfo.uid)
+    await handleActiveUser(userInfo.uid);
     signOut(auth)
       .then(() => {
         localStorage.removeItem("user");
@@ -126,7 +134,7 @@ export default function Navigation(props: IData & IFunction) {
       collection(dbFireStore, "users"),
       where("uid", "==", userInfo.uid)
     );
-     const unsubscribe = onSnapshot(
+    const unsubscribe = onSnapshot(
       queryData,
       (snapshot) => {
         const queriedData = snapshot.docs.map((doc) => doc.data() as User);
@@ -140,7 +148,7 @@ export default function Navigation(props: IData & IFunction) {
       unsubscribe();
     };
   }, [userInfo.uid]);
-  const IsAdmin = inFoUser.some((user) => (user.userRole === "admin"))
+  const IsAdmin = inFoUser.some((user) => user.userRole === "admin");
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -198,28 +206,26 @@ export default function Navigation(props: IData & IFunction) {
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
     >
       <NavLink to={`/profileBlog/${userInfo.uid}`}>
-      {inFoUser.map((m) => (
-        <MenuItem
-          key={m.uid}
-          onClick={handleMenuClose}
-          sx={{
-            color: "black",
-            padding: "10px",
-            gap: "10px",
-            margin: 1,
-            backgroundColor: "white",
-            borderRadius: "10px",
-            "&:hover": {
-              color: "white",
-              backgroundColor: "grey",
-            },
-          }}
-        >
-          <Avatar src={m.profilePhoto} /> 
-          <Typography>
-            {`${m.firstName} ${m.lastName}`}
-          </Typography>
-        </MenuItem>
+        {inFoUser.map((m) => (
+          <MenuItem
+            key={m.uid}
+            onClick={handleMenuClose}
+            sx={{
+              color: "black",
+              padding: "10px",
+              gap: "10px",
+              margin: 1,
+              backgroundColor: "white",
+              borderRadius: "10px",
+              "&:hover": {
+                color: "white",
+                backgroundColor: "grey",
+              },
+            }}
+          >
+            <Avatar src={m.profilePhoto} />
+            <Typography>{`${m.firstName} ${m.lastName}`}</Typography>
+          </MenuItem>
         ))}
       </NavLink>
       <Divider style={{ background: "white" }} />
@@ -382,14 +388,19 @@ export default function Navigation(props: IData & IFunction) {
                   };
                 }}
               >
-                <HomeIcon
-                  sx={{
-                    fontSize: "30px",
-                    "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
-                    borderRadius: "10px",
-                    padding: "10px",
-                  }}
-                />
+                <Tooltip title="Home">
+                  <HomeIcon
+                    sx={{
+                      fontSize: "30px",
+                      "&:hover": {
+                        backgroundColor: "#e8e8e8",
+                        color: "#8E51E2",
+                      },
+                      borderRadius: "10px",
+                      padding: "10px",
+                    }}
+                  />
+                </Tooltip>
               </NavLink>
               <NavLink
                 to={`/friends/${userInfo.uid}`}
@@ -401,14 +412,19 @@ export default function Navigation(props: IData & IFunction) {
                   };
                 }}
               >
-                <PeopleAltIcon
-                  sx={{
-                    fontSize: "30px",
-                    "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
-                    borderRadius: "10px",
-                    padding: "10px",
-                  }}
-                />
+                <Tooltip title="Friends">
+                  <PeopleAltIcon
+                    sx={{
+                      fontSize: "30px",
+                      "&:hover": {
+                        backgroundColor: "#e8e8e8",
+                        color: "#8E51E2",
+                      },
+                      borderRadius: "10px",
+                      padding: "10px",
+                    }}
+                  />
+                </Tooltip>
               </NavLink>
               <NavLink
                 to={"/members"}
@@ -420,14 +436,19 @@ export default function Navigation(props: IData & IFunction) {
                   };
                 }}
               >
-                <GroupsIcon
-                  sx={{
-                    fontSize: "30px",
-                    "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
-                    borderRadius: "10px",
-                    padding: "10px",
-                  }}
-                />
+                <Tooltip title="Members">
+                  <GroupsIcon
+                    sx={{
+                      fontSize: "30px",
+                      "&:hover": {
+                        backgroundColor: "#e8e8e8",
+                        color: "#8E51E2",
+                      },
+                      borderRadius: "10px",
+                      padding: "10px",
+                    }}
+                  />
+                </Tooltip>
               </NavLink>
               <NavLink
                 to={"/events"}
@@ -439,14 +460,19 @@ export default function Navigation(props: IData & IFunction) {
                   };
                 }}
               >
-                <DateRangeIcon
-                  sx={{
-                    fontSize: "30px",
-                    "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
-                    borderRadius: "10px",
-                    padding: "10px",
-                  }}
-                />
+                <Tooltip title="Events">
+                  <DateRangeIcon
+                    sx={{
+                      fontSize: "30px",
+                      "&:hover": {
+                        backgroundColor: "#e8e8e8",
+                        color: "#8E51E2",
+                      },
+                      borderRadius: "10px",
+                      padding: "10px",
+                    }}
+                  />
+                </Tooltip>
               </NavLink>
               <NavLink
                 to={"/topics"}
@@ -458,14 +484,19 @@ export default function Navigation(props: IData & IFunction) {
                   };
                 }}
               >
-                <TagIcon
-                  sx={{
-                    fontSize: "30px",
-                    "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
-                    borderRadius: "10px",
-                    padding: "10px",
-                  }}
-                />
+                <Tooltip title="Topics">
+                  <TagIcon
+                    sx={{
+                      fontSize: "30px",
+                      "&:hover": {
+                        backgroundColor: "#e8e8e8",
+                        color: "#8E51E2",
+                      },
+                      borderRadius: "10px",
+                      padding: "10px",
+                    }}
+                  />
+                </Tooltip>
               </NavLink>
               <NavLink
                 to="/groups"
@@ -477,37 +508,46 @@ export default function Navigation(props: IData & IFunction) {
                   };
                 }}
               >
-                <Diversity3Icon
-                  sx={{
-                    fontSize: "30px",
-                    "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
-                    borderRadius: "10px",
-                    padding: "10px",
-                  }}
-                />
+                <Tooltip title="Groups">
+                  <Diversity3Icon
+                    sx={{
+                      fontSize: "30px",
+                      "&:hover": {
+                        backgroundColor: "#e8e8e8",
+                        color: "#8E51E2",
+                      },
+                      borderRadius: "10px",
+                      padding: "10px",
+                    }}
+                  />
+                </Tooltip>
               </NavLink>
               {IsAdmin && (
                 <NavLink
-                to="/report"
-                style={({ isActive, isPending }) => {
-                  return {
-                    fontWeight: isPending ? "bold" : "",
-                    color: isActive ? "white" : "white",
-                    borderBlockEnd: isActive ? "2px solid white" : "",
-                  };
-                }}
-              >
-                <FlagIcon
-                  sx={{
-                    fontSize: "30px",
-                    "&:hover": { backgroundColor: "#e8e8e8", color: "#8E51E2" },
-                    borderRadius: "10px",
-                    padding: "10px",
+                  to="/report"
+                  style={({ isActive, isPending }) => {
+                    return {
+                      fontWeight: isPending ? "bold" : "",
+                      color: isActive ? "white" : "white",
+                      borderBlockEnd: isActive ? "2px solid white" : "",
+                    };
                   }}
-                />
-              </NavLink>
+                >
+                  <Tooltip title="Report">
+                    <FlagIcon
+                      sx={{
+                        fontSize: "30px",
+                        "&:hover": {
+                          backgroundColor: "#e8e8e8",
+                          color: "#8E51E2",
+                        },
+                        borderRadius: "10px",
+                        padding: "10px",
+                      }}
+                    />
+                  </Tooltip>
+                </NavLink>
               )}
-              
             </Box>
             {/* Middle */}
 
@@ -535,18 +575,18 @@ export default function Navigation(props: IData & IFunction) {
                 </Badge>
               </IconButton>
               {inFoUser.map((m) => (
-              <IconButton
-                key={m.uid}
-                size="small"
-                edge="end"
-                aria-label="account of current user"
-                aria-controls={menuId}
-                aria-haspopup="true"
-                onClick={handleProfileMenuOpen}
-                color="inherit"
-              >
-                <Avatar alt="Profile" src={m.profilePhoto} />
-              </IconButton>
+                <IconButton
+                  key={m.uid}
+                  size="small"
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <Avatar alt="Profile" src={m.profilePhoto} />
+                </IconButton>
               ))}
             </Box>
           </Toolbar>

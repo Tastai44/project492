@@ -36,16 +36,16 @@ export default function EventContainer() {
     <Box sx={{ display: "flex", justifyContent: "center", width: "95%" }}>
       <Grid sx={{ flexGrow: 1, gap: "40px" }} container>
         {eventData.map((m) => (
-          <Box key={m.id}>
+          <Box key={m.eventId}>
             <EventCard
               title={m.title}
               startDate={m.startDate}
               startTime={m.startTime}
               endDate={m.endDate}
               endTime={m.endTime}
-              eventId={m.id}
+              eventId={m.eventId}
               coverPhoto={m.coverPhoto}
-              userId={m.owner}
+              ownerId={m.owner}
             />
           </Box>
         ))}

@@ -49,7 +49,7 @@ interface IData {
     endDate: string;
     endTime: string;
     title: string;
-    coverPhoto: string[];
+    coverPhoto: string;
     topic: string;
     ageRage: number;
     details: string;
@@ -69,7 +69,7 @@ export default function EditEvent(props:IData & Ihandle ) {
     setStatus(event.target.value as string);
   };
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-  const [previewImages, setPreviewImages] = React.useState<string[]>(props.coverPhoto);
+  const [previewImages, setPreviewImages] = React.useState<string[]>([props.coverPhoto]);
 
   const handleClearImage = () => {
     setPreviewImages([]);

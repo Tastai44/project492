@@ -93,7 +93,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
   };
 
   const initialState = {
-    id: "",
+    eventId: "",
     title: "",
     startDate: "",
     startTime: "",
@@ -103,11 +103,12 @@ export default function AddEvent({ closeAdd }: Ihandle) {
     ageRage: 0,
     details: "",
     status: "",
-    coverPhoto: [],
+    coverPhoto: "",
     interest: [],
     owner: "",
     createAt: "",
-    shareUsers: []
+    shareUsers: [],
+    reportEvent: []
   };
   const [event, setEvent] = React.useState<EventPost>(initialState);
   const clearState = () => {
@@ -127,7 +128,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
   const createEvent = async () => {
     const eventCollection = collection(dbFireStore, "events");
     const newEvent = {
-      id: "",
+      eventId: "",
       title: event.title,
       startDate: event.startDate
         ? event.startDate
@@ -152,10 +153,11 @@ export default function AddEvent({ closeAdd }: Ihandle) {
       topic: event.topic,
       ageRage: event.ageRage,
       details: event.details,
-      coverPhoto: previewImages,
+      coverPhoto: previewImages[0],
       status: status,
       interest: [],
       shareUsers: [],
+      reportEvent: [],
       createAt: new Date().toLocaleString(),
       owner: userId,
     };
@@ -163,7 +165,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
     try {
       const docRef = doc(eventCollection);
       const eventId = docRef.id;
-      const updatedEvent = { ...newEvent, id: eventId };
+      const updatedEvent = { ...newEvent, eventId: eventId };
       await setDoc(docRef, updatedEvent);
 
       setEvent(updatedEvent);

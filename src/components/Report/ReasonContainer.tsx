@@ -64,7 +64,6 @@ interface IData {
 }
 interface IFunction {
   handleCloseReason: () => void;
-  handleRefresh: () => void;
 }
 
 export default function ReasonContainer(props: IData & IFunction) {
@@ -114,7 +113,6 @@ export default function ReasonContainer(props: IData & IFunction) {
       .then(() => {
         PopupAlert("Post deleted successfully", "success");
         console.log("Post deleted successfully");
-        props.handleRefresh();
       })
       .catch((error) => {
         PopupAlert("Error deleting post", "error");
@@ -135,7 +133,6 @@ export default function ReasonContainer(props: IData & IFunction) {
         updateReport.splice(IndexReport, 1);
         const updatedData = { ...postData, reportPost: updateReport };
         await updateDoc(doc.ref, updatedData);
-        props.handleRefresh();
         PopupAlert("Report approved successfully", "success");
       } else {
         PopupAlert("No post found with the specified ID", "error");
@@ -240,7 +237,7 @@ export default function ReasonContainer(props: IData & IFunction) {
                             <ListItemText
                               primary={
                                 <Typography sx={{ fontSize: "16px" }}>
-                                  <b>{user.firstName} {user.lastName}</b>
+                                  <b>{`${user.firstName} ${user.lastName} `}</b>
                                   {post.emoji && (
                                     <>
                                       is feeling
