@@ -106,6 +106,15 @@ export default function ReportContent() {
 											reportPost={post.reportPost}
 										/>
 									))}
+							</>
+						) : (
+							<Typography variant="h4" sx={{ color: "black" }}>
+								There is no report post.
+							</Typography>
+						)}
+
+						{eventData.some((e) => e.reportEvent.length !== 0) ? (
+							<>
 								{eventData
 									.filter((item) => item.reportEvent.length !== 0)
 									.map((event) => (
@@ -125,7 +134,7 @@ export default function ReportContent() {
 							</>
 						) : (
 							<Typography variant="h4" sx={{ color: "black" }}>
-								There is no report content.
+								There is no report event.
 							</Typography>
 						)}
 					</Grid>

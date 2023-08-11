@@ -112,7 +112,7 @@ export default function EventContent(props: Idata) {
 
     const handleApprove = async (id: string) => {
         const IndexReport = props.reportEvent.findIndex(
-            (index) => index.eventId === props.eventId
+            (index) => index.eventId === id
         );
         try {
             const queryPost = query(
@@ -126,7 +126,7 @@ export default function EventContent(props: Idata) {
                 const eventData = { eventId: doc.id, ...doc.data() } as EventPost;
                 const updateReport = [...eventData.reportEvent];
                 updateReport.splice(IndexReport, 1);
-                const updatedData = { ...eventData, reportPost: updateReport };
+                const updatedData = { ...eventData, reportEvent: updateReport };
                 await updateDoc(doc.ref, updatedData);
                 PopupAlert("Report approved successfully", "success");
             } else {
