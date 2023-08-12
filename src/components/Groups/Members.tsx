@@ -155,9 +155,9 @@ export default function Members(props: IData) {
                 </Box>
                 <Divider light />
                 {props.members.map((m, index) => (
-                    <Box key={m.uid + index}>
-                        <NavLink to={`/profileBlog/${m.uid}`} style={{ color: "black" }}>
-                            <UserCard username={m.username} profilePhoto={m.profilePhoto} />
+                    <Box key={m.memberId + index}>
+                        <NavLink to={`/profileBlog/${m.memberId}`} style={{ color: "black" }}>
+                            <UserCard userId={m.memberId} />
                         </NavLink>
                     </Box>
                 ))}

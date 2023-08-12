@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
 import { styleTable } from "../../utils/styleBox";
 import { IMember } from "../../interface/Group";
@@ -9,9 +9,12 @@ import {
 	collection,
 	updateDoc,
 	doc,
+	query,
+	onSnapshot,
 } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import SearchBar from "../../helper/SearchBar";
+import { User } from "../../interface/User";
 
 
 const columns: GridColDef[] = [
@@ -48,12 +51,40 @@ interface IFunction {
 
 export default function DeleteMember(props: IData & IFunction) {
 	const [searchValue, setValue] = useState("");
-	const rows = props.members.map((row, index) => ({
-		id: `${row.uid}_${index}`,
-		uid: row.uid,
-		username: row.username,
-		profilePhoto: row.profilePhoto,
-	}));
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+
+	useEffect(() => {
+		const queryData = query(
+			collection(dbFireStore, "users"),
+		);
+		const unsubscribe = onSnapshot(
+			queryData,
+			(snapshot) => {
+				const queriedData = snapshot.docs.map((doc) => doc.data() as User);
+				setInFoUser(queriedData);
+			},
+			(error) => {
+				console.error("Error fetching data: ", error);
+			}
+		);
+		return () => {
+			unsubscribe();
+		};
+	}, [props.members]);
+
+	const rows = props.members.map((row, index) => {
+		const matchingUser = inFoUser.find((user) => user.uid === row.memberId);
+		const username = matchingUser ? `${matchingUser.firstName} ${matchingUser.lastName}` : '';
+		const profilePhoto = matchingUser ? matchingUser.profilePhoto : '';
+
+		return {
+			id: `${row.memberId}_${index}`,
+			uid: row.memberId,
+			username: username,
+			profilePhoto: profilePhoto
+		};
+	});
+
 	const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
 	const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
 		setSelectedRows(selectionModel);
@@ -65,9 +96,7 @@ export default function DeleteMember(props: IData & IFunction) {
 		const groupRef = doc(postsCollection, props.gId);
 		updateDoc(groupRef, {
 			members: filteredData.map((m) => ({
-				uid: m.uid,
-				username: m.username,
-				profilePhoto: m.profilePhoto
+				memberId: m.uid,
 			})),
 		})
 			.then(() => {

@@ -66,9 +66,7 @@ export default function AddMembers(props: IFunction & IData) {
 		const tmp = [...member].map((m) => JSON.parse(m));
 		const tmp2 = tmp.map((m) => {
 			return {
-				uid: m.uid,
-				username: `${m.firstName} ${m.lastName}`,
-				profilePhoto: m.profilePhoto,
+				memberId: m.uid,
 			};
 		});
 		const groupRef = doc(groupCollection, props.gId);
@@ -114,7 +112,7 @@ export default function AddMembers(props: IFunction & IData) {
 						options={users
 							.filter(
 								(user) =>
-									!props.members.some((member) => member.uid === user.uid) && (user.uid !== props.hostId)
+									!props.members.some((member) => member.memberId === user.uid) && (user.uid !== props.hostId)
 							)
 							.map((e) => JSON.stringify(e))}
 						disableCloseOnSelect

@@ -46,12 +46,6 @@ const columns: GridColDef[] = [
         width: 150,
         flex: 1,
     },
-    {
-        field: "IsShare",
-        headerName: "IsShare",
-        width: 150,
-        flex: 1,
-    },
 ];
 
 interface IData {
@@ -72,7 +66,6 @@ export default function ShareCard(props: IData & IFunction) {
         uid: row.friendId,
         username: row.username,
         profilePhoto: row.profilePhoto,
-        IsShare: false,
     }));
 
     const [status, setStatus] = useState("");
@@ -196,7 +189,7 @@ export default function ShareCard(props: IData & IFunction) {
                     >
                         Share Lists
                     </Typography>
-                    <Box sx={{ display: "flex" }}>
+                    <Box sx={{ display: "flex", alignItems: "center", }}>
                         <FormControl size="small" sx={{ width: "120px" }}>
                             <InputLabel id="demo-simple-select">Status</InputLabel>
                             <Select
