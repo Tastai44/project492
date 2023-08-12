@@ -11,7 +11,7 @@ import { useParams } from "react-router-dom";
 import { Item } from "../../App";
 
 import { dbFireStore } from "../../config/firebase";
-import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
+import { collection, query, orderBy, getDocs, where, onSnapshot } from "firebase/firestore";
 import { IGroup } from "../../interface/Group";
 import { User } from "../../interface/User";
 import PostGroupForm from "../../components/Groups/PostGroupForm";
@@ -22,31 +22,27 @@ export default function GroupDetails() {
     const [inFoUser, setInFoUser] = React.useState<User[]>([]);
     const { groupId } = useParams();
     const [groupData, setGroupData] = React.useState<IGroup[]>([]);
-    const [reFresh, setReFresh] = React.useState(0);
-    const handleRefresh = () => {
-        setReFresh((pre) => pre + 1);
-    };
 
     React.useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const q = query(
-                    collection(dbFireStore, "groups"),
-                    where("gId", "==", groupId),
-                    orderBy("createAt", "desc")
-                );
-                const querySnapshot = await getDocs(q);
-                const queriedData = querySnapshot.docs.map(
-                    (doc) => doc.data() as IGroup
-                );
+        const queryGroupData = query(
+            collection(dbFireStore, "groups"),
+            where("gId", "==", groupId),
+            orderBy("createAt", "desc")
+        );
+        const unsubscribe = onSnapshot(
+            queryGroupData,
+            (snapshot) => {
+                const queriedData = snapshot.docs.map((doc) => doc.data() as IGroup);
                 setGroupData(queriedData);
-            } catch (error) {
+            },
+            (error) => {
                 console.error("Error fetching data:", error);
             }
+        );
+        return () => {
+            unsubscribe();
         };
-
-        fetchData();
-    }, [reFresh, groupId]);
+    }, [groupId]);
 
     React.useEffect(() => {
         const fetchData = async () => {
@@ -71,25 +67,27 @@ export default function GroupDetails() {
         fetchData();
     }, [userInfo.uid]);
 
-    const [data, setData] = React.useState<Post[]>([]);
+    const [postData, setPostData] = React.useState<Post[]>([]);
     React.useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const q = query(
-                    collection(dbFireStore, "posts"),
-                    where("groupId", "==", groupId),
-                    orderBy("createAt", "desc")
-                );
-                const querySnapshot = await getDocs(q);
-                const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
-                setData(queriedData);
-            } catch (error) {
+        const queryPostData = query(
+            collection(dbFireStore, "posts"),
+            where("groupId", "==", groupId),
+            orderBy("createAt", "desc")
+        );
+        const unsubscribe = onSnapshot(
+            queryPostData,
+            (snapshot) => {
+                const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
+                setPostData(queriedData);
+            },
+            (error) => {
                 console.error("Error fetching data:", error);
             }
+        );
+        return () => {
+            unsubscribe();
         };
-
-        fetchData();
-    }, [reFresh, groupId]);
+    }, [groupId]);
 
     return (
         <div>
@@ -127,21 +125,19 @@ export default function GroupDetails() {
                                                                 hostId={g.hostId}
                                                                 members={g.members}
                                                                 gId={g.gId}
-                                                                handleRefresh={handleRefresh}
                                                             />
                                                         </Item>
                                                     </Grid>
                                                     <Grid item xs={7}>
                                                         <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
                                                             <PostGroupForm
-                                                                handdleReFresh={handleRefresh}
                                                                 inFoUser={inFoUser}
                                                                 groupName={g.groupName}
                                                                 groupId={g.gId}
                                                             />
                                                         </Item>
                                                         <Item>
-                                                            {data.map((m) => (
+                                                            {postData.map((m) => (
                                                                 <Box key={m.id}>
                                                                     <MContainer
                                                                         owner={m.owner}

@@ -48,7 +48,6 @@ const styleBoxPop = {
 
 interface IHandle {
     handleCloseCratePost: () => void;
-    handdleReFresh: () => void;
 }
 interface IData {
     groupName: string;
@@ -57,7 +56,6 @@ interface IData {
 
 export default function CreateGroupPost({
     handleCloseCratePost,
-    handdleReFresh,
     groupName,
     groupId
 }: IHandle & IData) {
@@ -180,7 +178,6 @@ export default function CreateGroupPost({
 
             setPost(updatedPost);
             clearState();
-            handdleReFresh();
             PopupAlert("Content was posted successfully", "success");
         } catch (error) {
             console.error("Error adding post: ", error);

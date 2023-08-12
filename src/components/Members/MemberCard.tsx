@@ -24,6 +24,7 @@ interface IData {
     username: string;
     profilePhoto: string;
     uId: string;
+    handleRefresh: () => void;
 }
 
 export default function MemberCard(props: IData) {
@@ -90,6 +91,7 @@ export default function MemberCard(props: IData) {
             })
                 .then(() => {
                     addFriendOtherSide();
+                    props.handleRefresh();
                     PopupAlert("Successfully added friend to the friendList", "success");
                 })
                 .catch((error) => {

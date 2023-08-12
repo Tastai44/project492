@@ -21,7 +21,6 @@ import { IMember } from "../../interface/Group";
 
 interface IFunction {
 	handleClose: () => void;
-	handleRefresh: () => void;
 }
 
 interface IData {
@@ -78,7 +77,6 @@ export default function AddMembers(props: IFunction & IData) {
 		})
 			.then(() => {
 				PopupAlert("Added member(s) successfully", "success");
-				props.handleRefresh();
 				props.handleClose();
 			})
 			.catch((error) => {

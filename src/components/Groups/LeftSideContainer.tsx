@@ -8,11 +8,8 @@ interface IData {
 	hostId: string;
 	members: IMember[];
 }
-interface IFunction {
-	handleRefresh: () => void;
-}
 
-export default function LeftSideContainer(props: IData & IFunction) {
+export default function LeftSideContainer(props: IData) {
 	return (
 		<div>
 			<Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -21,7 +18,6 @@ export default function LeftSideContainer(props: IData & IFunction) {
 					hostId={props.hostId}
 					members={props.members}
 					gId={props.gId}
-					handleRefresh={props.handleRefresh}
 				/>
 			</Box>
 		</div>

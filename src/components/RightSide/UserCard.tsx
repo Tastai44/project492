@@ -113,13 +113,13 @@ export default function UserCard(props: IData) {
 				</>
 			) : (
 				<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-					<StyledBadge
+					{/* <StyledBadge
 						overlap="circular"
 						anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-						variant="dot"
-					>
-						<Avatar alt="Remy Sharp" src={props.profilePhoto} />
-					</StyledBadge>
+						variant={IsMemberActive ? "dot" : "standard"}
+					> */}
+					<Avatar alt="Remy Sharp" src={props.profilePhoto} />
+					{/* </StyledBadge> */}
 					<Typography sx={{ fontSize: "16px" }}>{props.username}</Typography>
 				</Box>
 			)}

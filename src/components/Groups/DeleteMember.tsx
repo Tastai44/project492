@@ -1,11 +1,8 @@
-import Box from "@mui/material/Box";
+import { ChangeEvent, useState } from "react";
 import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
 import { styleTable } from "../../utils/styleBox";
 import { IMember } from "../../interface/Group";
-import { Avatar, Button, Typography, Divider } from "@mui/material";
-import { Search, SearchIconWrapper, StyledInputBase } from "../Navigation";
-import SearchIcon from "@mui/icons-material/Search";
-import React from "react";
+import { Avatar, Button, Typography, Divider, Box } from "@mui/material";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import {
@@ -14,6 +11,7 @@ import {
 	doc,
 } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
+import SearchBar from "../../helper/SearchBar";
 
 
 const columns: GridColDef[] = [
@@ -46,18 +44,17 @@ interface IData {
 }
 interface IFunction {
 	handleCloseDelete: () => void;
-	handleRefresh: () => void;
 }
 
 export default function DeleteMember(props: IData & IFunction) {
-
+	const [searchValue, setValue] = useState("");
 	const rows = props.members.map((row, index) => ({
 		id: `${row.uid}_${index}`,
 		uid: row.uid,
 		username: row.username,
 		profilePhoto: row.profilePhoto,
 	}));
-	const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
+	const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
 	const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
 		setSelectedRows(selectionModel);
 	};
@@ -74,12 +71,16 @@ export default function DeleteMember(props: IData & IFunction) {
 			})),
 		})
 			.then(() => {
-				props.handleRefresh();
 				PopupAlert("Deleted member(s) successfully", "success");
 			})
 			.catch((error) => {
 				console.error("Error adding likes: ", error);
 			});
+	};
+
+	const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
+		const value = event.target.value;
+		setValue(value);
 	};
 	return (
 		<Box sx={styleTable}>
@@ -95,20 +96,10 @@ export default function DeleteMember(props: IData & IFunction) {
 				<Typography id="modal-modal-title" variant="h5" sx={{ color: "black" }}>
 					Delete Members
 				</Typography>
-				<Search
-					sx={{
-						backgroundColor: "#F1F1F1",
-						"&:hover": { backgroundColor: "#C5C5C5" },
-					}}
-				>
-					<SearchIconWrapper>
-						<SearchIcon />
-					</SearchIconWrapper>
-					<StyledInputBase
-						placeholder="Search…"
-						inputProps={{ "aria-label": "search" }}
-					/>
-				</Search>
+				<SearchBar
+					searchValue={searchValue}
+					handleSearch={handleSearch}
+				/>
 			</Box>
 			<Divider sx={{ background: "grey", mb: 1 }} />
 			<DataGrid

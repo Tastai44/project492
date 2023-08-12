@@ -1,12 +1,5 @@
-import { Box, Grid, Stack, Typography } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+import { useState, useEffect, ChangeEvent } from "react";
 import { Item } from "../App";
-import {
-	Search,
-	SearchIconWrapper,
-	StyledInputBase,
-} from "../components/Navigation";
-import React from "react";
 import "firebase/database";
 import { collection, orderBy, query, onSnapshot } from "firebase/firestore";
 import { dbFireStore } from "../config/firebase";
@@ -14,11 +7,14 @@ import { Post } from "../interface/PostContent";
 import Content from "../components/Report/Content";
 import { EventPost } from "../interface/Event";
 import EventContent from "../components/Report/EventContent";
+import { Box, Stack, Grid, Typography } from "@mui/material";
+import SearchBar from "../helper/SearchBar";
 
 export default function ReportContent() {
-	const [postData, setPostData] = React.useState<Post[]>([]);
-	const [eventData, setEventData] = React.useState<EventPost[]>([]);
-	React.useEffect(() => {
+	const [postData, setPostData] = useState<Post[]>([]);
+	const [eventData, setEventData] = useState<EventPost[]>([]);
+	const [searchValue, setValue] = useState("");
+	useEffect(() => {
 		const queryPostData = query(
 			collection(dbFireStore, "posts"),
 			orderBy("createAt", "desc")
@@ -54,6 +50,11 @@ export default function ReportContent() {
 			eventUnsubscribe();
 		};
 	}, []);
+
+	const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
+		const value = event.target.value;
+		setValue(value);
+	};
 	return (
 		<Box sx={{ width: "100%", marginTop: 7 }}>
 			<Stack spacing={2}>
@@ -67,21 +68,10 @@ export default function ReportContent() {
 					<div style={{ fontSize: "30px", color: "#920EFA", fontWeight: 500 }}>
 						Report Contents
 					</div>
-					<Search
-						sx={{
-							backgroundColor: "#F1F1F1",
-							m: 1,
-							"&:hover": { backgroundColor: "#C5C5C5" },
-						}}
-					>
-						<SearchIconWrapper>
-							<SearchIcon />
-						</SearchIconWrapper>
-						<StyledInputBase
-							placeholder="Search…"
-							inputProps={{ "aria-label": "search" }}
-						/>
-					</Search>
+					<SearchBar
+						searchValue={searchValue}
+						handleSearch={handleSearch}
+					/>
 				</Item>
 				<Box sx={{ display: "flex", justifyContent: "center" }}>
 					<Grid item xs={10}>

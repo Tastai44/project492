@@ -22,10 +22,8 @@ interface IData {
     hostId: string;
     gId: string;
 }
-interface IFunction {
-    handleRefresh: () => void;
-}
-export default function Members(props: IData & IFunction) {
+
+export default function Members(props: IData) {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const [openAdd, setOpenAdd] = React.useState(false);
     const [openDelete, setOpenDelete] = React.useState(false);
@@ -63,7 +61,6 @@ export default function Members(props: IData & IFunction) {
                         gId={props.gId}
                         members={props.members}
                         handleClose={handleCloseAdd}
-                        handleRefresh={props.handleRefresh}
                     />
                 </Box>
             </Modal>
@@ -79,7 +76,6 @@ export default function Members(props: IData & IFunction) {
                         gId={props.gId}
                         members={props.members}
                         handleCloseDelete={handleCloseDelete}
-                        handleRefresh={props.handleRefresh}
                     />
                 </Box>
             </Modal>

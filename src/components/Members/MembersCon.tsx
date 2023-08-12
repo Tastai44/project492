@@ -12,6 +12,7 @@ export default function MembersCon() {
     const [otherMembers, setOtherMembers] = useState<User[]>([]);
     const [user, setUser] = useState<User[]>([]);
     const [searchValue, setValue] = useState("");
+    const [reFresh, setReFresh] = useState("");
 
     useEffect(() => {
         const fetchMemberData = query(
@@ -51,11 +52,15 @@ export default function MembersCon() {
             }
         };
         fetchUserData();
-    }, [userInfo.uid]);
+    }, [userInfo.uid, reFresh]);
 
     const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         setValue(value);
+    };
+
+    const handleRefresh = () => {
+        setReFresh(pre => pre + 1);
     };
 
     return (
@@ -93,6 +98,7 @@ export default function MembersCon() {
                                 otherUser.profilePhoto ? otherUser.profilePhoto : ""
                             }
                             uId={otherUser.uid}
+                            handleRefresh={handleRefresh}
                         />
                     ))}
             </Grid>

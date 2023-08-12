@@ -6,9 +6,6 @@ import * as React from "react";
 import { User } from "../../interface/User";
 import CreateGroupPost from "./CreateGroupPost";
 
-interface IFunction {
-	handdleReFresh: () => void;
-}
 interface IData {
 	inFoUser: User[];
 	groupName: string;
@@ -16,11 +13,10 @@ interface IData {
 }
 
 export default function PostGroupForm({
-	handdleReFresh,
 	inFoUser,
 	groupName,
 	groupId
-}: IFunction & IData) {
+}: IData) {
 	const [openCreatePost, setOpenCreatePost] = React.useState(false);
 	const handletOpenCratePost = () => setOpenCreatePost(true);
 	const handleCloseCratePost = () => setOpenCreatePost(false);
@@ -36,7 +32,6 @@ export default function PostGroupForm({
 				<Box>
 					<CreateGroupPost
 						handleCloseCratePost={handleCloseCratePost}
-						handdleReFresh={handdleReFresh}
 						groupName={groupName}
 						groupId={groupId}
 					/>

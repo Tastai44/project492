@@ -314,7 +314,7 @@ export default function Navigation(props: IData & IFunction) {
       </Modal> */}
 
 			<Box sx={{ flexGrow: 1 }}>
-				<AppBar position="fixed" sx={{ backgroundColor: "#8E51E2" }}>
+				<AppBar position="fixed" sx={{ backgroundColor: "#8E51E2", color: "black" }}>
 					<Toolbar>
 						<NavLink to="/">
 							<IconButton
@@ -331,7 +331,7 @@ export default function Navigation(props: IData & IFunction) {
 							variant="h6"
 							noWrap
 							component="div"
-							sx={{ display: { xs: "none", sm: "block" }, fontWeight: "bold" }}
+							sx={{ display: { xs: "none", sm: "block" }, fontWeight: "bold", color: "white" }}
 						>
 							CMU
 						</Typography>
@@ -524,7 +524,7 @@ export default function Navigation(props: IData & IFunction) {
 								color="inherit"
 							>
 								<Badge badgeContent={4} color="error">
-									<MailIcon />
+									<MailIcon sx={{ color: "white" }} />
 								</Badge>
 							</IconButton>
 							<IconButton
@@ -536,7 +536,7 @@ export default function Navigation(props: IData & IFunction) {
 								onClick={handleMobileMenuOpen}
 							>
 								<Badge badgeContent={17} color="error">
-									<NotificationsIcon />
+									<NotificationsIcon sx={{ color: "white" }} />
 								</Badge>
 							</IconButton>
 							{inFoUser.map((m) => (

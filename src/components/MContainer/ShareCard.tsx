@@ -1,5 +1,4 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
+import { useState, ChangeEvent } from "react";
 import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
 import { styleTable } from "../../utils/styleBox";
 import {
@@ -13,9 +12,8 @@ import {
     MenuItem,
     Select,
     SelectChangeEvent,
+    Box
 } from "@mui/material";
-import { Search, SearchIconWrapper, StyledInputBase } from "../Navigation";
-import SearchIcon from "@mui/icons-material/Search";
 import { IFriendList } from "../../interface/User";
 import LockIcon from "@mui/icons-material/Lock";
 import GroupIcon from "@mui/icons-material/Group";
@@ -24,6 +22,7 @@ import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { collection, updateDoc, doc, arrayUnion } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
+import SearchBar from "../../helper/SearchBar";
 
 const columns: GridColDef[] = [
     { field: "id", headerName: "ID", flex: 1 },
@@ -67,6 +66,7 @@ interface IFunction {
 
 export default function ShareCard(props: IData & IFunction) {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+    const [searchValue, setValue] = useState("");
     const rows = props.friendList.map((row, index) => ({
         id: `${row.friendId}_${index}`,
         uid: row.friendId,
@@ -75,11 +75,11 @@ export default function ShareCard(props: IData & IFunction) {
         IsShare: false,
     }));
 
-    const [status, setStatus] = React.useState("");
+    const [status, setStatus] = useState("");
     const handleChange = (event: SelectChangeEvent) => {
         setStatus(event.target.value as string);
     };
-    const [selectedRows, setSelectedRows] = React.useState<GridRowId[]>([]);
+    const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
     const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
         setSelectedRows(selectionModel);
     };
@@ -172,6 +172,11 @@ export default function ShareCard(props: IData & IFunction) {
         }
     };
 
+    const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setValue(value);
+    };
+
     return (
         <Modal open={props.openShare} onClose={props.handleCloseShare}>
             <Box sx={styleTable}>
@@ -236,20 +241,10 @@ export default function ShareCard(props: IData & IFunction) {
                                 </MenuItem>
                             </Select>
                         </FormControl>
-                        <Search
-                            sx={{
-                                backgroundColor: "#F1F1F1",
-                                "&:hover": { backgroundColor: "#C5C5C5" },
-                            }}
-                        >
-                            <SearchIconWrapper>
-                                <SearchIcon />
-                            </SearchIconWrapper>
-                            <StyledInputBase
-                                placeholder="Search…"
-                                inputProps={{ "aria-label": "search" }}
-                            />
-                        </Search>
+                        <SearchBar
+                            searchValue={searchValue}
+                            handleSearch={handleSearch}
+                        />
                     </Box>
                 </Box>
                 <Divider sx={{ background: "grey", mb: 1 }} />
