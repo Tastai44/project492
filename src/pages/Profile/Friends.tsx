@@ -2,12 +2,6 @@ import { ChangeEvent, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { Divider, Paper, Typography } from "@mui/material";
-import {
-	Search,
-	SearchIconWrapper,
-	StyledInputBase,
-} from "../../components/Navigation";
-import SearchIcon from "@mui/icons-material/Search";
 import FriendCard from "../../components/Profile/FriendCard";
 import "firebase/database";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
@@ -15,6 +9,7 @@ import { dbFireStore } from "../../config/firebase";
 import { useParams } from "react-router-dom";
 import { User } from "../../interface/User";
 import SearchFriend from "../../components/Profile/SearchFriend";
+import SearchBar from "../../helper/SearchBar";
 
 export default function Friends() {
 	const { userId } = useParams();
@@ -64,23 +59,10 @@ export default function Friends() {
 					<Box sx={{ m: 1, fontSize: "20px" }} component="p">
 						Friends
 					</Box>
-					<Search
-						sx={{
-							backgroundColor: "#F1F1F1",
-							m: 1,
-							"&:hover": { backgroundColor: "#C5C5C5" },
-						}}
-					>
-						<SearchIconWrapper>
-							<SearchIcon />
-						</SearchIconWrapper>
-						<StyledInputBase
-							placeholder="Search…"
-							inputProps={{ "aria-label": "search" }}
-							onChange={handleSearch}
-							value={searchValue}
-						/>
-					</Search>
+					<SearchBar
+						searchValue={searchValue}
+						handleSearch={handleSearch}
+					/>
 				</Box>
 				<Divider light sx={{ background: "grey", mb: 1 }} />
 				{searchValue === "" ? (
@@ -116,8 +98,9 @@ export default function Friends() {
 					</>
 				) : (
 					<SearchFriend
+						userId={userId ?? ""}
 						searchValue={searchValue}
-						inFoUser={inFoUser}
+						friendList={inFoUser.find((user) => user.friendList)?.friendList}
 					/>
 				)}
 

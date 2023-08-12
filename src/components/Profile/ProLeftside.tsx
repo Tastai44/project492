@@ -19,7 +19,7 @@ import { styled } from "@mui/material/styles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import { NavLink, useParams } from "react-router-dom";
 import EditProfile from "./EditProfile";
-import { User } from "../../interface/User";
+import { IFriendList, User } from "../../interface/User";
 import {
 	collection,
 	query,
@@ -27,6 +27,8 @@ import {
 	where,
 	updateDoc,
 	onSnapshot,
+	doc,
+	arrayUnion
 } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -182,6 +184,58 @@ export default function ProLeftside() {
 			}
 		} catch (error) {
 			console.error("Error deleting friend:", error);
+		}
+	};
+
+	const addFriendOtherSide = async () => {
+		const addFriend: IFriendList[] = inFoUser.map((m) => ({
+			status: true,
+			friendId: userInfo.uid,
+			username: m.firstName + m.lastName,
+			profilePhoto: m.profilePhoto,
+			createdAt: new Date().toLocaleString(),
+		}));
+		const querySnapshot = await getDocs(
+			query(collection(dbFireStore, "users"), where("uid", "==", userId))
+		);
+		if (!querySnapshot.empty) {
+			const userDoc = querySnapshot.docs[0];
+			const userRef = doc(dbFireStore, "users", userDoc.id);
+			updateDoc(userRef, {
+				friendList: addFriend,
+			})
+				.then(() => {
+					console.log("Successfully added friend to the friendList.");
+				})
+				.catch((error) => {
+					console.error("Error adding friend to the friendList: ", error);
+				});
+		}
+	};
+	const handleAddFriend = async () => {
+		const addFriend: IFriendList[] = inFoUser.map((user) => ({
+			status: true,
+			friendId: userId ?? "",
+			username: `${user.firstName} ${user.lastName}`,
+			profilePhoto: user.profilePhoto,
+			createdAt: new Date().toLocaleString(),
+		}));
+		const querySnapshot = await getDocs(
+			query(collection(dbFireStore, "users"), where("uid", "==", userInfo.uid))
+		);
+		if (!querySnapshot.empty) {
+			const userDoc = querySnapshot.docs[0];
+			const userRef = doc(dbFireStore, "users", userDoc.id);
+			updateDoc(userRef, {
+				friendList: arrayUnion(addFriend[0]),
+			})
+				.then(() => {
+					addFriendOtherSide();
+					PopupAlert("Successfully added friend to the friendList", "success");
+				})
+				.catch((error) => {
+					console.error("Error adding friend to the friendList: ", error);
+				});
 		}
 	};
 
@@ -359,6 +413,7 @@ export default function ProLeftside() {
 										</Button>
 									) : (
 										<Button
+											onClick={handleAddFriend}
 											size="small"
 											sx={{
 												width: "100px",

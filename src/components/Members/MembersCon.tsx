@@ -1,39 +1,43 @@
-import * as React from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import Grid from "@mui/material/Grid";
 import MemberCard from "./MemberCard";
 import { User } from "../../interface/User";
-import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
+import { collection, query, orderBy, where, onSnapshot, getDocs } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
 import { Box, Typography } from "@mui/material";
-import {
-    Search,
-    SearchIconWrapper,
-    StyledInputBase,
-} from "../../components/Navigation";
-import SearchIcon from "@mui/icons-material/Search";
+import SearchBar from "../../helper/SearchBar";
 
 export default function MembersCon() {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-    const [otherMembers, setOtherMembers] = React.useState<User[]>([]);
-    const [user, setUser] = React.useState<User[]>([]);
+    const [otherMembers, setOtherMembers] = useState<User[]>([]);
+    const [user, setUser] = useState<User[]>([]);
+    const [searchValue, setValue] = useState("");
 
-    React.useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const queryData = query(
-                    collection(dbFireStore, "users"),
-                    where("uid", "!=", userInfo.uid),
-                    orderBy("uid"),
-                    orderBy("firstName", "desc")
-                );
-                const querySnapshot = await getDocs(queryData);
-                const queriedData = querySnapshot.docs.map((doc) => doc.data() as User);
+    useEffect(() => {
+        const fetchMemberData = query(
+            collection(dbFireStore, "users"),
+            where("uid", "!=", userInfo.uid),
+            orderBy("uid"),
+            orderBy("firstName", "desc")
+        );
+        const unsubscribeOther = onSnapshot(
+            fetchMemberData,
+            (snapshot) => {
+                const queriedData = snapshot.docs.map((doc) => doc.data() as User);
                 setOtherMembers(queriedData);
-            } catch (error) {
-                console.error("Error fetching data:", error);
+            },
+            (error) => {
+                console.error("Error fetching data: ", error);
             }
+        );
+        return () => {
+            unsubscribeOther();
         };
-        const fetchUSerData = async () => {
+
+    }, [user, otherMembers, userInfo.uid]);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
             try {
                 const queryData = query(
                     collection(dbFireStore, "users"),
@@ -46,9 +50,13 @@ export default function MembersCon() {
                 console.error("Error fetching data:", error);
             }
         };
-        fetchUSerData();
-        fetchData();
-    }, [userInfo.uid, user, otherMembers]);
+        fetchUserData();
+    }, [userInfo.uid]);
+
+    const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setValue(value);
+    };
 
     return (
         <Box
@@ -66,21 +74,10 @@ export default function MembersCon() {
                 >
                     People who you may know
                 </Typography>
-                <Search
-                    sx={{
-                        backgroundColor: "#F1F1F1",
-                        m: 1,
-                        "&:hover": { backgroundColor: "#C5C5C5" },
-                    }}
-                >
-                    <SearchIconWrapper>
-                        <SearchIcon />
-                    </SearchIconWrapper>
-                    <StyledInputBase
-                        placeholder="Search…"
-                        inputProps={{ "aria-label": "search" }}
-                    />
-                </Search>
+                <SearchBar
+                    searchValue={searchValue}
+                    handleSearch={handleSearch}
+                />
             </Box>
             <Grid sx={{ flexGrow: 1, gap: "30px" }} container>
                 {otherMembers

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -48,6 +48,7 @@ import {
 } from "firebase/firestore";
 import { dbFireStore } from "../config/firebase";
 import FlagIcon from "@mui/icons-material/Flag";
+import SearchBar from "../helper/SearchBar";
 
 interface IData {
 	open: boolean;
@@ -57,47 +58,10 @@ interface IFunction {
 	handleClose: () => void;
 }
 
-export const Search = styled("div")(({ theme }) => ({
-	position: "relative",
-	borderRadius: theme.shape.borderRadius,
-	backgroundColor: alpha(theme.palette.common.white, 0.15),
-	"&:hover": {
-		backgroundColor: alpha(theme.palette.common.white, 0.25),
-	},
-	marginLeft: 0,
-	width: "100%",
-	[theme.breakpoints.up("sm")]: {
-		marginLeft: theme.spacing(1),
-		width: "auto",
-	},
-}));
-
-export const SearchIconWrapper = styled("div")(({ theme }) => ({
-	padding: theme.spacing(0, 2),
-	height: "100%",
-	position: "absolute",
-	pointerEvents: "none",
-	display: "flex",
-	alignItems: "center",
-	justifyContent: "center",
-}));
-
-export const StyledInputBase = styled(InputBase)(({ theme }) => ({
-	color: "inherit",
-	"& .MuiInputBase-input": {
-		padding: theme.spacing(1, 1, 1, 0),
-		paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-		transition: theme.transitions.create("width"),
-		width: "100%",
-		[theme.breakpoints.up("md")]: {
-			width: "20ch",
-		},
-	},
-}));
-
 export default function Navigation(props: IData & IFunction) {
 	const navigate = useNavigate();
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+
 	const handleActiveUser = async (userId: string) => {
 		try {
 			const q = query(
@@ -122,14 +86,15 @@ export default function Navigation(props: IData & IFunction) {
 				console.log(error);
 			});
 	};
-	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
-		React.useState<null | HTMLElement>(null);
+		useState<null | HTMLElement>(null);
 	const isMenuOpen = Boolean(anchorEl);
 	const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-	const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	const [searchValue, setValue] = useState("");
 
-	React.useEffect(() => {
+	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "users"),
 			where("uid", "==", userInfo.uid)
@@ -165,6 +130,11 @@ export default function Navigation(props: IData & IFunction) {
 
 	const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
 		setMobileMoreAnchorEl(event.currentTarget);
+	};
+
+	const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
+		const value = event.target.value;
+		setValue(value);
 	};
 
 	const menuId = "primary-search-account-menu";
@@ -365,15 +335,10 @@ export default function Navigation(props: IData & IFunction) {
 						>
 							CMU
 						</Typography>
-						<Search>
-							<SearchIconWrapper>
-								<SearchIcon />
-							</SearchIconWrapper>
-							<StyledInputBase
-								placeholder="Search…"
-								inputProps={{ "aria-label": "search" }}
-							/>
-						</Search>
+						<SearchBar
+							searchValue={searchValue}
+							handleSearch={handleSearch}
+						/>
 
 						{/* Middle */}
 						<Box sx={{ flexGrow: 1 }} />
