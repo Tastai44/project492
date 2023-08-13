@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect, useMemo } from "react";
 import Box from "@mui/material/Box";
 
 import EachTopic from "./EachTopic";
@@ -12,29 +12,45 @@ import {
 	MenuItem,
 	Select,
 	SelectChangeEvent,
+	Button,
 } from "@mui/material";
 import { dbFireStore } from "../../config/firebase";
-import { collection, query, orderBy, getDocs, where, onSnapshot } from "firebase/firestore";
+import {
+	collection,
+	query,
+	orderBy,
+	getDocs,
+	where,
+	onSnapshot,
+} from "firebase/firestore";
 import { Like, Post } from "../../interface/PostContent";
 import Content from "../MContainer/Content";
 import { styleBoxPop } from "../../utils/styleBox";
 import { User } from "../../interface/User";
+import SearchContent from "../TopBar/SearchContent";
+import SearchIcon from "@mui/icons-material/Search";
 
 export default function TopicContainer() {
-	const [dateType, setDateType] = React.useState("All");
-	const [dataPost, setPosts] = React.useState<Post[]>([]);
-	const [postId, setPostId] = React.useState("");
-	const [reFresh, setReFresh] = React.useState(0);
-	const [openPost, setOpenPost] = React.useState(false);
-	const [likes, setLikes] = React.useState<Like[]>([]);
-	const [postOwner, setPostOwner] = React.useState("");
-
+	const [dateType, setDateType] = useState("All");
+	const [dataPost, setPosts] = useState<Post[]>([]);
+	const [postId, setPostId] = useState("");
+	const [reFresh, setReFresh] = useState(0);
+	const [openPost, setOpenPost] = useState(false);
+	const [likes, setLikes] = useState<Like[]>([]);
+	const [postOwner, setPostOwner] = useState("");
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+	const [openSearch, setOpenSearch] = useState<boolean>(false);
 
+	const handleOpenSearch = () => {
+		setOpenSearch(true);
+	};
+	const handleCloseSearch = () => {
+		setOpenSearch(false);
+	};
 	const handleRefresh = () => {
 		setReFresh((pre) => pre + 1);
 	};
-	React.useEffect(() => {
+	useEffect(() => {
 		const fetchData = query(
 			collection(dbFireStore, "posts"),
 			orderBy("createAt", "desc")
@@ -147,8 +163,8 @@ export default function TopicContainer() {
 		setDateType(e.target.value as string);
 	};
 
-	const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-	React.useMemo(() => {
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	useMemo(() => {
 		const fetchData = async () => {
 			try {
 				const q = query(
@@ -173,6 +189,11 @@ export default function TopicContainer() {
 
 	return (
 		<div>
+			<SearchContent
+				openSearchBar={openSearch}
+				handleCloseSearchBar={handleCloseSearch}
+				inFoUser={inFoUser}
+			/>
 			<Modal
 				open={openPost}
 				onClose={handleClosePost}
@@ -193,19 +214,36 @@ export default function TopicContainer() {
 			</Modal>
 			<Box sx={{ width: "100%", bgcolor: "background.paper", color: "black" }}>
 				<Box
-					style={{
+					sx={{
 						display: "flex",
 						justifyContent: "space-between",
-						padding: 10,
+						alignItems: "center",
+						padding: 1,
 					}}
 				>
 					<Typography variant="h4">Topics</Typography>
 					<Box
-						style={{
+						sx={{
 							display: "flex",
 							gap: "5px",
+							alignItems: "center"
 						}}
 					>
+						<Button
+							variant="outlined"
+							startIcon={<SearchIcon />}
+							sx={{
+								border: "1px solid #CCCCCC",
+								width: "200px",
+								color: "black",
+								"&:hover": {
+									backgroundColor: "primary.contrastText"
+								}
+							}}
+							onClick={handleOpenSearch}
+						>
+							Search...
+						</Button>
 						<FormControl fullWidth>
 							<InputLabel id="demo-simple-select-label">D/W/M</InputLabel>
 							<Select
@@ -239,7 +277,13 @@ export default function TopicContainer() {
 							item.owner == userInfo.uid ||
 							item.status == "Public" ||
 							(item.status == "Friend" &&
-								inFoUser.some((user) => user.uid === item.owner))
+								inFoUser.some(
+									(user) =>
+										user.uid === item.owner ||
+										user.friendList?.some(
+											(friend) => friend.friendId == item.owner
+										)
+								))
 					)
 					.map((posts) => (
 						<Box

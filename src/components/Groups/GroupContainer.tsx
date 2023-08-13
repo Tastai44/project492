@@ -5,6 +5,12 @@ import EachGroup from "./EachGroup";
 import { Typography, Button, Divider } from "@mui/material";
 import { NavLink } from "react-router-dom";
 import { IGroup } from "../../interface/Group";
+import { useMemo, useState } from "react";
+import SearchContent from "../TopBar/SearchContent";
+import SearchIcon from "@mui/icons-material/Search";
+import { collection, where, getDocs, query } from "firebase/firestore";
+import { dbFireStore } from "../../config/firebase";
+import { User } from "../../interface/User";
 
 interface IFunction {
 	openAddGroup: () => void;
@@ -18,8 +24,45 @@ export default function GroupContainer({
 	groupData,
 }: IFunction & IData) {
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+	const [openSearch, setOpenSearch] = useState<boolean>(false);
+
+	const handleOpenSearch = () => {
+		setOpenSearch(true);
+	};
+	const handleCloseSearch = () => {
+		setOpenSearch(false);
+	};
+
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	useMemo(() => {
+		const fetchData = async () => {
+			try {
+				const q = query(
+					collection(dbFireStore, "users"),
+					where("uid", "==", userInfo.uid)
+				);
+				const querySnapshot = await getDocs(q);
+				const queriedData = querySnapshot.docs.map(
+					(doc) =>
+					({
+						uid: doc.id,
+						...doc.data(),
+					} as User)
+				);
+				setInFoUser(queriedData);
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		};
+		fetchData();
+	}, [userInfo.uid]);
 	return (
 		<Box sx={{ width: "100%", bgcolor: "background.paper", color: "black" }}>
+			<SearchContent
+				openSearchBar={openSearch}
+				handleCloseSearchBar={handleCloseSearch}
+				inFoUser={inFoUser}
+			/>
 			<div
 				style={{
 					display: "flex",
@@ -28,12 +71,27 @@ export default function GroupContainer({
 				}}
 			>
 				<Typography variant="h4">Groups</Typography>
-				<div
-					style={{
+				<Box
+					sx={{
 						display: "flex",
 						gap: "5px",
 					}}
 				>
+					<Button
+						variant="outlined"
+						startIcon={<SearchIcon />}
+						sx={{
+							border: "1px solid #CCCCCC",
+							width: "100px",
+							color: "black",
+							"&:hover": {
+								backgroundColor: "primary.contrastText"
+							}
+						}}
+						onClick={handleOpenSearch}
+					>
+						Search...
+					</Button>
 					<Button
 						sx={{
 							fontSize: "16px",
@@ -47,7 +105,7 @@ export default function GroupContainer({
 					>
 						Create Group
 					</Button>
-				</div>
+				</Box>
 			</div>
 			<Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
 			{groupData
@@ -55,7 +113,7 @@ export default function GroupContainer({
 					(item) =>
 						item.status === "Public" ||
 						(item.hostId === userInfo.uid) ||
-						item.members.some((member) => member.uid === userInfo.uid)
+						item.members.some((member) => member.memberId === userInfo.uid)
 				)
 				.map((g) => (
 					<NavLink key={g.gId} to={`/groupDetail/${g.gId}`}>

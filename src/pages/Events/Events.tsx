@@ -1,10 +1,11 @@
-import * as React from "react";
-import { Button, Modal } from "@mui/material";
+import { useState, ChangeEvent } from "react";
+import { Button, Modal, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
 import EventContainer from "../../components/Events/EventContainer";
 import AddEvent from "../../components/Events/AddEvent";
+import SearchBar from "../../helper/SearchBar";
 
 const Item = styled(Box)(({ theme }) => ({
 	...theme.typography.body2,
@@ -14,10 +15,14 @@ const Item = styled(Box)(({ theme }) => ({
 }));
 
 export default function Events() {
-	const [open, setOpen] = React.useState(false);
+	const [open, setOpen] = useState(false);
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
-
+	const [searchValue, setValue] = useState("");
+	const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
+		const value = event.target.value;
+		setValue(value);
+	};
 	return (
 		<>
 			<Modal
@@ -41,27 +46,36 @@ export default function Events() {
 							alignItems: "center",
 						}}
 					>
-						<div
-							style={{ fontSize: "30px", color: "#920EFA", fontWeight: 500 }}
+						<Typography
+							sx={{ fontSize: "30px", color: "#920EFA", fontWeight: 500 }}
 						>
 							CMU Events
-						</div>
-						<Button
-							sx={{
-								fontSize: "16px",
-								"&:hover": { backgroundColor: "white", color: "black" },
-								borderRadius: "10px",
-								backgroundColor: "#A020F0",
-								padding: "5px",
-								color: "#fff",
-							}}
-							onClick={handleOpen}
-						>
-							Add an event
-						</Button>
+						</Typography>
+						<Box sx={{ display: "flex", alignItems: "center" }}>
+							<SearchBar
+								searchValue={searchValue}
+								handleSearch={handleSearch}
+							/>
+							<Button
+								sx={{
+									fontSize: "16px",
+									"&:hover": { backgroundColor: "white", color: "black" },
+									borderRadius: "10px",
+									backgroundColor: "#A020F0",
+									padding: "5px",
+									color: "#fff",
+								}}
+								onClick={handleOpen}
+							>
+								Add an event
+							</Button>
+						</Box>
+
 					</Item>
 					<Item sx={{ display: "flex", justifyContent: "center" }}>
-						<EventContainer />
+						<EventContainer
+							searchValue={searchValue}
+						/>
 					</Item>
 				</Stack>
 			</Box>

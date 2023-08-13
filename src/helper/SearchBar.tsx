@@ -49,9 +49,9 @@ export default function SearchBar(props: IData) {
         <div>
             <Search
                 sx={{
-                    backgroundColor: "#F1F1F1",
+                    backgroundColor: "#C5C5C5",
                     m: 1,
-                    "&:hover": { backgroundColor: "#C5C5C5" },
+                    "&:hover": { backgroundColor: "#F1F1F1" },
                 }}
             >
                 <SearchIconWrapper>

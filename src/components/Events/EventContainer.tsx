@@ -11,7 +11,11 @@ import {
 } from "firebase/firestore";
 import { EventPost } from "../../interface/Event";
 
-export default function EventContainer() {
+interface IData {
+    searchValue: string;
+}
+
+export default function EventContainer(props: IData) {
     const [eventData, setEventData] = React.useState<EventPost[]>([]);
     React.useEffect(() => {
         const fetchData = query(
@@ -34,22 +38,42 @@ export default function EventContainer() {
     }, []);
     return (
         <Box sx={{ display: "flex", justifyContent: "center", width: "95%" }}>
-            <Grid sx={{ flexGrow: 1, gap: "40px" }} container>
-                {eventData.map((m) => (
-                    <Box key={m.eventId}>
-                        <EventCard
-                            title={m.title}
-                            startDate={m.startDate}
-                            startTime={m.startTime}
-                            endDate={m.endDate}
-                            endTime={m.endTime}
-                            eventId={m.eventId}
-                            coverPhoto={m.coverPhoto}
-                            ownerId={m.owner}
-                        />
-                    </Box>
-                ))}
-            </Grid>
+            {props.searchValue == "" ? (
+                <Grid sx={{ flexGrow: 1, gap: "40px" }} container>
+                    {eventData.map((event) => (
+                        <Box key={event.eventId}>
+                            <EventCard
+                                title={event.title}
+                                startDate={event.startDate}
+                                startTime={event.startTime}
+                                endDate={event.endDate}
+                                endTime={event.endTime}
+                                eventId={event.eventId}
+                                coverPhoto={event.coverPhoto}
+                                ownerId={event.owner}
+                            />
+                        </Box>
+                    ))}
+                </Grid>
+            ) : (
+                <Grid sx={{ flexGrow: 1, gap: "40px" }} container>
+                    {eventData.filter((item) => item.title.includes(props.searchValue) || item.topic.includes(props.searchValue)).map((event) => (
+                        <Box key={event.eventId}>
+                            <EventCard
+                                title={event.title}
+                                startDate={event.startDate}
+                                startTime={event.startTime}
+                                endDate={event.endDate}
+                                endTime={event.endTime}
+                                eventId={event.eventId}
+                                coverPhoto={event.coverPhoto}
+                                ownerId={event.owner}
+                            />
+                        </Box>
+                    ))}
+                </Grid>
+            )}
+
         </Box>
     );
 }

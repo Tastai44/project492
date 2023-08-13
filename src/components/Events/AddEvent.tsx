@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect, useRef, ChangeEvent } from "react";
 import {
     Button,
     Divider,
@@ -44,19 +44,19 @@ interface Ihandle {
 }
 
 export default function AddEvent({ closeAdd }: Ihandle) {
-    const [userId, setUserId] = React.useState("");
-    React.useEffect(() => {
+    const [userId, setUserId] = useState("");
+    useEffect(() => {
         const getUerInfo = localStorage.getItem("user");
         const tmp = JSON.parse(getUerInfo ? getUerInfo : "");
         setUserId(tmp.uid);
     }, []);
 
-    const [status, setStatus] = React.useState("");
+    const [status, setStatus] = useState("");
     const handleChange = (event: SelectChangeEvent) => {
         setStatus(event.target.value as string);
     };
-    const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-    const [previewImages, setPreviewImages] = React.useState<string[]>([]);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [previewImages, setPreviewImages] = useState<string[]>([]);
 
     const handleClearImage = () => {
         setPreviewImages([]);
@@ -67,7 +67,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
         }
     };
     const handleFileChange = async (
-        event: React.ChangeEvent<HTMLInputElement>
+        event: ChangeEvent<HTMLInputElement>
     ) => {
         const files = event.target.files;
         if (files) {
@@ -110,13 +110,13 @@ export default function AddEvent({ closeAdd }: Ihandle) {
         shareUsers: [],
         reportEvent: []
     };
-    const [event, setEvent] = React.useState<EventPost>(initialState);
+    const [event, setEvent] = useState<EventPost>(initialState);
     const clearState = () => {
         setEvent({ ...initialState });
         handleClearImage();
     };
     const handleChangeEvent = (
-        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         const { name, value } = event.target;
         setEvent((prevEvent) => ({

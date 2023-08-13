@@ -12,7 +12,7 @@ export default function EachGroup({ title }: IData) {
 					<ListItemIcon>
 						<TagIcon />
 					</ListItemIcon>
-					<ListItemText primary={`${title}`} />
+					<ListItemText primary={`${title.replace(/^#/, '')}`} />
 					{/* <BorderColorIcon />
                 <DeleteIcon /> */}
 				</ListItemButton>

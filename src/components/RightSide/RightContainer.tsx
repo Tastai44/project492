@@ -141,18 +141,18 @@ export default function RightContainer() {
             </Modal>
             <Stack spacing={2}>
                 <Item style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                    <div
-                        style={{
+                    <Box
+                        sx={{
                             display: "flex",
                             justifyContent: "start",
                             fontSize: "18px",
                             fontWeight: "bold",
-                            padding: 10,
+                            padding: 1,
                         }}
                     >
                         Friend
-                    </div>
-                    <div>
+                    </Box>
+                    <Box>
                         <TextField
                             id="outlined-size-small"
                             size="small"
@@ -162,7 +162,7 @@ export default function RightContainer() {
                             }}
                             placeholder="Search for friend"
                         />
-                    </div>
+                    </Box>
                     <Box sx={{ display: "flex", justifyContent: "space-around", mb: 1 }}>
                         <Button
                             onClick={() => handleIsActive(true)}
@@ -237,18 +237,18 @@ export default function RightContainer() {
                 </Item>
 
                 <Item style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                    <div
-                        style={{
+                    <Box
+                        sx={{
                             display: "flex",
                             justifyContent: "start",
                             fontSize: "18px",
                             fontWeight: "bold",
-                            padding: 10,
+                            padding: 1,
                         }}
                     >
                         Groups
-                    </div>
-                    <div>
+                    </Box>
+                    <Box>
                         <TextField
                             id="outlined-size-small"
                             size="small"
@@ -256,9 +256,9 @@ export default function RightContainer() {
                             InputProps={{
                                 startAdornment: <SearchIcon />,
                             }}
-                            placeholder="Search for friend"
+                            placeholder="Search for group"
                         />
-                    </div>
+                    </Box>
                     <div style={{ display: "flex", justifyContent: "space-around" }}>
                         {/* <Button sx={{ color: "black" }}>Active</Button>
 						<Button sx={{ color: "black" }}>General</Button> */}

@@ -15,7 +15,7 @@ export default function EachTopic({ hashTag }: IData) {
 							<ListItemIcon>
 								<TagIcon />
 							</ListItemIcon>
-							<ListItemText primary={`${hashTag}`} />
+							<ListItemText primary={`${hashTag.replace(/^#/, '')}`} />
 							{/* <MoreHorizIcon /> */}
 						</ListItemButton>
 					</ListItem>

@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -7,11 +7,9 @@ import Typography from "@mui/material/Typography";
 import Badge from "@mui/material/Badge";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-
+import SearchIcon from "@mui/icons-material/Search";
 import Logo from "/images/logoCmu.png";
-import {
-	Avatar,
-} from "@mui/material";
+import { Avatar, Button } from "@mui/material";
 
 import { NavLink, useNavigate } from "react-router-dom";
 
@@ -28,10 +26,10 @@ import {
 	onSnapshot,
 } from "firebase/firestore";
 import { dbFireStore } from "../config/firebase";
-import SearchBar from "../helper/SearchBar";
 import UserMenu from "./TopBar/UserMenu";
 import NotificationList from "./TopBar/NotificationList";
 import PageIcons from "./TopBar/PageIcons";
+import SearchContent from "./TopBar/SearchContent";
 
 interface IData {
 	open: boolean;
@@ -44,6 +42,14 @@ interface IFunction {
 export default function Navigation(props: IData & IFunction) {
 	const navigate = useNavigate();
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+	const [openSearch, setOpenSearch] = useState<boolean>(false);
+
+	const handleOpenSearch = () => {
+		setOpenSearch(true);
+	};
+	const handleCloseSearch = () => {
+		setOpenSearch(false);
+	};
 
 	const handleActiveUser = async (userId: string) => {
 		try {
@@ -75,7 +81,6 @@ export default function Navigation(props: IData & IFunction) {
 	const isMenuOpen = Boolean(anchorEl);
 	const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
-	const [searchValue, setValue] = useState("");
 
 	useEffect(() => {
 		const queryData = query(
@@ -115,11 +120,6 @@ export default function Navigation(props: IData & IFunction) {
 		setMobileMoreAnchorEl(event.currentTarget);
 	};
 
-	const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
-		const value = event.target.value;
-		setValue(value);
-	};
-
 	const menuId = "primary-search-account-menu";
 	const renderMenu = (
 		<UserMenu
@@ -155,9 +155,16 @@ export default function Navigation(props: IData & IFunction) {
           <ChatBox handleClose={props.handleClose} />
         </Box>
       </Modal> */}
-
+			<SearchContent
+				openSearchBar={openSearch}
+				handleCloseSearchBar={handleCloseSearch}
+				inFoUser={inFoUser}
+			/>
 			<Box sx={{ flexGrow: 1 }}>
-				<AppBar position="fixed" sx={{ backgroundColor: "#8E51E2", color: "black" }}>
+				<AppBar
+					position="fixed"
+					sx={{ backgroundColor: "#8E51E2", color: "black" }}
+				>
 					<Toolbar>
 						<NavLink to="/">
 							<IconButton
@@ -174,21 +181,30 @@ export default function Navigation(props: IData & IFunction) {
 							variant="h6"
 							noWrap
 							component="div"
-							sx={{ display: { xs: "none", sm: "block" }, fontWeight: "bold", color: "white" }}
+							sx={{
+								display: { xs: "none", sm: "block" },
+								fontWeight: "bold",
+								color: "white",
+							}}
 						>
 							CMU
 						</Typography>
-						<SearchBar
-							searchValue={searchValue}
-							handleSearch={handleSearch}
-						/>
+						<Button
+							startIcon={<SearchIcon />}
+							sx={{
+								ml: 1, color: "black", backgroundColor: "primary.contrastText",
+								"&:hover": {
+									backgroundColor: "white"
+								}
+							}}
+							onClick={handleOpenSearch}
+						>
+							Searching
+						</Button>
 
 						{/* Middle */}
 						<Box sx={{ flexGrow: 1 }} />
-						<PageIcons
-							userId={userInfo.uid}
-							IsAdmin={IsAdmin}
-						/>
+						<PageIcons userId={userInfo.uid} IsAdmin={IsAdmin} />
 						{/* Middle */}
 
 						<Box sx={{ flexGrow: 1 }} />
