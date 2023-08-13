@@ -9,7 +9,6 @@ export interface User {
 	email: string;
 	profilePhoto?: string;
 	coverPhoto?: string;
-	active?: boolean;
 	aboutMe: string;
 	faculty: string;
 	instagram: string;
