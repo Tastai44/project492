@@ -2,7 +2,14 @@ import { useState, useEffect, ChangeEvent } from "react";
 import Grid from "@mui/material/Grid";
 import MemberCard from "./MemberCard";
 import { User } from "../../interface/User";
-import { collection, query, orderBy, where, onSnapshot, getDocs } from "firebase/firestore";
+import {
+    collection,
+    query,
+    orderBy,
+    where,
+    onSnapshot,
+    getDocs,
+} from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
 import { Box, Typography } from "@mui/material";
 import SearchBar from "../../helper/SearchBar";
@@ -34,7 +41,6 @@ export default function MembersCon() {
         return () => {
             unsubscribeOther();
         };
-
     }, [user, otherMembers, userInfo.uid]);
 
     useEffect(() => {
@@ -60,7 +66,7 @@ export default function MembersCon() {
     };
 
     const handleRefresh = () => {
-        setReFresh(pre => pre + 1);
+        setReFresh((pre) => pre + 1);
     };
 
     return (
@@ -79,29 +85,53 @@ export default function MembersCon() {
                 >
                     People who you may know
                 </Typography>
-                <SearchBar
-                    searchValue={searchValue}
-                    handleSearch={handleSearch}
-                />
+                <SearchBar searchValue={searchValue} handleSearch={handleSearch} />
             </Box>
-            <Grid sx={{ flexGrow: 1, gap: "30px" }} container>
-                {otherMembers
-                    .filter(
-                        (f) =>
-                            !user.some((m) => m.friendList?.some((s) => f.uid === s.friendId))
-                    )
-                    .map((otherUser) => (
-                        <MemberCard
-                            key={otherUser.uid}
-                            username={`${otherUser.firstName} ${otherUser.lastName}`}
-                            profilePhoto={
-                                otherUser.profilePhoto ? otherUser.profilePhoto : ""
-                            }
-                            uId={otherUser.uid}
-                            handleRefresh={handleRefresh}
-                        />
-                    ))}
-            </Grid>
+            {searchValue == "" ? (
+                <Grid sx={{ flexGrow: 1, gap: "30px" }} container>
+                    {otherMembers
+                        .filter(
+                            (f) =>
+                                !user.some((m) =>
+                                    m.friendList?.some((s) => f.uid === s.friendId)
+                                )
+                        )
+                        .map((otherUser) => (
+                            <MemberCard
+                                key={otherUser.uid}
+                                username={`${otherUser.firstName} ${otherUser.lastName}`}
+                                profilePhoto={
+                                    otherUser.profilePhoto ? otherUser.profilePhoto : ""
+                                }
+                                uId={otherUser.uid}
+                                handleRefresh={handleRefresh}
+                            />
+                        ))}
+                </Grid>
+            ) : (
+                <Grid sx={{ flexGrow: 1, gap: "30px" }} container>
+                    {otherMembers
+                        .filter(
+                            (f) =>
+                                !user.some((m) =>
+                                    m.friendList?.some((s) => f.uid === s.friendId)
+                                ) &&
+                                (f.firstName.includes(searchValue) ||
+                                    f.lastName.includes(searchValue))
+                        )
+                        .map((otherUser) => (
+                            <MemberCard
+                                key={otherUser.uid}
+                                username={`${otherUser.firstName} ${otherUser.lastName}`}
+                                profilePhoto={
+                                    otherUser.profilePhoto ? otherUser.profilePhoto : ""
+                                }
+                                uId={otherUser.uid}
+                                handleRefresh={handleRefresh}
+                            />
+                        ))}
+                </Grid>
+            )}
         </Box>
     );
 }

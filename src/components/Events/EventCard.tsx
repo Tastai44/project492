@@ -45,7 +45,6 @@ export default function MediaCard(props: IData) {
 		};
 		fetchData();
 	}, [props.ownerId]);
-	console.log(props.ownerId);
 
 	return (
 		<Card sx={{ width: 258, height: 360 }}>
