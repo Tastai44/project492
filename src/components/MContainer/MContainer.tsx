@@ -36,6 +36,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import Content from "./Content";
 import EditPost from "./EditPost";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
@@ -83,6 +84,7 @@ interface Idata {
     owner: string;
     groupName?: string;
     groupId?: string;
+    location?: string;
     userInfo: User[];
 }
 
@@ -320,6 +322,7 @@ export default function MContainer(props: Idata) {
                                                 {props.status === "Friend" && <GroupIcon />}
                                                 {props.status === "Public" && <PublicIcon />}
                                                 {props.status}
+                                                <LocationOnIcon color="error" /> {props.location}
                                             </Typography>
                                         }
                                     />

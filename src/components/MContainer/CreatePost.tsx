@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useRef, ChangeEvent } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import {
@@ -13,6 +13,7 @@ import {
 	MenuItem,
 	ImageList,
 	ImageListItem,
+	Typography,
 } from "@mui/material";
 import Luffy from "/images/Luffy.webp";
 import FormControl from "@mui/material/FormControl";
@@ -33,6 +34,7 @@ import { Post } from "../../interface/PostContent";
 import { doc } from "firebase/firestore";
 import { collection, setDoc } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
+import LocationCard from "./LocationCard";
 
 const styleBoxPop = {
 	position: "absolute",
@@ -52,18 +54,22 @@ interface IHandle {
 }
 
 export default function CreatePost({ handleCloseCratePost }: IHandle) {
-
-	const [status, setStatus] = React.useState("");
+	const [location, setLocation] = useState("");
+	const [status, setStatus] = useState("");
 	const handleChange = (event: SelectChangeEvent) => {
 		setStatus(event.target.value as string);
 	};
 
-	const [openEmoji, setOpenEmoji] = React.useState(false);
+	const [openLocation, setOpenLocation] = useState(false);
+	const handletOpenLocation = () => setOpenLocation(true);
+	const handleCloseLocation = () => setOpenLocation(false);
+
+	const [openEmoji, setOpenEmoji] = useState(false);
 	const handletOpenEmoji = () => setOpenEmoji(true);
 	const handleCloseEmoji = () => setOpenEmoji(false);
 
-	const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-	const [previewImages, setPreviewImages] = React.useState<string[]>([]);
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
+	const [previewImages, setPreviewImages] = useState<string[]>([]);
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
 	const handleClearImage = () => {
@@ -75,7 +81,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 		}
 	};
 	const handleFileChange = async (
-		event: React.ChangeEvent<HTMLInputElement>
+		event: ChangeEvent<HTMLInputElement>
 	) => {
 		const files = event.target.files;
 		if (files) {
@@ -100,7 +106,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 		}
 	};
 
-	const [emoji, setEmoji] = React.useState("");
+	const [emoji, setEmoji] = useState("");
 	const handleChangeEmoji = (e: string) => {
 		setEmoji(e);
 	};
@@ -119,7 +125,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 		shareUsers: [],
 		reportPost: [],
 	};
-	const [post, setPost] = React.useState<Post>(initialState);
+	const [post, setPost] = useState<Post>(initialState);
 	const clearState = () => {
 		setPost({ ...initialState });
 		setStatus('');
@@ -128,7 +134,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 	};
 
 	const handleChangePost = (
-		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+		event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 	) => {
 		const { name, value } = event.target;
 		setPost((prevPost) => ({
@@ -152,6 +158,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 			owner: userInfo.uid,
 			shareUsers: [],
 			reportPost: [],
+			location: location,
 			comments: post.comments,
 		};
 
@@ -174,6 +181,15 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 		return emoji ? emoji.name : undefined;
 	};
 
+	const handleChangeLocation = (
+		_event: ChangeEvent<unknown>,
+		newValue: string | null
+	) => {
+		if (newValue) {
+			setLocation(newValue);
+		}
+	};
+
 	return (
 		<div>
 			<Modal
@@ -189,6 +205,12 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 					/>
 				</Box>
 			</Modal>
+			<LocationCard
+				openLocation={openLocation}
+				location={location}
+				handleCloseLocation={handleCloseLocation}
+				handleChangeLocation={handleChangeLocation}
+			/>
 			<Box sx={styleBoxPop}>
 				<Box sx={{ display: "flex", justifyContent: "space-between" }}>
 					<Box
@@ -214,7 +236,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 						<ListItemText
 							primary={
 								<Box sx={{ fontSize: "16px" }}>
-									<Box sx={{ mb: 1 }}>
+									<Box>
 										<b>User Name </b>
 										{emoji !== "" && (
 											<>{String.fromCodePoint(parseInt(emoji, 16))} {convertEmojiCodeToName(emoji)}</>
@@ -268,6 +290,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 							}
 						/>
 					</ListItem>
+					<Typography sx={{ ml: 2, mb: 1 }}>{location ? `Location: ${location}` : ""}</Typography>
 					<TextField
 						name="caption"
 						label="What is in your mind?"
@@ -329,7 +352,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 									<InsertPhotoIcon sx={{ color: "green" }} />
 								</IconButton>
 							</Box>
-							<IconButton size="large">
+							<IconButton size="large" onClick={handletOpenLocation}>
 								<LocationOnIcon color="error" />
 							</IconButton>
 							<IconButton onClick={handletOpenEmoji} size="large">

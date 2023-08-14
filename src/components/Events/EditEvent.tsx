@@ -382,7 +382,7 @@ export default function EditEvent(props: IData & Ihandle) {
                         />
                     </FormControl>
                 </Box>
-                <Typography
+                <Box
                     sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}
                 >
                     <Button
@@ -412,7 +412,7 @@ export default function EditEvent(props: IData & Ihandle) {
                     >
                         Save
                     </Button>
-                </Typography>
+                </Box>
                 {previewImages.length !== 0 && (
                     <Box>
                         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>

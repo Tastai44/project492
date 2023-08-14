@@ -3,20 +3,8 @@ import emojiData from "emoji-datasource-facebook";
 import { Box, Paper, Grid, IconButton, Divider } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { themeApp } from "../../utils/Theme";
-const styleBoxEmoji = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 400,
-    bgcolor: "white",
-    border: "2px solid #000",
-    boxShadow: 24,
-    color: "black",
-    p: 3,
-    overflowY: "scroll",
-    height: 400,
-};
+import { styleBoxEmoji } from "../../utils/styleBox";
+
 interface IHandle {
     handleClose: () => void;
     handleChangeEmoji: (e: string) => void;

@@ -58,7 +58,7 @@ export interface Post {
 	comments: Comment[];
 	reports?: Report[];
 	shares?: Share[];
-	location?: Address[];
+	location?: string;
 	owner: string;
 	groupName?: string;
 	groupId?: string;

@@ -87,6 +87,7 @@ export default function HomeFeed() {
 									groupId={m.groupId}
 									shareUsers={m.shareUsers}
 									userInfo={inFoUser}
+									location={m.location}
 								/>
 							)}
 						</Box>

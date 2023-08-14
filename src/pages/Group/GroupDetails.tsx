@@ -155,6 +155,7 @@ export default function GroupDetails() {
                                                                         groupId={m.groupId}
                                                                         shareUsers={m.shareUsers}
                                                                         userInfo={inFoUser}
+                                                                        location={m.location}
                                                                     />
                                                                 </Box>
                                                             ))}

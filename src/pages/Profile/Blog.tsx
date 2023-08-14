@@ -135,6 +135,7 @@ export default function Blog() {
 													commentNumber={m.comments.length}
 													shareUsers={m.shareUsers}
 													userInfo={inFoUser}
+													location={m.location}
 												/>
 											</Box>
 										))}
@@ -192,6 +193,7 @@ export default function Blog() {
 															userInfo={inFoUser}
 															groupName={m.groupName}
 															groupId={m.groupId}
+															location={m.location}
 														/>
 													</Box>
 												))}
@@ -244,6 +246,7 @@ export default function Blog() {
 															userInfo={inFoUser}
 															groupName={m.groupName}
 															groupId={m.groupId}
+															location={m.location}
 														/>
 													</Box>
 												))}
