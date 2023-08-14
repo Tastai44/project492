@@ -171,6 +171,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
             status: status,
             interest: [],
             shareUsers: [],
+            location: location,
             reportEvent: [],
             createAt: new Date().toLocaleString(),
             owner: userId,
@@ -268,29 +269,6 @@ export default function AddEvent({ closeAdd }: Ihandle) {
                             }
                         />
                     </Box>
-
-                    {/* <FormControl sx={{ width: "100%", mb: 1 }}>
-                        <InputLabel id="demo-simple-select">Location</InputLabel>
-                        <Select
-                            label="Location"
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={status}
-                            onChange={handleChange}
-                        >
-                            <MenuItem value={"Public"}>
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        alignContent: "end",
-                                        gap: 0.5,
-                                    }}
-                                >
-                                    <PublicIcon /> Public
-                                </Box>
-                            </MenuItem>
-                        </Select>
-                    </FormControl> */}
                     <Autocomplete
                         disablePortal
                         id="combo-box-demo"
