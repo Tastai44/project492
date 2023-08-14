@@ -232,6 +232,7 @@ export default function MContainer(props: Idata) {
                                     handleClosePost={handleClosePost}
                                     likes={props.likes}
                                     owner={props.owner}
+                                    location={props.location}
                                 />
                             </Paper>
                         </Box>
@@ -252,6 +253,7 @@ export default function MContainer(props: Idata) {
                                 oldPhoto={props.photoPost}
                                 oldEmoji={props.emoji !== undefined ? props.emoji : ""}
                                 postId={props.postId}
+                                location={props.location}
                             />
                         </Box>
                     </Modal>

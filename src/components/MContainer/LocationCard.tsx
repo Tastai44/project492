@@ -8,6 +8,7 @@ interface IData {
     openLocation: boolean;
     location: string;
     handleCloseLocation: () => void;
+    handletSaveLocation: () => void;
     handleChangeLocation: (_event: ChangeEvent<unknown>,
         newValue: string | null) => void;
 }
@@ -56,7 +57,7 @@ export default function LocationCard(props: IData) {
                         Cancel
                     </Button>
                     <Button
-                        onClick={props.handleCloseLocation}
+                        onClick={props.handletSaveLocation}
                         sx={{
                             backgroundColor: "#8E51E2",
                             color: "white",

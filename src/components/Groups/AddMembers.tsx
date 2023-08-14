@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Box, Button, Divider, TextField, Typography } from "@mui/material";
-import { styleBox } from "../../utils/styleBox";
+import { styleTable } from "../../utils/styleBox";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { User } from "../../interface/User";
@@ -84,7 +84,7 @@ export default function AddMembers(props: IFunction & IData) {
 
 	return (
 		<div>
-			<Box sx={styleBox}>
+			<Box sx={styleTable}>
 				<Box
 					sx={{
 						color: "black",

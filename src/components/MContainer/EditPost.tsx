@@ -1,4 +1,4 @@
-import * as React from "react";
+
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import {
@@ -13,8 +13,8 @@ import {
 	MenuItem,
 	ImageList,
 	ImageListItem,
+	Typography
 } from "@mui/material";
-import Luffy from "/images/Luffy.webp";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
@@ -30,8 +30,11 @@ import emojiData from "emoji-datasource-facebook";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { Post } from "../../interface/PostContent";
-import { doc, updateDoc, collection, getDoc } from "firebase/firestore";
+import { doc, updateDoc, collection, getDoc, onSnapshot, query, where } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
+import { useState, useRef, ChangeEvent, useEffect } from "react";
+import LocationCard from "./LocationCard";
+import { User } from "../../interface/User";
 
 const styleBoxPop = {
 	position: "absolute",
@@ -56,6 +59,7 @@ interface Idata {
 	oldStatus: string;
 	// createAt: string;
 	oldPhoto: string[];
+	location?: string;
 	oldEmoji: string;
 	// likeNumber: number;
 	// postId: string;
@@ -64,28 +68,38 @@ interface Idata {
 	// owner: string;
 }
 
-export default function CreatePost({
-	handleCloseEditPost,
-	caption,
-	oldStatus,
-	hashTagTopic,
-	oldPhoto,
-	oldEmoji,
-	postId,
-}: IHandle & Idata) {
-	const [status, setStatus] = React.useState(`${oldStatus}`);
+export default function CreatePost(props: IHandle & Idata) {
+	const [status, setStatus] = useState(`${props.oldStatus}`);
+	const [location, setLocation] = useState(props.location);
 	const handleChange = (event: SelectChangeEvent) => {
 		setStatus(event.target.value as string);
 	};
 
-	const [openEmoji, setOpenEmoji] = React.useState(false);
+	const [openLocation, setOpenLocation] = useState(false);
+	const handletOpenLocation = () => setOpenLocation(true);
+	const handletSaveLocation = () => setOpenLocation(false);
+	const handleCloseLocation = () => {
+		setOpenLocation(false);
+		setLocation("");
+	};
+
+	const handleChangeLocation = (
+		_event: ChangeEvent<unknown>,
+		newValue: string | null
+	) => {
+		if (newValue) {
+			setLocation(newValue);
+		}
+	};
+	const [openEmoji, setOpenEmoji] = useState(false);
 	const handletOpenEmoji = () => setOpenEmoji(true);
 	const handleCloseEmoji = () => setOpenEmoji(false);
 
-	const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-	const [previewImages, setPreviewImages] = React.useState<string[]>(oldPhoto);
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
+	const [previewImages, setPreviewImages] = useState<string[]>(props.oldPhoto);
 
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
 
 	const handleClearImage = () => {
 		setPreviewImages([]);
@@ -96,7 +110,7 @@ export default function CreatePost({
 		}
 	};
 	const handleFileChange = async (
-		event: React.ChangeEvent<HTMLInputElement>
+		event: ChangeEvent<HTMLInputElement>
 	) => {
 		const files = event.target.files;
 		if (files) {
@@ -121,15 +135,15 @@ export default function CreatePost({
 		}
 	};
 
-	const [emoji, setEmoji] = React.useState(oldEmoji ? oldEmoji : "");
+	const [emoji, setEmoji] = useState(props.oldEmoji ? props.oldEmoji : "");
 	const handleChangeEmoji = (e: string) => {
 		setEmoji(e);
 	};
 
 	const initialState = {
 		id: "",
-		caption: caption,
-		hashTagTopic: hashTagTopic,
+		caption: props.caption,
+		hashTagTopic: props.hashTagTopic,
 		status: "",
 		photoPost: [],
 		comments: [],
@@ -140,7 +154,7 @@ export default function CreatePost({
 		shareUsers: [],
 		reportPost: [],
 	};
-	const [post, setPost] = React.useState<Post>(initialState);
+	const [post, setPost] = useState<Post>(initialState);
 	const clearState = () => {
 		setPost({ ...initialState });
 		setStatus("");
@@ -149,7 +163,7 @@ export default function CreatePost({
 	};
 
 	const handleChangePost = (
-		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+		event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 	) => {
 		const { name, value } = event.target;
 		setPost((prevPost) => ({
@@ -171,13 +185,13 @@ export default function CreatePost({
 		};
 
 		try {
-			const docRef = doc(postCollection, postId);
+			const docRef = doc(postCollection, props.postId);
 			getDoc(docRef)
 				.then(async (docSnap) => {
 					if (docSnap.exists() && docSnap.data().owner === userInfo.uid) {
 						await updateDoc(docRef, updatedPost);
 						clearState();
-						handleCloseEditPost();
+						props.handleCloseEditPost();
 						PopupAlert("Post has edited successfully", "success");
 					} else {
 						PopupAlert("You don't have permission to delete this post", "warning");
@@ -196,6 +210,26 @@ export default function CreatePost({
 		return emoji ? emoji.name : undefined;
 	};
 
+	useEffect(() => {
+		const queryData = query(
+			collection(dbFireStore, "users"),
+			where("uid", "==", userInfo.uid)
+		);
+		const unsubscribe = onSnapshot(
+			queryData,
+			(snapshot) => {
+				const queriedData = snapshot.docs.map((doc) => doc.data() as User);
+				setInFoUser(queriedData);
+			},
+			(error) => {
+				console.error("Error fetching data: ", error);
+			}
+		);
+		return () => {
+			unsubscribe();
+		};
+	}, [userInfo.uid]);
+
 	return (
 		<div>
 			<Modal
@@ -211,6 +245,13 @@ export default function CreatePost({
 					/>
 				</Box>
 			</Modal>
+			<LocationCard
+				openLocation={openLocation}
+				location={location ?? ""}
+				handleCloseLocation={handleCloseLocation}
+				handletSaveLocation={handletSaveLocation}
+				handleChangeLocation={handleChangeLocation}
+			/>
 			<Box sx={styleBoxPop}>
 				<Box sx={{ display: "flex", justifyContent: "space-between" }}>
 					<Box
@@ -220,79 +261,83 @@ export default function CreatePost({
 						Edit The Post
 					</Box>
 					<Box>
-						<IconButton onClick={handleCloseEditPost}>
+						<IconButton onClick={props.handleCloseEditPost}>
 							<CancelIcon />
 						</IconButton>
 					</Box>
 				</Box>
 				<Box>
-					<ListItem>
-						<ListItemAvatar>
-							<Avatar
-								src={Luffy}
-								sx={{ width: "40px", height: "40px", marginRight: "10px" }}
-							/>
-						</ListItemAvatar>
-						<ListItemText
-							primary={
-								<Box sx={{ fontSize: "16px" }}>
-									<Box sx={{ mb: 1 }}>
-										<b>User Name </b>
-										{emoji !== "" && (
-											<>
-												{String.fromCodePoint(parseInt(emoji, 16))}{" "}
-												{convertEmojiCodeToName(emoji)}
-											</>
-										)}
+					{inFoUser.map((user) => (
+						<ListItem>
+							<ListItemAvatar>
+								<Avatar
+									src={user.profilePhoto}
+									sx={{ width: "40px", height: "40px", marginRight: "10px" }}
+								/>
+							</ListItemAvatar>
+							<ListItemText
+								primary={
+									<Box sx={{ fontSize: "16px" }}>
+										<Box sx={{ mb: 1 }}>
+											<b>{`${user.firstName} ${user.lastName}`} </b>
+											{emoji !== "" && (
+												<>
+													{String.fromCodePoint(parseInt(emoji, 16))}{" "}
+													{convertEmojiCodeToName(emoji)}
+												</>
+											)}
+										</Box>
+										<FormControl size="small" sx={{ width: "130px" }}>
+											<InputLabel id="demo-simple-select">Status</InputLabel>
+											<Select
+												label="Status"
+												labelId="demo-simple-select-label"
+												id="demo-simple-select"
+												value={status}
+												onChange={handleChange}
+											>
+												<MenuItem value={"Private"}>
+													<Box
+														sx={{
+															display: "flex",
+															alignContent: "end",
+															gap: 0.5,
+														}}
+													>
+														<LockIcon /> Private
+													</Box>
+												</MenuItem>
+												<MenuItem value={"Friend"}>
+													<Box
+														sx={{
+															display: "flex",
+															alignContent: "end",
+															gap: 0.5,
+														}}
+													>
+														<GroupIcon /> Friend
+													</Box>
+												</MenuItem>
+												<MenuItem value={"Public"}>
+													<Box
+														sx={{
+															display: "flex",
+															alignContent: "end",
+															gap: 0.5,
+														}}
+													>
+														<PublicIcon /> Public
+													</Box>
+												</MenuItem>
+											</Select>
+										</FormControl>
 									</Box>
-									<FormControl size="small" sx={{ width: "130px" }}>
-										<InputLabel id="demo-simple-select">Status</InputLabel>
-										<Select
-											label="Status"
-											labelId="demo-simple-select-label"
-											id="demo-simple-select"
-											value={status}
-											onChange={handleChange}
-										>
-											<MenuItem value={"Private"}>
-												<Box
-													sx={{
-														display: "flex",
-														alignContent: "end",
-														gap: 0.5,
-													}}
-												>
-													<LockIcon /> Private
-												</Box>
-											</MenuItem>
-											<MenuItem value={"Friend"}>
-												<Box
-													sx={{
-														display: "flex",
-														alignContent: "end",
-														gap: 0.5,
-													}}
-												>
-													<GroupIcon /> Friend
-												</Box>
-											</MenuItem>
-											<MenuItem value={"Public"}>
-												<Box
-													sx={{
-														display: "flex",
-														alignContent: "end",
-														gap: 0.5,
-													}}
-												>
-													<PublicIcon /> Public
-												</Box>
-											</MenuItem>
-										</Select>
-									</FormControl>
-								</Box>
-							}
-						/>
-					</ListItem>
+								}
+							/>
+						</ListItem>
+					))}
+
+					<Typography sx={{ color: "red", ml: 2, mb: 1 }}>{location ? `Location: ${location}` : ""}</Typography>
 					<TextField
 						name="caption"
 						label="What is in your mind?"
@@ -354,7 +399,7 @@ export default function CreatePost({
 									<InsertPhotoIcon sx={{ color: "green" }} />
 								</IconButton>
 							</Box>
-							<IconButton size="large">
+							<IconButton size="large" onClick={handletOpenLocation}>
 								<LocationOnIcon color="error" />
 							</IconButton>
 							<IconButton onClick={handletOpenEmoji} size="large">

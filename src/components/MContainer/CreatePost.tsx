@@ -1,4 +1,4 @@
-import { useState, useRef, ChangeEvent } from "react";
+import { useState, useRef, ChangeEvent, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import {
@@ -15,7 +15,6 @@ import {
 	ImageListItem,
 	Typography,
 } from "@mui/material";
-import Luffy from "/images/Luffy.webp";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
@@ -31,10 +30,11 @@ import emojiData from "emoji-datasource-facebook";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { Post } from "../../interface/PostContent";
-import { doc } from "firebase/firestore";
+import { doc, onSnapshot, query, where } from "firebase/firestore";
 import { collection, setDoc } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import LocationCard from "./LocationCard";
+import { User } from "../../interface/User";
 
 const styleBoxPop = {
 	position: "absolute",
@@ -56,12 +56,14 @@ interface IHandle {
 export default function CreatePost({ handleCloseCratePost }: IHandle) {
 	const [location, setLocation] = useState("");
 	const [status, setStatus] = useState("");
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const handleChange = (event: SelectChangeEvent) => {
 		setStatus(event.target.value as string);
 	};
 
 	const [openLocation, setOpenLocation] = useState(false);
 	const handletOpenLocation = () => setOpenLocation(true);
+	const handletSaveLocation = () => setOpenLocation(false);
 	const handleCloseLocation = () => setOpenLocation(false);
 
 	const [openEmoji, setOpenEmoji] = useState(false);
@@ -190,6 +192,26 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 		}
 	};
 
+	useEffect(() => {
+		const queryData = query(
+			collection(dbFireStore, "users"),
+			where("uid", "==", userInfo.uid)
+		);
+		const unsubscribe = onSnapshot(
+			queryData,
+			(snapshot) => {
+				const queriedData = snapshot.docs.map((doc) => doc.data() as User);
+				setInFoUser(queriedData);
+			},
+			(error) => {
+				console.error("Error fetching data: ", error);
+			}
+		);
+		return () => {
+			unsubscribe();
+		};
+	}, [userInfo.uid]);
+
 	return (
 		<div>
 			<Modal
@@ -209,6 +231,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 				openLocation={openLocation}
 				location={location}
 				handleCloseLocation={handleCloseLocation}
+				handletSaveLocation={handletSaveLocation}
 				handleChangeLocation={handleChangeLocation}
 			/>
 			<Box sx={styleBoxPop}>
@@ -226,71 +249,74 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 					</Box>
 				</Box>
 				<Box>
-					<ListItem>
-						<ListItemAvatar>
-							<Avatar
-								src={Luffy}
-								sx={{ width: "40px", height: "40px", marginRight: "10px" }}
-							/>
-						</ListItemAvatar>
-						<ListItemText
-							primary={
-								<Box sx={{ fontSize: "16px" }}>
-									<Box>
-										<b>User Name </b>
-										{emoji !== "" && (
-											<>{String.fromCodePoint(parseInt(emoji, 16))} {convertEmojiCodeToName(emoji)}</>
-										)}
+					{inFoUser.map((user) => (
+						<ListItem key={user.uid}>
+							<ListItemAvatar>
+								<Avatar
+									src={user.profilePhoto}
+									sx={{ width: "40px", height: "40px", marginRight: "10px" }}
+								/>
+							</ListItemAvatar>
+							<ListItemText
+								primary={
+									<Box sx={{ fontSize: "16px" }}>
+										<Box>
+											<b>{`${user.firstName} ${user.lastName}`} </b>
+											{emoji !== "" && (
+												<>{String.fromCodePoint(parseInt(emoji, 16))} {convertEmojiCodeToName(emoji)}</>
+											)}
+										</Box>
+										<FormControl size="small" sx={{ width: "130px" }}>
+											<InputLabel id="demo-simple-select">Status</InputLabel>
+											<Select
+												label="Status"
+												labelId="demo-simple-select-label"
+												id="demo-simple-select"
+												value={status}
+												onChange={handleChange}
+											>
+												<MenuItem value={"Private"}>
+													<Box
+														sx={{
+															display: "flex",
+															alignContent: "end",
+															gap: 0.5,
+														}}
+													>
+														<LockIcon /> Private
+													</Box>
+												</MenuItem>
+												<MenuItem value={"Friend"}>
+													<Box
+														sx={{
+															display: "flex",
+															alignContent: "end",
+															gap: 0.5,
+														}}
+													>
+														<GroupIcon /> Friend
+													</Box>
+												</MenuItem>
+												<MenuItem value={"Public"}>
+													<Box
+														sx={{
+															display: "flex",
+															alignContent: "end",
+															gap: 0.5,
+														}}
+													>
+														<PublicIcon /> Public
+													</Box>
+												</MenuItem>
+											</Select>
+										</FormControl>
 									</Box>
-									<FormControl size="small" sx={{ width: "130px" }}>
-										<InputLabel id="demo-simple-select">Status</InputLabel>
-										<Select
-											label="Status"
-											labelId="demo-simple-select-label"
-											id="demo-simple-select"
-											value={status}
-											onChange={handleChange}
-										>
-											<MenuItem value={"Private"}>
-												<Box
-													sx={{
-														display: "flex",
-														alignContent: "end",
-														gap: 0.5,
-													}}
-												>
-													<LockIcon /> Private
-												</Box>
-											</MenuItem>
-											<MenuItem value={"Friend"}>
-												<Box
-													sx={{
-														display: "flex",
-														alignContent: "end",
-														gap: 0.5,
-													}}
-												>
-													<GroupIcon /> Friend
-												</Box>
-											</MenuItem>
-											<MenuItem value={"Public"}>
-												<Box
-													sx={{
-														display: "flex",
-														alignContent: "end",
-														gap: 0.5,
-													}}
-												>
-													<PublicIcon /> Public
-												</Box>
-											</MenuItem>
-										</Select>
-									</FormControl>
-								</Box>
-							}
-						/>
-					</ListItem>
-					<Typography sx={{ ml: 2, mb: 1 }}>{location ? `Location: ${location}` : ""}</Typography>
+								}
+							/>
+						</ListItem>
+					))}
+
+					<Typography sx={{ color: "red", ml: 2, mb: 1 }}>{location ? `Location: ${location}` : ""}</Typography>
 					<TextField
 						name="caption"
 						label="What is in your mind?"

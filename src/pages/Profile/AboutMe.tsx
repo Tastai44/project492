@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import { Divider, Stack, Typography } from "@mui/material";
 import { User } from "../../interface/User";
@@ -9,9 +9,9 @@ import { dbFireStore } from "../../config/firebase";
 
 export default function AboutMe() {
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-	const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "users"),
 			where("uid", "==", userInfo.uid)

@@ -1,7 +1,6 @@
-import * as React from "react";
+import { useState, useEffect, ChangeEvent, MouseEvent } from "react";
 import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
-import Luffy from "/images/Luffy.webp";
 import {
     ListItem,
     ListItemAvatar,
@@ -57,6 +56,8 @@ import ReportCard from "../Report/ReportCard";
 import { User } from "../../interface/User";
 import { themeApp } from "../../utils/Theme";
 import { NavLink } from "react-router-dom";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+
 
 const Item = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -69,6 +70,7 @@ interface IData {
     postId: string;
     userId: string;
     owner?: string;
+    location?: string;
     likes: Like[];
 }
 interface IFunction {
@@ -76,18 +78,20 @@ interface IFunction {
 }
 
 export default function Content(props: IData & IFunction) {
-    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(
         null
     );
-    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    const [inFoUser, setInFoUser] = useState<User[]>([]);
+    const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+    const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
     };
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
 
-    const [postData, setPostData] = React.useState<Post[]>([]);
-    React.useEffect(() => {
+    const [postData, setPostData] = useState<Post[]>([]);
+    useEffect(() => {
         const queryData = query(
             collection(dbFireStore, "posts"),
             where("id", "==", props.postId)
@@ -121,12 +125,12 @@ export default function Content(props: IData & IFunction) {
         author: "",
     };
 
-    const [comment, setComment] = React.useState<Comment>(initialState);
+    const [comment, setComment] = useState<Comment>(initialState);
     const clearState = () => {
         setComment({ ...initialState });
     };
     const handleChangeComment = (
-        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         const { name, value } = event.target;
         setComment((prevComment) => ({
@@ -154,8 +158,8 @@ export default function Content(props: IData & IFunction) {
             });
     };
 
-    const [isLike, setIsLike] = React.useState(false);
-    React.useEffect(() => {
+    const [isLike, setIsLike] = useState(false);
+    useEffect(() => {
         setIsLike(
             postData.some(
                 (d) =>
@@ -196,7 +200,7 @@ export default function Content(props: IData & IFunction) {
         }
     };
 
-    const [openEditPost, setOpenEditPost] = React.useState(false);
+    const [openEditPost, setOpenEditPost] = useState(false);
     const handletOpenEditPost = () => {
         setOpenEditPost(true);
         handleCloseUserMenu();
@@ -229,18 +233,38 @@ export default function Content(props: IData & IFunction) {
             });
     };
 
-    const [openReportPost, setOpenReportPost] = React.useState(false);
+    const [openReportPost, setOpenReportPost] = useState(false);
     const handletOpenReport = () => {
         setOpenReportPost(true);
         handleCloseUserMenu();
     };
     const handleCloseReport = () => setOpenReportPost(false);
 
-    const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-    React.useEffect(() => {
+    const [userOwner, setUserOwner] = useState<User[]>([]);
+    useEffect(() => {
         const queryData = query(
             collection(dbFireStore, "users"),
             where("uid", "==", props.owner)
+        );
+        const unsubscribe = onSnapshot(
+            queryData,
+            (snapshot) => {
+                const queriedData = snapshot.docs.map((doc) => doc.data() as User);
+                setUserOwner(queriedData);
+            },
+            (error) => {
+                console.error("Error fetching data: ", error);
+            }
+        );
+        return () => {
+            unsubscribe();
+        };
+    }, [props.owner]);
+
+    useEffect(() => {
+        const queryData = query(
+            collection(dbFireStore, "users"),
+            where("uid", "==", userInfo.uid)
         );
         const unsubscribe = onSnapshot(
             queryData,
@@ -255,7 +279,7 @@ export default function Content(props: IData & IFunction) {
         return () => {
             unsubscribe();
         };
-    }, [props.owner]);
+    }, [userInfo.uid]);
 
     return (
         <Box>
@@ -292,6 +316,8 @@ export default function Content(props: IData & IFunction) {
                                 oldPhoto={m.photoPost}
                                 oldEmoji={m.emoji !== undefined ? m.emoji : ""}
                                 postId={props.postId}
+                                location={props.location}
+
                             />
                         </Box>
                     </Modal>
@@ -335,7 +361,7 @@ export default function Content(props: IData & IFunction) {
                             <Item>
                                 <Box sx={{ display: "flex", flexDirection: "column" }}>
                                     <Box>
-                                        {inFoUser.map((user) => (
+                                        {userOwner.map((user) => (
                                             <ListItem key={user.uid}>
                                                 <ListItemAvatar>
                                                     <Avatar
@@ -387,6 +413,7 @@ export default function Content(props: IData & IFunction) {
                                                             {m.status === "Friend" && <GroupIcon />}
                                                             {m.status === "Public" && <PublicIcon />}
                                                             {m.status}
+                                                            <LocationOnIcon color="error" /> {props.location}
                                                         </Typography>
                                                     }
                                                 />
@@ -534,7 +561,7 @@ export default function Content(props: IData & IFunction) {
                                     >
                                         <Avatar
                                             alt="User"
-                                            src={Luffy}
+                                            src={inFoUser.find((user) => user.profilePhoto)?.profilePhoto}
                                             sx={{ width: "45px", height: "45px" }}
                                         />
                                         <Box sx={{ width: "98%", display: "flex", gap: 2 }}>
