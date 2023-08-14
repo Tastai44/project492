@@ -94,6 +94,7 @@ export default function EventDetail() {
 											<CoverPhoto
 												coverPhoto={e.coverPhoto}
 												title={e.title}
+												location={e.location}
 												startDate={e.startDate}
 												startTime={e.startTime}
 												eventId={e.eventId}

@@ -136,7 +136,6 @@ export default function AddEvent({ closeAdd }: Ihandle) {
         if (newValue) {
             setLocation(newValue);
         }
-
     };
 
     const createEvent = async () => {

@@ -46,6 +46,7 @@ interface IData {
     interest: Interest[];
     owner: string;
     details: string;
+    location: string;
     status: string;
 }
 
@@ -142,6 +143,7 @@ export default function ProCoverImage(props: IData & IFunction) {
                         ageRage={props.ageRage}
                         details={props.details}
                         status={props.status}
+                        location={props.location}
                     />
                 </Box>
             </Modal>
@@ -183,7 +185,7 @@ export default function ProCoverImage(props: IData & IFunction) {
                         >
                             <Box sx={{ ml: 1 }}>
                                 <Button color="error" startIcon={<LocationOnIcon />}>
-                                    Location
+                                    {props.location}
                                 </Button>
                             </Box>
                             <Box

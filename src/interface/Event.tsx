@@ -25,7 +25,7 @@ export interface EventPost {
 	startTime: string;
 	endDate: string;
 	endTime: string;
-	location?: string;
+	location: string;
 	topic: string;
 	ageRage: number;
 	details: string;

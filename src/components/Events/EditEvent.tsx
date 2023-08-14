@@ -1,5 +1,6 @@
-import * as React from "react";
+import { useState, ChangeEvent, useEffect, useRef } from "react";
 import {
+    Autocomplete,
     Button,
     Divider,
     FormControl,
@@ -25,18 +26,8 @@ import { dbFireStore } from "../../config/firebase";
 import { doc } from "firebase/firestore";
 import { collection, getDoc, updateDoc } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
-
-const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 400,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
-};
+import { locations } from "../../helper/CMULocations";
+import { styleBox } from "../../utils/styleBox";
 
 interface Ihandle {
     closeAdd: () => void;
@@ -54,22 +45,33 @@ interface IData {
     ageRage: number;
     details: string;
     status: string;
+    location: string;
 }
 
 export default function EditEvent(props: IData & Ihandle) {
-    const [userId, setUserId] = React.useState("");
-    React.useEffect(() => {
+    const [userId, setUserId] = useState("");
+    const [location, setLocation] = useState(props.location);
+    const handleChangeLocation = (
+        _event: ChangeEvent<unknown>,
+        newValue: string | null
+    ) => {
+        if (newValue) {
+            setLocation(newValue);
+        }
+    };
+
+    useEffect(() => {
         const getUerInfo = localStorage.getItem("user");
         const tmp = JSON.parse(getUerInfo ? getUerInfo : "");
         setUserId(tmp.uid);
     }, []);
 
-    const [status, setStatus] = React.useState(`${props.status}`);
+    const [status, setStatus] = useState(`${props.status}`);
     const handleChange = (event: SelectChangeEvent) => {
         setStatus(event.target.value as string);
     };
-    const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-    const [previewImages, setPreviewImages] = React.useState<string[]>([props.coverPhoto]);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [previewImages, setPreviewImages] = useState<string[]>([props.coverPhoto]);
 
     const handleClearImage = () => {
         setPreviewImages([]);
@@ -80,7 +82,7 @@ export default function EditEvent(props: IData & Ihandle) {
         }
     };
     const handleFileChange = async (
-        event: React.ChangeEvent<HTMLInputElement>
+        event: ChangeEvent<HTMLInputElement>
     ) => {
         const files = event.target.files;
         if (files) {
@@ -116,10 +118,11 @@ export default function EditEvent(props: IData & Ihandle) {
         ageRage: props.ageRage,
         details: props.details,
         status: props.status,
+        location: props.location,
         coverPhoto: props.coverPhoto,
     };
 
-    const [event, setEvent] = React.useState<IData>(initialState);
+    const [event, setEvent] = useState<IData>(initialState);
     const clearState = () => {
         setEvent({ ...initialState });
         handleClearImage();
@@ -189,11 +192,17 @@ export default function EditEvent(props: IData & Ihandle) {
 
 
     return (
-        <div style={{ color: "black" }}>
-            <Box sx={style}>
+        <Box sx={{ color: "black" }}>
+            <Box sx={styleBox}>
+                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <IconButton onClick={props.closeAdd}>
+                        <CancelIcon />
+                    </IconButton>
+                </Box>
                 <Typography id="modal-modal-title" variant="h5">
                     Add an event
                 </Typography>
+
                 <Divider sx={{ background: "grey" }} />
                 <Box sx={{ mt: 1 }}>
                     <TextField
@@ -266,13 +275,16 @@ export default function EditEvent(props: IData & Ihandle) {
                         />
                     </Box>
 
-                    {/* <TextField
-            sx={{ width: "100%", mb: 1 }}
-            id="outlined-basic"
-            label="Location"
-            variant="outlined"
-            type="text"
-          /> */}
+                    <Autocomplete
+                        disablePortal
+                        id="combo-box-demo"
+                        options={locations}
+                        value={location}
+                        onChange={handleChangeLocation}
+                        isOptionEqualToValue={(option, value) => option === value}
+                        sx={{ width: "100%", mb: 1 }}
+                        renderInput={(params) => <TextField {...params} label="Locations" />}
+                    />
                     <TextField
                         name="topic"
                         sx={{ width: "100%", mb: 1 }}
@@ -422,6 +434,6 @@ export default function EditEvent(props: IData & Ihandle) {
                     </Box>
                 )}
             </Box>
-        </div>
+        </Box>
     );
 }
