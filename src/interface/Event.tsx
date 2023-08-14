@@ -1,4 +1,4 @@
-import { Address, ShareUser } from "./PostContent";
+import { ShareUser } from "./PostContent";
 
 export interface Interest {
 	eventId: number;
@@ -13,6 +13,11 @@ export interface EventReport {
 	createAt: string;
 }
 
+export interface Location {
+	address: string;
+	link: string;
+}
+
 export interface EventPost {
 	eventId: string;
 	title: string;
@@ -20,7 +25,7 @@ export interface EventPost {
 	startTime: string;
 	endDate: string;
 	endTime: string;
-	location?: Address[];
+	location?: string;
 	topic: string;
 	ageRage: number;
 	details: string;

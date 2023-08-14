@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, ChangeEvent } from "react";
 import {
+    Autocomplete,
     Button,
     Divider,
     FormControl,
@@ -26,6 +27,7 @@ import { dbFireStore } from "../../config/firebase";
 import { doc } from "firebase/firestore";
 import { collection, setDoc } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
+import { locations } from "../../helper/CMULocations";
 
 const style = {
     position: "absolute",
@@ -106,11 +108,13 @@ export default function AddEvent({ closeAdd }: Ihandle) {
         coverPhoto: "",
         interest: [],
         owner: "",
+        location: "",
         createAt: "",
         shareUsers: [],
         reportEvent: []
     };
     const [event, setEvent] = useState<EventPost>(initialState);
+    const [location, setLocation] = useState("");
     const clearState = () => {
         setEvent({ ...initialState });
         handleClearImage();
@@ -123,6 +127,16 @@ export default function AddEvent({ closeAdd }: Ihandle) {
             ...prevEvent,
             [name]: value,
         }));
+    };
+
+    const handleChangeLocation = (
+        _event: ChangeEvent<unknown>,
+        newValue: string | null
+    ) => {
+        if (newValue) {
+            setLocation(newValue);
+        }
+
     };
 
     const createEvent = async () => {
@@ -255,13 +269,38 @@ export default function AddEvent({ closeAdd }: Ihandle) {
                         />
                     </Box>
 
-                    {/* <TextField
-            sx={{ width: "100%", mb: 1 }}
-            id="outlined-basic"
-            label="Location"
-            variant="outlined"
-            type="text"
-          /> */}
+                    {/* <FormControl sx={{ width: "100%", mb: 1 }}>
+                        <InputLabel id="demo-simple-select">Location</InputLabel>
+                        <Select
+                            label="Location"
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={status}
+                            onChange={handleChange}
+                        >
+                            <MenuItem value={"Public"}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignContent: "end",
+                                        gap: 0.5,
+                                    }}
+                                >
+                                    <PublicIcon /> Public
+                                </Box>
+                            </MenuItem>
+                        </Select>
+                    </FormControl> */}
+                    <Autocomplete
+                        disablePortal
+                        id="combo-box-demo"
+                        options={locations}
+                        value={location}
+                        onChange={handleChangeLocation}
+                        isOptionEqualToValue={(option, value) => option === value}
+                        sx={{ width: "100%", mb: 1 }}
+                        renderInput={(params) => <TextField {...params} label="Locations" />}
+                    />
                     <TextField
                         name="topic"
                         sx={{ width: "100%", mb: 1 }}

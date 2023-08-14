@@ -43,6 +43,12 @@ export default function Navigation(props: IData & IFunction) {
 	const navigate = useNavigate();
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [openSearch, setOpenSearch] = useState<boolean>(false);
+	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+	const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
+		useState<null | HTMLElement>(null);
+	const isMenuOpen = Boolean(anchorEl);
+	const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
 
 	const handleOpenSearch = () => {
 		setOpenSearch(true);
@@ -75,12 +81,6 @@ export default function Navigation(props: IData & IFunction) {
 				console.log(error);
 			});
 	};
-	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
-		useState<null | HTMLElement>(null);
-	const isMenuOpen = Boolean(anchorEl);
-	const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-	const [inFoUser, setInFoUser] = useState<User[]>([]);
 
 	useEffect(() => {
 		const queryData = query(

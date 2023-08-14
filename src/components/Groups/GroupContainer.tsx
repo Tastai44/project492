@@ -63,11 +63,11 @@ export default function GroupContainer({
 				handleCloseSearchBar={handleCloseSearch}
 				inFoUser={inFoUser}
 			/>
-			<div
-				style={{
+			<Box
+				sx={{
 					display: "flex",
 					justifyContent: "space-between",
-					padding: 10,
+					padding: 1,
 				}}
 			>
 				<Typography variant="h4">Groups</Typography>
@@ -78,6 +78,7 @@ export default function GroupContainer({
 					}}
 				>
 					<Button
+						size="small"
 						variant="outlined"
 						startIcon={<SearchIcon />}
 						sx={{
@@ -93,12 +94,11 @@ export default function GroupContainer({
 						Search...
 					</Button>
 					<Button
+						size="small"
 						sx={{
 							fontSize: "16px",
 							"&:hover": { backgroundColor: "#e8e8e8", color: "black" },
-							borderRadius: "10px",
 							backgroundColor: "#A020F0",
-							padding: "5px",
 							color: "#fff",
 						}}
 						onClick={openAddGroup}
@@ -106,7 +106,7 @@ export default function GroupContainer({
 						Create Group
 					</Button>
 				</Box>
-			</div>
+			</Box>
 			<Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
 			{groupData
 				.filter(

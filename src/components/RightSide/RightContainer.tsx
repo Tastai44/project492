@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
@@ -37,6 +37,8 @@ export default function RightContainer() {
     const [groupData, setGroupData] = useState<IGroup[]>([]);
     const [openChat, setOpenChat] = useState(false);
     const [isActive, setIsActive] = useState(false);
+    const [searchValue, setValue] = useState("");
+    const [searchGroupValue, setGroupValue] = useState("");
 
     const handleIsActive = (value: boolean) => {
         setIsActive(value);
@@ -54,6 +56,15 @@ export default function RightContainer() {
         setGroupId(id);
     };
     const handleCloseGroupChat = () => setOpenGroupChat(false);
+
+    const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setValue(value);
+    };
+    const handleGroupSearch = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setGroupValue(value);
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -161,6 +172,8 @@ export default function RightContainer() {
                                 startAdornment: <SearchIcon />,
                             }}
                             placeholder="Search for friend"
+                            onChange={handleSearch}
+                            value={searchValue}
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "space-around", mb: 1 }}>
@@ -170,6 +183,7 @@ export default function RightContainer() {
                                 color: isActive ? "white" : "black",
                                 backgroundColor: isActive ? "primary.main" : "",
                                 cursor: "pointer",
+                                "&:hover": { color: isActive ? "black" : "black" }
                             }}
                         >
                             Active
@@ -180,6 +194,7 @@ export default function RightContainer() {
                                 color: isActive ? "black" : "white",
                                 backgroundColor: isActive ? "" : "primary.main",
                                 cursor: "pointer",
+                                "&:hover": { color: isActive ? "black" : "black" }
                             }}
                         >
                             General
@@ -192,11 +207,14 @@ export default function RightContainer() {
                                 <Box>
                                     {inFoUser.map((user) =>
                                         user.friendList
-                                            ?.filter((item) =>
+                                            ?.filter((item) => (searchValue ?
                                                 otherMembers.some(
                                                     (other) =>
+                                                        other.uid == item.friendId && other.isActive && other.firstName.includes(searchValue)
+                                                ) : otherMembers.some(
+                                                    (other) =>
                                                         other.uid == item.friendId && other.isActive
-                                                )
+                                                ))
                                             )
                                             .map((friend) => (
                                                 <Box
@@ -218,15 +236,22 @@ export default function RightContainer() {
                             {inFoUser.some((user) => user.friendList?.length !== 0) ? (
                                 <Box>
                                     {inFoUser.map((user) =>
-                                        user.friendList?.map((friend) => (
-                                            <Box
-                                                onClick={() => handleOpenChat(friend.friendId)}
-                                                sx={{ cursor: "pointer" }}
-                                                key={friend.friendId}
-                                            >
-                                                <UserCard userId={friend.friendId} />
-                                            </Box>
-                                        ))
+                                        user.friendList?.filter((item) => searchValue ?
+                                            otherMembers.some(
+                                                (other) =>
+                                                    other.uid == item.friendId && other.firstName.includes(searchValue)
+                                            ) : otherMembers.some(
+                                                (other) =>
+                                                    other.uid == item.friendId
+                                            )).map((friend) => (
+                                                <Box
+                                                    onClick={() => handleOpenChat(friend.friendId)}
+                                                    sx={{ cursor: "pointer" }}
+                                                    key={friend.friendId}
+                                                >
+                                                    <UserCard userId={friend.friendId} />
+                                                </Box>
+                                            ))
                                     )}
                                 </Box>
                             ) : (
@@ -257,6 +282,8 @@ export default function RightContainer() {
                                 startAdornment: <SearchIcon />,
                             }}
                             placeholder="Search for group"
+                            onChange={handleGroupSearch}
+                            value={searchGroupValue}
                         />
                     </Box>
                     <div style={{ display: "flex", justifyContent: "space-around" }}>
@@ -274,7 +301,10 @@ export default function RightContainer() {
                             <Box>
                                 {groupData
                                     .filter(
-                                        (item) =>
+                                        (item) => searchGroupValue ?
+                                            (item.members.some(
+                                                (member) => member.memberId == userInfo.uid
+                                            ) || item.hostId == userInfo.uid) && item.groupName.includes(searchGroupValue) :
                                             item.members.some(
                                                 (member) => member.memberId == userInfo.uid
                                             ) || item.hostId == userInfo.uid

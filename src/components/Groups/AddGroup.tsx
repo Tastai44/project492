@@ -141,9 +141,7 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 		const tmp = [...member].map((m) => JSON.parse(m));
 		const tmp2 = [...tmp].map((m) => {
 			return {
-				uid: m.uid,
-				username: `${m.firstName} ${m.lastName}`,
-				profilePhoto: m.profilePhoto,
+				memberId: m.uid,
 			};
 		});
 		const newPost = {
