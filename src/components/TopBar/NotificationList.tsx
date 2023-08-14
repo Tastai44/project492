@@ -1,14 +1,41 @@
+import { useEffect, useState, Fragment } from "react";
 import { Menu, MenuItem, Divider, ListItem, ListItemAvatar, Avatar, ListItemText, Typography } from "@mui/material";
-import React from "react";
+import { INoti } from "../../interface/Notification";
+import { collection, where, onSnapshot, query } from "firebase/firestore";
+import { dbFireStore } from "../../config/firebase";
+import { User } from "../../interface/User";
 
 interface IData {
     mobileMoreAnchorEl: null | HTMLElement;
     mobileMenuId: string;
     isMobileMenuOpen: boolean;
+    notifications: INoti[];
     handleMobileMenuClose: () => void;
 }
 
 export default function NotificationList(props: IData) {
+    const [inFoUser, setInFoUser] = useState<User[]>([]);
+    const userId = props.notifications.find((noti) => noti.actionBy)?.actionBy ?? "";
+    useEffect(() => {
+        const queryData = query(
+            collection(dbFireStore, "users"),
+            where("uid", "==", userId)
+        );
+        const unsubscribe = onSnapshot(
+            queryData,
+            (snapshot) => {
+                const queriedData = snapshot.docs.map((doc) => doc.data() as User);
+                setInFoUser(queriedData);
+            },
+            (error) => {
+                console.error("Error fetching data: ", error);
+            }
+        );
+        return () => {
+            unsubscribe();
+        };
+    }, [userId]);
+
     return (
         <Menu
             anchorEl={props.mobileMoreAnchorEl}
@@ -54,44 +81,48 @@ export default function NotificationList(props: IData) {
                     fontWeight: "bold",
                     color: "White",
                     margin: 2,
+                    width: "300px",
                     borderRadius: "10px",
                 }}
             >
                 Notifications
             </MenuItem>
             <Divider style={{ background: "white" }} />
-            <ListItem alignItems="flex-start">
-                <ListItemAvatar>
-                    <Avatar alt="CMU" src="" />
-                </ListItemAvatar>
-                <ListItemText
-                    primary={
-                        <Typography
-                            sx={{ display: "inline" }}
-                            component="span"
-                            variant="body2"
-                            color="white"
-                            fontWeight="bold"
-                        >
-                            Username
-                        </Typography>
-                    }
-                    secondary={
-                        <React.Fragment>
+            {props.notifications.map((noti) => (
+                <ListItem key={noti.notiId} alignItems="flex-start">
+                    <ListItemAvatar>
+                        <Avatar alt="CMU" src={inFoUser.find((user) => user.profilePhoto)?.profilePhoto} />
+                    </ListItemAvatar>
+                    <ListItemText
+                        primary={
                             <Typography
                                 sx={{ display: "inline" }}
                                 component="span"
                                 variant="body2"
                                 color="white"
+                                fontWeight="bold"
                             >
-                                I'll be in your neighborhood doing errands this…
+                                {`${inFoUser.find((user) => user.firstName)?.firstName} ${inFoUser.find((user) => user.lastName)?.lastName}`}
                             </Typography>
-                            <br />
-                            {" Saturday, May 13, 2566 BE "}
-                        </React.Fragment>
-                    }
-                />
-            </ListItem>
+                        }
+                        secondary={
+                            <Fragment>
+                                <Typography
+                                    sx={{ display: "inline", fontSize: "16px" }}
+                                    component="span"
+                                    variant="body2"
+                                    color="white"
+                                >
+                                    {noti.actionMessage}
+                                </Typography>
+                                <br />
+                                {noti.createAt}
+                            </Fragment>
+                        }
+                    />
+                </ListItem>
+            ))}
+
             <Divider
                 variant="inset"
                 component="li"

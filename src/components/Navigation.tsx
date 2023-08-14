@@ -24,12 +24,15 @@ import {
 	where,
 	updateDoc,
 	onSnapshot,
+	orderBy,
+	limit
 } from "firebase/firestore";
 import { dbFireStore } from "../config/firebase";
 import UserMenu from "./TopBar/UserMenu";
 import NotificationList from "./TopBar/NotificationList";
 import PageIcons from "./TopBar/PageIcons";
 import SearchContent from "./TopBar/SearchContent";
+import { INoti } from "../interface/Notification";
 
 interface IData {
 	open: boolean;
@@ -49,6 +52,7 @@ export default function Navigation(props: IData & IFunction) {
 	const isMenuOpen = Boolean(anchorEl);
 	const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	const [notifications, SetNotifications] = useState<INoti[]>();
 
 	const handleOpenSearch = () => {
 		setOpenSearch(true);
@@ -101,7 +105,27 @@ export default function Navigation(props: IData & IFunction) {
 			unsubscribe();
 		};
 	}, [userInfo.uid]);
-	const IsAdmin = inFoUser.some((user) => user.userRole === "admin");
+
+	useEffect(() => {
+		const queryData = query(
+			collection(dbFireStore, "notifications"),
+			orderBy("createAt", "desc"),
+			limit(5)
+		);
+		const unsubscribe = onSnapshot(
+			queryData,
+			(snapshot) => {
+				const queriedData = snapshot.docs.map((doc) => doc.data() as INoti);
+				SetNotifications(queriedData);
+			},
+			(error) => {
+				console.error("Error fetching data: ", error);
+			}
+		);
+		return () => {
+			unsubscribe();
+		};
+	}, []);
 
 	const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
 		setAnchorEl(event.currentTarget);
@@ -139,9 +163,12 @@ export default function Navigation(props: IData & IFunction) {
 			mobileMoreAnchorEl={mobileMoreAnchorEl}
 			mobileMenuId={mobileMenuId}
 			isMobileMenuOpen={isMobileMenuOpen}
+			notifications={notifications ?? []}
 			handleMobileMenuClose={handleMobileMenuClose}
 		/>
 	);
+
+	const IsAdmin = inFoUser.some((user) => user.userRole === "admin");
 
 	return (
 		<>

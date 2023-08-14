@@ -35,6 +35,7 @@ import { collection, setDoc } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import LocationCard from "./LocationCard";
 import { User } from "../../interface/User";
+import { createNoti } from "../NotificationFunction";
 
 const styleBoxPop = {
 	position: "absolute",
@@ -170,6 +171,9 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 			const updatedPost = { ...newPost, id: postId };
 			await setDoc(docRef, updatedPost);
 
+			createNoti(
+				"Posting", userInfo.uid
+			);
 			setPost(updatedPost);
 			clearState();
 			PopupAlert("Content was posted successfully", "success");
