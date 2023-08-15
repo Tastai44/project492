@@ -55,7 +55,7 @@ export default function NotificationList(props: IData) {
                         ml: -0.5,
                         mr: 1,
                     },
-                    background: "#B885FF",
+                    background: "#f3ebff",
                     color: "white",
                     "&:before": {
                         content: '""',
@@ -79,27 +79,37 @@ export default function NotificationList(props: IData) {
                     fontSize: "20px",
                     padding: "5px",
                     fontWeight: "bold",
-                    color: "White",
+                    color: "black",
                     margin: 2,
                     width: "300px",
                     borderRadius: "10px",
+                    "&:hover": {
+                        color: "black",
+                        backgroundColor: "transparent",
+                    },
                 }}
             >
                 Notifications
             </MenuItem>
             <Divider style={{ background: "white" }} />
             {props.notifications.map((noti) => (
-                <ListItem key={noti.notiId} alignItems="flex-start">
+                <ListItem key={noti.notiId} alignItems="flex-start" sx={{
+                    cursor: "pointer", "&:hover": {
+                        backgroundColor: "primary.contrastText"
+                    }
+                }}>
                     <ListItemAvatar>
                         <Avatar alt="CMU" src={inFoUser.find((user) => user.profilePhoto)?.profilePhoto} />
                     </ListItemAvatar>
                     <ListItemText
                         primary={
                             <Typography
-                                sx={{ display: "inline" }}
+                                sx={{
+                                    display: "inline"
+                                }}
                                 component="span"
                                 variant="body2"
-                                color="white"
+                                color="black"
                                 fontWeight="bold"
                             >
                                 {`${inFoUser.find((user) => user.firstName)?.firstName} ${inFoUser.find((user) => user.lastName)?.lastName}`}
@@ -111,23 +121,19 @@ export default function NotificationList(props: IData) {
                                     sx={{ display: "inline", fontSize: "16px" }}
                                     component="span"
                                     variant="body2"
-                                    color="white"
+                                    color="black"
                                 >
-                                    {noti.actionMessage}
+                                    {noti.actionMessage.substring(0, 50) + "..."}
                                 </Typography>
                                 <br />
-                                {noti.createAt}
+                                <Typography color="red" fontSize={14}>{noti.createAt}</Typography>
                             </Fragment>
                         }
                     />
                 </ListItem>
             ))}
 
-            <Divider
-                variant="inset"
-                component="li"
-                sx={{ backgroundColor: "white" }}
-            />
+
         </Menu>
     );
 }

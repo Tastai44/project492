@@ -489,9 +489,14 @@ export default function Content(props: IData & IFunction) {
 
                                         <CardContent>
                                             <Typography
-                                                variant="body1"
                                                 color="text.secondary"
-                                                sx={{ textAlign: "justify" }}
+                                                sx={{
+                                                    textAlign: "justify",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                    whiteSpace: "pre-wrap",
+                                                    wordWrap: "break-word",
+                                                }}
                                             >
                                                 {m.caption}
                                             </Typography>

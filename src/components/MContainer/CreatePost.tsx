@@ -172,7 +172,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 			await setDoc(docRef, updatedPost);
 
 			createNoti(
-				"Posting", userInfo.uid
+				`posted ${post.caption}`, userInfo.uid
 			);
 			setPost(updatedPost);
 			clearState();

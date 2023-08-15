@@ -324,7 +324,12 @@ export default function MContainer(props: Idata) {
                                                 {props.status === "Friend" && <GroupIcon />}
                                                 {props.status === "Public" && <PublicIcon />}
                                                 {props.status}
-                                                <LocationOnIcon color="error" /> {props.location}
+                                                {props.location && (
+                                                    <>
+                                                        <LocationOnIcon color="error" />
+                                                        {props.location}
+                                                    </>
+                                                )}
                                             </Typography>
                                         }
                                     />
@@ -402,7 +407,13 @@ export default function MContainer(props: Idata) {
                                     <Typography
                                         variant="body1"
                                         color="text.secondary"
-                                        sx={{ textAlign: "justify" }}
+                                        sx={{
+                                            textAlign: "justify",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "pre-wrap",
+                                            wordWrap: "break-word",
+                                        }}
                                     >
                                         {props.caption}
                                     </Typography>
