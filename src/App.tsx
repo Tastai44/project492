@@ -31,9 +31,9 @@ export const Item = styled(Box)(({ theme }) => ({
 }));
 
 function App() {
-	const [open, setOpen] = React.useState(false);
-	const handleOpen = () => setOpen(true);
-	const handleClose = () => setOpen(false);
+	const [openChat, setOpenChat] = React.useState(false);
+	const handleOpenChat = () => setOpenChat(true);
+	const handleCloseChat = () => setOpenChat(false);
 
 	return (
 		<>
@@ -46,9 +46,9 @@ function App() {
 						<>
 							<ProtectedRoute>
 								<Navigation
-									open={open}
-									handleOpen={handleOpen}
-									handleClose={handleClose}
+									openChat={openChat}
+									handleOpenChat={handleOpenChat}
+									handleCloseChat={handleCloseChat}
 								/>
 								<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
 									<Grid item xs={12}>
@@ -81,9 +81,9 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								open={open}
-								handleOpen={handleOpen}
-								handleClose={handleClose}
+								openChat={openChat}
+								handleOpenChat={handleOpenChat}
+								handleCloseChat={handleCloseChat}
 							/>
 							{/* <Members /> */}
 							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
@@ -113,9 +113,9 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								open={open}
-								handleOpen={handleOpen}
-								handleClose={handleClose}
+								openChat={openChat}
+								handleOpenChat={handleOpenChat}
+								handleCloseChat={handleCloseChat}
 							/>
 							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
 								<Grid item xs={12}>
@@ -154,9 +154,9 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								open={open}
-								handleOpen={handleOpen}
-								handleClose={handleClose}
+								openChat={openChat}
+								handleOpenChat={handleOpenChat}
+								handleCloseChat={handleCloseChat}
 							/>
 
 							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
@@ -201,9 +201,9 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								open={open}
-								handleOpen={handleOpen}
-								handleClose={handleClose}
+								openChat={openChat}
+								handleOpenChat={handleOpenChat}
+								handleCloseChat={handleCloseChat}
 							/>
 							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
 								<Grid item xs={12}>
@@ -247,9 +247,9 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								open={open}
-								handleOpen={handleOpen}
-								handleClose={handleClose}
+								openChat={openChat}
+								handleOpenChat={handleOpenChat}
+								handleCloseChat={handleCloseChat}
 							/>
 							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
 								<Grid item xs={12}>
@@ -293,9 +293,9 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								open={open}
-								handleOpen={handleOpen}
-								handleClose={handleClose}
+								openChat={openChat}
+								handleOpenChat={handleOpenChat}
+								handleCloseChat={handleCloseChat}
 							/>
 							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
 								<Grid item xs={12}>
@@ -342,9 +342,9 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								open={open}
-								handleOpen={handleOpen}
-								handleClose={handleClose}
+								openChat={openChat}
+								handleOpenChat={handleOpenChat}
+								handleCloseChat={handleCloseChat}
 							/>
 							<Events />
 							{/* </ProtectedRoute> */}
@@ -357,9 +357,9 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								open={open}
-								handleOpen={handleOpen}
-								handleClose={handleClose}
+								openChat={openChat}
+								handleOpenChat={handleOpenChat}
+								handleCloseChat={handleCloseChat}
 							/>
 							<EventDetail />
 							{/* </ProtectedRoute> */}
@@ -375,9 +375,9 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								open={open}
-								handleOpen={handleOpen}
-								handleClose={handleClose}
+								openChat={openChat}
+								handleOpenChat={handleOpenChat}
+								handleCloseChat={handleCloseChat}
 							/>
 							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
 								<Grid item xs={12}>
@@ -415,9 +415,9 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								open={open}
-								handleOpen={handleOpen}
-								handleClose={handleClose}
+								openChat={openChat}
+								handleOpenChat={handleOpenChat}
+								handleCloseChat={handleCloseChat}
 							/>
 							<GroupDetails />
 							{/* </ProtectedRoute> */}
@@ -430,9 +430,9 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								open={open}
-								handleOpen={handleOpen}
-								handleClose={handleClose}
+								openChat={openChat}
+								handleOpenChat={handleOpenChat}
+								handleCloseChat={handleCloseChat}
 							/>
 							{/* <Members /> */}
 							<Grid sx={{ flexGrow: 1 }} container>

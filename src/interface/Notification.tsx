@@ -12,6 +12,7 @@ export interface IMessageNoti {
     conversationId: string;
     message: string;
     senderId: string;
+    groupId: string;
     receiverId: string;
     createAt: string;
 }

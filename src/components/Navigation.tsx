@@ -15,7 +15,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 
 import { auth } from "../config/firebase";
 import { signOut } from "firebase/auth";
-import ChatBox from "./Chat/ChatBox";
 import { User } from "../interface/User";
 import {
 	collection,
@@ -36,11 +35,11 @@ import { IMessageNoti, INoti } from "../interface/Notification";
 import MessageNoti from "./TopBar/MessageNoti";
 
 interface IData {
-	open: boolean;
+	openChat: boolean;
 }
 interface IFunction {
-	handleOpen: () => void;
-	handleClose: () => void;
+	handleOpenChat: () => void;
+	handleCloseChat: () => void;
 }
 
 export default function Navigation(props: IData & IFunction) {
@@ -57,8 +56,8 @@ export default function Navigation(props: IData & IFunction) {
 	const isMenuOpen = Boolean(anchorEl);
 	const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
-	const [notifications, SetNotifications] = useState<INoti[]>();
-	const [messageNoti, SetMessageNoti] = useState<IMessageNoti[]>();
+	const [notifications, setNotifications] = useState<INoti[]>();
+	const [messageNoti, setMessageNoti] = useState<IMessageNoti[]>();
 
 	const handleOpenSearch = () => {
 		setOpenSearch(true);
@@ -122,7 +121,7 @@ export default function Navigation(props: IData & IFunction) {
 			queryData,
 			(snapshot) => {
 				const queriedData = snapshot.docs.map((doc) => doc.data() as INoti);
-				SetNotifications(queriedData);
+				setNotifications(queriedData);
 			},
 			(error) => {
 				console.error("Error fetching data: ", error);
@@ -143,7 +142,7 @@ export default function Navigation(props: IData & IFunction) {
 			queryData,
 			(snapshot) => {
 				const queriedData = snapshot.docs.map((doc) => doc.data() as IMessageNoti);
-				SetMessageNoti(queriedData);
+				setMessageNoti(queriedData);
 			},
 			(error) => {
 				console.error("Error fetching data: ", error);
@@ -209,7 +208,10 @@ export default function Navigation(props: IData & IFunction) {
 			messageNotiList={messageNotiList}
 			isMessageMenuOpen={isMessageMenuOpen}
 			messageNoti={messageNoti ?? []}
+			openChat={props.openChat}
 			handleCloseMessageNoti={handleCloseMessageNoti}
+			handleOpenChat={props.handleOpenChat}
+			handleCloseChat={props.handleCloseChat}
 		/>
 	);
 
@@ -217,16 +219,6 @@ export default function Navigation(props: IData & IFunction) {
 
 	return (
 		<>
-			{/* <Modal
-        open={props.open}
-        onClose={props.handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box>
-          <ChatBox handleClose={props.handleClose} />
-        </Box>
-      </Modal> */}
 			<SearchContent
 				openSearchBar={openSearch}
 				handleCloseSearchBar={handleCloseSearch}

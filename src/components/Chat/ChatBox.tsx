@@ -157,7 +157,7 @@ export default function ChatBox(props: IFunction & IData) {
       const updatedMessage = { ...newMessage, conversation_id: conversationId };
       await setDoc(docRef, updatedMessage)
         .then(() => {
-          createMessageNoti(conversationId, userInfo.uid, props.uId, message);
+          createMessageNoti(conversationId, userInfo.uid, props.uId, '0', message);
           setMessage("");
           setEmoji("");
           setPreviewImages([]);
