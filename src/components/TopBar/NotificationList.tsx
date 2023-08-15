@@ -1,4 +1,4 @@
-import { useEffect, useState, Fragment } from "react";
+import { useMemo, useState, Fragment } from "react";
 import { Menu, MenuItem, Divider, ListItem, ListItemAvatar, Avatar, ListItemText, Typography } from "@mui/material";
 import { INoti } from "../../interface/Notification";
 import { collection, where, onSnapshot, query } from "firebase/firestore";
@@ -15,8 +15,11 @@ interface IData {
 
 export default function NotificationList(props: IData) {
     const [inFoUser, setInFoUser] = useState<User[]>([]);
+    const [inFoShareUser, setInShareFoUser] = useState<User[]>([]);
+    const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const userId = props.notifications.find((noti) => noti.actionBy)?.actionBy ?? "";
-    useEffect(() => {
+    const shareId = props.notifications.find((noti) => noti.actionTo)?.actionTo ?? "";
+    useMemo(() => {
         const queryData = query(
             collection(dbFireStore, "users"),
             where("uid", "==", userId)
@@ -35,6 +38,26 @@ export default function NotificationList(props: IData) {
             unsubscribe();
         };
     }, [userId]);
+
+    useMemo(() => {
+        const queryData = query(
+            collection(dbFireStore, "users"),
+            where("uid", "==", shareId)
+        );
+        const unsubscribe = onSnapshot(
+            queryData,
+            (snapshot) => {
+                const queriedData = snapshot.docs.map((doc) => doc.data() as User);
+                setInShareFoUser(queriedData);
+            },
+            (error) => {
+                console.error("Error fetching data: ", error);
+            }
+        );
+        return () => {
+            unsubscribe();
+        };
+    }, [shareId]);
 
     return (
         <Menu
@@ -92,7 +115,7 @@ export default function NotificationList(props: IData) {
                 Notifications
             </MenuItem>
             <Divider style={{ background: "white" }} />
-            {props.notifications.map((noti) => (
+            {props.notifications.filter((item) => item.actionBy === userInfo.uid || item.actionTo === userInfo.uid).map((noti) => (
                 <ListItem key={noti.notiId} alignItems="flex-start" sx={{
                     cursor: "pointer", "&:hover": {
                         backgroundColor: "primary.contrastText"
@@ -123,7 +146,11 @@ export default function NotificationList(props: IData) {
                                     variant="body2"
                                     color="black"
                                 >
-                                    {noti.actionMessage.substring(0, 50) + "..."}
+                                    {
+                                        noti.actionTo
+                                            ? `${noti.actionMessage.substring(0, 40)}... to ${inFoShareUser.find((shareTo) => shareTo.firstName)?.firstName} `
+                                            : noti.actionMessage.substring(0, 50) + "..."
+                                    }
                                 </Typography>
                                 <br />
                                 <Typography color="red" fontSize={14}>{noti.createAt}</Typography>

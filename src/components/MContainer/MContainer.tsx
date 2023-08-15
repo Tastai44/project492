@@ -549,6 +549,7 @@ export default function MContainer(props: Idata) {
                                             handleCloseShare={handleCloseShare}
                                             friendList={user.friendList ?? []}
                                             postId={props.postId}
+                                            postCaption={props.caption ?? ""}
                                         />
                                         <Avatar
                                             alt="User"

@@ -32,6 +32,7 @@ import Emoji from "../MContainer/Emoji";
 import { User } from "../../interface/User";
 import { collection, query, getDocs, where, setDoc } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
+import { createNoti } from "../NotificationFunction";
 
 const styleBoxPop = {
     position: "absolute",
@@ -176,6 +177,9 @@ export default function CreateGroupPost({
             const updatedPost = { ...newPost, id: postId };
             await setDoc(docRef, updatedPost);
 
+            createNoti(
+                `posted ${post.caption}`, userId
+            );
             setPost(updatedPost);
             clearState();
             PopupAlert("Content was posted successfully", "success");

@@ -23,6 +23,7 @@ import { dbFireStore } from "../../config/firebase";
 import { collection, updateDoc, doc, arrayUnion } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import SearchBar from "../../helper/SearchBar";
+import { createNoti } from "../NotificationFunction";
 
 const columns: GridColDef[] = [
     { field: "id", headerName: "ID", flex: 1 },
@@ -52,6 +53,7 @@ interface IData {
     friendList: IFriendList[];
     openShare: boolean;
     postId?: string;
+    postCaption?: string;
     eventId?: string;
 }
 interface IFunction {
@@ -94,6 +96,9 @@ export default function ShareCard(props: IData & IFunction) {
                             status: status,
                             createdAt: new Date().toLocaleString(),
                         };
+                        createNoti(
+                            `shared ${props.postCaption}`, userInfo.uid, filterRowsData[i].uid
+                        );
                         const postRef = doc(postsCollection, props.postId);
                         await updateDoc(postRef, {
                             shareUsers: arrayUnion(updateShare),
@@ -114,6 +119,9 @@ export default function ShareCard(props: IData & IFunction) {
                 await updateDoc(postRef, {
                     shareUsers: arrayUnion(updateShare),
                 });
+                createNoti(
+                    `shared ${props.postCaption}`, userInfo.uid
+                );
                 PopupAlert("Share successfully", "success");
             }
         } catch (error) {
