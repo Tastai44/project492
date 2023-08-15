@@ -178,7 +178,7 @@ export default function CreateGroupPost({
             await setDoc(docRef, updatedPost);
 
             createNoti(
-                `posted ${post.caption}`, userId
+                postId, `posted ${post.caption}`, userId
             );
             setPost(updatedPost);
             clearState();

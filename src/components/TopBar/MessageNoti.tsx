@@ -1,28 +1,26 @@
 import { useMemo, useState, Fragment } from "react";
 import { Menu, MenuItem, Divider, ListItem, ListItemAvatar, Avatar, ListItemText, Typography } from "@mui/material";
-import { INoti } from "../../interface/Notification";
+import { IMessageNoti } from "../../interface/Notification";
 import { collection, where, onSnapshot, query } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
 import { User } from "../../interface/User";
 
 interface IData {
-    mobileMoreAnchorEl: null | HTMLElement;
-    mobileMenuId: string;
-    isMobileMenuOpen: boolean;
-    notifications: INoti[];
-    handleMobileMenuClose: () => void;
+    openMessageNoti: null | HTMLElement;
+    messageNotiList: string;
+    isMessageMenuOpen: boolean;
+    messageNoti: IMessageNoti[];
+    handleCloseMessageNoti: () => void;
 }
 
-export default function NotificationList(props: IData) {
+export default function MessageNoti(props: IData) {
     const [inFoUser, setInFoUser] = useState<User[]>([]);
-    const [inFoShareUser, setInShareFoUser] = useState<User[]>([]);
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-    const userId = props.notifications.find((noti) => noti.actionBy)?.actionBy ?? "";
-    const shareId = props.notifications.find((noti) => noti.actionTo)?.actionTo ?? "";
+    const senderId = props.messageNoti.find((noti) => noti.senderId)?.senderId ?? "";
     useMemo(() => {
         const queryData = query(
             collection(dbFireStore, "users"),
-            where("uid", "==", userId)
+            where("uid", "==", senderId)
         );
         const unsubscribe = onSnapshot(
             queryData,
@@ -37,35 +35,15 @@ export default function NotificationList(props: IData) {
         return () => {
             unsubscribe();
         };
-    }, [userId]);
-
-    useMemo(() => {
-        const queryData = query(
-            collection(dbFireStore, "users"),
-            where("uid", "==", shareId)
-        );
-        const unsubscribe = onSnapshot(
-            queryData,
-            (snapshot) => {
-                const queriedData = snapshot.docs.map((doc) => doc.data() as User);
-                setInShareFoUser(queriedData);
-            },
-            (error) => {
-                console.error("Error fetching data: ", error);
-            }
-        );
-        return () => {
-            unsubscribe();
-        };
-    }, [shareId]);
+    }, [senderId]);
 
     return (
         <Menu
-            anchorEl={props.mobileMoreAnchorEl}
-            id={props.mobileMenuId}
-            open={props.isMobileMenuOpen}
-            onClose={props.handleMobileMenuClose}
-            onClick={props.handleMobileMenuClose}
+            anchorEl={props.openMessageNoti}
+            id={props.messageNotiList}
+            open={props.isMessageMenuOpen}
+            onClose={props.handleCloseMessageNoti}
+            onClick={props.handleCloseMessageNoti}
             PaperProps={{
                 elevation: 0,
                 sx: {
@@ -112,10 +90,10 @@ export default function NotificationList(props: IData) {
                     },
                 }}
             >
-                Notifications
+                Messages
             </MenuItem>
             <Divider style={{ background: "white" }} />
-            {props.notifications.filter((item) => item.actionBy === userInfo.uid || item.actionTo === userInfo.uid).map((noti) => (
+            {props.messageNoti.filter((item) => item.receiverId === userInfo.uid).map((noti) => (
                 <ListItem key={noti.notiId} alignItems="flex-start" sx={{
                     cursor: "pointer", "&:hover": {
                         backgroundColor: "primary.contrastText"
@@ -130,6 +108,7 @@ export default function NotificationList(props: IData) {
                                 sx={{
                                     display: "inline"
                                 }}
+                                fontSize={16}
                                 component="span"
                                 variant="body2"
                                 color="black"
@@ -146,17 +125,10 @@ export default function NotificationList(props: IData) {
                                     variant="body2"
                                     color="black"
                                 >
-                                    {noti.actionTo ? (
-                                        <>
-                                            {noti.actionMessage.substring(0, 30)}... to
-                                            <b> {inFoShareUser.find((shareTo) => shareTo.firstName)?.firstName}</b>
-                                        </>
-                                    ) : (
-                                        noti.actionMessage.substring(0, 30) + "..."
-                                    )}
+                                    <b> Message</b>: {noti.message}
                                 </Typography>
                                 <br />
-                                <Typography color="red" fontSize={14}>{noti.createAt}</Typography>
+                                {noti.createAt}
                             </Fragment>
                         }
                     />

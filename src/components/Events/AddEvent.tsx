@@ -28,6 +28,7 @@ import { doc } from "firebase/firestore";
 import { collection, setDoc } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import { locations } from "../../helper/CMULocations";
+import { createNoti } from "../NotificationFunction";
 
 const style = {
     position: "absolute",
@@ -182,6 +183,9 @@ export default function AddEvent({ closeAdd }: Ihandle) {
             const updatedEvent = { ...newEvent, eventId: eventId };
             await setDoc(docRef, updatedEvent);
 
+            createNoti(
+                eventId, `created an event ${event.title}`, userId
+            );
             setEvent(updatedEvent);
             clearState();
             closeAdd();

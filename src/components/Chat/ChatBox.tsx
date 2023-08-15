@@ -31,6 +31,7 @@ import { Message } from "../../interface/Chat";
 import Emoji from "../MContainer/Emoji";
 import Header from "./Header";
 import MessageBody from "./MessageBody";
+import { createMessageNoti } from "../MessageNotification";
 
 interface IFunction {
   handleClose: () => void;
@@ -107,10 +108,10 @@ export default function ChatBox(props: IFunction & IData) {
         const querySnapshot = await getDocs(q);
         const queriedData = querySnapshot.docs.map(
           (doc) =>
-            ({
-              uid: doc.id,
-              ...doc.data(),
-            } as User)
+          ({
+            uid: doc.id,
+            ...doc.data(),
+          } as User)
         );
         setInFoUser(queriedData);
       } catch (error) {
@@ -156,6 +157,7 @@ export default function ChatBox(props: IFunction & IData) {
       const updatedMessage = { ...newMessage, conversation_id: conversationId };
       await setDoc(docRef, updatedMessage)
         .then(() => {
+          createMessageNoti(conversationId, userInfo.uid, props.uId, message);
           setMessage("");
           setEmoji("");
           setPreviewImages([]);

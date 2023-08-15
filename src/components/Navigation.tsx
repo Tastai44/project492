@@ -32,7 +32,8 @@ import UserMenu from "./TopBar/UserMenu";
 import NotificationList from "./TopBar/NotificationList";
 import PageIcons from "./TopBar/PageIcons";
 import SearchContent from "./TopBar/SearchContent";
-import { INoti } from "../interface/Notification";
+import { IMessageNoti, INoti } from "../interface/Notification";
+import MessageNoti from "./TopBar/MessageNoti";
 
 interface IData {
 	open: boolean;
@@ -46,6 +47,10 @@ export default function Navigation(props: IData & IFunction) {
 	const navigate = useNavigate();
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [openSearch, setOpenSearch] = useState<boolean>(false);
+
+	const [openMessageNoti, setOpenMessageNoti] = useState<null | HTMLElement>(null);
+	const isMessageMenuOpen = Boolean(openMessageNoti);
+
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
 		useState<null | HTMLElement>(null);
@@ -53,6 +58,7 @@ export default function Navigation(props: IData & IFunction) {
 	const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const [notifications, SetNotifications] = useState<INoti[]>();
+	const [messageNoti, SetMessageNoti] = useState<IMessageNoti[]>();
 
 	const handleOpenSearch = () => {
 		setOpenSearch(true);
@@ -127,6 +133,27 @@ export default function Navigation(props: IData & IFunction) {
 		};
 	}, []);
 
+	useEffect(() => {
+		const queryData = query(
+			collection(dbFireStore, "messageNotifications"),
+			orderBy("createAt", "desc"),
+			limit(5)
+		);
+		const unsubscribe = onSnapshot(
+			queryData,
+			(snapshot) => {
+				const queriedData = snapshot.docs.map((doc) => doc.data() as IMessageNoti);
+				SetMessageNoti(queriedData);
+			},
+			(error) => {
+				console.error("Error fetching data: ", error);
+			}
+		);
+		return () => {
+			unsubscribe();
+		};
+	}, []);
+
 	const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
 		setAnchorEl(event.currentTarget);
 	};
@@ -142,6 +169,13 @@ export default function Navigation(props: IData & IFunction) {
 
 	const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
 		setMobileMoreAnchorEl(event.currentTarget);
+	};
+
+	const handleOpenMessageNoti = (event: React.MouseEvent<HTMLElement>) => {
+		setOpenMessageNoti(event.currentTarget);
+	};
+	const handleCloseMessageNoti = () => {
+		setOpenMessageNoti(null);
 	};
 
 	const menuId = "primary-search-account-menu";
@@ -165,6 +199,17 @@ export default function Navigation(props: IData & IFunction) {
 			isMobileMenuOpen={isMobileMenuOpen}
 			notifications={notifications ?? []}
 			handleMobileMenuClose={handleMobileMenuClose}
+		/>
+	);
+
+	const messageNotiList = "primary-message-account-menu-mobile";
+	const renderMessageNoti = (
+		<MessageNoti
+			openMessageNoti={openMessageNoti}
+			messageNotiList={messageNotiList}
+			isMessageMenuOpen={isMessageMenuOpen}
+			messageNoti={messageNoti ?? []}
+			handleCloseMessageNoti={handleCloseMessageNoti}
 		/>
 	);
 
@@ -240,6 +285,9 @@ export default function Navigation(props: IData & IFunction) {
 								size="large"
 								aria-label="show 4 new mails"
 								color="inherit"
+								aria-controls={messageNotiList}
+								aria-haspopup="true"
+								onClick={handleOpenMessageNoti}
 							>
 								<Badge badgeContent={4} color="error">
 									<MailIcon sx={{ color: "white" }} />
@@ -276,6 +324,7 @@ export default function Navigation(props: IData & IFunction) {
 				</AppBar>
 				{renderMobileMenu}
 				{renderMenu}
+				{renderMessageNoti}
 			</Box>
 		</>
 	);
