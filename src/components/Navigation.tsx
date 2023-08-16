@@ -34,20 +34,7 @@ import SearchContent from "./TopBar/SearchContent";
 import { IGroupMessageNoti, IMessageNoti, INoti } from "../interface/Notification";
 import MessageNoti from "./TopBar/MessageNoti";
 
-interface IData {
-	openChat: boolean;
-	openGroupChat: boolean;
-}
-
-interface IFunction {
-	handleOpenChat: () => void;
-	handleCloseChat: () => void;
-	handleOpenGroupChat: () => void;
-	handleCloseGroupChat: () => void;
-}
-
-
-export default function Navigation(props: IData & IFunction) {
+export default function Navigation() {
 	const navigate = useNavigate();
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [openSearch, setOpenSearch] = useState<boolean>(false);
@@ -236,13 +223,7 @@ export default function Navigation(props: IData & IFunction) {
 			isMessageMenuOpen={isMessageMenuOpen}
 			messageNoti={messageNoti ?? []}
 			groupMessageNoti={groupMessageNoti ?? []}
-			openChat={props.openChat}
-			openGroupChat={props.openGroupChat}
 			handleCloseMessageNoti={handleCloseMessageNoti}
-			handleOpenChat={props.handleOpenChat}
-			handleCloseChat={props.handleCloseChat}
-			handleOpenGroupChat={props.handleOpenGroupChat}
-			handleCloseGroupChat={props.handleCloseGroupChat}
 		/>
 	);
 

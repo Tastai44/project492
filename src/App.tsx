@@ -1,4 +1,3 @@
-import * as React from "react";
 import { Routes, Route } from "react-router-dom";
 import "./App.css";
 import Navigation from "./components/Navigation";
@@ -31,13 +30,6 @@ export const Item = styled(Box)(({ theme }) => ({
 }));
 
 function App() {
-	const [openChat, setOpenChat] = React.useState(false);
-	const handleOpenChat = () => setOpenChat(true);
-	const handleCloseChat = () => setOpenChat(false);
-
-	const [openGroupChat, setOpenGroupChat] = React.useState(false);
-	const handleOpenGroupChat = () => setOpenGroupChat(true);
-	const handleCloseGroupChat = () => setOpenGroupChat(false);
 
 	return (
 		<>
@@ -50,12 +42,6 @@ function App() {
 						<>
 							<ProtectedRoute>
 								<Navigation
-									openChat={openChat}
-									handleOpenChat={handleOpenChat}
-									handleCloseChat={handleCloseChat}
-									openGroupChat={openGroupChat}
-									handleOpenGroupChat={handleOpenGroupChat}
-									handleCloseGroupChat={handleCloseGroupChat}
 								/>
 								<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
 									<Grid item xs={12}>
@@ -87,14 +73,7 @@ function App() {
 					element={
 						<>
 							{/* <ProtectedRoute> */}
-							<Navigation
-								openChat={openChat}
-								handleOpenChat={handleOpenChat}
-								handleCloseChat={handleCloseChat}
-								openGroupChat={openGroupChat}
-								handleOpenGroupChat={handleOpenGroupChat}
-								handleCloseGroupChat={handleCloseGroupChat}
-							/>
+							<Navigation />
 							{/* <Members /> */}
 							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
 								<Grid item xs={12}>
@@ -122,14 +101,7 @@ function App() {
 					element={
 						<>
 							{/* <ProtectedRoute> */}
-							<Navigation
-								openChat={openChat}
-								handleOpenChat={handleOpenChat}
-								handleCloseChat={handleCloseChat}
-								openGroupChat={openGroupChat}
-								handleOpenGroupChat={handleOpenGroupChat}
-								handleCloseGroupChat={handleCloseGroupChat}
-							/>
+							<Navigation />
 							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
 								<Grid item xs={12}>
 									<Grid
@@ -167,12 +139,6 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								openChat={openChat}
-								handleOpenChat={handleOpenChat}
-								handleCloseChat={handleCloseChat}
-								openGroupChat={openGroupChat}
-								handleOpenGroupChat={handleOpenGroupChat}
-								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 
 							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
@@ -217,12 +183,6 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								openChat={openChat}
-								handleOpenChat={handleOpenChat}
-								handleCloseChat={handleCloseChat}
-								openGroupChat={openGroupChat}
-								handleOpenGroupChat={handleOpenGroupChat}
-								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
 								<Grid item xs={12}>
@@ -266,12 +226,6 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								openChat={openChat}
-								handleOpenChat={handleOpenChat}
-								handleCloseChat={handleCloseChat}
-								openGroupChat={openGroupChat}
-								handleOpenGroupChat={handleOpenGroupChat}
-								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
 								<Grid item xs={12}>
@@ -315,12 +269,6 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								openChat={openChat}
-								handleOpenChat={handleOpenChat}
-								handleCloseChat={handleCloseChat}
-								openGroupChat={openGroupChat}
-								handleOpenGroupChat={handleOpenGroupChat}
-								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
 								<Grid item xs={12}>
@@ -367,12 +315,6 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								openChat={openChat}
-								handleOpenChat={handleOpenChat}
-								handleCloseChat={handleCloseChat}
-								openGroupChat={openGroupChat}
-								handleOpenGroupChat={handleOpenGroupChat}
-								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							<Events />
 							{/* </ProtectedRoute> */}
@@ -385,12 +327,6 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								openChat={openChat}
-								handleOpenChat={handleOpenChat}
-								handleCloseChat={handleCloseChat}
-								openGroupChat={openGroupChat}
-								handleOpenGroupChat={handleOpenGroupChat}
-								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							<EventDetail />
 							{/* </ProtectedRoute> */}
@@ -406,12 +342,6 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								openChat={openChat}
-								handleOpenChat={handleOpenChat}
-								handleCloseChat={handleCloseChat}
-								openGroupChat={openGroupChat}
-								handleOpenGroupChat={handleOpenGroupChat}
-								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
 								<Grid item xs={12}>
@@ -449,12 +379,6 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								openChat={openChat}
-								handleOpenChat={handleOpenChat}
-								handleCloseChat={handleCloseChat}
-								openGroupChat={openGroupChat}
-								handleOpenGroupChat={handleOpenGroupChat}
-								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							<GroupDetails />
 							{/* </ProtectedRoute> */}
@@ -467,12 +391,6 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation
-								openChat={openChat}
-								handleOpenChat={handleOpenChat}
-								handleCloseChat={handleCloseChat}
-								openGroupChat={openGroupChat}
-								handleOpenGroupChat={handleOpenGroupChat}
-								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							{/* <Members /> */}
 							<Grid sx={{ flexGrow: 1 }} container>

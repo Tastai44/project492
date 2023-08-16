@@ -1,5 +1,16 @@
 import { useMemo, useState, Fragment } from "react";
-import { Menu, MenuItem, Divider, ListItem, ListItemAvatar, Avatar, ListItemText, Typography, Box, Modal } from "@mui/material";
+import {
+    Menu,
+    MenuItem,
+    Divider,
+    ListItem,
+    ListItemAvatar,
+    Avatar,
+    ListItemText,
+    Typography,
+    Box,
+    Modal,
+} from "@mui/material";
 import { IGroupMessageNoti, IMessageNoti } from "../../interface/Notification";
 import { collection, where, onSnapshot, query } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
@@ -14,21 +25,25 @@ interface IData {
     isMessageMenuOpen: boolean;
     messageNoti: IMessageNoti[];
     groupMessageNoti: IGroupMessageNoti[];
-    openChat: boolean;
-    openGroupChat: boolean;
     handleCloseMessageNoti: () => void;
-    handleOpenChat: () => void;
-    handleCloseChat: () => void;
-    handleOpenGroupChat: () => void;
-    handleCloseGroupChat: () => void;
 }
 
 export default function MessageNoti(props: IData) {
     const [inFoUser, setInFoUser] = useState<User[]>([]);
     const [inFoGroup, setInFoGroup] = useState<IGroup[]>([]);
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-    const senderId = props.messageNoti.find((noti) => noti.senderId)?.senderId ?? "";
-    const groupId = props.groupMessageNoti.find((noti) => noti.groupId)?.groupId ?? "";
+    const senderId =
+        props.messageNoti.find((noti) => noti.senderId)?.senderId ?? "";
+    const groupId =
+        props.groupMessageNoti.find((noti) => noti.groupId)?.groupId ?? "";
+
+    const [openChat, setOpenChat] = useState(false);
+    const handleOpenChat = () => setOpenChat(true);
+    const handleCloseChat = () => setOpenChat(false);
+
+    const [openGroupChat, setOpenGroupChat] = useState(false);
+    const handleOpenGroupChat = () => setOpenGroupChat(true);
+    const handleCloseGroupChat = () => setOpenGroupChat(false);
 
     useMemo(() => {
         const queryData = query(
@@ -73,24 +88,27 @@ export default function MessageNoti(props: IData) {
     return (
         <Box>
             <Modal
-                open={props.openChat}
-                onClose={props.handleCloseChat}
+                open={openChat}
+                onClose={handleCloseChat}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
                 <Box>
-                    <ChatBox uId={senderId} handleClose={props.handleCloseChat} />
+                    <ChatBox uId={senderId} handleClose={handleCloseChat} />
                 </Box>
             </Modal>
 
             <Modal
-                open={props.openGroupChat}
-                onClose={props.handleCloseGroupChat}
+                open={openGroupChat}
+                onClose={handleCloseGroupChat}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
                 <Box>
-                    <GroupChatBox groupId={groupId} handleClose={props.handleCloseGroupChat} />
+                    <GroupChatBox
+                        groupId={groupId}
+                        handleClose={handleCloseGroupChat}
+                    />
                 </Box>
             </Modal>
 
@@ -149,89 +167,120 @@ export default function MessageNoti(props: IData) {
                     Messages
                 </MenuItem>
                 <Divider style={{ background: "white" }} />
-                {props.messageNoti.filter((item) => item.receiverId === userInfo.uid).map((noti) => (
-                    <ListItem onClick={props.handleOpenChat} key={noti.notiId} alignItems="flex-start" sx={{
-                        cursor: "pointer", "&:hover": {
-                            backgroundColor: "primary.contrastText"
-                        }
-                    }}>
-                        <ListItemAvatar>
-                            <Avatar alt="CMU" src={inFoUser.find((user) => user.profilePhoto)?.profilePhoto} />
-                        </ListItemAvatar>
-                        <ListItemText
-                            primary={
-                                <Typography
-                                    sx={{
-                                        display: "inline"
-                                    }}
-                                    fontSize={16}
-                                    component="span"
-                                    variant="body2"
-                                    color="black"
-                                    fontWeight="bold"
-                                >
-                                    {`${inFoUser.find((user) => user.firstName)?.firstName} ${inFoUser.find((user) => user.lastName)?.lastName}`}
-                                </Typography>
-                            }
-                            secondary={
-                                <Fragment>
+                {props.messageNoti
+                    .filter((item) => item.receiverId === userInfo.uid)
+                    .map((noti) => (
+                        <ListItem
+                            onClick={handleOpenChat}
+                            key={noti.notiId}
+                            alignItems="flex-start"
+                            sx={{
+                                cursor: "pointer",
+                                "&:hover": {
+                                    backgroundColor: "primary.contrastText",
+                                },
+                            }}
+                        >
+                            <ListItemAvatar>
+                                <Avatar
+                                    alt="CMU"
+                                    src={inFoUser.find((user) => user.profilePhoto)?.profilePhoto}
+                                />
+                            </ListItemAvatar>
+                            <ListItemText
+                                primary={
                                     <Typography
-                                        sx={{ display: "inline", fontSize: "16px" }}
+                                        sx={{
+                                            display: "inline",
+                                        }}
+                                        fontSize={16}
                                         component="span"
                                         variant="body2"
                                         color="black"
+                                        fontWeight="bold"
                                     >
-                                        <b> Message</b>: {noti.message}
+                                        {`${inFoUser.find((user) => user.firstName)?.firstName} ${inFoUser.find((user) => user.lastName)?.lastName
+                                            }`}
                                     </Typography>
-                                    <br />
-                                    {noti.createAt}
-                                </Fragment>
-                            }
-                        />
-                    </ListItem>
-                ))}
+                                }
+                                secondary={
+                                    <Fragment>
+                                        <Typography
+                                            sx={{ display: "inline", fontSize: "16px" }}
+                                            component="span"
+                                            variant="body2"
+                                            color="black"
+                                        >
+                                            <b> Message</b>: {noti.message}
+                                        </Typography>
+                                        <br />
+                                        {noti.createAt}
+                                    </Fragment>
+                                }
+                            />
+                        </ListItem>
+                    ))}
 
-                {props.groupMessageNoti.filter((item) => item.groupId === groupId).map((noti) => (
-                    <ListItem onClick={props.handleOpenGroupChat} key={noti.notiId} alignItems="flex-start" sx={{
-                        cursor: "pointer", "&:hover": {
-                            backgroundColor: "primary.contrastText"
-                        }
-                    }}>
-                        <ListItemAvatar>
-                            <Avatar alt="CMU" src={inFoGroup.find((group) => group.coverPhoto)?.coverPhoto} />
-                        </ListItemAvatar>
-                        <ListItemText
-                            primary={
-                                <Typography
-                                    sx={{
-                                        display: "inline"
-                                    }}
-                                    fontSize={16}
-                                    component="span"
-                                    variant="body2"
-                                    color="black"
-                                    fontWeight="bold"
-                                >
-                                    {inFoGroup.find((group) => group.groupName)?.groupName}
-                                </Typography>
-                            }
-                            secondary={
-                                <Fragment>
+                {props.groupMessageNoti
+                    .filter(
+                        (item) =>
+                            item.groupId === groupId &&
+                            inFoGroup.some((group) =>
+                            (group.members.some((member) => member.memberId == userInfo.uid) ||
+                                group.hostId == userInfo.uid
+                            )
+                            )
+                    )
+                    .map((noti) => (
+                        <ListItem
+                            onClick={handleOpenGroupChat}
+                            key={noti.notiId}
+                            alignItems="flex-start"
+                            sx={{
+                                cursor: "pointer",
+                                "&:hover": {
+                                    backgroundColor: "primary.contrastText",
+                                },
+                            }}
+                        >
+                            <ListItemAvatar>
+                                <Avatar
+                                    alt="CMU"
+                                    src={inFoGroup.find((group) => group.coverPhoto)?.coverPhoto}
+                                />
+                            </ListItemAvatar>
+                            <ListItemText
+                                primary={
                                     <Typography
-                                        sx={{ display: "inline", fontSize: "16px" }}
+                                        sx={{
+                                            display: "inline",
+                                        }}
+                                        fontSize={16}
                                         component="span"
                                         variant="body2"
                                         color="black"
+                                        fontWeight="bold"
                                     >
-                                        <b> Message</b>: {noti.message}
+                                        {inFoGroup.find((group) => group.groupName)?.groupName}
                                     </Typography>
-                                    <br />
-                                    {noti.createAt}
-                                </Fragment>
-                            }
-                        />
-                    </ListItem>
-                ))}
+                                }
+                                secondary={
+                                    <Fragment>
+                                        <Typography
+                                            sx={{ display: "inline", fontSize: "16px" }}
+                                            component="span"
+                                            variant="body2"
+                                            color="black"
+                                        >
+                                            <b> Message</b>: {noti.message}
+                                        </Typography>
+                                        <br />
+                                        {noti.createAt}
+                                    </Fragment>
+                                }
+                            />
+                        </ListItem>
+                    ))}
             </Menu>
         </Box>
     );
