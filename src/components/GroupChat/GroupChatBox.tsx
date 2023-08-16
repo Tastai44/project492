@@ -31,7 +31,7 @@ import Emoji from "../MContainer/Emoji";
 import Header from "./Header";
 import MessageBody from "./MessageBody";
 import { IGroup } from "../../interface/Group";
-import { createMessageNoti } from "../MessageNotification";
+import { createGroupMessageNoti } from "../MessageNotification";
 
 interface IFunction {
 	handleClose: () => void;
@@ -160,7 +160,7 @@ export default function GroupChatBox
 			const updatedMessage = { ...newMessage, conversation_id: conversationId };
 			await setDoc(docRef, updatedMessage)
 				.then(() => {
-					createMessageNoti(conversationId, userInfo.uid, '0', props.groupId, message);
+					createGroupMessageNoti(conversationId, userInfo.uid, props.groupId, message);
 					setMessage("");
 					setEmoji("");
 					setPreviewImages([]);

@@ -35,6 +35,10 @@ function App() {
 	const handleOpenChat = () => setOpenChat(true);
 	const handleCloseChat = () => setOpenChat(false);
 
+	const [openGroupChat, setOpenGroupChat] = React.useState(false);
+	const handleOpenGroupChat = () => setOpenGroupChat(true);
+	const handleCloseGroupChat = () => setOpenGroupChat(false);
+
 	return (
 		<>
 			<Routes>
@@ -49,6 +53,9 @@ function App() {
 									openChat={openChat}
 									handleOpenChat={handleOpenChat}
 									handleCloseChat={handleCloseChat}
+									openGroupChat={openGroupChat}
+									handleOpenGroupChat={handleOpenGroupChat}
+									handleCloseGroupChat={handleCloseGroupChat}
 								/>
 								<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
 									<Grid item xs={12}>
@@ -84,6 +91,9 @@ function App() {
 								openChat={openChat}
 								handleOpenChat={handleOpenChat}
 								handleCloseChat={handleCloseChat}
+								openGroupChat={openGroupChat}
+								handleOpenGroupChat={handleOpenGroupChat}
+								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							{/* <Members /> */}
 							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
@@ -116,6 +126,9 @@ function App() {
 								openChat={openChat}
 								handleOpenChat={handleOpenChat}
 								handleCloseChat={handleCloseChat}
+								openGroupChat={openGroupChat}
+								handleOpenGroupChat={handleOpenGroupChat}
+								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
 								<Grid item xs={12}>
@@ -157,6 +170,9 @@ function App() {
 								openChat={openChat}
 								handleOpenChat={handleOpenChat}
 								handleCloseChat={handleCloseChat}
+								openGroupChat={openGroupChat}
+								handleOpenGroupChat={handleOpenGroupChat}
+								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 
 							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
@@ -204,6 +220,9 @@ function App() {
 								openChat={openChat}
 								handleOpenChat={handleOpenChat}
 								handleCloseChat={handleCloseChat}
+								openGroupChat={openGroupChat}
+								handleOpenGroupChat={handleOpenGroupChat}
+								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
 								<Grid item xs={12}>
@@ -250,6 +269,9 @@ function App() {
 								openChat={openChat}
 								handleOpenChat={handleOpenChat}
 								handleCloseChat={handleCloseChat}
+								openGroupChat={openGroupChat}
+								handleOpenGroupChat={handleOpenGroupChat}
+								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
 								<Grid item xs={12}>
@@ -296,6 +318,9 @@ function App() {
 								openChat={openChat}
 								handleOpenChat={handleOpenChat}
 								handleCloseChat={handleCloseChat}
+								openGroupChat={openGroupChat}
+								handleOpenGroupChat={handleOpenGroupChat}
+								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
 								<Grid item xs={12}>
@@ -345,6 +370,9 @@ function App() {
 								openChat={openChat}
 								handleOpenChat={handleOpenChat}
 								handleCloseChat={handleCloseChat}
+								openGroupChat={openGroupChat}
+								handleOpenGroupChat={handleOpenGroupChat}
+								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							<Events />
 							{/* </ProtectedRoute> */}
@@ -360,6 +388,9 @@ function App() {
 								openChat={openChat}
 								handleOpenChat={handleOpenChat}
 								handleCloseChat={handleCloseChat}
+								openGroupChat={openGroupChat}
+								handleOpenGroupChat={handleOpenGroupChat}
+								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							<EventDetail />
 							{/* </ProtectedRoute> */}
@@ -378,6 +409,9 @@ function App() {
 								openChat={openChat}
 								handleOpenChat={handleOpenChat}
 								handleCloseChat={handleCloseChat}
+								openGroupChat={openGroupChat}
+								handleOpenGroupChat={handleOpenGroupChat}
+								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
 								<Grid item xs={12}>
@@ -418,6 +452,9 @@ function App() {
 								openChat={openChat}
 								handleOpenChat={handleOpenChat}
 								handleCloseChat={handleCloseChat}
+								openGroupChat={openGroupChat}
+								handleOpenGroupChat={handleOpenGroupChat}
+								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							<GroupDetails />
 							{/* </ProtectedRoute> */}
@@ -433,6 +470,9 @@ function App() {
 								openChat={openChat}
 								handleOpenChat={handleOpenChat}
 								handleCloseChat={handleCloseChat}
+								openGroupChat={openGroupChat}
+								handleOpenGroupChat={handleOpenGroupChat}
+								handleCloseGroupChat={handleCloseGroupChat}
 							/>
 							{/* <Members /> */}
 							<Grid sx={{ flexGrow: 1 }} container>

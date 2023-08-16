@@ -31,16 +31,21 @@ import UserMenu from "./TopBar/UserMenu";
 import NotificationList from "./TopBar/NotificationList";
 import PageIcons from "./TopBar/PageIcons";
 import SearchContent from "./TopBar/SearchContent";
-import { IMessageNoti, INoti } from "../interface/Notification";
+import { IGroupMessageNoti, IMessageNoti, INoti } from "../interface/Notification";
 import MessageNoti from "./TopBar/MessageNoti";
 
 interface IData {
 	openChat: boolean;
+	openGroupChat: boolean;
 }
+
 interface IFunction {
 	handleOpenChat: () => void;
 	handleCloseChat: () => void;
+	handleOpenGroupChat: () => void;
+	handleCloseGroupChat: () => void;
 }
+
 
 export default function Navigation(props: IData & IFunction) {
 	const navigate = useNavigate();
@@ -58,6 +63,7 @@ export default function Navigation(props: IData & IFunction) {
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const [notifications, setNotifications] = useState<INoti[]>();
 	const [messageNoti, setMessageNoti] = useState<IMessageNoti[]>();
+	const [groupMessageNoti, setGroupMessageNoti] = useState<IGroupMessageNoti[]>();
 
 	const handleOpenSearch = () => {
 		setOpenSearch(true);
@@ -153,6 +159,27 @@ export default function Navigation(props: IData & IFunction) {
 		};
 	}, []);
 
+	useEffect(() => {
+		const queryData = query(
+			collection(dbFireStore, "groupMessageNotications"),
+			orderBy("createAt", "desc"),
+			limit(5)
+		);
+		const unsubscribe = onSnapshot(
+			queryData,
+			(snapshot) => {
+				const queriedData = snapshot.docs.map((doc) => doc.data() as IGroupMessageNoti);
+				setGroupMessageNoti(queriedData);
+			},
+			(error) => {
+				console.error("Error fetching data: ", error);
+			}
+		);
+		return () => {
+			unsubscribe();
+		};
+	}, []);
+
 	const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
 		setAnchorEl(event.currentTarget);
 	};
@@ -208,10 +235,14 @@ export default function Navigation(props: IData & IFunction) {
 			messageNotiList={messageNotiList}
 			isMessageMenuOpen={isMessageMenuOpen}
 			messageNoti={messageNoti ?? []}
+			groupMessageNoti={groupMessageNoti ?? []}
 			openChat={props.openChat}
+			openGroupChat={props.openGroupChat}
 			handleCloseMessageNoti={handleCloseMessageNoti}
 			handleOpenChat={props.handleOpenChat}
 			handleCloseChat={props.handleCloseChat}
+			handleOpenGroupChat={props.handleOpenGroupChat}
+			handleCloseGroupChat={props.handleCloseGroupChat}
 		/>
 	);
 

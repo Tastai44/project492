@@ -1,27 +1,35 @@
 import { useMemo, useState, Fragment } from "react";
 import { Menu, MenuItem, Divider, ListItem, ListItemAvatar, Avatar, ListItemText, Typography, Box, Modal } from "@mui/material";
-import { IMessageNoti } from "../../interface/Notification";
+import { IGroupMessageNoti, IMessageNoti } from "../../interface/Notification";
 import { collection, where, onSnapshot, query } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
 import { User } from "../../interface/User";
 import ChatBox from "../Chat/ChatBox";
+import { IGroup } from "../../interface/Group";
+import GroupChatBox from "../GroupChat/GroupChatBox";
 
 interface IData {
     openMessageNoti: null | HTMLElement;
     messageNotiList: string;
     isMessageMenuOpen: boolean;
     messageNoti: IMessageNoti[];
+    groupMessageNoti: IGroupMessageNoti[];
     openChat: boolean;
+    openGroupChat: boolean;
     handleCloseMessageNoti: () => void;
     handleOpenChat: () => void;
     handleCloseChat: () => void;
+    handleOpenGroupChat: () => void;
+    handleCloseGroupChat: () => void;
 }
 
 export default function MessageNoti(props: IData) {
     const [inFoUser, setInFoUser] = useState<User[]>([]);
+    const [inFoGroup, setInFoGroup] = useState<IGroup[]>([]);
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const senderId = props.messageNoti.find((noti) => noti.senderId)?.senderId ?? "";
-    const groupId = props.messageNoti.find((noti) => noti.groupId)?.groupId ?? "";
+    const groupId = props.groupMessageNoti.find((noti) => noti.groupId)?.groupId ?? "";
+
     useMemo(() => {
         const queryData = query(
             collection(dbFireStore, "users"),
@@ -42,6 +50,26 @@ export default function MessageNoti(props: IData) {
         };
     }, [senderId]);
 
+    useMemo(() => {
+        const queryData = query(
+            collection(dbFireStore, "groups"),
+            where("gId", "==", groupId)
+        );
+        const unsubscribe = onSnapshot(
+            queryData,
+            (snapshot) => {
+                const queriedData = snapshot.docs.map((doc) => doc.data() as IGroup);
+                setInFoGroup(queriedData);
+            },
+            (error) => {
+                console.error("Error fetching data: ", error);
+            }
+        );
+        return () => {
+            unsubscribe();
+        };
+    }, [groupId]);
+
     return (
         <Box>
             <Modal
@@ -52,6 +80,17 @@ export default function MessageNoti(props: IData) {
             >
                 <Box>
                     <ChatBox uId={senderId} handleClose={props.handleCloseChat} />
+                </Box>
+            </Modal>
+
+            <Modal
+                open={props.openGroupChat}
+                onClose={props.handleCloseGroupChat}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box>
+                    <GroupChatBox groupId={groupId} handleClose={props.handleCloseGroupChat} />
                 </Box>
             </Modal>
 
@@ -110,8 +149,7 @@ export default function MessageNoti(props: IData) {
                     Messages
                 </MenuItem>
                 <Divider style={{ background: "white" }} />
-                {/* {props.messageNoti.filter((item) => item.receiverId === userInfo.uid).map((noti) => ( */}
-                {props.messageNoti.map((noti) => (
+                {props.messageNoti.filter((item) => item.receiverId === userInfo.uid).map((noti) => (
                     <ListItem onClick={props.handleOpenChat} key={noti.notiId} alignItems="flex-start" sx={{
                         cursor: "pointer", "&:hover": {
                             backgroundColor: "primary.contrastText"
@@ -133,6 +171,48 @@ export default function MessageNoti(props: IData) {
                                     fontWeight="bold"
                                 >
                                     {`${inFoUser.find((user) => user.firstName)?.firstName} ${inFoUser.find((user) => user.lastName)?.lastName}`}
+                                </Typography>
+                            }
+                            secondary={
+                                <Fragment>
+                                    <Typography
+                                        sx={{ display: "inline", fontSize: "16px" }}
+                                        component="span"
+                                        variant="body2"
+                                        color="black"
+                                    >
+                                        <b> Message</b>: {noti.message}
+                                    </Typography>
+                                    <br />
+                                    {noti.createAt}
+                                </Fragment>
+                            }
+                        />
+                    </ListItem>
+                ))}
+
+                {props.groupMessageNoti.filter((item) => item.groupId === groupId).map((noti) => (
+                    <ListItem onClick={props.handleOpenGroupChat} key={noti.notiId} alignItems="flex-start" sx={{
+                        cursor: "pointer", "&:hover": {
+                            backgroundColor: "primary.contrastText"
+                        }
+                    }}>
+                        <ListItemAvatar>
+                            <Avatar alt="CMU" src={inFoGroup.find((group) => group.coverPhoto)?.coverPhoto} />
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary={
+                                <Typography
+                                    sx={{
+                                        display: "inline"
+                                    }}
+                                    fontSize={16}
+                                    component="span"
+                                    variant="body2"
+                                    color="black"
+                                    fontWeight="bold"
+                                >
+                                    {inFoGroup.find((group) => group.groupName)?.groupName}
                                 </Typography>
                             }
                             secondary={
