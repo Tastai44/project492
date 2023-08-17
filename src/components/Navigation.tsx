@@ -167,6 +167,7 @@ export default function Navigation() {
 		};
 	}, []);
 
+
 	const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
 		setAnchorEl(event.currentTarget);
 	};

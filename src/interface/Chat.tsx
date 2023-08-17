@@ -1,17 +1,19 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface Conversation {
-	_id: string;
-	participants: string[];
-	created_at: string;
+	message: string,
+	photoMessage: string[],
+	emoji: string,
+	senderId: string;
+	receiverId: string;
 }
 
 export interface Message {
-	_id: string;
-	conversation_id: string;
-	sender_id: string;
-	receiver_id: string;
-	content: string;
-	photoMessage: string[];
-	emoji: string;
+	conversationId: string;
+	senderId: string;
+	content: Conversation[];
+	participants: string[];
+	createAt: Timestamp;
 	timestamp: string;
 }
 export interface GroupMessage {
