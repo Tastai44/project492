@@ -128,6 +128,7 @@ export default function Navigation() {
 	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "messageNotifications"),
+			where("receiverId", "==", userInfo.uid),
 			orderBy("createAt", "desc"),
 			limit(5)
 		);
@@ -144,7 +145,7 @@ export default function Navigation() {
 		return () => {
 			unsubscribe();
 		};
-	}, []);
+	}, [userInfo.uid]);
 
 	useEffect(() => {
 		const queryData = query(
@@ -294,7 +295,7 @@ export default function Navigation() {
 								aria-haspopup="true"
 								onClick={handleOpenMessageNoti}
 							>
-								<Badge badgeContent={4} color="error">
+								<Badge badgeContent={messageNoti?.length} color="error">
 									<MailIcon sx={{ color: "white" }} />
 								</Badge>
 							</IconButton>
@@ -306,7 +307,7 @@ export default function Navigation() {
 								aria-haspopup="true"
 								onClick={handleMobileMenuOpen}
 							>
-								<Badge badgeContent={17} color="error">
+								<Badge badgeContent={notifications?.length} color="error">
 									<NotificationsIcon sx={{ color: "white" }} />
 								</Badge>
 							</IconButton>

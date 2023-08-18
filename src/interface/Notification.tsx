@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface INoti {
     notiId: string;
     contentId: string;
@@ -8,12 +10,15 @@ export interface INoti {
 }
 
 export interface IMessageNoti {
+    length: number;
     notiId: string;
     conversationId: string;
     message: string;
-    senderId: string;
-    receiverId: string;
-    createAt: string;
+    senderId: string,
+    receiverId: string,
+    dateCreated: string;
+    isRead: boolean;
+    createAt: Timestamp;
 }
 
 export interface IGroupMessageNoti {
@@ -22,5 +27,6 @@ export interface IGroupMessageNoti {
     message: string;
     senderId: string;
     groupId: string;
-    createAt: string;
+    dateCreated: string;
+    createAt: Timestamp;
 }

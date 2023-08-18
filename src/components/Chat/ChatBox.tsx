@@ -141,7 +141,8 @@ export default function ChatBox(props: IFunction & IData) {
   useEffect(() => {
     const messagesCollectionRef = query(
       collection(dbFireStore, "messages"),
-      where("participants", "array-contains", props.uId),
+      where("participants", "array-contains", userInfo.uid),
+      // where("participants", "array-contains-any", userInfo.uid),
     );
     const unsubscribe = onSnapshot(messagesCollectionRef, (querySnapshot) => {
       const messagesData = querySnapshot.docs.map(
