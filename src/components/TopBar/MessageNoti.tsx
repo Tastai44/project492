@@ -30,7 +30,7 @@ interface IData {
 export default function MessageNoti(props: IData) {
     const [inFoGroup, setInFoGroup] = useState<IGroup[]>([]);
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-    const [openChat, setOpenChat] = useState(false);
+
     const groupId =
         props.groupMessageNoti.find((noti) => noti.groupId)?.groupId ?? "";
 
@@ -53,9 +53,6 @@ export default function MessageNoti(props: IData) {
             unsubscribe();
         };
     }, [groupId]);
-
-    const handleOpenChat = () => setOpenChat(true);
-    const handleCloseChat = () => setOpenChat(false);
 
     const [openGroupChat, setOpenGroupChat] = useState(false);
     const handleOpenGroupChat = () => setOpenGroupChat(true);
@@ -152,9 +149,6 @@ export default function MessageNoti(props: IData) {
                             dateCreated={message.dateCreated}
                             senderId={message.senderId}
                             notiId={message.notiId}
-                            openChat={openChat}
-                            handleOpenChat={handleOpenChat}
-                            handleCloseChat={handleCloseChat}
                         />
                     ))
                 ) : (

@@ -295,7 +295,7 @@ export default function Navigation() {
 								aria-haspopup="true"
 								onClick={handleOpenMessageNoti}
 							>
-								<Badge badgeContent={messageNoti?.length} color="error">
+								<Badge badgeContent={messageNoti?.filter((messNoti) => !messNoti.isRead).length} color="error">
 									<MailIcon sx={{ color: "white" }} />
 								</Badge>
 							</IconButton>

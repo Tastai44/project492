@@ -11,13 +11,15 @@ interface IData {
     dateCreated: string;
     senderId: string;
     notiId: string;
-    openChat: boolean;
-    handleOpenChat: () => void;
-    handleCloseChat: () => void;
+    // openChat: boolean;
+    // handleOpenChat: () => void;
+    // handleCloseChat: () => void;
 }
 
 export default function NotiCard(props: IData) {
     const [inFoUser, setInFoUser] = useState<User[]>([]);
+    const [openChat, setOpenChat] = useState(false);
+    const [senderId, setSenderId] = useState("");
 
     useMemo(() => {
         const queryData = query(
@@ -39,36 +41,39 @@ export default function NotiCard(props: IData) {
         };
     }, [props.senderId]);
 
-    // useMemo(() => {
-    //     const handleReaded = async () => {
-    //         const messageNotification = collection(dbFireStore, "messageNotifications");
-    //         try {
-    //             const notiDocRef = doc(messageNotification, props.notiId);
-    //             await updateDoc(notiDocRef, {
-    //                 isRead: true
-    //             });
-    //         } catch (error) {
-    //             console.error(error);
-    //         }
-    //     };
-    //     handleReaded();
-    // }, [props.notiId]);
-    console.log(props.openChat);
+    const handleReaded = async () => {
+        const messageNotification = collection(dbFireStore, "messageNotifications");
+        try {
+            const notiDocRef = doc(messageNotification, props.notiId);
+            await updateDoc(notiDocRef, {
+                isRead: true
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleOpenChat = (senderId: string) => {
+        setSenderId(senderId);
+        handleReaded();
+        setOpenChat(true);
+    };
+    const handleCloseChat = () => setOpenChat(false);
 
     return (
         <>
             <Modal
-                open={props.openChat}
-                onClose={props.handleCloseChat}
+                open={openChat}
+                onClose={handleCloseChat}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
                 <Box>
-                    <ChatBox uId={props.senderId} handleClose={props.handleCloseChat} />
+                    <ChatBox uId={senderId} handleClose={handleCloseChat} />
                 </Box>
             </Modal>
             <ListItem
-                onClick={props.handleOpenChat}
+                onClick={() => handleOpenChat(props.senderId)}
                 alignItems="flex-start"
                 sx={{
                     cursor: "pointer",
