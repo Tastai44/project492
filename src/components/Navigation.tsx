@@ -337,7 +337,7 @@ export default function Navigation() {
 								aria-haspopup="true"
 								onClick={handleMobileMenuOpen}
 							>
-								<Badge badgeContent={notifications?.length} color="error">
+								<Badge badgeContent={notifications?.filter((noti) => !noti.isRead).length} color="error">
 									<NotificationsIcon sx={{ color: "white" }} />
 								</Badge>
 							</IconButton>

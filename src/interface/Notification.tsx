@@ -6,6 +6,7 @@ export interface INoti {
     actionMessage: string;
     actionBy: string;
     actionTo?: string;
+    isRead: boolean;
     createAt: string;
 }
 
