@@ -210,17 +210,3 @@ export default function MessageBody(props: IData) {
         </div>
     );
 }
-
-
-
-
-
-// {mess.sender_id !== userInfo.uid && (
-//     <Avatar
-//         src={
-//             inFoUser.find((user) => user.uid === mess.ownerContent_id)
-//                 ?.profilePhoto
-//         }
-//         sx={{ width: "25px", height: "25px", mr: 1 }}
-//     />
-// )}

@@ -34,7 +34,7 @@ import Header from "./Header";
 import MessageBody from "./MessageBody";
 import { IGroup } from "../../interface/Group";
 import { useState, useRef, ChangeEvent, useMemo, useEffect } from "react";
-import { createMessageNoti } from "../MessageNotification";
+import { createGroupMessageNoti } from "../MessageNotification";
 
 interface IFunction {
 	handleClose: () => void;
@@ -193,7 +193,7 @@ export default function GroupChatBox
 				await updateDoc(conversationDocRef, {
 					content: arrayUnion(newMessage.content[0]),
 				});
-				createMessageNoti(conversationId, userInfo.uid, props.groupId, message);
+				createGroupMessageNoti(conversationId, userInfo.uid, props.groupId, groupData.flatMap(member => member.members), message);
 				clearState();
 			} else {
 				const docRef = doc(messagesCollection);
@@ -203,7 +203,7 @@ export default function GroupChatBox
 					conversationId: conversationId,
 				};
 				await setDoc(docRef, updatedMessage);
-				createMessageNoti(conversationId, userInfo.uid, props.groupId, message);
+				createGroupMessageNoti(conversationId, userInfo.uid, props.groupId, groupData.flatMap(member => member.members), message);
 				clearState();
 			}
 		} catch (error) {

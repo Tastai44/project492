@@ -97,7 +97,7 @@ export default function ShareCard(props: IData & IFunction) {
                             createdAt: new Date().toLocaleString(),
                         };
                         createNoti(
-                            (props.postId ?? ""), `shared ${props.postCaption}`, userInfo.uid, filterRowsData[i].uid
+                            (props.postId ?? ""), ` shared ${props.postCaption}`, userInfo.uid, filterRowsData[i].uid
                         );
                         const postRef = doc(postsCollection, props.postId);
                         await updateDoc(postRef, {
@@ -120,7 +120,7 @@ export default function ShareCard(props: IData & IFunction) {
                     shareUsers: arrayUnion(updateShare),
                 });
                 createNoti(
-                    (props.postId ?? ""), `shared ${props.postCaption}`, userInfo.uid
+                    (props.postId ?? ""), ` shared ${props.postCaption}`, userInfo.uid, userInfo.uid
                 );
                 PopupAlert("Share successfully", "success");
             }

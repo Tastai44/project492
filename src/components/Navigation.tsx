@@ -33,15 +33,14 @@ import PageIcons from "./TopBar/PageIcons";
 import SearchContent from "./TopBar/SearchContent";
 import { IGroupMessageNoti, IMessageNoti, INoti } from "../interface/Notification";
 import MessageNoti from "./TopBar/MessageNoti";
+import { IGroup } from "../interface/Group";
 
 export default function Navigation() {
 	const navigate = useNavigate();
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [openSearch, setOpenSearch] = useState<boolean>(false);
-
 	const [openMessageNoti, setOpenMessageNoti] = useState<null | HTMLElement>(null);
 	const isMessageMenuOpen = Boolean(openMessageNoti);
-
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
 		useState<null | HTMLElement>(null);
@@ -51,6 +50,8 @@ export default function Navigation() {
 	const [notifications, setNotifications] = useState<INoti[]>();
 	const [messageNoti, setMessageNoti] = useState<IMessageNoti[]>();
 	const [groupMessageNoti, setGroupMessageNoti] = useState<IGroupMessageNoti[]>();
+	const [messageNumber, setMessageNumber] = useState(0);
+	const [groupData, setGroupData] = useState<IGroup[]>([]);
 
 	const handleOpenSearch = () => {
 		setOpenSearch(true);
@@ -83,6 +84,27 @@ export default function Navigation() {
 				console.log(error);
 			});
 	};
+
+	useEffect(() => {
+		const fetchData = query(
+			collection(dbFireStore, "groups"),
+			where("members", "array-contains", userInfo.uid),
+			orderBy("createAt", "desc")
+		);
+		const unsubscribe = onSnapshot(
+			fetchData,
+			(snapshot) => {
+				const queriedData = snapshot.docs.map((doc) => doc.data() as IGroup);
+				setGroupData(queriedData);
+			},
+			(error) => {
+				console.error("Error fetching data", error);
+			}
+		);
+		return () => {
+			unsubscribe();
+		};
+	}, [userInfo.uid]);
 
 	useEffect(() => {
 		const queryData = query(
@@ -148,26 +170,34 @@ export default function Navigation() {
 	}, [userInfo.uid]);
 
 	useEffect(() => {
-		const queryData = query(
-			collection(dbFireStore, "groupMessageNotications"),
-			orderBy("createAt", "desc"),
-			limit(5)
-		);
-		const unsubscribe = onSnapshot(
-			queryData,
-			(snapshot) => {
-				const queriedData = snapshot.docs.map((doc) => doc.data() as IGroupMessageNoti);
-				setGroupMessageNoti(queriedData);
-			},
-			(error) => {
-				console.error("Error fetching data: ", error);
-			}
-		);
-		return () => {
-			unsubscribe();
-		};
-	}, []);
+		if (groupData.flatMap((group) => group.members).length !== 0) {
+			const queryData = query(
+				collection(dbFireStore, "groupMessageNotications"),
+				where("receiverId", "==", groupData.flatMap((group) => group.members)),
+				orderBy("createAt", "desc"),
+				limit(5)
+			);
+			const unsubscribe = onSnapshot(
+				queryData,
+				(snapshot) => {
+					const queriedData = snapshot.docs.map((doc) => doc.data() as IGroupMessageNoti);
+					setGroupMessageNoti(queriedData);
+				},
+				(error) => {
+					console.error("Error fetching data: ", error);
+				}
+			);
+			return () => {
+				unsubscribe();
+			};
+		}
+	}, [groupData]);
 
+	useEffect(() => {
+		const messageNumber = messageNoti?.filter((messNoti) => !messNoti.isRead).length;
+		const groupMessageNumber: number | undefined = groupMessageNoti?.filter((messNoti) => !messNoti.isRead).length;
+		setMessageNumber((messageNumber ? messageNumber : 0) + (groupMessageNumber ? groupMessageNumber : 0));
+	}, [groupMessageNoti, messageNoti]);
 
 	const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
 		setAnchorEl(event.currentTarget);
@@ -295,7 +325,7 @@ export default function Navigation() {
 								aria-haspopup="true"
 								onClick={handleOpenMessageNoti}
 							>
-								<Badge badgeContent={messageNoti?.filter((messNoti) => !messNoti.isRead).length} color="error">
+								<Badge badgeContent={messageNumber} color="error">
 									<MailIcon sx={{ color: "white" }} />
 								</Badge>
 							</IconButton>

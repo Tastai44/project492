@@ -10,7 +10,6 @@ export interface INoti {
 }
 
 export interface IMessageNoti {
-    length: number;
     notiId: string;
     conversationId: string;
     message: string;
@@ -25,8 +24,10 @@ export interface IGroupMessageNoti {
     notiId: string;
     conversationId: string;
     message: string;
-    senderId: string;
-    groupId: string;
+    senderId: string,
+    groupId: string,
+    receiverId: string[],
     dateCreated: string;
+    isRead: boolean;
     createAt: Timestamp;
 }

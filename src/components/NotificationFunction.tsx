@@ -11,6 +11,7 @@ export const createNoti = async (
         actionMessage: actionMessage,
         actionBy: actionBy,
         actionTo: actionTo ?? "",
+        isRead: false,
         createAt: new Date().toLocaleString(),
     };
 

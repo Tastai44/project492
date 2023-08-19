@@ -30,6 +30,7 @@ export const createMessageNoti = async (
         if (notiId) {
             const notiDocRef = doc(messageNotiCollection, notiId);
             await updateDoc(notiDocRef, {
+                isRead: false,
                 message: message,
             });
         } else {
@@ -47,7 +48,7 @@ export const createMessageNoti = async (
 };
 
 export const createGroupMessageNoti = async (
-    conversationId: string, senderId: string, groupId: string, message: string
+    conversationId: string, senderId: string, groupId: string, members: string[], message: string
 ) => {
     const messageNotiCollection = collection(dbFireStore, "groupMessageNotications");
     const querySnapshot = await getDocs(messageNotiCollection);
@@ -66,7 +67,8 @@ export const createGroupMessageNoti = async (
         conversationId: conversationId,
         message: message,
         senderId: senderId,
-        receiverId: groupId,
+        groupId: groupId,
+        receiverId: members,
         isRead: false,
         dateCreated: new Date().toLocaleString(),
         createAt: serverTimestamp(),
@@ -75,6 +77,7 @@ export const createGroupMessageNoti = async (
         if (notiId) {
             const notiDocRef = doc(messageNotiCollection, notiId);
             await updateDoc(notiDocRef, {
+                isRead: false,
                 message: message,
             });
         } else {

@@ -1,22 +1,12 @@
-import { useMemo, useState, Fragment } from "react";
 import {
     Menu,
     MenuItem,
     Divider,
-    ListItem,
-    ListItemAvatar,
-    Avatar,
-    ListItemText,
-    Typography,
     Box,
-    Modal,
 } from "@mui/material";
 import { IGroupMessageNoti, IMessageNoti } from "../../interface/Notification";
-import { collection, where, onSnapshot, query } from "firebase/firestore";
-import { dbFireStore } from "../../config/firebase";
-import { IGroup } from "../../interface/Group";
-import GroupChatBox from "../GroupChat/GroupChatBox";
 import NotiCard from "./NotiCard";
+import GroupNotiCard from "./GroupNotiCard";
 
 interface IData {
     openMessageNoti: null | HTMLElement;
@@ -28,64 +18,9 @@ interface IData {
 }
 
 export default function MessageNoti(props: IData) {
-    const [inFoGroup, setInFoGroup] = useState<IGroup[]>([]);
-    const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-
-    const groupId =
-        props.groupMessageNoti.find((noti) => noti.groupId)?.groupId ?? "";
-
-    useMemo(() => {
-        const queryData = query(
-            collection(dbFireStore, "groups"),
-            where("gId", "==", groupId)
-        );
-        const unsubscribe = onSnapshot(
-            queryData,
-            (snapshot) => {
-                const queriedData = snapshot.docs.map((doc) => doc.data() as IGroup);
-                setInFoGroup(queriedData);
-            },
-            (error) => {
-                console.error("Error fetching data: ", error);
-            }
-        );
-        return () => {
-            unsubscribe();
-        };
-    }, [groupId]);
-
-    const [openGroupChat, setOpenGroupChat] = useState(false);
-    const handleOpenGroupChat = () => setOpenGroupChat(true);
-    const handleCloseGroupChat = () => setOpenGroupChat(false);
-
-    const groupNotification: IGroupMessageNoti | undefined = props.groupMessageNoti
-        .filter(
-            (item) =>
-                item.groupId === groupId &&
-                inFoGroup.some((group) =>
-                (group.members.some((member) => member == userInfo.uid) ||
-                    group.hostId == userInfo.uid
-                )
-                )
-        ).at(0);
 
     return (
         <Box>
-
-            <Modal
-                open={openGroupChat}
-                onClose={handleCloseGroupChat}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box>
-                    <GroupChatBox
-                        groupId={groupId}
-                        handleClose={handleCloseGroupChat}
-                    />
-                </Box>
-            </Modal>
-
             <Menu
                 anchorEl={props.openMessageNoti}
                 id={props.messageNotiList}
@@ -141,8 +76,8 @@ export default function MessageNoti(props: IData) {
                     Messages
                 </MenuItem>
                 <Divider style={{ background: "white" }} />
-                {props.messageNoti.length !== 0 ? (
-                    props.messageNoti.map((message) => (
+                {props.messageNoti.length !== 0 && (
+                    props.messageNoti.filter((noti) => !noti.isRead).map((message) => (
                         <NotiCard
                             key={message.notiId}
                             message={message.message}
@@ -151,59 +86,19 @@ export default function MessageNoti(props: IData) {
                             notiId={message.notiId}
                         />
                     ))
-                ) : (
-                    <p>No messages to display.</p>
                 )}
 
-
-                {groupNotification && (
-                    <ListItem
-                        onClick={handleOpenGroupChat}
-                        alignItems="flex-start"
-                        sx={{
-                            cursor: "pointer",
-                            "&:hover": {
-                                backgroundColor: "primary.contrastText",
-                            },
-                        }}
-                    >
-                        <ListItemAvatar>
-                            <Avatar
-                                alt="CMU"
-                                src={inFoGroup.find((group) => group.coverPhoto)?.coverPhoto}
-                            />
-                        </ListItemAvatar>
-                        <ListItemText
-                            primary={
-                                <Typography
-                                    sx={{
-                                        display: "inline",
-                                    }}
-                                    fontSize={16}
-                                    component="span"
-                                    variant="body2"
-                                    color="black"
-                                    fontWeight="bold"
-                                >
-                                    {inFoGroup.find((group) => group.groupName)?.groupName}
-                                </Typography>
-                            }
-                            secondary={
-                                <Fragment>
-                                    <Typography
-                                        sx={{ display: "inline", fontSize: "16px" }}
-                                        component="span"
-                                        variant="body2"
-                                        color="black"
-                                    >
-                                        <b> Message</b>: {groupNotification?.message}
-                                    </Typography>
-                                    <br />
-                                    {groupNotification?.dateCreated}
-                                </Fragment>
-                            }
+                {props.groupMessageNoti.length !== 0 && (
+                    props.groupMessageNoti.filter((noti) => !noti.isRead).map((message) => (
+                        <GroupNotiCard
+                            key={message.notiId}
+                            message={message.message}
+                            dateCreated={message.dateCreated}
+                            senderId={message.senderId}
+                            notiId={message.notiId}
+                            groupId={message.groupId}
                         />
-                    </ListItem>
+                    ))
                 )}
             </Menu>
         </Box>

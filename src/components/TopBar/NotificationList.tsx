@@ -1,4 +1,4 @@
-import { useMemo, useState, Fragment } from "react";
+import { useMemo, useState } from "react";
 import { Menu, MenuItem, Divider, ListItem, ListItemAvatar, Avatar, ListItemText, Typography } from "@mui/material";
 import { INoti } from "../../interface/Notification";
 import { collection, where, onSnapshot, query } from "firebase/firestore";
@@ -139,25 +139,23 @@ export default function NotificationList(props: IData) {
                             </Typography>
                         }
                         secondary={
-                            <Fragment>
-                                <Typography
-                                    sx={{ display: "inline", fontSize: "16px" }}
-                                    component="span"
-                                    variant="body2"
-                                    color="black"
-                                >
-                                    {noti.actionTo ? (
-                                        <>
-                                            {noti.actionMessage.substring(0, 30)}... to
-                                            <b> {inFoShareUser.find((shareTo) => shareTo.firstName)?.firstName}</b>
-                                        </>
-                                    ) : (
-                                        noti.actionMessage.substring(0, 30) + "..."
-                                    )}
-                                </Typography>
+                            <Typography
+                                sx={{ display: "inline", fontSize: "16px" }}
+                                component="span"
+                                variant="body2"
+                                color="black"
+                            >
+                                {noti.actionTo ? (
+                                    <>
+                                        {noti.actionMessage.substring(0, 30)}... <br />to
+                                        <b> {inFoShareUser.find((shareTo) => shareTo.firstName)?.firstName}</b>
+                                    </>
+                                ) : (
+                                    noti.actionMessage.substring(0, 30) + "..."
+                                )}
                                 <br />
                                 <Typography color="red" fontSize={14}>{noti.createAt}</Typography>
-                            </Fragment>
+                            </Typography>
                         }
                     />
                 </ListItem>

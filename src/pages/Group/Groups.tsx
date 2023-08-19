@@ -1,20 +1,19 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import GroupContainer from "../../components/Groups/GroupContainer";
 import { Modal, Box } from "@mui/material";
 import AddGroup from "../../components/Groups/AddGroup";
-
-
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
 import { IGroup } from "../../interface/Group";
 
+
 export default function Groups() {
-	const [open, setOpen] = React.useState(false);
+	const [open, setOpen] = useState(false);
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
 
-	const [groupData, setGroupData] = React.useState<IGroup[]>([]);
-	React.useEffect(() => {
+	const [groupData, setGroupData] = useState<IGroup[]>([]);
+	useEffect(() => {
 		const fetchData = query(
 			collection(dbFireStore, "groups"),
 			orderBy("createAt", "desc")
