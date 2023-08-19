@@ -139,16 +139,12 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 	const createGroup = async () => {
 		const postCollection = collection(dbFireStore, "groups");
 		const tmp = [...member].map((m) => JSON.parse(m));
-		const tmp2 = [...tmp].map((m) => {
-			return {
-				memberId: m.uid,
-			};
-		});
+		const tmp2 = tmp.map((m) => m.uid);
 		const newPost = {
 			gId: "",
 			hostId: userInfo.uid,
 			groupName: group.groupName,
-			members: tmp2,
+			members: [...tmp2, userInfo.uid],
 			status: status,
 			details: group.details,
 			coverPhoto: previewImages[0],

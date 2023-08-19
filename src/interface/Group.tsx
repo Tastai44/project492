@@ -6,7 +6,7 @@ export interface IGroup {
 	gId: string;
 	groupName: string;
 	hostId: string;
-	members: IMember[];
+	members: string[];
 	status: string;
 	details: string;
 	coverPhoto: string;

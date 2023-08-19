@@ -17,14 +17,12 @@ export interface Message {
 	timestamp: string;
 }
 export interface GroupMessage {
-	_id: string;
-	conversation_id: string;
-	sender_id: string;
-	ownerContent_id: string;
-	receiver_id: string;
-	content: string;
-	photoMessage: string[];
-	emoji: string;
+	conversationId: string;
+	senderId: string;
+	content: Conversation[];
+	participants: string[];
+	ownerContentId: string;
+	createAt: Timestamp;
 	timestamp: string;
 }
 

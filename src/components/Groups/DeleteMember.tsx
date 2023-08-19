@@ -1,7 +1,6 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
 import { styleTable } from "../../utils/styleBox";
-import { IMember } from "../../interface/Group";
 import { Avatar, Button, Typography, Divider, Box } from "@mui/material";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
@@ -11,6 +10,7 @@ import {
 	doc,
 	query,
 	onSnapshot,
+	where,
 } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import SearchBar from "../../helper/SearchBar";
@@ -42,7 +42,7 @@ const columns: GridColDef[] = [
 ];
 
 interface IData {
-	members: IMember[];
+	members: string[];
 	gId: string;
 }
 interface IFunction {
@@ -56,6 +56,7 @@ export default function DeleteMember(props: IData & IFunction) {
 	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "users"),
+			where("uid", "in", props.members)
 		);
 		const unsubscribe = onSnapshot(
 			queryData,
@@ -73,13 +74,13 @@ export default function DeleteMember(props: IData & IFunction) {
 	}, [props.members]);
 
 	const rows = props.members.map((row, index) => {
-		const matchingUser = inFoUser.find((user) => user.uid === row.memberId);
+		const matchingUser = inFoUser.find((user) => user.uid === row);
 		const username = matchingUser ? `${matchingUser.firstName} ${matchingUser.lastName}` : '';
 		const profilePhoto = matchingUser ? matchingUser.profilePhoto : '';
 
 		return {
-			id: `${row.memberId}_${index}`,
-			uid: row.memberId,
+			id: `${row}_${index}`,
+			uid: row,
 			username: username,
 			profilePhoto: profilePhoto
 		};
@@ -95,9 +96,7 @@ export default function DeleteMember(props: IData & IFunction) {
 		const filteredData = rows.filter((row) => !selectedRows.includes(row.id));
 		const groupRef = doc(postsCollection, props.gId);
 		updateDoc(groupRef, {
-			members: filteredData.map((m) => ({
-				memberId: m.uid,
-			})),
+			members: filteredData.map((m) => m.uid),
 		})
 			.then(() => {
 				PopupAlert("Deleted member(s) successfully", "success");

@@ -1,12 +1,11 @@
 import { Box } from "@mui/material";
 import Members from "./Members";
 import Host from "../Events/Host";
-import { IMember } from "../../interface/Group";
 
 interface IData {
 	gId: string;
 	hostId: string;
-	members: IMember[];
+	members: string[];
 }
 
 export default function LeftSideContainer(props: IData) {

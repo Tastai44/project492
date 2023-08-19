@@ -1,4 +1,4 @@
-import * as React from "react";
+
 import {
 	Box,
 	IconButton,
@@ -24,14 +24,17 @@ import {
 	doc,
 	setDoc,
 	onSnapshot,
+	serverTimestamp,
+	updateDoc,
+	arrayUnion,
 } from "firebase/firestore";
-import { GroupMessage } from "../../interface/Chat";
-
+import { Conversation, Message } from "../../interface/Chat";
 import Emoji from "../MContainer/Emoji";
 import Header from "./Header";
 import MessageBody from "./MessageBody";
 import { IGroup } from "../../interface/Group";
-import { createGroupMessageNoti } from "../MessageNotification";
+import { useState, useRef, ChangeEvent, useMemo, useEffect } from "react";
+import { createMessageNoti } from "../MessageNotification";
 
 interface IFunction {
 	handleClose: () => void;
@@ -43,18 +46,18 @@ interface IData {
 
 export default function GroupChatBox
 	(props: IFunction & IData) {
-	const [groupData, setGroupData] = React.useState<IGroup[]>([]);
+	const [groupData, setGroupData] = useState<IGroup[]>([]);
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-	const [message, setMessage] = React.useState("");
-	const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-	const [previewImages, setPreviewImages] = React.useState<string[]>([]);
-	const [openEmoji, setOpenEmoji] = React.useState(false);
+	const [message, setMessage] = useState("");
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
+	const [previewImages, setPreviewImages] = useState<string[]>([]);
+	const [openEmoji, setOpenEmoji] = useState(false);
 	const handletOpenEmoji = () => setOpenEmoji(true);
 	const handleCloseEmoji = () => setOpenEmoji(false);
 	const handleClearImage = () => {
 		setPreviewImages([]);
 	};
-	const [emoji, setEmoji] = React.useState("");
+	const [emoji, setEmoji] = useState("");
 	const handleChangeEmoji = (e: string) => {
 		setEmoji(e);
 	};
@@ -68,7 +71,7 @@ export default function GroupChatBox
 		}
 	};
 	const handleFileChange = async (
-		event: React.ChangeEvent<HTMLInputElement>
+		event: ChangeEvent<HTMLInputElement>
 	) => {
 		const files = event.target.files;
 		if (files) {
@@ -94,13 +97,13 @@ export default function GroupChatBox
 	};
 
 	const handleMessage = (
-		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+		event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 	) => {
 		const { value } = event.target;
 		setMessage(value);
 	};
 
-	React.useMemo(() => {
+	useMemo(() => {
 		const fetchData = async () => {
 			try {
 				const q = query(
@@ -123,53 +126,88 @@ export default function GroupChatBox
 		fetchData();
 	}, [props.groupId]);
 
-	const [messages, setMessages] = React.useState<GroupMessage[]>([]);
-	const chatContainerRef = React.useRef<HTMLDivElement>(null);
-	React.useEffect(() => {
+	const [messages, setMessages] = useState<Message[]>([]);
+	const chatContainerRef = useRef<HTMLDivElement>(null);
+	useEffect(() => {
 		if (chatContainerRef.current) {
 			chatContainerRef.current.scrollTop =
 				chatContainerRef.current.scrollHeight;
 		}
 	}, [messages]);
-	React.useEffect(() => {
+	useEffect(() => {
 		const messagesCollectionRef = collection(dbFireStore, "groupMessages");
 		const unsubscribe = onSnapshot(messagesCollectionRef, (querySnapshot) => {
 			const messagesData = querySnapshot.docs.map(
-				(doc) => doc.data() as GroupMessage
+				(doc) => doc.data() as Message
 			);
 			setMessages(messagesData);
 		});
 		return () => unsubscribe();
 	}, []);
 
+	const clearState = () => {
+		setMessage('');
+		setEmoji('');
+		setPreviewImages([]);
+	};
+
 	const handleSendMessage = async () => {
 		const messagesCollection = collection(dbFireStore, "groupMessages");
+
+		const querySnapshot = await getDocs(messagesCollection);
+		let conversationId = "";
+
+		querySnapshot.forEach((doc) => {
+			const data = doc.data();
+			if (data.content && Array.isArray(data.content)) {
+				const content: Conversation[] = data.content;
+
+				const hasUserAsSender = content.some((con) => con.senderId === userInfo.uid);
+				const hasUserAsReceiver = content.some((con) => con.receiverId === userInfo.uid);
+				const hasPropsUserAsSender = content.some((con) => con.senderId === props.groupId);
+				const hasPropsUserAsReceiver = content.some((con) => con.receiverId === props.groupId);
+
+				if ((hasUserAsSender && hasPropsUserAsReceiver) || (hasPropsUserAsSender && hasUserAsReceiver)) {
+					conversationId = data.conversationId;
+				}
+			}
+		});
+
 		const newMessage = {
-			conversation_id: "",
-			sender_id: userInfo.uid,
-			ownerContent_id: userInfo.uid,
-			receiver_id: props.groupId,
-			content: message,
-			photoMessage: previewImages,
-			emoji: emoji,
-			timestamp: new Date().toISOString(),
+			senderId: userInfo.uid,
+			content: [{
+				message: message,
+				photoMessage: previewImages,
+				emoji: emoji,
+				senderId: userInfo.uid,
+				receiverId: props.groupId,
+			}],
+			participants: groupData.flatMap(member => member.members),
+			createAt: serverTimestamp(),
+			timestamp: new Date().toLocaleString(),
 		};
+
 		try {
-			const docRef = doc(messagesCollection);
-			const conversationId = docRef.id;
-			const updatedMessage = { ...newMessage, conversation_id: conversationId };
-			await setDoc(docRef, updatedMessage)
-				.then(() => {
-					createGroupMessageNoti(conversationId, userInfo.uid, props.groupId, message);
-					setMessage("");
-					setEmoji("");
-					setPreviewImages([]);
-				})
-				.catch((error) => {
-					console.error("Error sending message:", error);
+			if (conversationId) {
+				const conversationDocRef = doc(messagesCollection, conversationId);
+				await updateDoc(conversationDocRef, {
+					content: arrayUnion(newMessage.content[0]),
 				});
+				createMessageNoti(conversationId, userInfo.uid, props.groupId, message);
+				clearState();
+			} else {
+				const docRef = doc(messagesCollection);
+				conversationId = docRef.id;
+				const updatedMessage = {
+					...newMessage,
+					conversationId: conversationId,
+				};
+				await setDoc(docRef, updatedMessage);
+				createMessageNoti(conversationId, userInfo.uid, props.groupId, message);
+				clearState();
+			}
 		} catch (error) {
-			console.error(error);
+			console.error("Error sending message:", error);
 		}
 	};
 
@@ -227,6 +265,7 @@ export default function GroupChatBox
 						<MessageBody
 							messages={messages}
 							groupId={props.groupId}
+							members={groupData.flatMap((member) => member.members)}
 						/>
 					</Box>
 					<Box

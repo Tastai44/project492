@@ -10,7 +10,6 @@ import {
     Menu,
 } from "@mui/material";
 import UserCard from "../RightSide/UserCard";
-import { IMember } from "../../interface/Group";
 import { NavLink } from "react-router-dom";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
@@ -18,7 +17,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import AddMembers from "./AddMembers";
 import DeleteMember from "./DeleteMember";
 interface IData {
-    members: IMember[];
+    members: string[];
     hostId: string;
     gId: string;
 }
@@ -154,10 +153,10 @@ export default function Members(props: IData) {
                     </Box>
                 </Box>
                 <Divider light />
-                {props.members.map((m, index) => (
-                    <Box key={m.memberId + index}>
-                        <NavLink to={`/profileBlog/${m.memberId}`} style={{ color: "black" }}>
-                            <UserCard userId={m.memberId} />
+                {props.members.map((member, index) => (
+                    <Box key={member + index}>
+                        <NavLink to={`/profileBlog/${member}`} style={{ color: "black" }}>
+                            <UserCard userId={member} />
                         </NavLink>
                     </Box>
                 ))}

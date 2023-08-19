@@ -17,7 +17,6 @@ import {
 	arrayUnion,
 } from "firebase/firestore";
 import { ChangeEvent } from "react";
-import { IMember } from "../../interface/Group";
 
 interface IFunction {
 	handleClose: () => void;
@@ -26,7 +25,7 @@ interface IFunction {
 interface IData {
 	gId: string;
 	hostId: string;
-	members: IMember[];
+	members: string[];
 }
 
 export default function AddMembers(props: IFunction & IData) {
@@ -64,11 +63,7 @@ export default function AddMembers(props: IFunction & IData) {
 	const addMember = () => {
 		const groupCollection = collection(dbFireStore, "groups");
 		const tmp = [...member].map((m) => JSON.parse(m));
-		const tmp2 = tmp.map((m) => {
-			return {
-				memberId: m.uid,
-			};
-		});
+		const tmp2 = tmp.map((m) => m.uid,);
 		const groupRef = doc(groupCollection, props.gId);
 		updateDoc(groupRef, {
 			members: arrayUnion(...tmp2),
@@ -112,7 +107,7 @@ export default function AddMembers(props: IFunction & IData) {
 						options={users
 							.filter(
 								(user) =>
-									!props.members.some((member) => member.memberId === user.uid) && (user.uid !== props.hostId)
+									!props.members.some((member) => member === user.uid) && (user.uid !== props.hostId)
 							)
 							.map((e) => JSON.stringify(e))}
 						disableCloseOnSelect

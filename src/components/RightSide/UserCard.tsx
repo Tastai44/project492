@@ -7,7 +7,6 @@ import { Typography, Box } from "@mui/material";
 import { dbFireStore } from "../../config/firebase";
 import { collection, query, onSnapshot } from "firebase/firestore";
 import { User } from "../../interface/User";
-import { IMember } from "../../interface/Group";
 
 export const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": {
@@ -41,7 +40,7 @@ export const StyledBadge = styled(Badge)(({ theme }) => ({
 interface IData {
 	username?: string;
 	userId?: string;
-	members?: IMember[];
+	members?: string[];
 	profilePhoto?: string;
 }
 

@@ -63,7 +63,7 @@ export default function MessageNoti(props: IData) {
             (item) =>
                 item.groupId === groupId &&
                 inFoGroup.some((group) =>
-                (group.members.some((member) => member.memberId == userInfo.uid) ||
+                (group.members.some((member) => member == userInfo.uid) ||
                     group.hostId == userInfo.uid
                 )
                 )

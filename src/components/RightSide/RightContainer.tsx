@@ -295,7 +295,7 @@ export default function RightContainer() {
                         {groupData.some(
                             (group) =>
                                 group.members.some(
-                                    (member) => member.memberId == userInfo.uid
+                                    (member) => member == userInfo.uid
                                 ) || group.hostId == userInfo.uid
                         ) ? (
                             <Box>
@@ -303,10 +303,10 @@ export default function RightContainer() {
                                     .filter(
                                         (item) => searchGroupValue ?
                                             (item.members.some(
-                                                (member) => member.memberId == userInfo.uid
+                                                (member) => member == userInfo.uid
                                             ) || item.hostId == userInfo.uid) && item.groupName.includes(searchGroupValue) :
                                             item.members.some(
-                                                (member) => member.memberId == userInfo.uid
+                                                (member) => member == userInfo.uid
                                             ) || item.hostId == userInfo.uid
                                     )
                                     .map((group) => (
