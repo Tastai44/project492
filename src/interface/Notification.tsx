@@ -7,7 +7,9 @@ export interface INoti {
     actionBy: string;
     actionTo?: string;
     isRead: boolean;
-    createAt: string;
+    status: string;
+    dateCreated: string;
+    createAt: Timestamp;
 }
 
 export interface IMessageNoti {

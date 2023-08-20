@@ -1,8 +1,8 @@
-import { collection, setDoc, doc } from "firebase/firestore";
+import { collection, setDoc, doc, serverTimestamp } from "firebase/firestore";
 import { dbFireStore } from "../config/firebase";
 
 export const createNoti = async (
-    contentId: string, actionMessage: string, actionBy: string, actionTo?: string,
+    contentId: string, actionMessage: string, actionBy: string, status: string, friends: string[], actionTo?: string,
 ) => {
     const notiCollection = collection(dbFireStore, "notifications");
     const newNoti = {
@@ -12,7 +12,10 @@ export const createNoti = async (
         actionBy: actionBy,
         actionTo: actionTo ?? "",
         isRead: false,
-        createAt: new Date().toLocaleString(),
+        receiverId: friends,
+        status: status,
+        createAt: serverTimestamp(),
+        dateCreated: new Date().toLocaleString(),
     };
 
     try {

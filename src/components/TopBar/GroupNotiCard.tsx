@@ -12,6 +12,7 @@ interface IData {
     senderId: string;
     notiId: string;
     groupId: string;
+    isRead: boolean;
 }
 
 export default function GroupNotiCard(props: IData) {
@@ -75,6 +76,7 @@ export default function GroupNotiCard(props: IData) {
                 alignItems="flex-start"
                 sx={{
                     cursor: "pointer",
+                    backgroundColor: props.isRead ? "" : "#e0e0e0",
                     "&:hover": {
                         backgroundColor: "primary.contrastText",
                     },

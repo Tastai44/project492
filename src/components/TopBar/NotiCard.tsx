@@ -11,9 +11,7 @@ interface IData {
     dateCreated: string;
     senderId: string;
     notiId: string;
-    // openChat: boolean;
-    // handleOpenChat: () => void;
-    // handleCloseChat: () => void;
+    isRead: boolean;
 }
 
 export default function NotiCard(props: IData) {
@@ -77,6 +75,7 @@ export default function NotiCard(props: IData) {
                 alignItems="flex-start"
                 sx={{
                     cursor: "pointer",
+                    backgroundColor: props.isRead ? "" : "#e0e0e0",
                     "&:hover": {
                         backgroundColor: "primary.contrastText",
                     },

@@ -206,76 +206,74 @@ export default function NotificationList(props: IData) {
                     Notifications
                 </MenuItem>
                 <Divider style={{ background: "white" }} />
-                {props.notifications
-                    .filter(
-                        (item) =>
-                            (item.actionBy === userInfo.uid || item.actionTo === userInfo.uid) &&
-                            !item.isRead
-                    )
-                    .map((noti) => (
-                        <ListItem
-                            key={noti.notiId}
-                            alignItems="flex-start"
-                            onClick={() => handletOpenPost(noti.contentId, noti.notiId)}
-                            sx={{
-                                cursor: "pointer",
-                                "&:hover": {
-                                    backgroundColor: "primary.contrastText",
-                                },
-                            }}
-                        >
-                            <ListItemAvatar>
-                                <Avatar
-                                    alt="CMU"
-                                    src={inFoUser.find((user) => user.profilePhoto)?.profilePhoto}
-                                />
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={
-                                    <Typography
-                                        sx={{
-                                            display: "inline",
-                                        }}
-                                        component="span"
-                                        variant="body2"
-                                        color="black"
-                                        fontWeight="bold"
-                                    >
-                                        {`${inFoUser.find((user) => user.firstName)?.firstName} ${inFoUser.find((user) => user.lastName)?.lastName
-                                            }`}
-                                    </Typography>
-                                }
-                                secondary={
-                                    <Typography
-                                        sx={{ display: "inline", fontSize: "16px" }}
-                                        component="span"
-                                        variant="body2"
-                                        color="black"
-                                    >
-                                        {noti.actionTo ? (
-                                            <>
-                                                {noti.actionMessage.substring(0, 30)}... <br />
-                                                to
-                                                <b>
-                                                    {" "}
-                                                    {
-                                                        inFoShareUser.find((shareTo) => shareTo.firstName)
-                                                            ?.firstName
-                                                    }
-                                                </b>
-                                            </>
-                                        ) : (
-                                            noti.actionMessage.substring(0, 30) + "..."
-                                        )}
-                                        <br />
-                                        <Typography color="red" fontSize={14}>
-                                            {noti.createAt}
+                {props.notifications.length !== 0 && (
+                    props.notifications.filter((item) => item.status !== "Private")
+                        .map((noti) => (
+                            <ListItem
+                                key={noti.notiId}
+                                alignItems="flex-start"
+                                onClick={() => handletOpenPost(noti.contentId, noti.notiId)}
+                                sx={{
+                                    cursor: "pointer",
+                                    mb: 0.5,
+                                    backgroundColor: noti.isRead ? "" : "#e0e0e0",
+                                    "&:hover": {
+                                        backgroundColor: "primary.contrastText",
+                                    },
+                                }}
+                            >
+                                <ListItemAvatar>
+                                    <Avatar
+                                        alt="CMU"
+                                        src={inFoUser.find((user) => user.profilePhoto)?.profilePhoto}
+                                    />
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={
+                                        <Typography
+                                            sx={{
+                                                display: "inline",
+                                            }}
+                                            component="span"
+                                            variant="body2"
+                                            color="black"
+                                            fontWeight="bold"
+                                        >
+                                            {`${inFoUser.find((user) => user.firstName)?.firstName} ${inFoUser.find((user) => user.lastName)?.lastName
+                                                }`}
                                         </Typography>
-                                    </Typography>
-                                }
-                            />
-                        </ListItem>
-                    ))}
+                                    }
+                                    secondary={
+                                        <Typography
+                                            sx={{ display: "inline", fontSize: "16px" }}
+                                            component="span"
+                                            variant="body2"
+                                            color="black"
+                                        >
+                                            {noti.actionTo ? (
+                                                <>
+                                                    {noti.actionMessage.substring(0, 30)}... <br />
+                                                    to
+                                                    <b>
+                                                        {" "}
+                                                        {
+                                                            inFoShareUser.find((shareTo) => shareTo.firstName)
+                                                                ?.firstName
+                                                        }
+                                                    </b>
+                                                </>
+                                            ) : (
+                                                noti.actionMessage.substring(0, 30) + "..."
+                                            )}
+                                            <br />
+                                            <Typography color="red" fontSize={14}>
+                                                {noti.dateCreated}
+                                            </Typography>
+                                        </Typography>
+                                    }
+                                />
+                            </ListItem>
+                        )))}
             </Menu>
         </>
     );

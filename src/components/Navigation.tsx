@@ -129,6 +129,7 @@ export default function Navigation() {
 	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "notifications"),
+			where("receiverId", "array-contains", userInfo.uid),
 			orderBy("createAt", "desc"),
 			limit(5)
 		);
@@ -145,7 +146,7 @@ export default function Navigation() {
 		return () => {
 			unsubscribe();
 		};
-	}, []);
+	}, [userInfo.uid]);
 
 	useEffect(() => {
 		const queryData = query(

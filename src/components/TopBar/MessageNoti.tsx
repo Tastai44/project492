@@ -77,19 +77,20 @@ export default function MessageNoti(props: IData) {
                 </MenuItem>
                 <Divider style={{ background: "white" }} />
                 {props.messageNoti.length !== 0 && (
-                    props.messageNoti.filter((noti) => !noti.isRead).map((message) => (
+                    props.messageNoti.map((message) => (
                         <NotiCard
                             key={message.notiId}
                             message={message.message}
                             dateCreated={message.dateCreated}
                             senderId={message.senderId}
                             notiId={message.notiId}
+                            isRead={message.isRead}
                         />
                     ))
                 )}
 
                 {props.groupMessageNoti.length !== 0 && (
-                    props.groupMessageNoti.filter((noti) => !noti.isRead).map((message) => (
+                    props.groupMessageNoti.map((message) => (
                         <GroupNotiCard
                             key={message.notiId}
                             message={message.message}
@@ -97,6 +98,7 @@ export default function MessageNoti(props: IData) {
                             senderId={message.senderId}
                             notiId={message.notiId}
                             groupId={message.groupId}
+                            isRead={message.isRead}
                         />
                     ))
                 )}

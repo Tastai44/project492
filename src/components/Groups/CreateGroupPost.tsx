@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useRef, ChangeEvent, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import {
@@ -60,25 +60,18 @@ export default function CreateGroupPost({
     groupName,
     groupId
 }: IHandle & IData) {
-    const [userId, setUserId] = React.useState("");
-
-    const [status, setStatus] = React.useState("");
+    const [status, setStatus] = useState("");
     const handleChange = (event: SelectChangeEvent) => {
         setStatus(event.target.value as string);
     };
 
-    const [openEmoji, setOpenEmoji] = React.useState(false);
+    const [openEmoji, setOpenEmoji] = useState(false);
     const handletOpenEmoji = () => setOpenEmoji(true);
     const handleCloseEmoji = () => setOpenEmoji(false);
 
-    const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-    const [previewImages, setPreviewImages] = React.useState<string[]>([]);
-
-    React.useEffect(() => {
-        const getUerInfo = localStorage.getItem("user");
-        const tmp = JSON.parse(getUerInfo ? getUerInfo : "");
-        setUserId(tmp.uid);
-    }, []);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [previewImages, setPreviewImages] = useState<string[]>([]);
+    const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
     const handleClearImage = () => {
         setPreviewImages([]);
@@ -89,7 +82,7 @@ export default function CreateGroupPost({
         }
     };
     const handleFileChange = async (
-        event: React.ChangeEvent<HTMLInputElement>
+        event: ChangeEvent<HTMLInputElement>
     ) => {
         const files = event.target.files;
         if (files) {
@@ -114,7 +107,7 @@ export default function CreateGroupPost({
         }
     };
 
-    const [emoji, setEmoji] = React.useState("");
+    const [emoji, setEmoji] = useState("");
     const handleChangeEmoji = (e: string) => {
         setEmoji(e);
     };
@@ -133,7 +126,7 @@ export default function CreateGroupPost({
         shareUsers: [],
         reportPost: [],
     };
-    const [post, setPost] = React.useState<Post>(initialState);
+    const [post, setPost] = useState<Post>(initialState);
     const clearState = () => {
         setPost({ ...initialState });
         setStatus("");
@@ -142,7 +135,7 @@ export default function CreateGroupPost({
     };
 
     const handleChangePost = (
-        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         const { name, value } = event.target;
         setPost((prevPost) => ({
@@ -163,7 +156,7 @@ export default function CreateGroupPost({
             createAt: new Date().toLocaleString(),
             date: new Date().toLocaleDateString("en-US"),
             emoji: emoji,
-            owner: userId,
+            owner: userInfo.uid,
             comments: post.comments,
             groupName: groupName,
             groupId: groupId,
@@ -177,9 +170,17 @@ export default function CreateGroupPost({
             const updatedPost = { ...newPost, id: postId };
             await setDoc(docRef, updatedPost);
 
-            createNoti(
-                postId, `posted ${post.caption}`, userId
-            );
+            if (inFoUser.flatMap((user) => user.friendList).length !== 0) {
+                createNoti(
+                    postId, `posted ${post.caption}`, userInfo.uid, status,
+                    [
+                        ...inFoUser.flatMap((user) =>
+                            user.friendList?.flatMap((friend) => friend.friendId) || []
+                        )
+                    ]
+                );
+            }
+
             setPost(updatedPost);
             clearState();
             PopupAlert("Content was posted successfully", "success");
@@ -193,13 +194,13 @@ export default function CreateGroupPost({
         return emoji ? emoji.name : undefined;
     };
 
-    const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-    React.useEffect(() => {
+    const [inFoUser, setInFoUser] = useState<User[]>([]);
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 const q = query(
                     collection(dbFireStore, "users"),
-                    where("uid", "==", userId)
+                    where("uid", "==", userInfo.uid)
                 );
                 const querySnapshot = await getDocs(q);
                 const queriedData = querySnapshot.docs.map(
@@ -215,7 +216,7 @@ export default function CreateGroupPost({
             }
         };
         fetchData();
-    }, [userId]);
+    }, [userInfo.uid]);
 
     return (
         <div>

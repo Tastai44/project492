@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
@@ -32,15 +32,15 @@ import ShareEvent from "../../components/Events/ShareEvent";
 export default function Blog() {
 	const { userId } = useParams();
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-	const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-	const [type, setType] = React.useState("General");
-	const [eventData, setEventData] = React.useState<EventPost[]>([]);
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	const [type, setType] = useState("General");
+	const [eventData, setEventData] = useState<EventPost[]>([]);
 
 	const handleChangeType = (event: SelectChangeEvent) => {
 		setType(event.target.value as string);
 	};
-	const [data, setData] = React.useState<Post[]>([]);
-	React.useEffect(() => {
+	const [data, setData] = useState<Post[]>([]);
+	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "posts"),
 			orderBy("createAt", "desc")
@@ -78,7 +78,7 @@ export default function Blog() {
 		};
 	}, []);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "users"),
 			where("uid", "==", userInfo.uid)

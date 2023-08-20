@@ -170,10 +170,16 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 			const postId = docRef.id;
 			const updatedPost = { ...newPost, id: postId };
 			await setDoc(docRef, updatedPost);
-
-			createNoti(
-				postId, `posted ${post.caption}`, userInfo.uid
-			);
+			if (inFoUser.flatMap((user) => user.friendList).length !== 0) {
+				createNoti(
+					postId, `posted ${post.caption}`, userInfo.uid, status,
+					[
+						...inFoUser.flatMap((user) =>
+							user.friendList?.flatMap((friend) => friend.friendId) || []
+						)
+					]
+				);
+			}
 			setPost(updatedPost);
 			clearState();
 			PopupAlert("Content was posted successfully", "success");

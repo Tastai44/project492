@@ -24,11 +24,18 @@ import PublicIcon from "@mui/icons-material/Public";
 
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
-import { doc } from "firebase/firestore";
-import { collection, setDoc } from "firebase/firestore";
+import {
+    collection,
+    setDoc,
+    doc,
+    onSnapshot,
+    query,
+    where,
+} from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import { locations } from "../../helper/CMULocations";
 import { createNoti } from "../NotificationFunction";
+import { User } from "../../interface/User";
 
 const style = {
     position: "absolute",
@@ -47,14 +54,30 @@ interface Ihandle {
 }
 
 export default function AddEvent({ closeAdd }: Ihandle) {
-    const [userId, setUserId] = useState("");
-    useEffect(() => {
-        const getUerInfo = localStorage.getItem("user");
-        const tmp = JSON.parse(getUerInfo ? getUerInfo : "");
-        setUserId(tmp.uid);
-    }, []);
-
+    const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+    const [inFoUser, setInFoUser] = useState<User[]>([]);
     const [status, setStatus] = useState("");
+
+    useEffect(() => {
+        const queryData = query(
+            collection(dbFireStore, "users"),
+            where("uid", "==", userInfo.uid)
+        );
+        const unsubscribe = onSnapshot(
+            queryData,
+            (snapshot) => {
+                const queriedData = snapshot.docs.map((doc) => doc.data() as User);
+                setInFoUser(queriedData);
+            },
+            (error) => {
+                console.error("Error fetching data: ", error);
+            }
+        );
+        return () => {
+            unsubscribe();
+        };
+    }, [userInfo.uid]);
+
     const handleChange = (event: SelectChangeEvent) => {
         setStatus(event.target.value as string);
     };
@@ -69,9 +92,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
             fileInputRef.current.click();
         }
     };
-    const handleFileChange = async (
-        event: ChangeEvent<HTMLInputElement>
-    ) => {
+    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
         if (files) {
             try {
@@ -112,7 +133,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
         location: "",
         createAt: "",
         shareUsers: [],
-        reportEvent: []
+        reportEvent: [],
     };
     const [event, setEvent] = useState<EventPost>(initialState);
     const [location, setLocation] = useState("");
@@ -174,7 +195,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
             location: location,
             reportEvent: [],
             createAt: new Date().toLocaleString(),
-            owner: userId,
+            owner: userInfo.uid,
         };
 
         try {
@@ -182,10 +203,19 @@ export default function AddEvent({ closeAdd }: Ihandle) {
             const eventId = docRef.id;
             const updatedEvent = { ...newEvent, eventId: eventId };
             await setDoc(docRef, updatedEvent);
+            if (inFoUser.flatMap((user) => user.friendList).length !== 0) {
+                createNoti(
+                    eventId,
+                    `created an event ${event.title}`,
+                    userInfo.uid, status,
+                    [
+                        ...inFoUser.flatMap((user) =>
+                            user.friendList?.flatMap((friend) => friend.friendId) || []
+                        )
+                    ]
+                );
+            }
 
-            createNoti(
-                eventId, `created an event ${event.title}`, userId
-            );
             setEvent(updatedEvent);
             clearState();
             closeAdd();
@@ -280,7 +310,9 @@ export default function AddEvent({ closeAdd }: Ihandle) {
                         onChange={handleChangeLocation}
                         isOptionEqualToValue={(option, value) => option === value}
                         sx={{ width: "100%", mb: 1 }}
-                        renderInput={(params) => <TextField {...params} label="Locations" />}
+                        renderInput={(params) => (
+                            <TextField {...params} label="Locations" />
+                        )}
                     />
                     <TextField
                         name="topic"
