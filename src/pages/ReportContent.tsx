@@ -55,6 +55,7 @@ export default function ReportContent() {
 		const value = event.target.value;
 		setValue(value);
 	};
+
 	return (
 		<Box sx={{ width: "100%", marginTop: 7 }}>
 			<Stack spacing={2}>
@@ -68,19 +69,17 @@ export default function ReportContent() {
 					<div style={{ fontSize: "30px", color: "#920EFA", fontWeight: 500 }}>
 						Report Contents
 					</div>
-					<SearchBar
-						searchValue={searchValue}
-						handleSearch={handleSearch}
-					/>
+					<SearchBar searchValue={searchValue} handleSearch={handleSearch} />
 				</Item>
 				<Box sx={{ display: "flex", justifyContent: "center" }}>
 					<Grid item xs={10}>
-						{postData.some((s) => s.reportPost.length !== 0) ? (
-							<>
-								{postData
+						{
+							searchValue == "" ? (
+								postData
 									.filter((item) => item.reportPost.length !== 0)
 									.map((post) => (
 										<Content
+											key={post.id}
 											owner={post.owner}
 											postId={post.id}
 											caption={post.caption}
@@ -95,38 +94,55 @@ export default function ReportContent() {
 											reFreshInfo={0}
 											reportPost={post.reportPost}
 										/>
-									))}
-							</>
-						) : (
-							<Typography variant="h4" sx={{ color: "black" }}>
-								There is no report post.
-							</Typography>
-						)}
-
-						{eventData.some((e) => e.reportEvent.length !== 0) ? (
-							<>
-								{eventData
-									.filter((item) => item.reportEvent.length !== 0)
-									.map((event) => (
-										<EventContent
-											ownerId={event.owner}
-											details={event.details}
-											status={event.status}
-											eventId={event.eventId}
-											title={event.title}
-											topic={event.topic}
-											createAt={event.createAt ?? ""}
-											coverPhoto={event.coverPhoto}
-											reportNumber={event.reportEvent.length}
-											reportEvent={event.reportEvent ?? []}
+									))
+							) : (
+								postData
+									.filter((item) => item.reportPost.length !== 0 && item.caption.includes(searchValue))
+									.map((post) => (
+										<Content
+											key={post.id}
+											owner={post.owner}
+											postId={post.id}
+											caption={post.caption}
+											hashTagTopic={post.hashTagTopic}
+											status={post.status}
+											createAt={post.createAt}
+											emoji={post.emoji}
+											photoPost={post.photoPost}
+											groupName={post.groupName}
+											groupId={post.groupId}
+											reportNumber={post.reportPost.length}
+											reFreshInfo={0}
+											reportPost={post.reportPost}
 										/>
-									))}
-							</>
-						) : (
-							<Typography variant="h4" sx={{ color: "black" }}>
-								There is no report event.
-							</Typography>
-						)}
+									))
+							)
+						}
+
+						{eventData
+							.filter((item) => item.reportEvent.length !== 0)
+							.map((event) => (
+								<EventContent
+									key={event.eventId}
+									ownerId={event.owner}
+									details={event.details}
+									status={event.status}
+									eventId={event.eventId}
+									title={event.title}
+									topic={event.topic}
+									createAt={event.createAt ?? ""}
+									coverPhoto={event.coverPhoto}
+									reportNumber={event.reportEvent.length}
+									reportEvent={event.reportEvent ?? []}
+								/>
+							))}
+
+						{(eventData.flatMap((e) => e.reportEvent).length == 0 &&
+							postData.flatMap((s) => s.reportPost).length == 0) && (
+								<Typography variant="h4" sx={{ color: "black" }}>
+									There is no report content.
+								</Typography>
+							)}
 					</Grid>
 				</Box>
 			</Stack>

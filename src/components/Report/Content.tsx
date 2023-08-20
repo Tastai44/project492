@@ -279,7 +279,13 @@ export default function ReportContent(props: Idata) {
 									<Typography
 										variant="body1"
 										color="text.secondary"
-										sx={{ textAlign: "justify", fontSize: "25px" }}
+										sx={{
+											textAlign: "justify",
+											overflow: "hidden",
+											textOverflow: "ellipsis",
+											whiteSpace: "pre-wrap",
+											wordWrap: "break-word",
+										}}
 									>
 										{props.caption}
 									</Typography>

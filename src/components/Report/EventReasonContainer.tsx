@@ -134,6 +134,7 @@ export default function EventReasonContainer(props: IData & IFunction) {
     }
   };
 
+
   return (
     <div>
       <Modal
@@ -211,6 +212,7 @@ export default function EventReasonContainer(props: IData & IFunction) {
                             handleOpenShare={handleOpenShare}
                             details={e.details}
                             status={e.status}
+                            location={e.location}
                           />
                         </Item>
                         <ShareCard
