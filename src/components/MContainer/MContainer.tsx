@@ -327,7 +327,12 @@ export default function MContainer(props: Idata) {
                                                 {props.location && (
                                                     <>
                                                         <LocationOnIcon color="error" />
-                                                        {props.location}
+                                                        <NavLink
+                                                            to={`https://www.google.com/search?q=${props.location}`}
+                                                            target="_blank"
+                                                        >
+                                                            {props.location}
+                                                        </NavLink>
                                                     </>
                                                 )}
                                             </Typography>

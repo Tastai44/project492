@@ -413,7 +413,13 @@ export default function Content(props: IData & IFunction) {
                                                             {m.status === "Friend" && <GroupIcon />}
                                                             {m.status === "Public" && <PublicIcon />}
                                                             {m.status}
-                                                            <LocationOnIcon color="error" /> {props.location}
+                                                            <LocationOnIcon color="error" />
+                                                            <NavLink
+                                                                to={`https://www.google.com/search?q=${props.location}`}
+                                                                target="_blank"
+                                                            >
+                                                                {props.location}
+                                                            </NavLink>
                                                         </Typography>
                                                     }
                                                 />
