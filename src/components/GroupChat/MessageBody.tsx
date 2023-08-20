@@ -7,14 +7,14 @@ import {
     ImageListItem,
     Typography,
 } from "@mui/material";
-import { Message } from "../../interface/Chat";
+import { GroupMessage } from "../../interface/Chat";
 import { compareAsc } from "date-fns";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
 import { User } from "../../interface/User";
 
 interface IData {
-    messages: Message[];
+    messages: GroupMessage[];
     groupId: string;
     members: string[];
 }
@@ -22,7 +22,7 @@ interface IData {
 export default function MessageBody(props: IData) {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const [inFoUser, setInFoUser] = useState<User[]>([]);
-    const [chatMessages, setChatMessage] = useState<Message[]>([]);
+    const [chatMessages, setChatMessage] = useState<GroupMessage[]>([]);
 
     useMemo(() => {
         if (props.members.length !== 0) {
@@ -36,8 +36,10 @@ export default function MessageBody(props: IData) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const q = query(collection(dbFireStore, "users"),
-                    where("uid", "in", props.members));
+                const q = query(
+                    collection(dbFireStore, "users"),
+                    where("uid", "in", props.members)
+                );
                 const unsubscribe = onSnapshot(q, (querySnapshot) => {
                     const queriedData = querySnapshot.docs.map(
                         (doc) =>
@@ -57,23 +59,25 @@ export default function MessageBody(props: IData) {
         if (props.members.length !== 0) {
             fetchData();
         }
-
     }, [props.members]);
+
+    console.log(chatMessages);
 
     return (
         <div>
-            {chatMessages.sort((a, b) =>
-                compareAsc(new Date(a.timestamp), new Date(b.timestamp))
-            )
+            {chatMessages
+                .sort((a, b) =>
+                    compareAsc(new Date(a.timestamp), new Date(b.timestamp))
+                )
                 .map((mess, index) => (
-                    <Box
-                        key={index}
-                    >
+                    <Box key={index}>
                         {mess.content.map((chat, index) => (
-                            <Box key={index}
+                            <Box
+                                key={index}
                                 sx={{
                                     display: "flex",
-                                    justifyContent: chat.senderId === userInfo.uid ? "end" : "start",
+                                    justifyContent:
+                                        chat.senderId === userInfo.uid ? "end" : "start",
                                     mt: 1,
                                     ml: chat.senderId === userInfo.uid ? 0 : 1,
                                     mr: chat.senderId === userInfo.uid ? 1 : 0,
@@ -84,7 +88,7 @@ export default function MessageBody(props: IData) {
                                         {chat.senderId !== userInfo.uid && (
                                             <Avatar
                                                 src={
-                                                    inFoUser.find((user) => user.uid === mess.senderId)
+                                                    inFoUser.find((user) => user.uid === chat.senderId)
                                                         ?.profilePhoto
                                                 }
                                                 sx={{ width: "25px", height: "25px", mr: 1 }}
@@ -97,11 +101,13 @@ export default function MessageBody(props: IData) {
                                                 color: "grey",
                                             }}
                                         >
-                                            {mess.senderId !== userInfo.uid && (
+                                            {chat.senderId !== userInfo.uid && (
                                                 <Typography sx={{ ml: 1 }} fontSize={12}>
                                                     {inFoUser
-                                                        .filter((user) => user.uid === mess.senderId)
-                                                        .map((user) => `${user.firstName} ${user.lastName}`)}
+                                                        .filter((user) => user.uid === chat.senderId)
+                                                        .map(
+                                                            (user) => `${user.firstName} ${user.lastName}`
+                                                        )}
                                                 </Typography>
                                             )}
                                             <Chip
@@ -120,7 +126,7 @@ export default function MessageBody(props: IData) {
                                         {chat.senderId !== userInfo.uid && (
                                             <Avatar
                                                 src={
-                                                    inFoUser.find((user) => user.uid === mess.senderId)
+                                                    inFoUser.find((user) => user.uid === chat.senderId)
                                                         ?.profilePhoto
                                                 }
                                                 sx={{ width: "25px", height: "25px", mr: 1 }}
@@ -133,11 +139,13 @@ export default function MessageBody(props: IData) {
                                                 color: "grey",
                                             }}
                                         >
-                                            {mess.senderId !== userInfo.uid && (
+                                            {chat.senderId !== userInfo.uid && (
                                                 <Typography sx={{ ml: 1 }} fontSize={12}>
                                                     {inFoUser
-                                                        .filter((user) => user.uid === mess.senderId)
-                                                        .map((user) => `${user.firstName} ${user.lastName}`)}
+                                                        .filter((user) => user.uid === chat.senderId)
+                                                        .map(
+                                                            (user) => `${user.firstName} ${user.lastName}`
+                                                        )}
                                                 </Typography>
                                             )}
                                             <Chip
@@ -167,7 +175,7 @@ export default function MessageBody(props: IData) {
                                             {chat.senderId !== userInfo.uid && (
                                                 <Avatar
                                                     src={
-                                                        inFoUser.find((user) => user.uid === mess.senderId)
+                                                        inFoUser.find((user) => user.uid === chat.senderId)
                                                             ?.profilePhoto
                                                     }
                                                     sx={{ width: "25px", height: "25px", mr: 1 }}
@@ -204,7 +212,6 @@ export default function MessageBody(props: IData) {
                                 )}
                             </Box>
                         ))}
-
                     </Box>
                 ))}
         </div>

@@ -35,7 +35,6 @@ export default function Blog() {
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const [type, setType] = useState("General");
 	const [eventData, setEventData] = useState<EventPost[]>([]);
-
 	const handleChangeType = (event: SelectChangeEvent) => {
 		setType(event.target.value as string);
 	};
@@ -43,6 +42,7 @@ export default function Blog() {
 	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "posts"),
+			where("owner", "==", userInfo.uid),
 			orderBy("createAt", "desc")
 		);
 		const unsubscribe = onSnapshot(
@@ -76,7 +76,7 @@ export default function Blog() {
 			unsubscribe();
 			eventUnsubscribe();
 		};
-	}, []);
+	}, [userInfo.uid]);
 
 	useEffect(() => {
 		const queryData = query(
@@ -142,215 +142,227 @@ export default function Blog() {
 								</Item>
 							) : (
 								<>
-									{data.some((f) =>
-										f.shareUsers.some(
-											(share) =>
-												share.shareBy == userId &&
-												(share.status == "Private" || share.status == "Public")
-										)
-									) ? (
-										<Item
-											sx={{
-												display: "flex",
-												flexDirection: "column",
-												gap: 2,
-											}}
-										>
-											{data
-												.filter((f) =>
-													f.shareUsers.some(
-														(share) =>
-															share.shareBy == userId &&
-															(share.status == "Private" ||
-																share.status == "Public")
+									{
+										data.some((f) =>
+											f.shareUsers.some(
+												(share) =>
+													share.shareBy == userId &&
+													(share.status == "Private" ||
+														share.status == "Public")
+											)
+										) ? (
+											<Item
+												sx={{
+													display: "flex",
+													flexDirection: "column",
+													gap: 2,
+												}}
+											>
+												{data
+													.filter((f) =>
+														f.shareUsers.some(
+															(share) =>
+																share.shareBy == userId &&
+																(share.status == "Private" ||
+																	share.status == "Public")
+														)
 													)
-												)
-												.map((m) => (
-													<Box key={m.id}>
-														<ShareContent
-															userId={userId}
-															postId={m.id}
-															shareUsers={m.shareUsers.filter(
-																(share) =>
-																	share.status == "Private" ||
-																	(share.status == "Public" &&
-																		share.shareBy == userId)
-															)}
-														/>
-														<MContainer
-															owner={m.owner}
-															postId={m.id}
-															caption={m.caption}
-															hashTagTopic={m.hashTagTopic}
-															status={m.status}
-															createAt={m.createAt}
-															emoji={m.emoji}
-															photoPost={m.photoPost}
-															likeNumber={m.likes.length}
-															likes={m.likes}
-															commentNumber={m.comments.length}
-															shareUsers={m.shareUsers}
-															userInfo={inFoUser}
-															groupName={m.groupName}
-															groupId={m.groupId}
-															location={m.location}
-														/>
-													</Box>
-												))}
-										</Item>
-									) : data.some((f) =>
-										f.shareUsers.some(
-											(share) =>
-												share.shareTo == userId && share.status == "Friend"
-										)
-									) ? (
-										<Item
-											sx={{
-												display: "flex",
-												flexDirection: "column",
-												gap: 2,
-											}}
-										>
-											{data
-												.filter((f) =>
-													f.shareUsers.some(
-														(share) =>
-															share.shareTo == userId &&
-															share.status == "Friend"
+													.map((m) => (
+														<Box key={m.id}>
+															<ShareContent
+																userId={userId}
+																postId={m.id}
+																shareUsers={m.shareUsers.filter(
+																	(share) =>
+																		share.status == "Private" ||
+																		(share.status == "Public" &&
+																			share.shareBy == userId)
+																)}
+															/>
+															<MContainer
+																owner={m.owner}
+																postId={m.id}
+																caption={m.caption}
+																hashTagTopic={m.hashTagTopic}
+																status={m.status}
+																createAt={m.createAt}
+																emoji={m.emoji}
+																photoPost={m.photoPost}
+																likeNumber={m.likes.length}
+																likes={m.likes}
+																commentNumber={m.comments.length}
+																shareUsers={m.shareUsers}
+																userInfo={inFoUser}
+																groupName={m.groupName}
+																groupId={m.groupId}
+																location={m.location}
+															/>
+														</Box>
+													))}
+											</Item>
+										) : (
+											<Item
+												sx={{
+													display: "flex",
+													flexDirection: "column",
+													gap: 2,
+												}}
+											>
+												{data
+													.filter((f) =>
+														f.shareUsers.some(
+															(share) =>
+																share.shareTo == userId &&
+																share.status == "Friend"
+														)
 													)
-												)
-												.map((m) => (
-													<Box key={m.id}>
-														<ShareContent
-															userId={userId}
-															postId={m.id}
-															shareUsers={m.shareUsers.filter(
-																(share) =>
-																	share.status == "Friend" &&
-																	share.shareTo == userId
-															)}
-														/>
-														<MContainer
-															owner={m.owner}
-															postId={m.id}
-															caption={m.caption}
-															hashTagTopic={m.hashTagTopic}
-															status={m.status}
-															createAt={m.createAt}
-															emoji={m.emoji}
-															photoPost={m.photoPost}
-															likeNumber={m.likes.length}
-															likes={m.likes}
-															commentNumber={m.comments.length}
-															shareUsers={m.shareUsers}
-															userInfo={inFoUser}
-															groupName={m.groupName}
-															groupId={m.groupId}
-															location={m.location}
-														/>
-													</Box>
-												))}
-										</Item>
-									) : (
-										<Typography>This no post share data to show!</Typography>
-									)}
+													.map((m) => (
+														<Box key={m.id}>
+															<ShareContent
+																userId={userId}
+																postId={m.id}
+																shareUsers={m.shareUsers.filter(
+																	(share) =>
+																		share.status == "Friend" &&
+																		share.shareTo == userId
+																)}
+															/>
+															<MContainer
+																owner={m.owner}
+																postId={m.id}
+																caption={m.caption}
+																hashTagTopic={m.hashTagTopic}
+																status={m.status}
+																createAt={m.createAt}
+																emoji={m.emoji}
+																photoPost={m.photoPost}
+																likeNumber={m.likes.length}
+																likes={m.likes}
+																commentNumber={m.comments.length}
+																shareUsers={m.shareUsers}
+																userInfo={inFoUser}
+																groupName={m.groupName}
+																groupId={m.groupId}
+																location={m.location}
+															/>
+														</Box>
+													))}
+											</Item>
+										)
+									}
 
-									{eventData.some((f) =>
-										f.shareUsers.some(
-											(share) =>
-												share.shareBy == userId &&
-												(share.status == "Private" || share.status == "Public")
+									{
+										eventData.some((f) =>
+											f.shareUsers.some(
+												(share) =>
+													share.shareBy == userId &&
+													(share.status == "Private" ||
+														share.status == "Public")
+											)
+										) ? (
+											<Item
+												sx={{
+													display: "flex",
+													flexDirection: "column",
+													gap: 2,
+												}}
+											>
+												{eventData
+													.filter((f) =>
+														f.shareUsers.some(
+															(share) =>
+																share.shareBy == userId &&
+																(share.status == "Private" ||
+																	share.status == "Public")
+														)
+													)
+													.map((m) => (
+														<Box key={m.eventId}>
+															<ShareContent
+																userId={userId}
+																eventId={m.eventId}
+																shareUsers={m.shareUsers.filter(
+																	(share) =>
+																		share.status == "Private" ||
+																		(share.status == "Public" &&
+																			share.shareBy == userId)
+																)}
+															/>
+															<ShareEvent
+																eventId={m.eventId}
+																startDate={m.startDate}
+																startTime={m.startTime}
+																title={m.title}
+																endDate={m.endDate}
+																endTime={m.endTime}
+																userId={m.owner}
+																coverPhoto={m.coverPhoto}
+															/>
+														</Box>
+													))}
+											</Item>
+										) : (
+											<Item
+												sx={{
+													display: "flex",
+													flexDirection: "column",
+													gap: 2,
+												}}
+											>
+												{eventData
+													.filter((f) =>
+														f.shareUsers.some(
+															(share) =>
+																share.shareTo == userId &&
+																share.status == "Friend"
+														)
+													)
+													.map((m) => (
+														<Box key={m.eventId}>
+															<ShareContent
+																userId={userId}
+																eventId={m.eventId}
+																shareUsers={m.shareUsers.filter(
+																	(share) =>
+																		share.status == "Friend" &&
+																		share.shareTo == userId
+																)}
+															/>
+															<ShareEvent
+																eventId={m.eventId}
+																startDate={m.startDate}
+																startTime={m.startTime}
+																title={m.title}
+																endDate={m.endDate}
+																endTime={m.endTime}
+																userId={m.owner}
+																coverPhoto={m.coverPhoto}
+															/>
+														</Box>
+													))}
+											</Item>
 										)
-									) ? (
-										<Item
-											sx={{
-												display: "flex",
-												flexDirection: "column",
-												gap: 2,
-											}}
-										>
-											{eventData
-												.filter((f) =>
-													f.shareUsers.some(
+									}
+									{data.length == 0 ||
+										(eventData.filter((item) =>
+											item.shareUsers.some(
+												(share) =>
+													share.shareBy == userInfo.uid ||
+													share.shareTo == userInfo.uid
+											)
+										)
+											.map((event) => event.shareUsers).length == 0 &&
+											data
+												.filter((item) =>
+													item.shareUsers.some(
 														(share) =>
-															share.shareBy == userId &&
-															(share.status == "Private" ||
-																share.status == "Public")
+															share.shareBy == userInfo.uid ||
+															share.shareTo == userInfo.uid
 													)
 												)
-												.map((m) => (
-													<Box key={m.eventId}>
-														<ShareContent
-															userId={userId}
-															eventId={m.eventId}
-															shareUsers={m.shareUsers.filter(
-																(share) =>
-																	share.status == "Private" ||
-																	(share.status == "Public" &&
-																		share.shareBy == userId)
-															)}
-														/>
-														<ShareEvent
-															eventId={m.eventId}
-															startDate={m.startDate}
-															startTime={m.startTime}
-															title={m.title}
-															endDate={m.endDate}
-															endTime={m.endTime}
-															userId={m.owner}
-															coverPhoto={m.coverPhoto}
-														/>
-													</Box>
-												))}
-										</Item>
-									) : eventData.some((f) =>
-										f.shareUsers.some(
-											(share) =>
-												share.shareTo == userId && share.status == "Friend"
-										)
-									) ? (
-										<Item
-											sx={{
-												display: "flex",
-												flexDirection: "column",
-												gap: 2,
-											}}
-										>
-											{eventData
-												.filter((f) =>
-													f.shareUsers.some(
-														(share) =>
-															share.shareTo == userId &&
-															share.status == "Friend"
-													)
-												)
-												.map((m) => (
-													<Box key={m.eventId}>
-														<ShareContent
-															userId={userId}
-															eventId={m.eventId}
-															shareUsers={m.shareUsers.filter(
-																(share) =>
-																	share.status == "Friend" &&
-																	share.shareTo == userId
-															)}
-														/>
-														<ShareEvent
-															eventId={m.eventId}
-															startDate={m.startDate}
-															startTime={m.startTime}
-															title={m.title}
-															endDate={m.endDate}
-															endTime={m.endTime}
-															userId={m.owner}
-															coverPhoto={m.coverPhoto}
-														/>
-													</Box>
-												))}
-										</Item>
-									) : (
-										<Typography>This no event share data to show!</Typography>
-									)}
+												.map((post) => post.shareUsers).length == 0 && (
+												<Typography>This is no contents to show!</Typography>
+											))}
 								</>
 							)}
 						</Grid>

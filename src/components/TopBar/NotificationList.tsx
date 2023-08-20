@@ -160,7 +160,8 @@ export default function NotificationList(props: IData) {
                 PaperProps={{
                     elevation: 0,
                     sx: {
-                        overflow: "visible",
+                        overflow: "auto",
+                        height: props.notifications.length !== 0 ? "500px" : "auto",
                         filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
                         mt: 1.5,
                         "& .MuiAvatar-root": {

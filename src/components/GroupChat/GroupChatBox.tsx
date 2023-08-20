@@ -162,19 +162,19 @@ export default function GroupChatBox
 			if (data.content && Array.isArray(data.content)) {
 				const content: Conversation[] = data.content;
 
-				const hasUserAsSender = content.some((con) => con.senderId === userInfo.uid);
-				const hasUserAsReceiver = content.some((con) => con.receiverId === userInfo.uid);
-				const hasPropsUserAsSender = content.some((con) => con.senderId === props.groupId);
+				// const hasUserAsSender = content.some((con) => con.senderId === userInfo.uid);
+				// const hasUserAsReceiver = content.some((con) => con.receiverId === userInfo.uid);
+				// const hasPropsUserAsSender = content.some((con) => con.senderId === props.groupId);
 				const hasPropsUserAsReceiver = content.some((con) => con.receiverId === props.groupId);
 
-				if ((hasUserAsSender && hasPropsUserAsReceiver) || (hasPropsUserAsSender && hasUserAsReceiver)) {
+				if (hasPropsUserAsReceiver) {
 					conversationId = data.conversationId;
 				}
 			}
 		});
 
 		const newMessage = {
-			senderId: userInfo.uid,
+			// senderId: userInfo.uid,
 			content: [{
 				message: message,
 				photoMessage: previewImages,

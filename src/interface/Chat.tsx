@@ -18,10 +18,8 @@ export interface Message {
 }
 export interface GroupMessage {
 	conversationId: string;
-	senderId: string;
 	content: Conversation[];
 	participants: string[];
-	ownerContentId: string;
 	createAt: Timestamp;
 	timestamp: string;
 }
