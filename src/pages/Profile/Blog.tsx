@@ -35,14 +35,13 @@ export default function Blog() {
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const [type, setType] = useState("General");
 	const [eventData, setEventData] = useState<EventPost[]>([]);
-	const handleChangeType = (event: SelectChangeEvent) => {
-		setType(event.target.value as string);
-	};
 	const [data, setData] = useState<Post[]>([]);
+	const [sharePost, setSharePost] = useState<Post[]>([]);
+
 	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "posts"),
-			// where("owner", "==", userInfo.uid),
+			where("owner", "==", userInfo.uid),
 			orderBy("createAt", "desc")
 		);
 		const unsubscribe = onSnapshot(
@@ -80,6 +79,27 @@ export default function Blog() {
 
 	useEffect(() => {
 		const queryData = query(
+			collection(dbFireStore, "posts"),
+			where("participants", "array-contains", userInfo.uid),
+			orderBy("createAt", "desc")
+		);
+		const unsubscribe = onSnapshot(
+			queryData,
+			(snapshot) => {
+				const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
+				setSharePost(queriedData);
+			},
+			(error) => {
+				console.error("Error fetching data:", error);
+			}
+		);
+		return () => {
+			unsubscribe();
+		};
+	}, [userInfo.uid]);
+
+	useEffect(() => {
+		const queryData = query(
 			collection(dbFireStore, "users"),
 			where("uid", "==", userInfo.uid)
 		);
@@ -97,6 +117,10 @@ export default function Blog() {
 			unsubscribe();
 		};
 	}, [userInfo.uid]);
+
+	const handleChangeType = (event: SelectChangeEvent) => {
+		setType(event.target.value as string);
+	};
 
 	return (
 		<div>
@@ -143,7 +167,7 @@ export default function Blog() {
 							) : (
 								<>
 									{
-										data.some((f) =>
+										sharePost.some((f) =>
 											f.shareUsers.some(
 												(share) =>
 													share.shareBy == userId &&
@@ -158,7 +182,7 @@ export default function Blog() {
 													gap: 2,
 												}}
 											>
-												{data
+												{sharePost
 													.filter((f) =>
 														f.shareUsers.some(
 															(share) =>
@@ -208,7 +232,7 @@ export default function Blog() {
 													gap: 2,
 												}}
 											>
-												{data
+												{sharePost
 													.filter((f) =>
 														f.shareUsers.some(
 															(share) =>

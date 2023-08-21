@@ -61,8 +61,6 @@ export default function MessageBody(props: IData) {
         }
     }, [props.members]);
 
-    console.log(chatMessages);
-
     return (
         <div>
             {chatMessages

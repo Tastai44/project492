@@ -1,6 +1,5 @@
-import * as React from "react";
+import { useState, useMemo } from "react";
 import Box from "@mui/material/Box";
-
 import {
 	Avatar,
 	ListItem,
@@ -9,13 +8,10 @@ import {
 	Typography,
 	IconButton,
 } from "@mui/material";
-
 import LockIcon from "@mui/icons-material/Lock";
 import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
-
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import {
@@ -39,9 +35,10 @@ interface Idata {
 
 
 export default function ShareContent(props: Idata) {
-	const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-	React.useMemo(() => {
+
+	useMemo(() => {
 		const shareByValue = props.shareUsers.find((share) => share.shareBy);
 		const fetchData = async () => {
 			try {

@@ -163,6 +163,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 			reportPost: [],
 			location: location,
 			comments: post.comments,
+			participants: [userInfo.uid]
 		};
 
 		try {
