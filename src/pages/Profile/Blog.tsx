@@ -42,7 +42,7 @@ export default function Blog() {
 	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "posts"),
-			where("owner", "==", userInfo.uid),
+			// where("owner", "==", userInfo.uid),
 			orderBy("createAt", "desc")
 		);
 		const unsubscribe = onSnapshot(
@@ -116,7 +116,7 @@ export default function Blog() {
 									}}
 								>
 									{data
-										.filter((f) => f.owner === userId)
+										.filter((f) => (f.owner === userId && f.status !== "Private") || (f.owner === userInfo.uid))
 										.map((m) => (
 											<Box key={m.id}>
 												<MContainer

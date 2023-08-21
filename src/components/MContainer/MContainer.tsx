@@ -317,7 +317,7 @@ export default function MContainer(props: Idata) {
                                         }
                                         secondary={
                                             <Typography
-                                                sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
+                                                sx={{ display: "flex", alignItems: "center", gap: 0.5, fontSize: "14px" }}
                                             >
                                                 {props.createAt}
                                                 {props.status === "Private" && <LockIcon />}

@@ -20,10 +20,11 @@ import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
-import { collection, updateDoc, doc, arrayUnion } from "firebase/firestore";
+import { collection, updateDoc, doc, arrayUnion, getDoc, runTransaction } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import SearchBar from "../../helper/SearchBar";
 import { createNoti } from "../NotificationFunction";
+import { Post } from "../../interface/PostContent";
 
 const columns: GridColDef[] = [
     { field: "id", headerName: "ID", flex: 1 },
@@ -79,13 +80,88 @@ export default function ShareCard(props: IData & IFunction) {
         setSelectedRows(selectionModel);
     };
 
+    // const handleShare = async () => {
+    //     try {
+    //         const postsCollection = collection(dbFireStore, "posts");
+    //         const getRowsId = selectedRows.map((rowId) => rowId);
+    //         const filterRowsData = rows.filter((row) =>
+    //             getRowsId.includes(row.id ? row.id : "")
+    //         );
+
+    //         if (filterRowsData.length !== 0) {
+    //             try {
+    //                 for (let i = 0; i < filterRowsData.length; i++) {
+    //                     const updateShare = {
+    //                         shareBy: userInfo.uid,
+    //                         shareTo: status === "Friend" ? filterRowsData[i].uid : "",
+    //                         status: status,
+    //                         createdAt: new Date().toLocaleString(),
+    //                     };
+    //                     createNoti(
+    //                         (props.postId ?? ""), ` shared ${props.postCaption}`, userInfo.uid, status, [filterRowsData[i].uid], filterRowsData[i].uid
+    //                     );
+    //                     const postRef = doc(postsCollection, props.postId);
+    //                     await updateDoc(postRef, {
+    //                         shareUsers: arrayUnion(updateShare),
+    //                     });
+    //                 }
+    //                 PopupAlert("Share successfully", "success");
+    //             } catch (error) {
+    //                 console.error("Error share", error);
+    //             }
+    //         } else {
+    //             const updateShare = {
+    //                 shareBy: userInfo.uid,
+    //                 shareTo: userInfo.uid,
+    //                 status: status,
+    //                 createdAt: new Date().toLocaleString(),
+    //             };
+    //             const postRef = doc(postsCollection, props.postId);
+    //             await updateDoc(postRef, {
+    //                 shareUsers: arrayUnion(updateShare),
+    //             });
+    //             createNoti(
+    //                 (props.postId ?? ""), ` shared ${props.postCaption}`, userInfo.uid, status,
+    //                 [
+    //                     ...props.friendList?.flatMap((friend) => friend.friendId) || []
+    //                 ]
+    //             );
+    //             PopupAlert("Share successfully", "success");
+    //         }
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // };
+
     const handleShare = async () => {
         try {
             const postsCollection = collection(dbFireStore, "posts");
+            const postRef = doc(postsCollection, props.postId);
             const getRowsId = selectedRows.map((rowId) => rowId);
             const filterRowsData = rows.filter((row) =>
                 getRowsId.includes(row.id ? row.id : "")
             );
+
+            // Check if the post has been shared already by the current user
+            const postSnapshot = await getDoc(postRef);
+            const postExists = postSnapshot.exists();
+
+            if (!postExists) {
+                console.error("Post not found");
+                return;
+            }
+
+            const post = postSnapshot.data() as Post;
+
+            //Strill wrong
+            const existingShareIndex = post.shareUsers.findIndex(
+                (share) => (share.shareBy === userInfo.uid && share.shareTo === userInfo.uid)
+            );
+
+            if (existingShareIndex !== -1) {
+                PopupAlert("Share already exists for this user and post", "warning");
+                return;
+            }
 
             if (filterRowsData.length !== 0) {
                 try {
@@ -128,9 +204,10 @@ export default function ShareCard(props: IData & IFunction) {
                 PopupAlert("Share successfully", "success");
             }
         } catch (error) {
-            console.error(error);
+            console.error("Error sharing:", error);
         }
     };
+
 
     const handleShareEvent = async () => {
         try {
