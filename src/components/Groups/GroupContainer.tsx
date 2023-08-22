@@ -113,7 +113,7 @@ export default function GroupContainer({
 					(item) =>
 						item.status === "Public" ||
 						(item.hostId === userInfo.uid) ||
-						item.members.some((member) => member.memberId === userInfo.uid)
+						item.members.some((member) => member === userInfo.uid)
 				)
 				.map((g) => (
 					<NavLink key={g.gId} to={`/groupDetail/${g.gId}`}>

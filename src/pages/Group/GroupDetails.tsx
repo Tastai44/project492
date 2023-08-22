@@ -1,15 +1,13 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import { Stack } from "@mui/material";
-
+import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack } from "@mui/material";
 import CoverPhoto from "../../components/Groups/CoverPhoto";
 import LeftSideContainer from "../../components/Groups/LeftSideContainer";
 import MContainer from "../../components/MContainer/MContainer";
 import AboutGroup from "../../components/Groups/AboutGroup";
 import { useParams } from "react-router-dom";
 import { Item } from "../../App";
-
 import { dbFireStore } from "../../config/firebase";
 import { collection, query, orderBy, getDocs, where, onSnapshot } from "firebase/firestore";
 import { IGroup } from "../../interface/Group";
@@ -19,11 +17,12 @@ import { Post } from "../../interface/PostContent";
 
 export default function GroupDetails() {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-    const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+    const [inFoUser, setInFoUser] = useState<User[]>([]);
     const { groupId } = useParams();
-    const [groupData, setGroupData] = React.useState<IGroup[]>([]);
+    const [groupData, setGroupData] = useState<IGroup[]>([]);
+    const [type, setType] = useState("General");
 
-    React.useEffect(() => {
+    useEffect(() => {
         const queryGroupData = query(
             collection(dbFireStore, "groups"),
             where("gId", "==", groupId),
@@ -44,7 +43,7 @@ export default function GroupDetails() {
         };
     }, [groupId]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 const q = query(
@@ -67,8 +66,8 @@ export default function GroupDetails() {
         fetchData();
     }, [userInfo.uid]);
 
-    const [postData, setPostData] = React.useState<Post[]>([]);
-    React.useEffect(() => {
+    const [postData, setPostData] = useState<Post[]>([]);
+    useEffect(() => {
         const queryPostData = query(
             collection(dbFireStore, "posts"),
             where("groupId", "==", groupId),
@@ -88,6 +87,10 @@ export default function GroupDetails() {
             unsubscribe();
         };
     }, [groupId]);
+
+    const handleChangeType = (event: SelectChangeEvent) => {
+        setType(event.target.value as string);
+    };
 
     return (
         <div>
@@ -163,6 +166,22 @@ export default function GroupDetails() {
                                                     </Grid>
                                                     <Grid item xs={2.5}>
                                                         <Item>
+                                                            <FormControl fullWidth sx={{ mb: 1, backgroundColor: "white" }}>
+                                                                <InputLabel id="demo-simple-select-label">
+                                                                    Content type
+                                                                </InputLabel>
+                                                                <Select
+                                                                    labelId="demo-simple-select-label"
+                                                                    id="demo-simple-select"
+                                                                    value={type}
+                                                                    label="Content type"
+                                                                    onChange={handleChangeType}
+                                                                >
+                                                                    <MenuItem value={"General"}>General</MenuItem>
+                                                                    <MenuItem value={"Share"}>Share</MenuItem>
+                                                                    <MenuItem value={"Report"}>Report</MenuItem>
+                                                                </Select>
+                                                            </FormControl>
                                                             <AboutGroup details={g.details} />
                                                         </Item>
                                                     </Grid>

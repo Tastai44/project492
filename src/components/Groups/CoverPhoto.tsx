@@ -3,7 +3,6 @@ import { Box, Button, Card, CardMedia, Divider, Modal } from "@mui/material";
 import MessageIcon from "@mui/icons-material/Message";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import GroupsIcon from "@mui/icons-material/Groups";
-import { IMember } from "../../interface/Group";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import "firebase/database";
@@ -20,7 +19,7 @@ interface IData {
 	title: string;
 	host: string;
 	gId: string;
-	members: IMember[];
+	members: string[];
 	status: string;
 	details: string;
 }
