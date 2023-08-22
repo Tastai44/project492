@@ -5,6 +5,7 @@ import DateRangeIcon from "@mui/icons-material/DateRange";
 import GroupsIcon from "@mui/icons-material/Groups";
 import { IMember } from "../../interface/Group";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { doc, deleteDoc, getDoc } from "firebase/firestore";
@@ -179,7 +180,7 @@ export default function ProCoverImage(
 											}}
 											size="small"
 											startIcon={
-												<BorderColorOutlinedIcon sx={{ width: "16px" }} />
+												<DeleteOutlineOutlinedIcon sx={{ width: "16px" }} />
 											}
 										>
 											Delete
