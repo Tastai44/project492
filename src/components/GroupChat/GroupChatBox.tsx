@@ -28,7 +28,7 @@ import {
 	updateDoc,
 	arrayUnion,
 } from "firebase/firestore";
-import { Conversation, Message } from "../../interface/Chat";
+import { Conversation, GroupMessage } from "../../interface/Chat";
 import Emoji from "../MContainer/Emoji";
 import Header from "./Header";
 import MessageBody from "./MessageBody";
@@ -126,7 +126,7 @@ export default function GroupChatBox
 		fetchData();
 	}, [props.groupId]);
 
-	const [messages, setMessages] = useState<Message[]>([]);
+	const [messages, setMessages] = useState<GroupMessage[]>([]);
 	const chatContainerRef = useRef<HTMLDivElement>(null);
 	useEffect(() => {
 		if (chatContainerRef.current) {
@@ -134,16 +134,22 @@ export default function GroupChatBox
 				chatContainerRef.current.scrollHeight;
 		}
 	}, [messages]);
+
 	useEffect(() => {
-		const messagesCollectionRef = collection(dbFireStore, "groupMessages");
+		const messagesCollectionRef = query(
+			collection(dbFireStore, "groupMessages"),
+			where("receiverId", "==", props.groupId),
+			where("participants", "array-contains", userInfo.uid)
+		);
+
 		const unsubscribe = onSnapshot(messagesCollectionRef, (querySnapshot) => {
 			const messagesData = querySnapshot.docs.map(
-				(doc) => doc.data() as Message
+				(doc) => doc.data() as GroupMessage
 			);
 			setMessages(messagesData);
 		});
 		return () => unsubscribe();
-	}, []);
+	}, [props.groupId, userInfo.uid]);
 
 	const clearState = () => {
 		setMessage('');
@@ -174,7 +180,7 @@ export default function GroupChatBox
 		});
 
 		const newMessage = {
-			// senderId: userInfo.uid,
+			receiverId: props.groupId,
 			content: [{
 				message: message,
 				photoMessage: previewImages,
@@ -268,78 +274,72 @@ export default function GroupChatBox
 							members={groupData.flatMap((member) => member.members)}
 						/>
 					</Box>
-					<form onSubmit={handleSendMessage}>
-						<Box
-							sx={{
-								height: "50%",
-								display: "flex",
-								justifyContent: "space-between",
-								alignItems: "center",
-								alignContent: "center",
-								mt: 1
-							}}
-						>
-							<Box sx={{ width: "30%" }}>
-								<IconButton size="large" onClick={handleUploadClick}>
-									<input
-										type="file"
-										ref={fileInputRef}
-										onChange={handleFileChange}
-										multiple
-										hidden
-									/>
-									<CameraAltOutlinedIcon
-										sx={{ color: "primary.main", fontSize: "20px" }}
-									/>
-								</IconButton>
-								<IconButton onClick={handletOpenEmoji}>
-									<EmojiEmotionsIcon
-										sx={{ color: "primary.main", fontSize: "20px" }}
-									/>
-								</IconButton>
-							</Box>
-							<TextField
-								size="small"
-								name="message"
-								variant="outlined"
-								multiline
-								maxRows={1}
-								sx={{
-									borderRadius: "10px",
-									backgroundColor: "primary.contrastText",
-									overflow: "auto",
-									width: "100%",
-									"& .MuiOutlinedInput-root": {
-										"& fieldset": {
-											borderColor: "transparent",
-										},
-										"&:hover fieldset": {
-											borderColor: "transparent",
-										},
-										"&.Mui-focused fieldset": {
-											borderColor: "transparent",
-										},
-									},
-								}}
-								disabled={emoji !== '' || previewImages.length !== 0}
-								value={message}
-								onChange={handleMessage}
-								onKeyDown={(event) => {
-									if (event.key === "Enter" && !event.shiftKey) {
-										event.preventDefault();
-										handleSendMessage();
-									}
-								}}
-							/>
-							<IconButton
-								type="submit"
-							>
-								<SendOutlinedIcon
+					<Box
+						sx={{
+							height: "10%",
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+							alignContent: "center",
+							mt: 1,
+						}}
+					>
+						<Box sx={{ width: "30%" }}>
+							<IconButton size="large" onClick={handleUploadClick}>
+								<input
+									type="file"
+									ref={fileInputRef}
+									onChange={handleFileChange}
+									multiple
+									hidden
+								/>
+								<CameraAltOutlinedIcon
+									sx={{ color: "primary.main", fontSize: "20px" }}
+								/>
+							</IconButton>
+							<IconButton onClick={handletOpenEmoji}>
+								<EmojiEmotionsIcon
 									sx={{ color: "primary.main", fontSize: "20px" }}
 								/>
 							</IconButton>
 						</Box>
-					</form>
+						<TextField
+							size="small"
+							name="message"
+							variant="outlined"
+							multiline
+							maxRows={1}
+							sx={{
+								borderRadius: "10px",
+								height: "40px",
+								backgroundColor: "primary.contrastText",
+								overflow: "auto",
+								width: "100%",
+								"& .MuiOutlinedInput-root": {
+									"& fieldset": {
+										borderColor: "transparent",
+									},
+									"&:hover fieldset": {
+										borderColor: "transparent",
+									},
+									"&.Mui-focused fieldset": {
+										borderColor: "transparent",
+									},
+								},
+							}}
+							disabled={emoji !== '' || previewImages.length !== 0}
+							value={message}
+							onChange={handleMessage}
+						/>
+						<IconButton
+							onClick={handleSendMessage}
+							type="submit"
+						>
+							<SendOutlinedIcon
+								sx={{ color: "primary.main", fontSize: "20px" }}
+							/>
+						</IconButton>
+					</Box>
 					{emoji !== "" && (
 						<Box sx={{ backgroundColor: "gray", pl: 1 }}>
 							Emoji: {String.fromCodePoint(parseInt(emoji, 16))}{" "}

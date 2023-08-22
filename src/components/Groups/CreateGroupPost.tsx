@@ -183,6 +183,7 @@ export default function CreateGroupPost({
 
             setPost(updatedPost);
             clearState();
+            handleCloseCratePost();
             PopupAlert("Content was posted successfully", "success");
         } catch (error) {
             console.error("Error adding post: ", error);

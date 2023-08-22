@@ -41,7 +41,7 @@ export default function Blog() {
 	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "posts"),
-			where("owner", "==", userInfo.uid),
+			where("owner", "==", userId),
 			orderBy("createAt", "desc")
 		);
 		const unsubscribe = onSnapshot(
@@ -75,7 +75,7 @@ export default function Blog() {
 			unsubscribe();
 			eventUnsubscribe();
 		};
-	}, [userInfo.uid]);
+	}, [userId]);
 
 	useEffect(() => {
 		const queryData = query(

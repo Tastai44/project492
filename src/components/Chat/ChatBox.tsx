@@ -280,78 +280,72 @@ export default function ChatBox(props: IFunction & IData) {
 							}
 						/>
 					</Box>
-					<form onSubmit={handleSendMessage}>
-						<Box
-							sx={{
-								height: "50%",
-								display: "flex",
-								justifyContent: "space-between",
-								alignItems: "center",
-								alignContent: "center",
-								mt: 1
-							}}
-						>
-							<Box sx={{ width: "30%" }}>
-								<IconButton size="large" onClick={handleUploadClick}>
-									<input
-										type="file"
-										ref={fileInputRef}
-										onChange={handleFileChange}
-										multiple
-										hidden
-									/>
-									<CameraAltOutlinedIcon
-										sx={{ color: "primary.main", fontSize: "20px" }}
-									/>
-								</IconButton>
-								<IconButton onClick={handletOpenEmoji}>
-									<EmojiEmotionsIcon
-										sx={{ color: "primary.main", fontSize: "20px" }}
-									/>
-								</IconButton>
-							</Box>
-							<TextField
-								size="small"
-								name="message"
-								variant="outlined"
-								multiline
-								maxRows={1}
-								sx={{
-									borderRadius: "10px",
-									backgroundColor: "primary.contrastText",
-									overflow: "auto",
-									width: "100%",
-									"& .MuiOutlinedInput-root": {
-										"& fieldset": {
-											borderColor: "transparent",
-										},
-										"&:hover fieldset": {
-											borderColor: "transparent",
-										},
-										"&.Mui-focused fieldset": {
-											borderColor: "transparent",
-										},
-									},
-								}}
-								disabled={emoji !== '' || previewImages.length !== 0}
-								value={message}
-								onChange={handleMessage}
-								onKeyDown={(event) => {
-									if (event.key === "Enter" && !event.shiftKey) {
-										event.preventDefault();
-										handleSendMessage();
-									}
-								}}
-							/>
-							<IconButton
-								type="submit"
-							>
-								<SendOutlinedIcon
+					<Box
+						sx={{
+							height: "10%",
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+							alignContent: "center",
+							mt: 1,
+						}}
+					>
+						<Box sx={{ width: "30%" }}>
+							<IconButton size="large" onClick={handleUploadClick}>
+								<input
+									type="file"
+									ref={fileInputRef}
+									onChange={handleFileChange}
+									multiple
+									hidden
+								/>
+								<CameraAltOutlinedIcon
+									sx={{ color: "primary.main", fontSize: "20px" }}
+								/>
+							</IconButton>
+							<IconButton onClick={handletOpenEmoji}>
+								<EmojiEmotionsIcon
 									sx={{ color: "primary.main", fontSize: "20px" }}
 								/>
 							</IconButton>
 						</Box>
-					</form>
+						<TextField
+							size="small"
+							name="message"
+							variant="outlined"
+							multiline
+							maxRows={1}
+							sx={{
+								borderRadius: "10px",
+								height: "40px",
+								backgroundColor: "primary.contrastText",
+								overflow: "auto",
+								width: "100%",
+								"& .MuiOutlinedInput-root": {
+									"& fieldset": {
+										borderColor: "transparent",
+									},
+									"&:hover fieldset": {
+										borderColor: "transparent",
+									},
+									"&.Mui-focused fieldset": {
+										borderColor: "transparent",
+									},
+								},
+							}}
+							disabled={emoji !== '' || previewImages.length !== 0}
+							value={message}
+							onChange={handleMessage}
+						/>
+						<IconButton
+							onClick={handleSendMessage}
+							type="submit"
+						>
+							<SendOutlinedIcon
+								sx={{ color: "primary.main", fontSize: "20px" }}
+							/>
+						</IconButton>
+					</Box>
 
 					{emoji !== "" && (
 						<Box sx={{ backgroundColor: "gray", pl: 1, display: "flex", alignItems: "center", justifyContent: "space-between" }}>

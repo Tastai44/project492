@@ -21,6 +21,7 @@ export interface GroupMessage {
 	content: Conversation[];
 	participants: string[];
 	createAt: Timestamp;
+	receiverId: string;
 	timestamp: string;
 }
 
