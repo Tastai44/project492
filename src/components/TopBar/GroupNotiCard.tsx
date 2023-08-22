@@ -5,6 +5,7 @@ import { collection, where, onSnapshot, query, updateDoc, doc } from 'firebase/f
 import { dbFireStore } from '../../config/firebase';
 import { User } from '../../interface/User';
 import GroupChatBox from '../GroupChat/GroupChatBox';
+import { IGroup } from '../../interface/Group';
 
 interface IData {
     message: string;
@@ -17,6 +18,7 @@ interface IData {
 
 export default function GroupNotiCard(props: IData) {
     const [inFoUser, setInFoUser] = useState<User[]>([]);
+    const [inFoGroup, setInFoGroup] = useState<IGroup[]>([]);
     const [openChat, setOpenChat] = useState(false);
     const [senderId, setSenderId] = useState("");
 
@@ -39,6 +41,26 @@ export default function GroupNotiCard(props: IData) {
             unsubscribe();
         };
     }, [props.senderId]);
+
+    useMemo(() => {
+        const queryData = query(
+            collection(dbFireStore, "groups"),
+            where("gId", "==", props.groupId)
+        );
+        const unsubscribe = onSnapshot(
+            queryData,
+            (snapshot) => {
+                const queriedData = snapshot.docs.map((doc) => doc.data() as IGroup);
+                setInFoGroup(queriedData);
+            },
+            (error) => {
+                console.error("Error fetching data: ", error);
+            }
+        );
+        return () => {
+            unsubscribe();
+        };
+    }, [props.groupId]);
 
     const handleReaded = async () => {
         const messageNotification = collection(dbFireStore, "groupMessageNotications");
@@ -101,7 +123,8 @@ export default function GroupNotiCard(props: IData) {
                             fontWeight="bold"
                         >
                             {`${inFoUser.find((user) => user.firstName)?.firstName} ${inFoUser.find((user) => user.lastName)?.lastName
-                                }`}
+                                } (${inFoGroup.find((group) => group.groupName)?.groupName})`
+                            }
                         </Typography>
                     }
                     secondary={
