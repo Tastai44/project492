@@ -149,7 +149,7 @@ export default function SearchContent(props: IData) {
                                     (item) =>
                                         (item.status === "Public" && item.groupName.includes(searchValue)) ||
                                         (item.hostId === userInfo.uid) ||
-                                        (item.members.some((member) => member.memberId === userInfo.uid && item.groupName.includes(searchValue)))
+                                        (item.members.some((member) => member === userInfo.uid && item.groupName.includes(searchValue)))
                                 )
                                 .map((g) => (
                                     <NavLink key={g.gId} to={`/groupDetail/${g.gId}`}>
