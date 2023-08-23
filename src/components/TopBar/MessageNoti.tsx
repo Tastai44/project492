@@ -18,7 +18,12 @@ interface IData {
 }
 
 export default function MessageNoti(props: IData) {
-
+    const combinedNotifications = [...props.messageNoti, ...props.groupMessageNoti];
+    combinedNotifications.sort((a, b) => {
+        const dateA = new Date(a.dateCreated).getTime();
+        const dateB = new Date(b.dateCreated).getTime();
+        return dateB - dateA;
+    });
     return (
         <Box>
             <Menu
@@ -77,32 +82,32 @@ export default function MessageNoti(props: IData) {
                     Messages
                 </MenuItem>
                 <Divider style={{ background: "white" }} />
-                {props.messageNoti.length !== 0 && (
-                    props.messageNoti.map((message) => (
-                        <NotiCard
-                            key={message.notiId}
-                            message={message.message}
-                            dateCreated={message.dateCreated}
-                            senderId={message.senderId}
-                            notiId={message.notiId}
-                            isRead={message.isRead}
-                        />
-                    ))
-                )}
-
-                {props.groupMessageNoti.length !== 0 && (
-                    props.groupMessageNoti.map((message) => (
-                        <GroupNotiCard
-                            key={message.notiId}
-                            message={message.message}
-                            dateCreated={message.dateCreated}
-                            senderId={message.senderId}
-                            notiId={message.notiId}
-                            groupId={message.groupId}
-                            isRead={message.isRead}
-                        />
-                    ))
-                )}
+                {combinedNotifications.map((message) => {
+                    if ("groupId" in message) {
+                        return (
+                            <GroupNotiCard
+                                key={message.notiId}
+                                message={message.message}
+                                dateCreated={message.dateCreated}
+                                senderId={message.senderId}
+                                notiId={message.notiId}
+                                groupId={message.groupId}
+                                isRead={message.isRead}
+                            />
+                        );
+                    } else {
+                        return (
+                            <NotiCard
+                                key={message.notiId}
+                                message={message.message}
+                                dateCreated={message.dateCreated}
+                                senderId={message.senderId}
+                                notiId={message.notiId}
+                                isRead={message.isRead}
+                            />
+                        );
+                    }
+                })}
             </Menu>
         </Box>
     );

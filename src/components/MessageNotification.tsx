@@ -57,7 +57,7 @@ export const createGroupMessageNoti = async (
     querySnapshot.forEach((doc) => {
         const data = doc.data();
         if (
-            (data.receiverId === groupId && data.senderId == senderId)
+            (data.groupId === groupId && data.senderId == senderId)
         ) {
             notiId = data.notiId;
         }

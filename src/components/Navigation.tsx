@@ -174,7 +174,7 @@ export default function Navigation() {
 		if (groupData.flatMap((group) => group.members).length !== 0) {
 			const queryData = query(
 				collection(dbFireStore, "groupMessageNotications"),
-				where("receiverId", "==", groupData.flatMap((group) => group.members)),
+				where("receiverId", "array-contains", userInfo.uid),
 				orderBy("createAt", "desc"),
 				limit(5)
 			);
@@ -192,7 +192,7 @@ export default function Navigation() {
 				unsubscribe();
 			};
 		}
-	}, [groupData]);
+	}, [groupData, userInfo.uid]);
 
 	useEffect(() => {
 		const messageNumber = messageNoti?.filter((messNoti) => !messNoti.isRead).length;
