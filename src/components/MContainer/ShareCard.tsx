@@ -66,13 +66,10 @@ interface IFunction {
 export default function ShareCard(props: IData & IFunction) {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const [searchValue, setValue] = useState("");
-    const rows = props.friendList.map((row, index) => ({
-        id: `${row.friendId}_${index}`,
-        uid: row.friendId,
-        username: row.username,
-        profilePhoto: row.profilePhoto,
-    }));
-    const [gruopRow, setGroupRow] = useState<IShare[]>();
+    const [groupData, setGroupData] = useState<IGroup[]>([]);
+    const [status, setStatus] = useState("Private");
+    const [rows, setRows] = useState<IShare[]>([]);
+
     useEffect(() => {
         const fetchData = query(
             collection(dbFireStore, "groups"),
@@ -83,12 +80,7 @@ export default function ShareCard(props: IData & IFunction) {
             fetchData,
             (snapshot) => {
                 const queriedData = snapshot.docs.map((doc) => doc.data() as IGroup);
-                setGroupRow(queriedData.map((group, index) => ({
-                    id: `${group.gId}_${index}`,
-                    uid: group.gId,
-                    username: group.groupName,
-                    profilePhoto: group.coverPhoto,
-                })));
+                setGroupData(queriedData);
             },
             (error) => {
                 console.error("Error fetching data", error);
@@ -99,7 +91,25 @@ export default function ShareCard(props: IData & IFunction) {
         };
     }, [userInfo.uid]);
 
-    const [status, setStatus] = useState("Public");
+    useEffect(() => {
+        if (status == "Friend") {
+            const rows = props.friendList.map((row, index) => ({
+                id: `${row.friendId}_${index}`,
+                uid: row.friendId,
+                username: row.username,
+                profilePhoto: row.profilePhoto,
+            }));
+            setRows(rows);
+        } else if (status == "Group") {
+            setRows(groupData.flatMap((group, index) => ({
+                id: `${group.gId}_${index}`,
+                uid: group.gId,
+                username: group.groupName,
+                profilePhoto: group.coverPhoto,
+            })));
+        }
+    }, [groupData, props.friendList, status]);
+
     const handleChange = (event: SelectChangeEvent) => {
         setStatus(event.target.value as string);
     };
@@ -143,7 +153,7 @@ export default function ShareCard(props: IData & IFunction) {
                     for (let i = 0; i < filterRowsData.length; i++) {
                         const updateShare = {
                             shareBy: userInfo.uid,
-                            shareTo: status === "Friend" ? filterRowsData[i].uid : "",
+                            shareTo: status === "Friend" || status === "Group" ? filterRowsData[i].uid : "",
                             status: status,
                             createdAt: new Date().toLocaleString(),
                         };
@@ -200,7 +210,7 @@ export default function ShareCard(props: IData & IFunction) {
                     for (let i = 0; i < filterRowsData.length; i++) {
                         const updatedEvent = {
                             shareBy: userInfo.uid,
-                            shareTo: status === "Friend" ? filterRowsData[i].uid : "",
+                            shareTo: status === "Friend" || status === "Group" ? filterRowsData[i].uid : "",
                             status: status,
                             createdAt: new Date().toLocaleString(),
                         };
@@ -355,7 +365,7 @@ export default function ShareCard(props: IData & IFunction) {
                         sx={{ minHeight: 100, height: 300, maxHeight: 500, width: "100%" }}
                     >
                         <DataGrid
-                            rows={gruopRow ?? []}
+                            rows={rows ?? []}
                             columns={columns}
                             rowSelectionModel={selectedRows}
                             onRowSelectionModelChange={handleSelectionModelChange}

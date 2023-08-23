@@ -15,6 +15,7 @@ import { User } from "../../interface/User";
 import PostGroupForm from "../../components/Groups/PostGroupForm";
 import { Post } from "../../interface/PostContent";
 import Content from "../../components/Report/Content";
+import ShareContent from "../Profile/ShareContent";
 
 export default function GroupDetails() {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
@@ -79,6 +80,28 @@ export default function GroupDetails() {
             (snapshot) => {
                 const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
                 setPostData(queriedData);
+            },
+            (error) => {
+                console.error("Error fetching data:", error);
+            }
+        );
+        return () => {
+            unsubscribe();
+        };
+    }, [groupId]);
+
+    const [shareGroupPost, setShareGroupPost] = useState<Post[]>([]);
+    useEffect(() => {
+        const queryPostData = query(
+            collection(dbFireStore, "posts"),
+            where("participants", "array-contains", groupId),
+            orderBy("createAt", "desc")
+        );
+        const unsubscribe = onSnapshot(
+            queryPostData,
+            (snapshot) => {
+                const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
+                setShareGroupPost(queriedData);
             },
             (error) => {
                 console.error("Error fetching data:", error);
@@ -166,8 +189,17 @@ export default function GroupDetails() {
                                                                         </Box>
                                                                     ))
                                                                 ) : type == "Share" ? (
-                                                                    postData.map((m) => (
+                                                                    shareGroupPost.map((m) => (
                                                                         <Box key={m.id}>
+                                                                            <ShareContent
+                                                                                userId={g.gId}
+                                                                                postId={m.id}
+                                                                                shareUsers={m.shareUsers.filter(
+                                                                                    (share) =>
+                                                                                    (share.status == "Group" &&
+                                                                                        share.shareBy == m.shareUsers.find((share) => share.shareBy)?.shareBy)
+                                                                                )}
+                                                                            />
                                                                             <MContainer
                                                                                 owner={m.owner}
                                                                                 postId={m.id}
