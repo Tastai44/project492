@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import MContainer from "../components/MContainer/MContainer";
 import PostForm from "../components/MContainer/PostForm";
 import Box from "@mui/material/Box";
@@ -11,9 +11,9 @@ import { Item } from "../App";
 
 export default function HomeFeed() {
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-	const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-	const [postData, setPostData] = React.useState<Post[]>([]);
-	React.useEffect(() => {
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	const [postData, setPostData] = useState<Post[]>([]);
+	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "posts"),
 			orderBy("createAt", "desc")
@@ -35,7 +35,7 @@ export default function HomeFeed() {
 		};
 	}, []);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "users"),
 			where("uid", "==", userInfo.uid)
@@ -63,10 +63,10 @@ export default function HomeFeed() {
 			<Item sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
 				{postData
 					.filter(
-						(post) => post.status == "Friend" || post.status == "Public" ||
+						(post) => post.status == "Public" || (post.status == "Friend" &&
 							inFoUser.some((user) =>
-								user.friendList?.some((friend) => friend.friendId == post.owner)
-							) || post.owner === userInfo.uid
+								user.friendList?.some((friend) => friend.friendId == post.owner))
+						) || post.owner === userInfo.uid
 					)
 					.map((m) => (
 						<Box key={m.id}>
