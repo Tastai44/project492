@@ -1,5 +1,4 @@
 import { Box, CardMedia, Paper } from "@mui/material";
-import Luffy from "/images/Luffy.webp";
 
 export default function HeldMap() {
     return (
@@ -48,7 +47,7 @@ export default function HeldMap() {
                     <CardMedia
                         component="img"
                         height={155}
-                        image={Luffy}
+                        image={""}
                         alt="Host"
                     />
                 </Box>
