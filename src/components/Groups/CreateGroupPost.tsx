@@ -1,8 +1,8 @@
 import { useState, useRef, ChangeEvent, useEffect } from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import {
     Avatar,
+    Box,
+    Button,
     IconButton,
     InputLabel,
     ListItem,
@@ -13,6 +13,7 @@ import {
     MenuItem,
     ImageList,
     ImageListItem,
+    Typography
 } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
@@ -33,6 +34,7 @@ import { User } from "../../interface/User";
 import { collection, query, getDocs, where, setDoc } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import { createNoti } from "../NotificationFunction";
+import LocationCard from "../MContainer/LocationCard";
 
 const styleBoxPop = {
     position: "absolute",
@@ -60,6 +62,7 @@ export default function CreateGroupPost({
     groupName,
     groupId
 }: IHandle & IData) {
+    const [location, setLocation] = useState("");
     const [status, setStatus] = useState("");
     const handleChange = (event: SelectChangeEvent) => {
         setStatus(event.target.value as string);
@@ -72,7 +75,10 @@ export default function CreateGroupPost({
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [previewImages, setPreviewImages] = useState<string[]>([]);
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-
+    const [openLocation, setOpenLocation] = useState(false);
+    const handletOpenLocation = () => setOpenLocation(true);
+    const handletSaveLocation = () => setOpenLocation(false);
+    const handleCloseLocation = () => setOpenLocation(false);
     const handleClearImage = () => {
         setPreviewImages([]);
     };
@@ -219,6 +225,16 @@ export default function CreateGroupPost({
         fetchData();
     }, [userInfo.uid]);
 
+    const handleChangeLocation = (
+        _event: ChangeEvent<unknown>,
+        newValue: string | null
+    ) => {
+        if (newValue) {
+            setLocation(newValue);
+            handleCloseLocation();
+        }
+    };
+
     return (
         <div>
             <Modal
@@ -234,6 +250,13 @@ export default function CreateGroupPost({
                     />
                 </Box>
             </Modal>
+            <LocationCard
+                openLocation={openLocation}
+                location={location}
+                handleCloseLocation={handleCloseLocation}
+                handletSaveLocation={handletSaveLocation}
+                handleChangeLocation={handleChangeLocation}
+            />
             <Box sx={styleBoxPop}>
                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                     <Box
@@ -330,6 +353,9 @@ export default function CreateGroupPost({
                         value={post.caption}
                         onChange={handleChangePost}
                     />
+                    <Typography sx={{ color: "red", ml: 2, mb: 1 }}>
+                        {location ? <><b>Location:</b> {location}</> : ""}
+                    </Typography>
                     <TextField
                         name="hashTagTopic"
                         id="outlined-basic"
@@ -368,7 +394,7 @@ export default function CreateGroupPost({
                                     <InsertPhotoIcon sx={{ color: "green" }} />
                                 </IconButton>
                             </Box>
-                            <IconButton size="large">
+                            <IconButton onClick={handletOpenLocation} size="large">
                                 <LocationOnIcon color="error" />
                             </IconButton>
                             <IconButton onClick={handletOpenEmoji} size="large">

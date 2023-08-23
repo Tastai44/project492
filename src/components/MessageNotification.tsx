@@ -32,6 +32,7 @@ export const createMessageNoti = async (
             await updateDoc(notiDocRef, {
                 isRead: false,
                 message: message,
+                dateCreated: new Date().toLocaleString(),
             });
         } else {
             const docRef = doc(messageNotiCollection);

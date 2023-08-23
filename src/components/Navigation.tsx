@@ -24,7 +24,6 @@ import {
 	updateDoc,
 	onSnapshot,
 	orderBy,
-	limit
 } from "firebase/firestore";
 import { dbFireStore } from "../config/firebase";
 import UserMenu from "./TopBar/UserMenu";
@@ -131,7 +130,6 @@ export default function Navigation() {
 			collection(dbFireStore, "notifications"),
 			where("receiverId", "array-contains", userInfo.uid),
 			orderBy("createAt", "desc"),
-			limit(5)
 		);
 		const unsubscribe = onSnapshot(
 			queryData,
@@ -153,7 +151,6 @@ export default function Navigation() {
 			collection(dbFireStore, "messageNotifications"),
 			where("receiverId", "==", userInfo.uid),
 			orderBy("createAt", "desc"),
-			limit(5)
 		);
 		const unsubscribe = onSnapshot(
 			queryData,
@@ -176,7 +173,6 @@ export default function Navigation() {
 				collection(dbFireStore, "groupMessageNotications"),
 				where("receiverId", "array-contains", userInfo.uid),
 				orderBy("createAt", "desc"),
-				limit(5)
 			);
 			const unsubscribe = onSnapshot(
 				queryData,
