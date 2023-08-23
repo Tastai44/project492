@@ -73,51 +73,55 @@ export default function ReportContent() {
 				</Item>
 				<Box sx={{ display: "flex", justifyContent: "center" }}>
 					<Grid item xs={10}>
-						{
-							searchValue == "" ? (
-								postData
-									.filter((item) => item.reportPost.length !== 0)
-									.map((post) => (
-										<Content
-											key={post.id}
-											owner={post.owner}
-											postId={post.id}
-											caption={post.caption}
-											hashTagTopic={post.hashTagTopic}
-											status={post.status}
-											createAt={post.createAt}
-											emoji={post.emoji}
-											photoPost={post.photoPost}
-											groupName={post.groupName}
-											groupId={post.groupId}
-											reportNumber={post.reportPost.length}
-											reFreshInfo={0}
-											reportPost={post.reportPost}
-										/>
-									))
-							) : (
-								postData
-									.filter((item) => item.reportPost.length !== 0 && item.caption.includes(searchValue))
-									.map((post) => (
-										<Content
-											key={post.id}
-											owner={post.owner}
-											postId={post.id}
-											caption={post.caption}
-											hashTagTopic={post.hashTagTopic}
-											status={post.status}
-											createAt={post.createAt}
-											emoji={post.emoji}
-											photoPost={post.photoPost}
-											groupName={post.groupName}
-											groupId={post.groupId}
-											reportNumber={post.reportPost.length}
-											reFreshInfo={0}
-											reportPost={post.reportPost}
-										/>
-									))
-							)
-						}
+						{searchValue == ""
+							? postData
+								.filter(
+									(item) =>
+										item.reportPost.length !== 0 && item.status !== "Private"
+								)
+								.map((post) => (
+									<Content
+										key={post.id}
+										owner={post.owner}
+										postId={post.id}
+										caption={post.caption}
+										hashTagTopic={post.hashTagTopic}
+										status={post.status}
+										createAt={post.createAt}
+										emoji={post.emoji}
+										photoPost={post.photoPost}
+										groupName={post.groupName}
+										groupId={post.groupId}
+										reportNumber={post.reportPost.length}
+										reFreshInfo={0}
+										reportPost={post.reportPost}
+									/>
+								))
+							: postData
+								.filter(
+									(item) =>
+										item.reportPost.length !== 0 &&
+										item.status !== "Private" &&
+										item.caption.includes(searchValue)
+								)
+								.map((post) => (
+									<Content
+										key={post.id}
+										owner={post.owner}
+										postId={post.id}
+										caption={post.caption}
+										hashTagTopic={post.hashTagTopic}
+										status={post.status}
+										createAt={post.createAt}
+										emoji={post.emoji}
+										photoPost={post.photoPost}
+										groupName={post.groupName}
+										groupId={post.groupId}
+										reportNumber={post.reportPost.length}
+										reFreshInfo={0}
+										reportPost={post.reportPost}
+									/>
+								))}
 
 						{eventData
 							.filter((item) => item.reportEvent.length !== 0)
@@ -137,8 +141,8 @@ export default function ReportContent() {
 								/>
 							))}
 
-						{(eventData.flatMap((e) => e.reportEvent).length == 0 &&
-							postData.flatMap((s) => s.reportPost).length == 0) && (
+						{eventData.flatMap((e) => e.reportEvent).length == 0 &&
+							postData.flatMap((s) => s.reportPost).length == 0 && (
 								<Typography variant="h4" sx={{ color: "black" }}>
 									There is no report content.
 								</Typography>

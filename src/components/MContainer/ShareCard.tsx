@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
 import { styleTable } from "../../utils/styleBox";
 import {
@@ -20,11 +20,13 @@ import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
-import { collection, updateDoc, doc, arrayUnion, getDoc } from "firebase/firestore";
+import { collection, updateDoc, doc, arrayUnion, getDoc, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import SearchBar from "../../helper/SearchBar";
 import { createNoti } from "../NotificationFunction";
 import { Post } from "../../interface/PostContent";
+import Diversity3Icon from "@mui/icons-material/Diversity3";
+import { IGroup, IShare } from "../../interface/Group";
 
 const columns: GridColDef[] = [
     { field: "id", headerName: "ID", flex: 1 },
@@ -70,8 +72,34 @@ export default function ShareCard(props: IData & IFunction) {
         username: row.username,
         profilePhoto: row.profilePhoto,
     }));
+    const [gruopRow, setGroupRow] = useState<IShare[]>();
+    useEffect(() => {
+        const fetchData = query(
+            collection(dbFireStore, "groups"),
+            where("members", "array-contains", userInfo.uid),
+            orderBy("createAt", "desc")
+        );
+        const unsubscribe = onSnapshot(
+            fetchData,
+            (snapshot) => {
+                const queriedData = snapshot.docs.map((doc) => doc.data() as IGroup);
+                setGroupRow(queriedData.map((group, index) => ({
+                    id: `${group.gId}_${index}`,
+                    uid: group.gId,
+                    username: group.groupName,
+                    profilePhoto: group.coverPhoto,
+                })));
+            },
+            (error) => {
+                console.error("Error fetching data", error);
+            }
+        );
+        return () => {
+            unsubscribe();
+        };
+    }, [userInfo.uid]);
 
-    const [status, setStatus] = useState("");
+    const [status, setStatus] = useState("Public");
     const handleChange = (event: SelectChangeEvent) => {
         setStatus(event.target.value as string);
     };
@@ -102,7 +130,7 @@ export default function ShareCard(props: IData & IFunction) {
 
             //Strill wrong
             const existingShareIndex = post.shareUsers.findIndex(
-                (share) => (share.shareBy === userInfo.uid && share.shareTo === userInfo.uid)
+                (share) => (share.shareBy === userInfo.uid && share.shareTo === userInfo.uid, share.status == status)
             );
 
             if (existingShareIndex !== -1) {
@@ -128,6 +156,7 @@ export default function ShareCard(props: IData & IFunction) {
                             shareUsers: arrayUnion(updateShare),
                         });
                     }
+                    props.handleCloseShare();
                     PopupAlert("Share successfully", "success");
                 } catch (error) {
                     console.error("Error share", error);
@@ -149,6 +178,7 @@ export default function ShareCard(props: IData & IFunction) {
                         ...props.friendList?.flatMap((friend) => friend.friendId) || []
                     ]
                 );
+                props.handleCloseShare();
                 PopupAlert("Share successfully", "success");
             }
         } catch (error) {
@@ -257,6 +287,17 @@ export default function ShareCard(props: IData & IFunction) {
                                         <GroupIcon /> Friend
                                     </Box>
                                 </MenuItem>
+                                <MenuItem value={"Group"}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignContent: "end",
+                                            gap: 0.5,
+                                        }}
+                                    >
+                                        <Diversity3Icon /> Group
+                                    </Box>
+                                </MenuItem>
                                 <MenuItem value={"Public"}>
                                     <Box
                                         sx={{
@@ -278,13 +319,19 @@ export default function ShareCard(props: IData & IFunction) {
                 </Box>
                 <Divider sx={{ background: "grey", mb: 1 }} />
 
-                {status === "Public" || status === "Private" || status === "" ? (
+                {status === "Public" || status === "Private" ? (
+                    <Typography sx={{ color: "black" }}>
+                        {status == "Private" ? `This content will present only on your feed` : `This content will present on public feed`}
+                    </Typography>
+                ) : status === "Friend" ? (
                     <Box
                         sx={{ minHeight: 100, height: 300, maxHeight: 500, width: "100%" }}
                     >
                         <DataGrid
-                            rows={[]}
+                            rows={rows}
                             columns={columns}
+                            rowSelectionModel={selectedRows}
+                            onRowSelectionModelChange={handleSelectionModelChange}
                             initialState={{
                                 pagination: {
                                     paginationModel: {
@@ -308,7 +355,7 @@ export default function ShareCard(props: IData & IFunction) {
                         sx={{ minHeight: 100, height: 300, maxHeight: 500, width: "100%" }}
                     >
                         <DataGrid
-                            rows={rows}
+                            rows={gruopRow ?? []}
                             columns={columns}
                             rowSelectionModel={selectedRows}
                             onRowSelectionModelChange={handleSelectionModelChange}

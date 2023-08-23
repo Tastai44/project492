@@ -13,3 +13,10 @@ export interface IGroup {
 	createAt: string;
 	updateAt?: string;
 }
+
+export interface IShare {
+	id: string;
+	uid: string;
+	username: string;
+	profilePhoto?: string;
+}

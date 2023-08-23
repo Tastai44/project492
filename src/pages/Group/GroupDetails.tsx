@@ -14,6 +14,7 @@ import { IGroup } from "../../interface/Group";
 import { User } from "../../interface/User";
 import PostGroupForm from "../../components/Groups/PostGroupForm";
 import { Post } from "../../interface/PostContent";
+import Content from "../../components/Report/Content";
 
 export default function GroupDetails() {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
@@ -140,28 +141,77 @@ export default function GroupDetails() {
                                                             />
                                                         </Item>
                                                         <Item>
-                                                            {postData.map((m) => (
-                                                                <Box key={m.id}>
-                                                                    <MContainer
-                                                                        owner={m.owner}
-                                                                        postId={m.id}
-                                                                        caption={m.caption}
-                                                                        hashTagTopic={m.hashTagTopic}
-                                                                        status={m.status}
-                                                                        createAt={m.createAt}
-                                                                        emoji={m.emoji}
-                                                                        photoPost={m.photoPost}
-                                                                        likeNumber={m.likes.length}
-                                                                        likes={m.likes}
-                                                                        commentNumber={m.comments.length}
-                                                                        groupName={m.groupName}
-                                                                        groupId={m.groupId}
-                                                                        shareUsers={m.shareUsers}
-                                                                        userInfo={inFoUser}
-                                                                        location={m.location}
-                                                                    />
-                                                                </Box>
-                                                            ))}
+                                                            {
+                                                                type == "General" ? (
+                                                                    postData.map((m) => (
+                                                                        <Box key={m.id}>
+                                                                            <MContainer
+                                                                                owner={m.owner}
+                                                                                postId={m.id}
+                                                                                caption={m.caption}
+                                                                                hashTagTopic={m.hashTagTopic}
+                                                                                status={m.status}
+                                                                                createAt={m.createAt}
+                                                                                emoji={m.emoji}
+                                                                                photoPost={m.photoPost}
+                                                                                likeNumber={m.likes.length}
+                                                                                likes={m.likes}
+                                                                                commentNumber={m.comments.length}
+                                                                                groupName={m.groupName}
+                                                                                groupId={m.groupId}
+                                                                                shareUsers={m.shareUsers}
+                                                                                userInfo={inFoUser}
+                                                                                location={m.location}
+                                                                            />
+                                                                        </Box>
+                                                                    ))
+                                                                ) : type == "Share" ? (
+                                                                    postData.map((m) => (
+                                                                        <Box key={m.id}>
+                                                                            <MContainer
+                                                                                owner={m.owner}
+                                                                                postId={m.id}
+                                                                                caption={m.caption}
+                                                                                hashTagTopic={m.hashTagTopic}
+                                                                                status={m.status}
+                                                                                createAt={m.createAt}
+                                                                                emoji={m.emoji}
+                                                                                photoPost={m.photoPost}
+                                                                                likeNumber={m.likes.length}
+                                                                                likes={m.likes}
+                                                                                commentNumber={m.comments.length}
+                                                                                groupName={m.groupName}
+                                                                                groupId={m.groupId}
+                                                                                shareUsers={m.shareUsers}
+                                                                                userInfo={inFoUser}
+                                                                                location={m.location}
+                                                                            />
+                                                                        </Box>
+                                                                    ))
+                                                                ) : (
+                                                                    postData
+                                                                        .filter((item) => item.reportPost.length !== 0 && item.status == "Private")
+                                                                        .map((post) => (
+                                                                            <Content
+                                                                                key={post.id}
+                                                                                owner={post.owner}
+                                                                                postId={post.id}
+                                                                                caption={post.caption}
+                                                                                hashTagTopic={post.hashTagTopic}
+                                                                                status={post.status}
+                                                                                createAt={post.createAt}
+                                                                                emoji={post.emoji}
+                                                                                photoPost={post.photoPost}
+                                                                                groupName={post.groupName}
+                                                                                groupId={post.groupId}
+                                                                                reportNumber={post.reportPost.length}
+                                                                                reFreshInfo={0}
+                                                                                reportPost={post.reportPost}
+                                                                            />
+                                                                        ))
+                                                                )
+
+                                                            }
                                                         </Item>
                                                     </Grid>
                                                     <Grid item xs={2.5}>

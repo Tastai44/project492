@@ -1,6 +1,6 @@
-import * as React from 'react';
+import { useState, ChangeEvent } from "react";
 import { Box, Button, TextField } from "@mui/material";
-import { styleBox } from "../../utils/styleBox";
+import { styleBoxReport } from "../../utils/styleBox";
 import { PostReport } from '../../interface/PostContent';
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
@@ -27,12 +27,12 @@ export default function ReportCard(props: IFunction & IData) {
 		reason: "",
 		createAt: "",
 	};
-	const [report, setReport] = React.useState<PostReport>(initialPostState);
+	const [report, setReport] = useState<PostReport>(initialPostState);
 	const clearState = () => {
 		setReport({ ...initialPostState });
 	};
 	const handleChangeReport = (
-		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+		event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 	) => {
 		const { name, value } = event.target;
 		setReport((prevComment) => ({
@@ -63,10 +63,8 @@ export default function ReportCard(props: IFunction & IData) {
 			});
 	};
 
-
-
 	return (
-		<Box sx={styleBox}>
+		<Box sx={styleBoxReport}>
 			<Box sx={{ display: "flex", mb: 1 }}>
 				<Box
 					id="modal-modal-title"
