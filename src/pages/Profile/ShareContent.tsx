@@ -162,7 +162,7 @@ export default function ShareContent(props: Idata) {
 									(share) =>
 										(share.shareBy == userInfo.uid &&
 											share.shareTo == userInfo.uid) ||
-										(share.shareTo == userInfo.uid &&
+										(share.shareTo == userInfo.uid ||
 											share.shareTo == props.userId)
 								)
 							}

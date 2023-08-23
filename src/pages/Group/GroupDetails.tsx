@@ -189,37 +189,44 @@ export default function GroupDetails() {
                                                                         </Box>
                                                                     ))
                                                                 ) : type == "Share" ? (
-                                                                    shareGroupPost.map((m) => (
-                                                                        <Box key={m.id}>
-                                                                            <ShareContent
-                                                                                userId={g.gId}
-                                                                                postId={m.id}
-                                                                                shareUsers={m.shareUsers.filter(
-                                                                                    (share) =>
-                                                                                    (share.status == "Group" &&
-                                                                                        share.shareBy == m.shareUsers.find((share) => share.shareBy)?.shareBy)
-                                                                                )}
-                                                                            />
-                                                                            <MContainer
-                                                                                owner={m.owner}
-                                                                                postId={m.id}
-                                                                                caption={m.caption}
-                                                                                hashTagTopic={m.hashTagTopic}
-                                                                                status={m.status}
-                                                                                createAt={m.createAt}
-                                                                                emoji={m.emoji}
-                                                                                photoPost={m.photoPost}
-                                                                                likeNumber={m.likes.length}
-                                                                                likes={m.likes}
-                                                                                commentNumber={m.comments.length}
-                                                                                groupName={m.groupName}
-                                                                                groupId={m.groupId}
-                                                                                shareUsers={m.shareUsers}
-                                                                                userInfo={inFoUser}
-                                                                                location={m.location}
-                                                                            />
-                                                                        </Box>
-                                                                    ))
+                                                                    shareGroupPost.filter((f) =>
+                                                                        f.shareUsers.some(
+                                                                            (share) =>
+                                                                                share.shareTo == g.gId &&
+                                                                                share.status == "Group"
+                                                                        )
+                                                                    )
+                                                                        .map((m) => (
+                                                                            <Box key={m.id}>
+                                                                                <ShareContent
+                                                                                    userId={g.gId}
+                                                                                    postId={m.id}
+                                                                                    shareUsers={m.shareUsers.filter(
+                                                                                        (share) =>
+                                                                                        (share.status == "Group" &&
+                                                                                            share.shareBy == m.shareUsers.find((share) => share.shareBy)?.shareBy)
+                                                                                    )}
+                                                                                />
+                                                                                <MContainer
+                                                                                    owner={m.owner}
+                                                                                    postId={m.id}
+                                                                                    caption={m.caption}
+                                                                                    hashTagTopic={m.hashTagTopic}
+                                                                                    status={m.status}
+                                                                                    createAt={m.createAt}
+                                                                                    emoji={m.emoji}
+                                                                                    photoPost={m.photoPost}
+                                                                                    likeNumber={m.likes.length}
+                                                                                    likes={m.likes}
+                                                                                    commentNumber={m.comments.length}
+                                                                                    groupName={m.groupName}
+                                                                                    groupId={m.groupId}
+                                                                                    shareUsers={m.shareUsers}
+                                                                                    userInfo={inFoUser}
+                                                                                    location={m.location}
+                                                                                />
+                                                                            </Box>
+                                                                        ))
                                                                 ) : (
                                                                     postData
                                                                         .filter((item) => item.reportPost.length !== 0 && item.status == "Private")

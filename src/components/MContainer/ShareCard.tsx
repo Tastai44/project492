@@ -167,6 +167,7 @@ export default function ShareCard(props: IData & IFunction) {
                         });
                     }
                     props.handleCloseShare();
+                    setSelectedRows([]);
                     PopupAlert("Share successfully", "success");
                 } catch (error) {
                     console.error("Error share", error);

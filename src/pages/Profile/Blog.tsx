@@ -367,7 +367,7 @@ export default function Blog() {
 											</Item>
 										)
 									}
-									{data.length == 0 ||
+									{data.length == 0 &&
 										(eventData.filter((item) =>
 											item.shareUsers.some(
 												(share) =>
