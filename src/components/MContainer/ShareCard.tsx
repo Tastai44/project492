@@ -139,11 +139,16 @@ export default function ShareCard(props: IData & IFunction) {
             const post = postSnapshot.data() as Post;
 
             //Strill wrong
-            const existingShareIndex = post.shareUsers.findIndex(
-                (share) => (share.shareBy === userInfo.uid && share.shareTo === userInfo.uid, share.status == status)
+            const existingShareIndex = post.shareUsers.findIndex((share) => (
+                (share.shareBy === userInfo.uid && share.shareTo === userInfo.uid) &&
+                (status === "Private" || status === "Public")
+            ));
+
+            const existingShareFriend = post.shareUsers.some((share) => share.shareBy == userInfo.uid &&
+                filterRowsData.some((row) => row.uid == share.shareTo)
             );
 
-            if (existingShareIndex !== -1) {
+            if (existingShareIndex !== -1 || existingShareFriend) {
                 PopupAlert("Share already exists for this user and post", "warning");
                 return;
             }
@@ -181,6 +186,7 @@ export default function ShareCard(props: IData & IFunction) {
                 };
                 const postRef = doc(postsCollection, props.postId);
                 await updateDoc(postRef, {
+                    participants: arrayUnion(userInfo.uid),
                     shareUsers: arrayUnion(updateShare),
                 });
                 createNoti(
@@ -217,6 +223,7 @@ export default function ShareCard(props: IData & IFunction) {
                         };
                         const eventRef = doc(eventCollection, props.eventId);
                         await updateDoc(eventRef, {
+                            participants: arrayUnion(filterRowsData[i].uid),
                             shareUsers: arrayUnion(updatedEvent),
                         });
                     }
@@ -233,6 +240,7 @@ export default function ShareCard(props: IData & IFunction) {
                 };
                 const eventRef = doc(eventCollection, props.eventId);
                 await updateDoc(eventRef, {
+                    participants: arrayUnion(userInfo.uid),
                     shareUsers: arrayUnion(updatedEvent),
                 });
                 PopupAlert("Share successfully", "success");

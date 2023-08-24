@@ -80,7 +80,7 @@ export default function Blog() {
 	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "posts"),
-			where("participants", "array-contains", userInfo.uid),
+			where("participants", "array-contains", userId),
 			orderBy("createAt", "desc")
 		);
 		const unsubscribe = onSnapshot(
@@ -96,7 +96,7 @@ export default function Blog() {
 		return () => {
 			unsubscribe();
 		};
-	}, [userInfo.uid]);
+	}, [userId]);
 
 	useEffect(() => {
 		const queryData = query(
@@ -170,9 +170,8 @@ export default function Blog() {
 										sharePost.some((f) =>
 											f.shareUsers.some(
 												(share) =>
-													share.shareBy == userId &&
-													(share.status == "Private" ||
-														share.status == "Public")
+												((share.status == "Private" && (share.shareBy == userInfo.uid && share.shareTo == userInfo.uid)) ||
+													(share.shareBy == userId && share.status == "Public"))
 											)
 										) ? (
 											<Item
@@ -186,9 +185,8 @@ export default function Blog() {
 													.filter((f) =>
 														f.shareUsers.some(
 															(share) =>
-																share.shareBy == userId &&
-																(share.status == "Private" ||
-																	share.status == "Public")
+															((share.status == "Private" && (share.shareBy == userInfo.uid && share.shareTo == userInfo.uid)) ||
+																(share.shareBy == userId && share.status == "Public"))
 														)
 													)
 													.map((m) => (
@@ -279,9 +277,8 @@ export default function Blog() {
 										eventData.some((f) =>
 											f.shareUsers.some(
 												(share) =>
-													share.shareBy == userId &&
-													(share.status == "Private" ||
-														share.status == "Public")
+												((share.status == "Private" && (share.shareBy == userInfo.uid && share.shareTo == userInfo.uid)) ||
+													(share.shareBy == userId && share.status == "Public"))
 											)
 										) ? (
 											<Item
@@ -295,9 +292,8 @@ export default function Blog() {
 													.filter((f) =>
 														f.shareUsers.some(
 															(share) =>
-																share.shareBy == userId &&
-																(share.status == "Private" ||
-																	share.status == "Public")
+															((share.status == "Private" && (share.shareBy == userInfo.uid && share.shareTo == userInfo.uid)) ||
+																(share.shareBy == userId && share.status == "Public"))
 														)
 													)
 													.map((m) => (
