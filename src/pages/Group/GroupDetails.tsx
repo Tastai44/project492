@@ -116,6 +116,8 @@ export default function GroupDetails() {
         setType(event.target.value as string);
     };
 
+    const isHost = groupData.some((group) => group.hostId == userInfo.uid);
+
     return (
         <div>
             {groupData.map((g) => (
@@ -229,7 +231,7 @@ export default function GroupDetails() {
                                                                         ))
                                                                 ) : (
                                                                     postData
-                                                                        .filter((item) => item.reportPost.length !== 0 && item.status == "Private")
+                                                                        .filter((item) => item.reportPost.length !== 0 && item.status == "Private" && isHost)
                                                                         .map((post) => (
                                                                             <Content
                                                                                 key={post.id}
