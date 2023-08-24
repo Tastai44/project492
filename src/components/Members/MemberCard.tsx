@@ -90,13 +90,13 @@ export default function MemberCard(props: IData) {
                 friendList: arrayUnion(addFriend),
             })
                 .then(() => {
-                    addFriendOtherSide();
                     props.handleRefresh();
                     PopupAlert("Successfully added friend to the friendList", "success");
                 })
                 .catch((error) => {
                     console.error("Error adding friend to the friendList: ", error);
                 });
+            addFriendOtherSide();
         }
     };
     return (

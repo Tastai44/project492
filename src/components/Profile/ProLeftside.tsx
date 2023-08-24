@@ -230,12 +230,12 @@ export default function ProLeftside() {
 				friendList: arrayUnion(addFriend[0]),
 			})
 				.then(() => {
-					addFriendOtherSide();
 					PopupAlert("Successfully added friend to the friendList", "success");
 				})
 				.catch((error) => {
 					console.error("Error adding friend to the friendList: ", error);
 				});
+			addFriendOtherSide();
 		}
 	};
 
