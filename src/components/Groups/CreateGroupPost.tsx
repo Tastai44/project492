@@ -178,7 +178,7 @@ export default function CreateGroupPost({
 
             if (inFoUser.flatMap((user) => user.friendList).length !== 0) {
                 createNoti(
-                    postId, `posted ${post.caption}`, userInfo.uid, status,
+                    postId, ` posted ${post.caption}`, userInfo.uid, status,
                     [
                         ...inFoUser.flatMap((user) =>
                             user.friendList?.flatMap((friend) => friend.friendId) || []

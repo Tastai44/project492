@@ -206,7 +206,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
             if (inFoUser.flatMap((user) => user.friendList).length !== 0) {
                 createNoti(
                     eventId,
-                    `created an event ${event.title}`,
+                    ` created an event ${event.title}`,
                     userInfo.uid, status,
                     [
                         ...inFoUser.flatMap((user) =>

@@ -240,8 +240,8 @@ export default function NotificationList(props: IData) {
                                             color="black"
                                             fontWeight="bold"
                                         >
-                                            {`${inFoUser.find((user) => user.firstName)?.firstName} ${inFoUser.find((user) => user.lastName)?.lastName
-                                                }`}
+                                            {`${inFoUser.find((user) => user.firstName)?.firstName} 
+                                            ${inFoUser.find((user) => user.lastName)?.lastName} `}
                                         </Typography>
                                     }
                                     secondary={
@@ -256,7 +256,6 @@ export default function NotificationList(props: IData) {
                                                     {noti.actionMessage.substring(0, 30)}... <br />
                                                     to
                                                     <b>
-                                                        {" "}
                                                         {
                                                             inFoShareUser.find((shareTo) => shareTo.firstName)
                                                                 ?.firstName

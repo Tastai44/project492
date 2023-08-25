@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect, useRef, ChangeEvent } from "react";
 import {
 	Avatar,
 	Badge,
@@ -43,19 +43,20 @@ const Item = styled(Box)(({ theme }) => ({
 }));
 
 export default function ProLeftside() {
-	const [open, setOpen] = React.useState(false);
+	const [open, setOpen] = useState(false);
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
 
-	const [openPre, setOpenPre] = React.useState(false);
+	const [openPre, setOpenPre] = useState(false);
 	const handleOpenPre = () => setOpenPre(true);
 	const handleClosePre = () => setOpenPre(false);
 
 	const { userId } = useParams();
-	const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	const [loginUser, setLoginUser] = useState<User[]>([]);
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
-	React.useEffect(() => {
+	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "users"),
 			where("uid", "==", userId)
@@ -75,15 +76,35 @@ export default function ProLeftside() {
 		};
 	}, [userId]);
 
-	const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-	const [previewImages, setPreviewImages] = React.useState<string[]>([]);
+	useEffect(() => {
+		const queryData = query(
+			collection(dbFireStore, "users"),
+			where("uid", "==", userInfo.uid)
+		);
+		const unsubscribe = onSnapshot(
+			queryData,
+			(snapshot) => {
+				const queriedData = snapshot.docs.map((doc) => doc.data() as User);
+				setLoginUser(queriedData);
+			},
+			(error) => {
+				console.error("Error fetching data: ", error);
+			}
+		);
+		return () => {
+			unsubscribe();
+		};
+	}, [userInfo.uid]);
+
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
+	const [previewImages, setPreviewImages] = useState<string[]>([]);
 	const handleUploadClick = () => {
 		if (fileInputRef.current) {
 			fileInputRef.current.click();
 		}
 	};
 	const handleFileChange = async (
-		event: React.ChangeEvent<HTMLInputElement>
+		event: ChangeEvent<HTMLInputElement>
 	) => {
 		const files = event.target.files;
 		if (files) {
@@ -136,7 +157,7 @@ export default function ProLeftside() {
 	};
 
 	const unFriendOtherSide = async (id: string) => {
-		const IndexFriend = inFoUser.map((user) => user.friendList?.findIndex((index) => index.friendId === id)).flat();
+		const IndexFriend = loginUser.map((user) => user.friendList?.findIndex((index) => index.friendId === id)).flat();
 		try {
 			const q = query(collection(dbFireStore, "users"), where("uid", "==", userId));
 			const querySnapshot = await getDocs(q);
@@ -188,7 +209,7 @@ export default function ProLeftside() {
 	};
 
 	const addFriendOtherSide = async () => {
-		const addFriend: IFriendList[] = inFoUser.map((m) => ({
+		const addFriend: IFriendList[] = loginUser.map((m) => ({
 			status: true,
 			friendId: userInfo.uid,
 			username: m.firstName + m.lastName,
