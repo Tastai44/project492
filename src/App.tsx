@@ -345,9 +345,10 @@ function App() {
 								</Box>
 
 								<Box sx={{
-									width: "55%", [themeApp.breakpoints.down("md")]: {
+									width: "55%",
+									[themeApp.breakpoints.down("lg")]: {
 										width: "100%",
-									},
+									}
 								}}>
 									<Groups />
 								</Box>
