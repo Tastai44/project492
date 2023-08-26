@@ -218,7 +218,7 @@ export default function ReasonContainer(props: IData & IFunction) {
 											</Box>
 										</Item>
 									</Grid>
-									<Grid item xs={6}>
+									<Grid item xs={post.photoPost.length == 0 ? 12 : 6}>
 										<Item>
 											<Box sx={{ display: "flex", flexDirection: "column" }}>
 												<Box>
@@ -240,10 +240,10 @@ export default function ReasonContainer(props: IData & IFunction) {
 																		<b>{`${user.firstName} ${user.lastName} `}</b>
 																		{post.emoji && (
 																			<>
-																				is feeling
+																				is feeling{" "}
 																				{String.fromCodePoint(
 																					parseInt(post.emoji, 16)
-																				)}
+																				)}{" "}
 																				{convertEmojiCodeToName(
 																					post.emoji
 																				)?.toLocaleLowerCase()}

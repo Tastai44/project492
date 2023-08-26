@@ -204,8 +204,8 @@ export default function ReportContent(props: Idata) {
 												</b>
 												{props.emoji && (
 													<>
-														is feeling
-														{String.fromCodePoint(parseInt(props.emoji, 16))}
+														is feeling {" "}
+														{String.fromCodePoint(parseInt(props.emoji, 16))}{" "}
 														{convertEmojiCodeToName(
 															props.emoji
 														)?.toLocaleLowerCase()}

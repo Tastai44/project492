@@ -254,7 +254,7 @@ export default function NotificationList(props: IData) {
                                             {noti.actionTo ? (
                                                 <>
                                                     {noti.actionMessage.substring(0, 30)}... <br />
-                                                    to
+                                                    to{" "}
                                                     <b>
                                                         {
                                                             inFoShareUser.find((shareTo) => shareTo.firstName)

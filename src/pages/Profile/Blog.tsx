@@ -241,7 +241,7 @@ export default function Blog() {
 													.map((m) => (
 														<Box key={m.id}>
 															<ShareContent
-																userId={userId}
+																userId={m.shareUsers.find((user) => user.shareBy)?.shareBy}
 																postId={m.id}
 																shareUsers={m.shareUsers.filter(
 																	(share) =>
