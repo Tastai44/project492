@@ -35,19 +35,7 @@ import PopupAlert from "../PopupAlert";
 import { useState, useRef, ChangeEvent, useEffect } from "react";
 import LocationCard from "./LocationCard";
 import { User } from "../../interface/User";
-
-const styleBoxPop = {
-	position: "absolute",
-	top: "50%",
-	left: "50%",
-	transform: "translate(-50%, -50%)",
-	width: 400,
-	bgcolor: "background.paper",
-	border: "2px solid #000",
-	boxShadow: 24,
-	color: "black",
-	p: 4,
-};
+import { styleCreatePost } from "../../utils/styleBox";
 
 interface IHandle {
 	handleCloseEditPost: () => void;
@@ -57,15 +45,9 @@ interface Idata {
 	caption: string;
 	hashTagTopic: string;
 	oldStatus: string;
-	// createAt: string;
 	oldPhoto: string[];
 	location?: string;
 	oldEmoji: string;
-	// likeNumber: number;
-	// postId: string;
-	// commentNumber: number;
-	// likes: Like[];
-	// owner: string;
 }
 
 export default function CreatePost(props: IHandle & Idata) {
@@ -252,7 +234,7 @@ export default function CreatePost(props: IHandle & Idata) {
 				handletSaveLocation={handletSaveLocation}
 				handleChangeLocation={handleChangeLocation}
 			/>
-			<Box sx={styleBoxPop}>
+			<Box sx={styleCreatePost}>
 				<Box sx={{ display: "flex", justifyContent: "space-between" }}>
 					<Box
 						id="modal-modal-title"
@@ -268,7 +250,7 @@ export default function CreatePost(props: IHandle & Idata) {
 				</Box>
 				<Box>
 					{inFoUser.map((user) => (
-						<ListItem>
+						<ListItem key={user.uid}>
 							<ListItemAvatar>
 								<Avatar
 									src={user.profilePhoto}

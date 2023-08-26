@@ -18,7 +18,7 @@ import {
     Box,
     Paper,
     Stack,
-    styled
+    styled,
 } from "@mui/material";
 
 import TextField from "@mui/material/TextField";
@@ -61,7 +61,6 @@ import PopupAlert from "../PopupAlert";
 import ReportCard from "../Report/ReportCard";
 import ShareCard from "./ShareCard";
 
-
 export const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
     ...theme.typography.body2,
@@ -95,9 +94,7 @@ export default function MContainer(props: Idata) {
         return emoji ? emoji.name : undefined;
     };
 
-    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(
-        null
-    );
+    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
     const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
     };
@@ -308,7 +305,9 @@ export default function MContainer(props: Idata) {
                                                     <>
                                                         {" "}
                                                         is feeling{" "}
-                                                        {String.fromCodePoint(parseInt(props.emoji, 16))}{" "}
+                                                        {String.fromCodePoint(
+                                                            parseInt(props.emoji, 16)
+                                                        )}{" "}
                                                         {convertEmojiCodeToName(
                                                             props.emoji
                                                         )?.toLocaleLowerCase()}
@@ -318,7 +317,15 @@ export default function MContainer(props: Idata) {
                                         }
                                         secondary={
                                             <Typography
-                                                sx={{ display: "flex", alignItems: "center", gap: 0.5, fontSize: "14px" }}
+                                                sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: 0.5,
+                                                    fontSize: "14px",
+                                                    [themeApp.breakpoints.down("md")]: {
+                                                        flexWrap: "wrap",
+                                                    },
+                                                }}
                                             >
                                                 {props.createAt}
                                                 {props.status === "Private" && <LockIcon />}
@@ -443,7 +450,7 @@ export default function MContainer(props: Idata) {
                                             minHeight: "300px",
                                             maxHeight: "auto",
                                             justifyContent: "center",
-                                            cursor: "pointer"
+                                            cursor: "pointer",
                                         }}
                                         cols={1}
                                         onClick={handletOpenPost}

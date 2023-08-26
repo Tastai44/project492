@@ -1,5 +1,21 @@
 import { themeApp } from "./Theme";
 
+export const styleCreatePost = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  [themeApp.breakpoints.down("md")]: {
+    width: 300,
+  },
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  color: "black",
+  p: 4,
+};
+
 export const styleBoxPop = {
   position: "absolute",
   top: "50%",
@@ -54,6 +70,9 @@ export const styleTable = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 500,
+  [themeApp.breakpoints.down("md")]: {
+    width: 300,
+  },
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
@@ -82,6 +101,9 @@ export const styleBoxEmoji = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 400,
+  [themeApp.breakpoints.down("md")]: {
+    width: 300,
+  },
   bgcolor: "white",
   border: "2px solid #000",
   boxShadow: 24,
@@ -97,6 +119,9 @@ export const styleBoxReport = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 400,
+  [themeApp.breakpoints.down("md")]: {
+    width: 300,
+  },
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,

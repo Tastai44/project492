@@ -278,7 +278,7 @@ export default function Navigation() {
 				handleCloseSearchBar={handleCloseSearch}
 				inFoUser={inFoUser}
 			/>
-			<Box sx={{ flexGrow: 1, mb: 10 }}>
+			<Box sx={{ flexGrow: 1, mb: { md: 5, lg: 10 } }}>
 				<AppBar
 					position="fixed"
 					sx={{ backgroundColor: "#8E51E2", color: "black" }}
