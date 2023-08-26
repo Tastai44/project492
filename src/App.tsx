@@ -22,6 +22,7 @@ import ProCoverImage from "./components/Profile/ProCoverImage";
 import ProLeftside from "./components/Profile/ProLeftside";
 import { styled } from "@mui/material/styles";
 import ReportContent from "./pages/ReportContent";
+import { themeApp } from "./utils/Theme";
 
 export const Item = styled(Box)(({ theme }) => ({
 	...theme.typography.body2,
@@ -76,22 +77,20 @@ function App() {
 							<Navigation />
 							{/* <Members /> */}
 							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
-								<Grid item xs={12}>
-									<Grid
-										container
-										justifyContent="space-between"
-										paddingLeft={5}
-										paddingRight={5}
-									>
-										<Grid item xs={2}>
-											<div style={{ position: "fixed" }}>
-												<LeftSide />
-											</div>
-										</Grid>
+								<Grid item xs={2}>
+									<Item>
+										<Box style={{ position: "fixed" }}>
+											<LeftSide />
+										</Box>
+									</Item>
+								</Grid>
+								<Grid item lg={9} md={12}>
+									<Item>
 										<Members />
-									</Grid>
+									</Item>
 								</Grid>
 							</Grid>
+
 							{/* </ProtectedRoute> */}
 						</>
 					}
@@ -102,30 +101,27 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation />
-							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
-								<Grid item xs={12}>
-									<Grid
-										container
-										justifyContent="space-between"
-										paddingLeft={5}
-										paddingRight={5}
-									>
-										<Grid item xs={2}>
-											<div style={{ position: "fixed" }}>
-												<LeftSide />
-											</div>
-										</Grid>
+							<Grid container spacing={2} marginTop={5}>
+								<Grid item xs={2}>
+									<Item>
+										<Box style={{ position: "fixed" }}>
+											<LeftSide />
+										</Box>
+									</Item>
+								</Grid>
 
-										<Grid item xs={7}>
-											<Topics />
-										</Grid>
+								<Grid item lg={8} md={12}>
+									<Item>
+										<Topics />
+									</Item>
+								</Grid>
 
-										<Grid item xs={2}>
-											<div style={{ position: "fixed" }}>
-												<RightContainer />
-											</div>
-										</Grid>
-									</Grid>
+								<Grid item xs={2}>
+									<Item>
+										<Box style={{ position: "fixed" }}>
+											<RightContainer />
+										</Box>
+									</Item>
 								</Grid>
 							</Grid>
 							{/* </ProtectedRoute> */}
@@ -343,32 +339,24 @@ function App() {
 							{/* <ProtectedRoute> */}
 							<Navigation
 							/>
-							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
-								<Grid item xs={12}>
-									<Grid
-										container
-										justifyContent="space-between"
-										paddingLeft={5}
-										paddingRight={5}
-									>
-										<Grid item xs={2}>
-											<div style={{ position: "fixed" }}>
-												<LeftSide />
-											</div>
-										</Grid>
+							<Box sx={{ display: "flex", justifyContent: "space-between", mt: 11 }}>
+								<Box sx={{ width: "20%" }}>
+									<LeftSide />
+								</Box>
 
-										<Grid item xs={7}>
-											<Groups />
-										</Grid>
+								<Box sx={{
+									width: "55%", [themeApp.breakpoints.down("md")]: {
+										width: "100%",
+									},
+								}}>
+									<Groups />
+								</Box>
 
-										<Grid item xs={2}>
-											<div style={{ position: "fixed" }}>
-												<RightContainer />
-											</div>
-										</Grid>
-									</Grid>
-								</Grid>
-							</Grid>
+								<Box sx={{ width: "20%" }}>
+									<RightContainer />
+								</Box>
+							</Box>
+
 							{/* </ProtectedRoute> */}
 						</>
 					}

@@ -1,3 +1,4 @@
+import { useState, useMemo, ChangeEvent, useRef } from "react";
 import {
 	Button,
 	Divider,
@@ -18,9 +19,7 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import LockIcon from "@mui/icons-material/Lock";
 import PublicIcon from "@mui/icons-material/Public";
-import React, { ChangeEvent } from "react";
 import { IGroup } from "../../interface/Group";
-
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { doc, getDocs } from "firebase/firestore";
@@ -38,11 +37,11 @@ interface Ihandle {
 }
 
 export default function AddGroup({ closeEdit }: Ihandle) {
-	const [member, setMember] = React.useState<string[]>([]);
-	const [users, setUsers] = React.useState<User[]>([]);
+	const [member, setMember] = useState<string[]>([]);
+	const [users, setUsers] = useState<User[]>([]);
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
-	React.useMemo(() => {
+	useMemo(() => {
 		const fetchData = async () => {
 			try {
 				const q = collection(dbFireStore, "users");
@@ -69,15 +68,15 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 		setMember(newValue);
 	};
 
-	const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-	const [previewImages, setPreviewImages] = React.useState<string[]>([]);
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
+	const [previewImages, setPreviewImages] = useState<string[]>([]);
 	const handleUploadClick = () => {
 		if (fileInputRef.current) {
 			fileInputRef.current.click();
 		}
 	};
 	const handleFileChange = async (
-		event: React.ChangeEvent<HTMLInputElement>
+		event: ChangeEvent<HTMLInputElement>
 	) => {
 		const files = event.target.files;
 		if (files) {
@@ -105,7 +104,7 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 		setPreviewImages([]);
 	};
 
-	const [status, setStatus] = React.useState("");
+	const [status, setStatus] = useState("");
 	const handleChange = (event: SelectChangeEvent) => {
 		setStatus(event.target.value as string);
 	};
@@ -120,14 +119,14 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 		coverPhoto: "",
 		createAt: "",
 	};
-	const [group, setGroup] = React.useState<IGroup>(initialState);
+	const [group, setGroup] = useState<IGroup>(initialState);
 	const clearState = () => {
 		setGroup({ ...initialState });
 		handleClearImage();
 	};
 
 	const handleChangeGroup = (
-		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+		event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 	) => {
 		const { name, value } = event.target;
 		setGroup((prevGroup) => ({

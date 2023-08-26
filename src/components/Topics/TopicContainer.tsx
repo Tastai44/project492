@@ -221,7 +221,7 @@ export default function TopicContainer() {
 						padding: 1,
 					}}
 				>
-					<Typography variant="h4">Topics</Typography>
+					<Typography variant="h4" sx={{ mr: 1 }}>Topics</Typography>
 					<Box
 						sx={{
 							display: "flex",

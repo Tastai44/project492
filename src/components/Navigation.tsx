@@ -278,7 +278,7 @@ export default function Navigation() {
 				handleCloseSearchBar={handleCloseSearch}
 				inFoUser={inFoUser}
 			/>
-			<Box sx={{ flexGrow: 1, mb: { md: 5, lg: 10 } }}>
+			<Box sx={{ flexGrow: 1, mb: { sm: 7, md: 9 } }}>
 				<AppBar
 					position="fixed"
 					sx={{ backgroundColor: "#8E51E2", color: "black" }}
@@ -391,6 +391,7 @@ export default function Navigation() {
 								</IconButton>
 								<IconButton
 									size="large"
+									sx={{ display: { xs: "flex", md: "none" } }}
 									aria-label="show 17 new notifications"
 									color="inherit"
 									aria-controls={mobileMenuId}

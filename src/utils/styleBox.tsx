@@ -59,6 +59,9 @@ export const styleBox = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 400,
+  [themeApp.breakpoints.down("md")]: {
+    width: 300,
+  },
   height: 600,
   bgcolor: "background.paper",
   border: "2px solid #000",

@@ -36,18 +36,7 @@ import PopupAlert from "../PopupAlert";
 import { locations } from "../../helper/CMULocations";
 import { createNoti } from "../NotificationFunction";
 import { User } from "../../interface/User";
-
-const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 400,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
-};
+import { styleBox } from "../../utils/styleBox";
 
 interface Ihandle {
     closeAdd: () => void;
@@ -227,7 +216,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
 
     return (
         <div style={{ color: "black" }}>
-            <Box sx={style}>
+            <Box sx={styleBox}>
                 <Typography id="modal-modal-title" variant="h5">
                     Add an event
                 </Typography>
