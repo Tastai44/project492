@@ -37,7 +37,9 @@ export default function EventContainer(props: IData) {
         };
     }, []);
     return (
-        <Box sx={{ display: "flex", justifyContent: "center", width: "95%" }}>
+        <Box sx={{
+            display: "flex"
+        }}>
             {props.searchValue == "" ? (
                 <Grid sx={{ flexGrow: 1, gap: "40px" }} container>
                     {eventData.map((event) => (

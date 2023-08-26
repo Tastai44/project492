@@ -32,7 +32,7 @@ export default function Events() {
 				</Box>
 			</Modal>
 			<Box sx={{
-				width: "100%", marginTop: 7
+				width: "100%"
 			}}>
 				<Stack>
 					<Item
@@ -72,13 +72,18 @@ export default function Events() {
 								Add an event
 							</Button>
 						</Box>
-
 					</Item>
-					<Item sx={{ display: "flex", justifyContent: "center" }}>
+
+					<Box sx={{
+						display: "flex",
+						[themeApp.breakpoints.down("md")]: {
+							justifyContent: "center"
+						},
+					}}>
 						<EventContainer
 							searchValue={searchValue}
 						/>
-					</Item>
+					</Box>
 				</Stack>
 			</Box>
 		</>

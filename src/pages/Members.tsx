@@ -72,7 +72,8 @@ export default function Members() {
             sx={{
                 display: "flex",
                 flexDirection: "column",
-                gap: { xs: 2, md: 5 },
+                gap: 2,
+                width: "100%",
                 color: "black",
                 [themeApp.breakpoints.down("md")]: {
                     justifyContent: "center"
@@ -87,7 +88,7 @@ export default function Members() {
                     [themeApp.breakpoints.down("md")]: {
                         textAlign: "center",
                         flexDirection: "column",
-                        mt: "10px",
+
                     },
                 }}
             >
@@ -96,14 +97,12 @@ export default function Members() {
                         fontSize: "30px",
                         color: "primary.main",
                         fontWeight: 500,
-                        [themeApp.breakpoints.down("md")]: {
-                            fontSize: "20px",
-                        },
                     }}
                 >
                     People who you may know
                 </Typography>
                 <SearchBar searchValue={searchValue} handleSearch={handleSearch} />
+
             </Box>
             {searchValue == "" ? (
                 <Grid sx={{ flexGrow: 1, gap: "30px" }} container>

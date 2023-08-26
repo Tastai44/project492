@@ -18,7 +18,7 @@ export default function PostForm({
     const handleCloseCratePost = () => setOpenCreatePost(false);
 
     return (
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        <Box sx={{ display: "flex", flexDirection: "column" }}>
             <Modal
                 open={openCreatePost}
                 onClose={handleCloseCratePost}
@@ -32,7 +32,7 @@ export default function PostForm({
                 </Box>
             </Modal>
             {inFoUser.map((u) => (
-                <div
+                <Box
                     key={u.uid}
                     style={{
                         display: "flex",
@@ -44,9 +44,9 @@ export default function PostForm({
                     <Avatar
                         alt="User"
                         src={u.profilePhoto}
-                        sx={{ width: "40px", height: "40px" }}
+                        sx={{ width: "40px", height: "40px", m: 1 }}
                     />
-                    <div style={{ width: "98%" }}>
+                    <Box style={{ width: "98%" }}>
                         <TextField
                             id="outlined-basic"
                             label="What is in your mind?"
@@ -55,8 +55,8 @@ export default function PostForm({
                             sx={{ width: "99%" }}
                             onClick={handletOpenCratePost}
                         />
-                    </div>
-                </div>
+                    </Box>
+                </Box>
             ))}
             <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
             <Box
@@ -100,6 +100,6 @@ export default function PostForm({
                     <EmojiEmotionsIcon sx={{ color: "#FCE205" }} /> Feeling
                 </Button>
             </Box>
-        </div>
+        </Box>
     );
 }

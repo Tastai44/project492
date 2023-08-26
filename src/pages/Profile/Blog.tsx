@@ -127,7 +127,7 @@ export default function Blog() {
 			{inFoUser.map((m) => (
 				<Box sx={{ flexGrow: 1 }} key={m.uid}>
 					<Grid container spacing={2}>
-						<Grid item xs={9}>
+						<Grid item xs={12} md={9}>
 							<Item sx={{ backgroundColor: "#fff", margin: 1 }}>
 								<PostForm inFoUser={inFoUser} />
 							</Item>
@@ -387,7 +387,7 @@ export default function Blog() {
 							)}
 						</Grid>
 
-						<Grid item xs={3}>
+						<Grid item xs={3} sx={{ display: { xs: "none", lg: "block" } }}>
 							<Item>
 								<FormControl fullWidth sx={{ mb: 1, backgroundColor: "white" }}>
 									<InputLabel id="demo-simple-select-label">

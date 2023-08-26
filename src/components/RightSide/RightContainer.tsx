@@ -151,7 +151,7 @@ export default function RightContainer() {
                     >
                         Friend
                     </Box>
-                    <Box>
+                    <Box sx={{ display: "flex", justifyContent: "center" }} >
                         <TextField
                             id="outlined-size-small"
                             size="small"
@@ -164,7 +164,8 @@ export default function RightContainer() {
                             value={searchValue}
                         />
                     </Box>
-                    <Box sx={{ display: "flex", justifyContent: "space-around", mb: 1 }}>
+                    <Divider style={{ background: "#EAEAEA", marginBottom: 5 }} />
+                    <Box sx={{ display: "flex", justifyContent: "space-around", mb: 0.5 }}>
                         <Button
                             onClick={() => handleIsActive(true)}
                             sx={{
@@ -188,7 +189,7 @@ export default function RightContainer() {
                             General
                         </Button>
                     </Box>
-                    <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
+                    <Divider style={{ background: "#EAEAEA", marginBottom: 5 }} />
                     {isActive ? (
                         <Box>
                             {inFoUser.some((user) => user.friendList?.length !== 0) ? (
@@ -216,7 +217,7 @@ export default function RightContainer() {
                                     )}
                                 </Box>
                             ) : (
-                                <Typography>You have no friend</Typography>
+                                <Typography sx={{ p: 1 }}>You have no friend</Typography>
                             )}
                         </Box>
                     ) : (
@@ -243,7 +244,7 @@ export default function RightContainer() {
                                     )}
                                 </Box>
                             ) : (
-                                <Typography>You have no friend</Typography>
+                                <Typography sx={{ p: 1 }}>You have no friend</Typography>
                             )}
                         </Box>
                     )}
@@ -261,7 +262,7 @@ export default function RightContainer() {
                     >
                         Groups
                     </Box>
-                    <Box>
+                    <Box sx={{ display: "flex", justifyContent: "center" }}>
                         <TextField
                             id="outlined-size-small"
                             size="small"
@@ -312,7 +313,7 @@ export default function RightContainer() {
                                     ))}
                             </Box>
                         ) : (
-                            <Typography>You have no group</Typography>
+                            <Typography sx={{ p: 1 }}>You have no group</Typography>
                         )}
                     </Box>
                 </Paper>

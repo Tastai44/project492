@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import { User } from "../../interface/User";
 import SearchFriend from "../../components/Profile/SearchFriend";
 import SearchBar from "../../helper/SearchBar";
+import { themeApp } from "../../utils/Theme";
 
 export default function Friends() {
 	const { userId } = useParams();
@@ -59,10 +60,18 @@ export default function Friends() {
 					<Box sx={{ m: 1, fontSize: "20px" }} component="p">
 						Friends
 					</Box>
-					<SearchBar
-						searchValue={searchValue}
-						handleSearch={handleSearch}
-					/>
+					<Box sx={{
+						[themeApp.breakpoints.down("lg")]: {
+							mr: 2,
+						}
+					}}>
+						<SearchBar
+							searchValue={searchValue}
+							handleSearch={handleSearch}
+						/>
+
+					</Box>
+
 				</Box>
 				<Divider light sx={{ background: "grey", mb: 1 }} />
 				{searchValue === "" ? (
