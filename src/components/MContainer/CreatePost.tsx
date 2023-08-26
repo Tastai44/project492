@@ -170,21 +170,26 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 			const docRef = doc(postCollection);
 			const postId = docRef.id;
 			const updatedPost = { ...newPost, id: postId };
-			await setDoc(docRef, updatedPost);
-			if (inFoUser.flatMap((user) => user.friendList).length !== 0) {
-				createNoti(
-					postId, `posted ${post.caption}`, userInfo.uid, status,
-					[
-						...inFoUser.flatMap((user) =>
-							user.friendList?.flatMap((friend) => friend.friendId) || []
-						)
-					]
-				);
+			if (status && post.hashTagTopic && post.caption) {
+				await setDoc(docRef, updatedPost);
+				if (inFoUser.flatMap((user) => user.friendList).length !== 0) {
+					createNoti(
+						postId, `posted ${post.caption}`, userInfo.uid, status,
+						[
+							...inFoUser.flatMap((user) =>
+								user.friendList?.flatMap((friend) => friend.friendId) || []
+							)
+						]
+					);
+				}
+				setPost(updatedPost);
+				clearState();
+				handleCloseCratePost();
+				PopupAlert("Content was posted successfully", "success");
+			} else {
+				PopupAlert("Please fill in all information", "warning");
 			}
-			setPost(updatedPost);
-			clearState();
-			handleCloseCratePost();
-			PopupAlert("Content was posted successfully", "success");
+
 		} catch (error) {
 			console.error("Error adding post: ", error);
 		}

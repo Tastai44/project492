@@ -300,7 +300,9 @@ export default function Content(props: IData & IFunction) {
                 <CancelIcon />
             </IconButton>
             {postData.map((m) => (
-                <Box key={m.id} sx={{ flexGrow: 1, p: 1 }}>
+                <Box key={m.id} sx={{
+                    flexGrow: 1, p: 1
+                }}>
                     <Modal
                         open={openEditPost}
                         onClose={handleCloseEditPost}
@@ -322,7 +324,7 @@ export default function Content(props: IData & IFunction) {
                         </Box>
                     </Modal>
                     <Grid container spacing={1}>
-                        <Grid item xs={6}>
+                        <Grid item lg={6} md={12}>
                             <Item>
                                 <Box sx={{ height: "auto", maxWidth: "lg", minWidth: "sm" }}>
                                     {m.photoPost.length == 1 ? (
@@ -357,7 +359,7 @@ export default function Content(props: IData & IFunction) {
                                 </Box>
                             </Item>
                         </Grid>
-                        <Grid item xs={m.photoPost.length == 0 ? 12 : 6}>
+                        <Grid item lg={6} md={12}>
                             <Item>
                                 <Box sx={{ display: "flex", flexDirection: "column" }}>
                                     <Box>
@@ -406,6 +408,9 @@ export default function Content(props: IData & IFunction) {
                                                                 display: "flex",
                                                                 alignItems: "center",
                                                                 gap: 0.5,
+                                                                [themeApp.breakpoints.down("md")]: {
+                                                                    flexWrap: "wrap",
+                                                                },
                                                             }}
                                                         >
                                                             {m.createAt}

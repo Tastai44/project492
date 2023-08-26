@@ -442,6 +442,7 @@ export default function MContainer(props: Idata) {
                                             minHeight: "300px",
                                             maxHeight: "auto",
                                             justifyContent: "center",
+                                            cursor: "pointer"
                                         }}
                                         cols={1}
                                         onClick={handletOpenPost}
