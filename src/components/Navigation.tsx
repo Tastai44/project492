@@ -311,6 +311,7 @@ export default function Navigation() {
 							startIcon={<SearchIcon />}
 							sx={{
 								ml: 1, color: "black", backgroundColor: "primary.contrastText",
+								display: { xs: "none", md: "flex" },
 								"&:hover": {
 									backgroundColor: "white"
 								}
@@ -366,10 +367,44 @@ export default function Navigation() {
 								</IconButton>
 							))}
 						</Box>
-						{(!openMenu && !openSearch) && (
-							<IconButton onClick={handleOpenMenu} sx={{ display: { xs: "flex", md: "none" } }}>
-								<MenuIcon sx={{ color: "white" }} />
-							</IconButton>
+						{(!openMenu) && (
+							<>
+								<IconButton
+									sx={{ color: "white", display: { xs: "flex", md: "none" } }}
+									onClick={handleOpenSearch}
+								>
+									<SearchIcon />
+								</IconButton>
+
+								<IconButton
+									size="large"
+									sx={{ display: { xs: "flex", md: "none" } }}
+									aria-label="show 4 new mails"
+									color="inherit"
+									aria-controls={messageNotiList}
+									aria-haspopup="true"
+									onClick={handleOpenMessageNoti}
+								>
+									<Badge badgeContent={messageNumber} color="error">
+										<MailIcon sx={{ color: "white" }} />
+									</Badge>
+								</IconButton>
+								<IconButton
+									size="large"
+									aria-label="show 17 new notifications"
+									color="inherit"
+									aria-controls={mobileMenuId}
+									aria-haspopup="true"
+									onClick={handleMobileMenuOpen}
+								>
+									<Badge badgeContent={notifications?.filter((noti) => !noti.isRead && noti.status !== "Private").length} color="error">
+										<NotificationsIcon sx={{ color: "white" }} />
+									</Badge>
+								</IconButton>
+								<IconButton onClick={handleOpenMenu} sx={{ display: { xs: "flex", md: "none" } }}>
+									<MenuIcon sx={{ color: "white" }} />
+								</IconButton>
+							</>
 						)}
 
 					</Toolbar>

@@ -34,6 +34,9 @@ export const styleBoxChat = {
   left: 10,
   bottom: 0,
   width: 400,
+  [themeApp.breakpoints.down("md")]: {
+    width: 350,
+  },
   height: 480,
   backgroundColor: "background.paper",
   color: "black",

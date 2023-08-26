@@ -1,6 +1,7 @@
 import { useState, useRef, ChangeEvent, useMemo, useEffect } from "react";
 import {
 	Box,
+	Divider,
 	IconButton,
 	ImageList,
 	ImageListItem,
@@ -280,17 +281,18 @@ export default function ChatBox(props: IFunction & IData) {
 							}
 						/>
 					</Box>
+					<Divider />
 					<Box
 						sx={{
 							height: "10%",
+							width: "100%",
 							display: "flex",
 							justifyContent: "space-between",
 							alignItems: "center",
 							alignContent: "center",
-							mt: 1,
 						}}
 					>
-						<Box sx={{ width: "30%" }}>
+						<Box sx={{ width: "auto", display: "flex" }}>
 							<IconButton size="large" onClick={handleUploadClick}>
 								<input
 									type="file"

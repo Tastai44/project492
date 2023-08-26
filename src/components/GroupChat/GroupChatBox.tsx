@@ -1,6 +1,7 @@
 
 import {
 	Box,
+	Divider,
 	IconButton,
 	ImageList,
 	ImageListItem,
@@ -274,6 +275,7 @@ export default function GroupChatBox
 							members={groupData.flatMap((member) => member.members)}
 						/>
 					</Box>
+					<Divider />
 					<Box
 						sx={{
 							height: "10%",
@@ -281,10 +283,9 @@ export default function GroupChatBox
 							justifyContent: "space-between",
 							alignItems: "center",
 							alignContent: "center",
-							mt: 1,
 						}}
 					>
-						<Box sx={{ width: "30%" }}>
+						<Box sx={{ width: "auto", display: "flex" }}>
 							<IconButton size="large" onClick={handleUploadClick}>
 								<input
 									type="file"
