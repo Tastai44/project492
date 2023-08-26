@@ -18,8 +18,7 @@ import { styleBoxPop } from "../../utils/styleBox";
 import SearchPost from "../../components/Profile/SearchPost";
 import SearchBar from "../../helper/SearchBar";
 import { themeApp } from "../../utils/Theme";
-
-
+import TabLink from "./TabLink";
 
 export default function Collections() {
 	const { userId } = useParams();
@@ -70,6 +69,9 @@ export default function Collections() {
 
 	return (
 		<div>
+			<TabLink
+				userId={userId ?? ""}
+			/>
 			<Modal
 				open={openPost}
 				onClose={handleClosePost}

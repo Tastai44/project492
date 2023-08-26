@@ -1,20 +1,21 @@
 import { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
-import { Divider, Stack, Typography } from "@mui/material";
+import { Divider, Stack, Typography, Box } from "@mui/material";
 import { User } from "../../interface/User";
 import { Item } from "../../App";
 
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
+import { useParams } from "react-router-dom";
+import TabLink from "./TabLink";
 
 export default function AboutMe() {
-	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+	const { userId } = useParams();
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 
 	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "users"),
-			where("uid", "==", userInfo.uid)
+			where("uid", "==", userId)
 		);
 		const unsubscribe = onSnapshot(
 			queryData,
@@ -29,10 +30,13 @@ export default function AboutMe() {
 		return () => {
 			unsubscribe();
 		};
-	}, [userInfo.uid]);
+	}, [userId]);
 
 	return (
 		<div>
+			<TabLink
+				userId={userId ?? ""}
+			/>
 			<Box sx={{ width: "100%" }}>
 				<Stack
 					direction="row"

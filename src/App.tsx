@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router-dom";
-import "./App.css";
 import Navigation from "./components/Navigation";
 import HomeFeed from "./pages/HomeFeed";
 import Members from "./pages/Members";
@@ -23,6 +22,7 @@ import ProLeftside from "./components/Profile/ProLeftside";
 import { styled } from "@mui/material/styles";
 import ReportContent from "./pages/ReportContent";
 import { themeApp } from "./utils/Theme";
+
 
 export const Item = styled(Box)(({ theme }) => ({
 	...theme.typography.body2,
