@@ -185,28 +185,27 @@ export default function LeftSide() {
 										</ListItemButton>
 									</NavLink>
 								</ListItem>
+								<ListItem disablePadding>
+									<NavLink
+										to="/groups"
+										style={({ isActive, isPending }) => {
+											return {
+												fontWeight: isPending ? "bold" : "",
+												color: isActive ? "black" : "grey",
+												backgroundColor: isActive ? "#F1F1F1" : "",
+												width: isActive ? "100%" : "100%",
+											};
+										}}
+									>
+										<ListItemButton>
+											<ListItemIcon>
+												<Diversity3Icon />
+											</ListItemIcon>
+											<ListItemText primary="Groups" />
+										</ListItemButton>
+									</NavLink>
+								</ListItem>
 							</List>
-
-							<ListItem disablePadding>
-								<NavLink
-									to="/groups"
-									style={({ isActive, isPending }) => {
-										return {
-											fontWeight: isPending ? "bold" : "",
-											color: isActive ? "black" : "grey",
-											backgroundColor: isActive ? "#F1F1F1" : "",
-											width: isActive ? "100%" : "100%",
-										};
-									}}
-								>
-									<ListItemButton>
-										<ListItemIcon>
-											<Diversity3Icon />
-										</ListItemIcon>
-										<ListItemText primary="Groups" />
-									</ListItemButton>
-								</NavLink>
-							</ListItem>
 						</nav>
 					</Item>
 				</Box>

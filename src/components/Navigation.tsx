@@ -10,7 +10,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
 import Logo from "/images/logoCmu.png";
 import { Avatar, Button } from "@mui/material";
-
+import MenuIcon from '@mui/icons-material/Menu';
 import { NavLink, useNavigate } from "react-router-dom";
 
 import { auth } from "../config/firebase";
@@ -33,6 +33,7 @@ import SearchContent from "./TopBar/SearchContent";
 import { IGroupMessageNoti, IMessageNoti, INoti } from "../interface/Notification";
 import MessageNoti from "./TopBar/MessageNoti";
 import { IGroup } from "../interface/Group";
+import SmallMenu from "./TopBar/SmallMenu";
 
 export default function Navigation() {
 	const navigate = useNavigate();
@@ -51,6 +52,7 @@ export default function Navigation() {
 	const [groupMessageNoti, setGroupMessageNoti] = useState<IGroupMessageNoti[]>();
 	const [messageNumber, setMessageNumber] = useState(0);
 	const [groupData, setGroupData] = useState<IGroup[]>([]);
+	const [openMenu, setOpenMenu] = useState(false);
 
 	const handleOpenSearch = () => {
 		setOpenSearch(true);
@@ -220,6 +222,10 @@ export default function Navigation() {
 		setOpenMessageNoti(null);
 	};
 
+	const handleOpenMenu = () => {
+		setOpenMenu(!openMenu);
+	};
+
 	const menuId = "primary-search-account-menu";
 	const renderMenu = (
 		<UserMenu
@@ -253,6 +259,13 @@ export default function Navigation() {
 			messageNoti={messageNoti ?? []}
 			groupMessageNoti={groupMessageNoti ?? []}
 			handleCloseMessageNoti={handleCloseMessageNoti}
+		/>
+	);
+
+	const renderSmallScreenMenu = (
+		<SmallMenu
+			openMenu={openMenu}
+			handleOpenMenu={handleOpenMenu}
 		/>
 	);
 
@@ -353,11 +366,15 @@ export default function Navigation() {
 								</IconButton>
 							))}
 						</Box>
+						<IconButton onClick={handleOpenMenu} sx={{ display: { xs: "flex", md: "none" } }}>
+							<MenuIcon sx={{ color: "white" }} />
+						</IconButton>
 					</Toolbar>
 				</AppBar>
 				{renderMobileMenu}
 				{renderMenu}
 				{renderMessageNoti}
+				{renderSmallScreenMenu}
 			</Box>
 		</>
 	);
