@@ -278,7 +278,7 @@ export default function Navigation() {
 				handleCloseSearchBar={handleCloseSearch}
 				inFoUser={inFoUser}
 			/>
-			<Box sx={{ flexGrow: 1 }}>
+			<Box sx={{ flexGrow: 1, mb: 10 }}>
 				<AppBar
 					position="fixed"
 					sx={{ backgroundColor: "#8E51E2", color: "black" }}
@@ -366,9 +366,12 @@ export default function Navigation() {
 								</IconButton>
 							))}
 						</Box>
-						<IconButton onClick={handleOpenMenu} sx={{ display: { xs: "flex", md: "none" } }}>
-							<MenuIcon sx={{ color: "white" }} />
-						</IconButton>
+						{(!openMenu && !openSearch) && (
+							<IconButton onClick={handleOpenMenu} sx={{ display: { xs: "flex", md: "none" } }}>
+								<MenuIcon sx={{ color: "white" }} />
+							</IconButton>
+						)}
+
 					</Toolbar>
 				</AppBar>
 				{renderMobileMenu}

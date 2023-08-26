@@ -129,7 +129,7 @@ export default function RightContainer() {
     }, [userInfo.uid]);
 
     return (
-        <Box sx={{ width: "100%" }}>
+        <Box sx={{ width: "100%", display: { xs: "none", md: "flex" } }}>
             <Modal
                 open={openChat}
                 onClose={handleCloseChat}

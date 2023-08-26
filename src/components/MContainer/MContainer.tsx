@@ -1,8 +1,4 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Stack from "@mui/material/Stack";
-import { styled } from "@mui/material/styles";
+import { useState, useEffect, MouseEvent } from "react";
 import {
     Avatar,
     Button,
@@ -19,6 +15,10 @@ import {
     MenuItem,
     IconButton,
     Modal,
+    Box,
+    Paper,
+    Stack,
+    styled
 } from "@mui/material";
 
 import TextField from "@mui/material/TextField";
@@ -61,6 +61,7 @@ import PopupAlert from "../PopupAlert";
 import ReportCard from "../Report/ReportCard";
 import ShareCard from "./ShareCard";
 
+
 export const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
     ...theme.typography.body2,
@@ -94,30 +95,30 @@ export default function MContainer(props: Idata) {
         return emoji ? emoji.name : undefined;
     };
 
-    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(
         null
     );
-    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
     };
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
 
-    const [openPost, setOpenPost] = React.useState(false);
+    const [openPost, setOpenPost] = useState(false);
     const handletOpenPost = () => setOpenPost(true);
     const handleClosePost = () => {
         setOpenPost(false);
     };
 
-    const [openEditPost, setOpenEditPost] = React.useState(false);
+    const [openEditPost, setOpenEditPost] = useState(false);
     const handletOpenEditPost = () => {
         setOpenEditPost(true);
         handleCloseUserMenu();
     };
     const handleCloseEditPost = () => setOpenEditPost(false);
 
-    const [openReportPost, setOpenReportPost] = React.useState(false);
+    const [openReportPost, setOpenReportPost] = useState(false);
     const handletOpenReport = () => {
         setOpenReportPost(true);
         handleCloseUserMenu();
@@ -189,8 +190,8 @@ export default function MContainer(props: Idata) {
         }
     };
 
-    const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-    React.useEffect(() => {
+    const [inFoUser, setInFoUser] = useState<User[]>([]);
+    useEffect(() => {
         const queryData = query(
             collection(dbFireStore, "users"),
             where("uid", "==", props.owner)
@@ -210,7 +211,7 @@ export default function MContainer(props: Idata) {
         };
     }, [props.owner]);
 
-    const [openShare, setOpenShare] = React.useState(false);
+    const [openShare, setOpenShare] = useState(false);
     const handleOpenShare = () => setOpenShare(true);
     const handleCloseShare = () => setOpenShare(false);
 

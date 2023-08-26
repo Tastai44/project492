@@ -1,3 +1,4 @@
+import { themeApp } from "./Theme";
 
 export const styleBoxPop = {
   position: "absolute",
@@ -65,6 +66,9 @@ export const styleSearchBox = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 500,
+  [themeApp.breakpoints.down("md")]: {
+    width: 300,
+  },
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,

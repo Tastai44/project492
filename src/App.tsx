@@ -52,7 +52,7 @@ function App() {
 												</Box>
 											</Grid>
 
-											<Grid item xs={7}>
+											<Grid item lg={7} md={12}>
 												<HomeFeed />
 											</Grid>
 

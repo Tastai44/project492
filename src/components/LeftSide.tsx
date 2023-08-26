@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -33,9 +33,9 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default function LeftSide() {
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-	const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "users"),
 			where("uid", "==", userInfo.uid)
@@ -56,7 +56,7 @@ export default function LeftSide() {
 	}, [userInfo.uid]);
 
 	return (
-		<Box sx={{ width: "120%" }}>
+		<Box sx={{ width: "120%", display: { xs: "none", md: "flex" } }}>
 			<Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
 				<Box gridColumn="span 12">
 					<NavLink to={`/profileBlog/${userInfo.uid}`}>
