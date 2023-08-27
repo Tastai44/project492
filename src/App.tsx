@@ -35,7 +35,15 @@ function App() {
 	return (
 		<>
 			<Routes>
-				<Route path={"/login"} element={<Login />} />
+				<Route path={"/login"} element={
+					<Box sx={{
+						ml: 5, mr: 5, [themeApp.breakpoints.down("lg")]: {
+							ml: 2, mr: 2
+						}
+					}}>
+						<Login />
+					</Box>
+				} />
 
 				<Route
 					path={"/"}
@@ -70,17 +78,17 @@ function App() {
 					path={"/members"}
 					element={
 						<>
-							{/* <ProtectedRoute> */}
-							<Navigation />
-							<Box sx={{
-								display: "flex", mt: 11, ml: 5, mr: 5, [themeApp.breakpoints.down("md")]: {
-									justifyContent: "center"
-								},
-							}}>
-								<Members />
-							</Box>
+							<ProtectedRoute>
+								<Navigation />
+								<Box sx={{
+									display: "flex", mt: 11, ml: 5, mr: 5, [themeApp.breakpoints.down("md")]: {
+										justifyContent: "center"
+									},
+								}}>
+									<Members />
+								</Box>
 
-							{/* </ProtectedRoute> */}
+							</ProtectedRoute>
 						</>
 					}
 				/>
@@ -88,27 +96,27 @@ function App() {
 					path={"/topics"}
 					element={
 						<>
-							{/* <ProtectedRoute> */}
-							<Navigation />
-							<Box sx={{ display: "flex", justifyContent: "center", mt: 11 }}>
-								<Box sx={{ width: "20%", position: "fixed", left: "0" }}>
-									<LeftSide />
-								</Box>
+							<ProtectedRoute>
+								<Navigation />
+								<Box sx={{ display: "flex", justifyContent: "center", mt: 11 }}>
+									<Box sx={{ width: "20%", position: "fixed", left: "0" }}>
+										<LeftSide />
+									</Box>
 
-								<Box sx={{
-									width: "55%",
-									[themeApp.breakpoints.down("lg")]: {
-										width: "100%",
-									}
-								}}>
-									<Topics />
-								</Box>
+									<Box sx={{
+										width: "55%",
+										[themeApp.breakpoints.down("lg")]: {
+											width: "100%",
+										}
+									}}>
+										<Topics />
+									</Box>
 
-								<Box sx={{ width: "20%", position: "fixed", right: "0" }}>
-									<RightContainer />
+									<Box sx={{ width: "20%", position: "fixed", right: "0" }}>
+										<RightContainer />
+									</Box>
 								</Box>
-							</Box>
-							{/* </ProtectedRoute> */}
+							</ProtectedRoute>
 						</>
 					}
 				/>
@@ -269,10 +277,10 @@ function App() {
 					path={"/eventsDetail/:eventId"}
 					element={
 						<>
-							{/* <ProtectedRoute> */}
-							<Navigation />
-							<EventDetail />
-							{/* </ProtectedRoute> */}
+							<ProtectedRoute>
+								<Navigation />
+								<EventDetail />
+							</ProtectedRoute>
 						</>
 					}
 				/>
@@ -283,29 +291,29 @@ function App() {
 					path={"/groups"}
 					element={
 						<>
-							{/* <ProtectedRoute> */}
-							<Navigation
-							/>
-							<Box sx={{ display: "flex", justifyContent: "center", mt: 11 }}>
-								<Box sx={{ width: "20%", position: "fixed", left: "0" }}>
-									<LeftSide />
+							<ProtectedRoute>
+								<Navigation
+								/>
+								<Box sx={{ display: "flex", justifyContent: "center", mt: 11 }}>
+									<Box sx={{ width: "20%", position: "fixed", left: "0" }}>
+										<LeftSide />
+									</Box>
+
+									<Box sx={{
+										width: "55%",
+										[themeApp.breakpoints.down("lg")]: {
+											width: "100%",
+										}
+									}}>
+										<Groups />
+									</Box>
+
+									<Box sx={{ width: "20%", position: "fixed", right: "0" }}>
+										<RightContainer />
+									</Box>
 								</Box>
 
-								<Box sx={{
-									width: "55%",
-									[themeApp.breakpoints.down("lg")]: {
-										width: "100%",
-									}
-								}}>
-									<Groups />
-								</Box>
-
-								<Box sx={{ width: "20%", position: "fixed", right: "0" }}>
-									<RightContainer />
-								</Box>
-							</Box>
-
-							{/* </ProtectedRoute> */}
+							</ProtectedRoute>
 						</>
 					}
 				/>
@@ -313,11 +321,11 @@ function App() {
 					path={"/groupDetail/:groupId"}
 					element={
 						<>
-							{/* <ProtectedRoute> */}
-							<Navigation
-							/>
-							<GroupDetails />
-							{/* </ProtectedRoute> */}
+							<ProtectedRoute>
+								<Navigation
+								/>
+								<GroupDetails />
+							</ProtectedRoute>
 						</>
 					}
 				/>
@@ -325,16 +333,16 @@ function App() {
 					path={"/report"}
 					element={
 						<>
-							{/* <ProtectedRoute> */}
-							<Navigation
-							/>
-							{/* <Members /> */}
-							<Grid sx={{ flexGrow: 1 }} container>
-								<Grid item xs={12}>
-									<ReportContent />
+							<ProtectedRoute>
+								<Navigation
+								/>
+								{/* <Members /> */}
+								<Grid sx={{ flexGrow: 1 }} container>
+									<Grid item xs={12}>
+										<ReportContent />
+									</Grid>
 								</Grid>
-							</Grid>
-							{/* </ProtectedRoute> */}
+							</ProtectedRoute>
 						</>
 					}
 				/>
