@@ -137,20 +137,21 @@ function App() {
 									</Box>
 
 									<Box sx={{
-										width: "75%",
+										width: "80%",
 										ml: "20%",
+										mr: 5,
 										[themeApp.breakpoints.down("lg")]: {
 											width: "100%",
 											ml: "0px",
 										}
 									}}>
-										<Stack spacing={2}>
-											<Item>
+										<Stack>
+											<Box sx={{ mb: 2 }}>
 												<ProCoverImage />
-											</Item>
-											<Item>
+											</Box>
+											<Box>
 												<Blog />
-											</Item>
+											</Box>
 										</Stack>
 									</Box>
 								</Box>
@@ -170,20 +171,21 @@ function App() {
 									</Box>
 
 									<Box sx={{
-										width: "75%",
+										width: "80%",
 										ml: "20%",
+										mr: 5,
 										[themeApp.breakpoints.down("lg")]: {
 											width: "100%",
 											ml: "0px",
 										}
 									}}>
-										<Stack spacing={2}>
-											<Item>
+										<Stack>
+											<Box sx={{ mb: 2 }}>
 												<ProCoverImage />
-											</Item>
-											<Item>
+											</Box>
+											<Box>
 												<AboutMe />
-											</Item>
+											</Box>
 										</Stack>
 									</Box>
 								</Box>
@@ -203,20 +205,21 @@ function App() {
 									</Box>
 
 									<Box sx={{
-										width: "75%",
+										width: "80%",
 										ml: "20%",
+										mr: 5,
 										[themeApp.breakpoints.down("lg")]: {
 											width: "100%",
 											ml: "0px",
 										}
 									}}>
-										<Stack spacing={2}>
-											<Item>
+										<Stack>
+											<Box sx={{ mb: 2 }}>
 												<ProCoverImage />
-											</Item>
-											<Item>
+											</Box>
+											<Box>
 												<Friends />
-											</Item>
+											</Box>
 										</Stack>
 									</Box>
 								</Box>
@@ -236,20 +239,21 @@ function App() {
 									</Box>
 
 									<Box sx={{
-										width: "75%",
+										width: "80%",
 										ml: "20%",
+										mr: 5,
 										[themeApp.breakpoints.down("lg")]: {
 											width: "100%",
 											ml: "0px",
 										}
 									}}>
-										<Stack spacing={2}>
-											<Item>
+										<Stack>
+											<Box sx={{ mb: 2 }}>
 												<ProCoverImage />
-											</Item>
-											<Item>
+											</Box>
+											<Box>
 												<Collections />
-											</Item>
+											</Box>
 										</Stack>
 									</Box>
 								</Box>
