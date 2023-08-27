@@ -17,6 +17,7 @@ import community from "/images/communityPic.png";
 import "firebase/database";
 import { doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { collection, setDoc } from "firebase/firestore";
+import { themeApp } from "../utils/Theme";
 
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -115,9 +116,18 @@ export default function Login() {
 		//   />
 		//   <Button onClick={handleSignIn}>Sign In</Button>
 		// </Box>
-		<Box sx={{ flexGrow: 1, mt: 8 }}>
-			<Grid container spacing={1}>
-				<Grid item xs={6}>
+		<Box sx={{
+			flexGrow: 1, mt: 8,
+			[themeApp.breakpoints.down("lg")]: {
+				mt: 2
+			}
+		}}>
+			<Grid container spacing={1} sx={{
+				[themeApp.breakpoints.down("lg")]: {
+					flexDirection: "column"
+				}
+			}}>
+				<Grid item xs={12} md={6}>
 					<Item>
 						<Box sx={{ fontSize: "25px" }}>
 							WELCOME <br />
@@ -129,12 +139,13 @@ export default function Login() {
 							sizes="medium"
 							component="img"
 							width={"100%"}
+							height={"70%"}
 							image={community}
 							alt="Paella dish"
 						/>
 					</Item>
 				</Grid>
-				<Grid item xs={6}>
+				<Grid item xs={12} md={6}>
 					<Item>
 						<Box
 							sx={{
