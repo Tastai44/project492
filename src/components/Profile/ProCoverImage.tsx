@@ -13,6 +13,7 @@ import {
 import { dbFireStore } from "../../config/firebase";
 import { useParams } from "react-router-dom";
 import { User } from "../../interface/User";
+import ProfileInfo from "./ProfileInfo";
 
 export default function ProCoverImage() {
     const { userId } = useParams();
@@ -177,7 +178,8 @@ export default function ProCoverImage() {
                 sx={{
                     display: "flex",
                     justifyContent: "flex-end",
-                    mt: "-4%",
+                    mt: "-40px",
+                    mr: 0.5,
                     alignItems: "center",
                     alignContent: "center",
                 }}
@@ -205,6 +207,10 @@ export default function ProCoverImage() {
                     Add cover photo
                 </Button>
             </Box>
+            <ProfileInfo
+                userId={userId ?? ''}
+                userInfo={inFoUser}
+            />
         </div>
     );
 }

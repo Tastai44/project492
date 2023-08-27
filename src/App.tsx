@@ -127,7 +127,11 @@ function App() {
 						<>
 							<ProtectedRoute>
 								<Navigation />
-								<Box sx={{ display: "flex", mt: 11 }}>
+								<Box sx={{
+									display: "flex", mt: 11, [themeApp.breakpoints.down("md")]: {
+										mt: 7
+									},
+								}}>
 									<Box sx={{ width: "20%", position: "fixed", left: "0", ml: 5 }}>
 										<ProLeftside />
 									</Box>

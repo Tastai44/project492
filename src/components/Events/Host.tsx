@@ -60,7 +60,7 @@ export default function Host({ hostId }: IData) {
                             />
                         </Box>
                         <Divider light />
-                        <Box sx={{ m: 1, fontSize: "18px" }}>
+                        <Box sx={{ m: 1, fontSize: "18px", textAlign: "center" }}>
                             {u.firstName} {u.lastName}
                         </Box>
                     </NavLink>

@@ -51,7 +51,7 @@ export default function SmallMenu(props: IData) {
             </Box>
             <Divider />
             <List>
-                <ListItem disablePadding>
+                <ListItem disablePadding onClick={props.handleOpenMenu}>
                     <NavLink
                         to="/"
                         style={({ isActive, isPending }) => {
@@ -72,7 +72,7 @@ export default function SmallMenu(props: IData) {
                     </NavLink>
                 </ListItem>
 
-                <ListItem disablePadding>
+                <ListItem disablePadding onClick={props.handleOpenMenu}>
                     <NavLink
                         to={`/friends/${userInfo.uid}`}
                         style={({ isActive, isPending }) => {
@@ -93,7 +93,7 @@ export default function SmallMenu(props: IData) {
                     </NavLink>
                 </ListItem>
 
-                <ListItem disablePadding>
+                <ListItem disablePadding onClick={props.handleOpenMenu}>
                     <NavLink
                         to="/members"
                         style={({ isActive, isPending }) => {
@@ -114,7 +114,7 @@ export default function SmallMenu(props: IData) {
                     </NavLink>
                 </ListItem>
 
-                <ListItem disablePadding>
+                <ListItem disablePadding onClick={props.handleOpenMenu}>
                     <NavLink
                         to="/events"
                         style={({ isActive, isPending }) => {
@@ -135,7 +135,7 @@ export default function SmallMenu(props: IData) {
                     </NavLink>
                 </ListItem>
 
-                <ListItem disablePadding>
+                <ListItem disablePadding onClick={props.handleOpenMenu}>
                     <NavLink
                         to="/topics"
                         style={({ isActive, isPending }) => {
@@ -155,7 +155,7 @@ export default function SmallMenu(props: IData) {
                         </ListItemButton>
                     </NavLink>
                 </ListItem>
-                <ListItem disablePadding>
+                <ListItem disablePadding onClick={props.handleOpenMenu}>
                     <NavLink
                         to="/groups"
                         style={({ isActive, isPending }) => {
@@ -187,7 +187,7 @@ export default function SmallMenu(props: IData) {
                     <List component="div" disablePadding>
                         {props.inFoUser.map((user) => (
                             <NavLink key={user.uid} to={`/profileBlog/${user.uid}`} style={{ color: "black" }}>
-                                <ListItemButton sx={{ pl: 4 }}>
+                                <ListItemButton sx={{ pl: 4 }} onClick={props.handleOpenMenu}>
                                     <ListItemIcon>
                                         <Avatar src={user.profilePhoto} />
                                     </ListItemIcon>
