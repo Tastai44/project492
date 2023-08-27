@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import EditGroup from "./EditGroup";
 import GroupChatBox from "../GroupChat/GroupChatBox";
 import PopupAlert from "../PopupAlert";
+import { themeApp } from "../../utils/Theme";
 
 interface IData {
 	coverPhoto: string;
@@ -24,9 +25,7 @@ interface IData {
 	details: string;
 }
 
-export default function ProCoverImage(
-	props: IData,
-) {
+export default function ProCoverImage(props: IData) {
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [open, setOpen] = React.useState(false);
 	const handleOpen = () => setOpen(true);
@@ -104,14 +103,38 @@ export default function ProCoverImage(
 					marginTop: "-50px",
 				}}
 			>
-				<Card sx={{ width: "95%", backgroundColor: "white", display: "flex" }}>
-					<Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
+				<Card
+					sx={{
+						width: "95%",
+						backgroundColor: "white",
+						display: "flex",
+						[themeApp.breakpoints.down("md")]: {
+							background:
+								"linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 1))",
+							width: "100%",
+						},
+					}}
+				>
+					<Box
+						sx={{
+							display: "flex",
+							flexDirection: "column",
+							width: "100%",
+							[themeApp.breakpoints.down("lg")]: {
+								textAlign: "center",
+							},
+						}}
+					>
 						<Box
 							sx={{
 								display: "flex",
 								justifyContent: "space-between",
 								alignItems: "center",
 								width: "100%",
+								[themeApp.breakpoints.down("md")]: {
+									flexDirection: "column",
+									textAlign: "center"
+								},
 							}}
 						>
 							<Box
@@ -120,13 +143,23 @@ export default function ProCoverImage(
 									ml: 1,
 									display: "flex",
 									justifyContent: "flex-start",
-									fontSize: "20px",
+									fontSize: "25px",
+									[themeApp.breakpoints.down("md")]: {
+										justifyContent: "center",
+										color: "white",
+										textShadow: "5px 5px 5px black",
+									},
 								}}
 							>
 								{props.title}
 							</Box>
 							<Box
-								sx={{ display: "flex", gap: 0.5, m: 1, alignItems: "center" }}
+								sx={{
+									display: "flex",
+									gap: 0.5,
+									m: 1,
+									alignItems: "center"
+								}}
 							>
 								<Button
 									onClick={() => handleOpenGroupChat(props.gId)}
@@ -189,7 +222,12 @@ export default function ProCoverImage(
 							</Box>
 						</Box>
 						<Divider light sx={{ mb: 1 }} />
-						<Box sx={{ display: "flex", justifyContent: "space-between" }}>
+						<Box sx={{
+							display: "flex", justifyContent: "space-between", [themeApp.breakpoints.down("md")]: {
+								flexWrap: "wrap",
+								justifyContent: "center",
+							},
+						}}>
 							<Box sx={{ display: "flex", gap: 1, m: 1, alignItems: "center" }}>
 								<DateRangeIcon />
 								<div>Create date: {props.createAt}</div>

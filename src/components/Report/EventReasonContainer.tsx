@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect, useMemo } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -6,7 +6,6 @@ import { Button, IconButton, Modal, Stack, Typography } from "@mui/material";
 
 import DetailCard from "../../components/Events/DetailCard";
 import LeftSideContainer from "../../components/Events/LeftSideContainer";
-import HeldMap from "../../components/Events/HeldMap";
 import CoverPhoto from "../../components/Events/CoverPhoto";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 
@@ -31,6 +30,8 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import PopupAlert from "../PopupAlert";
 import ReasonContent from "./ReasonContent";
+import InterestedContainer from "../Events/InterestedContainer";
+
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -48,11 +49,11 @@ interface IFunction {
 }
 
 export default function EventReasonContainer(props: IData & IFunction) {
-  const [openShare, setOpenShare] = React.useState(false);
+  const [openShare, setOpenShare] = useState(false);
   const handleOpenShare = () => setOpenShare(true);
   const handleCloseShare = () => setOpenShare(false);
-  const [data, setData] = React.useState<EventPost[]>([]);
-  React.useEffect(() => {
+  const [data, setData] = useState<EventPost[]>([]);
+  useEffect(() => {
     const fetchData = query(
       collection(dbFireStore, "events"),
       where("eventId", "==", props.eventId),
@@ -73,9 +74,9 @@ export default function EventReasonContainer(props: IData & IFunction) {
     };
   }, [props.eventId]);
 
-  const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+  const [inFoUser, setInFoUser] = useState<User[]>([]);
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-  React.useMemo(() => {
+  useMemo(() => {
     const fetchData = async () => {
       try {
         const q = query(
@@ -232,7 +233,7 @@ export default function EventReasonContainer(props: IData & IFunction) {
                                   <LeftSideContainer evenetData={data} />
                                 </Item>
                               </Grid>
-                              <Grid item xs={7}>
+                              <Grid item xs={12} md={7}>
                                 <Item>
                                   <DetailCard
                                     details={e.details}
@@ -270,7 +271,9 @@ export default function EventReasonContainer(props: IData & IFunction) {
                               </Grid>
                               <Grid item xs={2.5}>
                                 <Item>
-                                  <HeldMap />
+                                  <InterestedContainer
+                                    interestedPeople={e.interest}
+                                  />
                                 </Item>
                               </Grid>
                             </Grid>

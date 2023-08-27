@@ -11,7 +11,7 @@ interface IData {
 export default function LeftSideContainer(props: IData) {
 	return (
 		<div>
-			<Box sx={{ display: "flex", flexDirection: "column" }}>
+			<Box sx={{ display: { xs: "none", md: "flex" }, flexDirection: "column" }}>
 				<Host hostId={props.hostId} />
 				<Members
 					hostId={props.hostId}
