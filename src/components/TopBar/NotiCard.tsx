@@ -63,8 +63,6 @@ export default function NotiCard(props: IData) {
             <Modal
                 open={openChat}
                 onClose={handleCloseChat}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
             >
                 <Box>
                     <ChatBox uId={senderId} handleClose={handleCloseChat} />

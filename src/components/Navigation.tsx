@@ -265,7 +265,11 @@ export default function Navigation() {
 	const renderSmallScreenMenu = (
 		<SmallMenu
 			openMenu={openMenu}
+			inFoUser={inFoUser}
+			userId={userInfo.uid ?? ""}
 			handleOpenMenu={handleOpenMenu}
+			handleLogout={handleLogout}
+
 		/>
 	);
 

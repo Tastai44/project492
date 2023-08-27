@@ -223,7 +223,7 @@ export default function ChatBox(props: IFunction & IData) {
 	};
 
 	return (
-		<div>
+		<>
 			<Modal
 				open={openEmoji}
 				onClose={handleCloseEmoji}
@@ -316,10 +316,9 @@ export default function ChatBox(props: IFunction & IData) {
 							name="message"
 							variant="outlined"
 							multiline
-							maxRows={1}
 							sx={{
 								borderRadius: "10px",
-								height: "40px",
+								minHeight: "40px",
 								backgroundColor: "primary.contrastText",
 								overflow: "auto",
 								width: "100%",
@@ -387,6 +386,6 @@ export default function ChatBox(props: IFunction & IData) {
 					)}
 				</Box>
 			</Paper>
-		</div >
+		</ >
 	);
 }
