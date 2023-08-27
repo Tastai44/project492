@@ -17,8 +17,8 @@ import Content from "../../components/MContainer/Content";
 import { styleBoxPop } from "../../utils/styleBox";
 import SearchPost from "../../components/Profile/SearchPost";
 import SearchBar from "../../helper/SearchBar";
-
-
+import { themeApp } from "../../utils/Theme";
+import TabLink from "./TabLink";
 
 export default function Collections() {
 	const { userId } = useParams();
@@ -66,8 +66,12 @@ export default function Collections() {
 		const value = event.target.value;
 		setValue(value);
 	};
+
 	return (
 		<div>
+			<TabLink
+				userId={userId ?? ""}
+			/>
 			<Modal
 				open={openPost}
 				onClose={handleClosePost}
@@ -103,15 +107,22 @@ export default function Collections() {
 						}}
 					>
 						<Box sx={{ m: 1, fontSize: "20px" }}>Collections</Box>
-						<SearchBar
-							searchValue={searchValue}
-							handleSearch={handleSearch}
-						/>
+						<Box sx={{
+							[themeApp.breakpoints.down("lg")]: {
+								mr: 2,
+							}
+						}}>
+							<SearchBar
+								searchValue={searchValue}
+								handleSearch={handleSearch}
+							/>
+
+						</Box>
 					</Box>
 					<Divider light sx={{ background: "grey", mb: 1 }} />
 					{searchValue === "" ? (
 						<>
-							{postData.length !== 0 ? (
+							{postData.some((picture) => picture.photoPost.length !== 0) ? (
 								<Grid sx={{ flexGrow: 1, gap: 1 }} container>
 									<ImageList
 										sx={{
@@ -140,7 +151,7 @@ export default function Collections() {
 											ml: 1,
 										}}
 									>
-										You have no friend...
+										There is no data to show
 									</Typography>
 								</>
 							)}

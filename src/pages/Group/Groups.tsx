@@ -1,18 +1,22 @@
-import { useState, useEffect } from "react";
-import GroupContainer from "../../components/Groups/GroupContainer";
-import { Modal, Box } from "@mui/material";
+import { useState, useEffect, useMemo } from "react";
+import { Modal, Box, Button, Divider, Typography } from "@mui/material";
 import AddGroup from "../../components/Groups/AddGroup";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, getDocs, where } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
 import { IGroup } from "../../interface/Group";
-
+import { User } from "../../interface/User";
+import SearchContent from "../../components/TopBar/SearchContent";
+import { NavLink } from "react-router-dom";
+import EachGroup from "../../components/Groups/EachGroup";
+import SearchIcon from "@mui/icons-material/Search";
+import { themeApp } from "../../utils/Theme";
 
 export default function Groups() {
 	const [open, setOpen] = useState(false);
-	const handleOpen = () => setOpen(true);
-	const handleClose = () => setOpen(false);
-
 	const [groupData, setGroupData] = useState<IGroup[]>([]);
+	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+	const [openSearch, setOpenSearch] = useState<boolean>(false);
+
 	useEffect(() => {
 		const fetchData = query(
 			collection(dbFireStore, "groups"),
@@ -33,6 +37,40 @@ export default function Groups() {
 		};
 	}, []);
 
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	useMemo(() => {
+		const fetchData = async () => {
+			try {
+				const q = query(
+					collection(dbFireStore, "users"),
+					where("uid", "==", userInfo.uid)
+				);
+				const querySnapshot = await getDocs(q);
+				const queriedData = querySnapshot.docs.map(
+					(doc) =>
+					({
+						uid: doc.id,
+						...doc.data(),
+					} as User)
+				);
+				setInFoUser(queriedData);
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		};
+		fetchData();
+	}, [userInfo.uid]);
+
+	const handleOpen = () => setOpen(true);
+	const handleClose = () => setOpen(false);
+
+	const handleOpenSearch = () => {
+		setOpenSearch(true);
+	};
+	const handleCloseSearch = () => {
+		setOpenSearch(false);
+	};
+
 	return (
 		<>
 			<Modal
@@ -45,10 +83,74 @@ export default function Groups() {
 					<AddGroup closeEdit={handleClose} />
 				</Box>
 			</Modal>
-			<GroupContainer
-				groupData={groupData}
-				openAddGroup={handleOpen}
-			/>
+			<Box sx={{ width: "100%", bgcolor: "background.paper", color: "black" }}>
+				<SearchContent
+					openSearchBar={openSearch}
+					handleCloseSearchBar={handleCloseSearch}
+					inFoUser={inFoUser}
+				/>
+				<Box
+					sx={{
+						display: "flex",
+						justifyContent: "space-between",
+						alignItems: "center",
+						p: 1,
+						[themeApp.breakpoints.down("lg")]: {
+							flexDirection: "column"
+						}
+					}}
+				>
+					<Typography variant="h4" sx={{ mr: 1 }}>Groups</Typography>
+					<Box
+						sx={{
+							display: "flex",
+							gap: "5px",
+						}}
+					>
+						<Button
+							size="small"
+							variant="outlined"
+							startIcon={<SearchIcon />}
+							sx={{
+								border: "1px solid #CCCCCC",
+								width: "100px",
+								color: "black",
+								"&:hover": {
+									backgroundColor: "primary.contrastText"
+								},
+							}}
+							onClick={handleOpenSearch}
+						>
+							Search...
+						</Button>
+						<Button
+							size="small"
+							sx={{
+								fontSize: "16px",
+								"&:hover": { backgroundColor: "#e8e8e8", color: "black" },
+								backgroundColor: "#A020F0",
+								color: "#fff",
+							}}
+							onClick={handleOpen}
+						>
+							Create Group
+						</Button>
+					</Box>
+				</Box>
+				<Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
+				{groupData
+					.filter(
+						(item) =>
+							item.status === "Public" ||
+							(item.hostId === userInfo.uid) ||
+							item.members.some((member) => member === userInfo.uid)
+					)
+					.map((g) => (
+						<NavLink key={g.gId} to={`/groupDetail/${g.gId}`}>
+							<EachGroup title={g.groupName} />
+						</NavLink>
+					))}
+			</Box>
 		</>
 	);
 }

@@ -28,6 +28,7 @@ import { Item } from "../../App";
 import ShareContent from "./ShareContent";
 import { EventPost } from "../../interface/Event";
 import ShareEvent from "../../components/Events/ShareEvent";
+import TabLink from "./TabLink";
 
 export default function Blog() {
 	const { userId } = useParams();
@@ -124,10 +125,13 @@ export default function Blog() {
 
 	return (
 		<div>
+			<TabLink
+				userId={userId ?? ""}
+			/>
 			{inFoUser.map((m) => (
 				<Box sx={{ flexGrow: 1 }} key={m.uid}>
 					<Grid container spacing={2}>
-						<Grid item xs={9}>
+						<Grid item lg={9} md={12} sm={12}>
 							<Item sx={{ backgroundColor: "#fff", margin: 1 }}>
 								<PostForm inFoUser={inFoUser} />
 							</Item>
@@ -387,7 +391,7 @@ export default function Blog() {
 							)}
 						</Grid>
 
-						<Grid item xs={3}>
+						<Grid item xs={3} sx={{ display: { xs: "none", lg: "block" } }}>
 							<Item>
 								<FormControl fullWidth sx={{ mb: 1, backgroundColor: "white" }}>
 									<InputLabel id="demo-simple-select-label">

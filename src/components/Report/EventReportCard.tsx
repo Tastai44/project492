@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Box, Button, TextField } from "@mui/material";
-import { styleBox } from "../../utils/styleBox";
+import { styleBoxReport } from "../../utils/styleBox";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import {
@@ -64,7 +64,7 @@ export default function EventReportCard(props: IFunction & IData) {
 	};
 
 	return (
-		<Box sx={styleBox}>
+		<Box sx={styleBoxReport}>
 			<Box sx={{ display: "flex", mb: 1 }}>
 				<Box
 					id="modal-modal-title"

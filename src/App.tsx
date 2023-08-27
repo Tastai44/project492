@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router-dom";
-import "./App.css";
 import Navigation from "./components/Navigation";
 import HomeFeed from "./pages/HomeFeed";
 import Members from "./pages/Members";
@@ -22,6 +21,8 @@ import ProCoverImage from "./components/Profile/ProCoverImage";
 import ProLeftside from "./components/Profile/ProLeftside";
 import { styled } from "@mui/material/styles";
 import ReportContent from "./pages/ReportContent";
+import { themeApp } from "./utils/Theme";
+
 
 export const Item = styled(Box)(({ theme }) => ({
 	...theme.typography.body2,
@@ -43,27 +44,24 @@ function App() {
 							<ProtectedRoute>
 								<Navigation
 								/>
-								<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
-									<Grid item xs={12}>
-										<Grid container justifyContent="space-between">
-											<Grid item xs={2}>
-												<Box style={{ position: "fixed" }}>
-													<LeftSide />
-												</Box>
-											</Grid>
+								<Box sx={{ display: "flex", justifyContent: "center", mt: 11 }}>
+									<Box sx={{ width: "20%", position: "fixed", left: "0" }}>
+										<LeftSide />
+									</Box>
 
-											<Grid item xs={7}>
-												<HomeFeed />
-											</Grid>
+									<Box sx={{
+										width: "55%",
+										[themeApp.breakpoints.down("lg")]: {
+											width: "100%",
+										}
+									}}>
+										<HomeFeed />
+									</Box>
 
-											<Grid item xs={2}>
-												<Box style={{ position: "fixed" }}>
-													<RightContainer />
-												</Box>
-											</Grid>
-										</Grid>
-									</Grid>
-								</Grid>
+									<Box sx={{ width: "20%", position: "fixed", right: "0" }}>
+										<RightContainer />
+									</Box>
+								</Box>
 							</ProtectedRoute>
 						</>
 					}
@@ -74,24 +72,14 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation />
-							{/* <Members /> */}
-							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
-								<Grid item xs={12}>
-									<Grid
-										container
-										justifyContent="space-between"
-										paddingLeft={5}
-										paddingRight={5}
-									>
-										<Grid item xs={2}>
-											<div style={{ position: "fixed" }}>
-												<LeftSide />
-											</div>
-										</Grid>
-										<Members />
-									</Grid>
-								</Grid>
-							</Grid>
+							<Box sx={{
+								display: "flex", mt: 11, ml: 5, mr: 5, [themeApp.breakpoints.down("md")]: {
+									justifyContent: "center"
+								},
+							}}>
+								<Members />
+							</Box>
+
 							{/* </ProtectedRoute> */}
 						</>
 					}
@@ -102,32 +90,24 @@ function App() {
 						<>
 							{/* <ProtectedRoute> */}
 							<Navigation />
-							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
-								<Grid item xs={12}>
-									<Grid
-										container
-										justifyContent="space-between"
-										paddingLeft={5}
-										paddingRight={5}
-									>
-										<Grid item xs={2}>
-											<div style={{ position: "fixed" }}>
-												<LeftSide />
-											</div>
-										</Grid>
+							<Box sx={{ display: "flex", justifyContent: "center", mt: 11 }}>
+								<Box sx={{ width: "20%", position: "fixed", left: "0" }}>
+									<LeftSide />
+								</Box>
 
-										<Grid item xs={7}>
-											<Topics />
-										</Grid>
+								<Box sx={{
+									width: "55%",
+									[themeApp.breakpoints.down("lg")]: {
+										width: "100%",
+									}
+								}}>
+									<Topics />
+								</Box>
 
-										<Grid item xs={2}>
-											<div style={{ position: "fixed" }}>
-												<RightContainer />
-											</div>
-										</Grid>
-									</Grid>
-								</Grid>
-							</Grid>
+								<Box sx={{ width: "20%", position: "fixed", right: "0" }}>
+									<RightContainer />
+								</Box>
+							</Box>
 							{/* </ProtectedRoute> */}
 						</>
 					}
@@ -137,43 +117,32 @@ function App() {
 					path={"/profileBlog/:userId"}
 					element={
 						<>
-							{/* <ProtectedRoute> */}
-							<Navigation
-							/>
+							<ProtectedRoute>
+								<Navigation />
+								<Box sx={{ display: "flex", mt: 11 }}>
+									<Box sx={{ width: "20%", position: "fixed", left: "0", ml: 5 }}>
+										<ProLeftside />
+									</Box>
 
-							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
-								<Grid item xs={12}>
-									<Grid
-										container
-										justifyContent="space-between"
-										paddingLeft={5}
-										paddingRight={5}
-										spacing={10}
-									>
-										<Grid item xs={2}>
-											<Item sx={{ backgroundColor: "#EEECEF" }}>
-												<ProLeftside />
-											</Item>
-										</Grid>
-										<Grid item xs={10}>
+									<Box sx={{
+										width: "75%",
+										ml: "20%",
+										[themeApp.breakpoints.down("lg")]: {
+											width: "100%",
+											ml: "0px",
+										}
+									}}>
+										<Stack spacing={2}>
 											<Item>
-												<Box sx={{ width: "100%" }}>
-													<Stack spacing={2}>
-														<Item>
-															<ProCoverImage />
-														</Item>
-														<Item>
-															<Blog />
-														</Item>
-													</Stack>
-												</Box>
+												<ProCoverImage />
 											</Item>
-										</Grid>
-									</Grid>
-								</Grid>
-							</Grid>
-
-							{/* </ProtectedRoute> */}
+											<Item>
+												<Blog />
+											</Item>
+										</Stack>
+									</Box>
+								</Box>
+							</ProtectedRoute>
 						</>
 					}
 				/>
@@ -181,42 +150,32 @@ function App() {
 					path={"/aboutMe/:userId"}
 					element={
 						<>
-							{/* <ProtectedRoute> */}
-							<Navigation
-							/>
-							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
-								<Grid item xs={12}>
-									<Grid
-										container
-										justifyContent="space-between"
-										paddingLeft={5}
-										paddingRight={5}
-										spacing={10}
-									>
-										<Grid item xs={2}>
-											<Item sx={{ backgroundColor: "#EEECEF" }}>
-												<ProLeftside />
-											</Item>
-										</Grid>
+							<ProtectedRoute>
+								<Navigation />
+								<Box sx={{ display: "flex", mt: 11 }}>
+									<Box sx={{ width: "20%", position: "fixed", left: "0", ml: 5 }}>
+										<ProLeftside />
+									</Box>
 
-										<Grid item xs={10}>
+									<Box sx={{
+										width: "75%",
+										ml: "20%",
+										[themeApp.breakpoints.down("lg")]: {
+											width: "100%",
+											ml: "0px",
+										}
+									}}>
+										<Stack spacing={2}>
 											<Item>
-												<Box sx={{ width: "100%" }}>
-													<Stack spacing={2}>
-														<Item>
-															<ProCoverImage />
-														</Item>
-														<Item>
-															<AboutMe />
-														</Item>
-													</Stack>
-												</Box>
+												<ProCoverImage />
 											</Item>
-										</Grid>
-									</Grid>
-								</Grid>
-							</Grid>
-							{/* </ProtectedRoute> */}
+											<Item>
+												<AboutMe />
+											</Item>
+										</Stack>
+									</Box>
+								</Box>
+							</ProtectedRoute>
 						</>
 					}
 				/>
@@ -224,42 +183,32 @@ function App() {
 					path={"/friends/:userId"}
 					element={
 						<>
-							{/* <ProtectedRoute> */}
-							<Navigation
-							/>
-							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
-								<Grid item xs={12}>
-									<Grid
-										container
-										justifyContent="space-between"
-										paddingLeft={5}
-										paddingRight={5}
-										spacing={10}
-									>
-										<Grid item xs={2}>
-											<Item sx={{ backgroundColor: "#EEECEF" }}>
-												<ProLeftside />
-											</Item>
-										</Grid>
+							<ProtectedRoute>
+								<Navigation />
+								<Box sx={{ display: "flex", mt: 11 }}>
+									<Box sx={{ width: "20%", position: "fixed", left: "0", ml: 5 }}>
+										<ProLeftside />
+									</Box>
 
-										<Grid item xs={10}>
+									<Box sx={{
+										width: "75%",
+										ml: "20%",
+										[themeApp.breakpoints.down("lg")]: {
+											width: "100%",
+											ml: "0px",
+										}
+									}}>
+										<Stack spacing={2}>
 											<Item>
-												<Box sx={{ width: "100%" }}>
-													<Stack>
-														<Item>
-															<ProCoverImage />
-														</Item>
-														<Item>
-															<Friends />
-														</Item>
-													</Stack>
-												</Box>
+												<ProCoverImage />
 											</Item>
-										</Grid>
-									</Grid>
-								</Grid>
-							</Grid>
-							{/* </ProtectedRoute> */}
+											<Item>
+												<Friends />
+											</Item>
+										</Stack>
+									</Box>
+								</Box>
+							</ProtectedRoute>
 						</>
 					}
 				/>
@@ -267,42 +216,32 @@ function App() {
 					path={"/collections/:userId"}
 					element={
 						<>
-							{/* <ProtectedRoute> */}
-							<Navigation
-							/>
-							<Grid sx={{ flexGrow: 1 }} container marginTop={5}>
-								<Grid item xs={12}>
-									<Grid
-										container
-										justifyContent="space-between"
-										paddingLeft={5}
-										paddingRight={5}
-										spacing={10}
-									>
-										<Grid item xs={2}>
-											<Item sx={{ backgroundColor: "#EEECEF" }}>
-												<ProLeftside />
-											</Item>
-										</Grid>
+							<ProtectedRoute>
+								<Navigation />
+								<Box sx={{ display: "flex", mt: 11 }}>
+									<Box sx={{ width: "20%", position: "fixed", left: "0", ml: 5 }}>
+										<ProLeftside />
+									</Box>
 
-										<Grid item xs={10}>
+									<Box sx={{
+										width: "75%",
+										ml: "20%",
+										[themeApp.breakpoints.down("lg")]: {
+											width: "100%",
+											ml: "0px",
+										}
+									}}>
+										<Stack spacing={2}>
 											<Item>
-												<Box sx={{ width: "100%" }}>
-													<Stack>
-														<Item>
-															<ProCoverImage />
-														</Item>
-														<Item>
-															<Collections />
-														</Item>
-													</Stack>
-												</Box>
+												<ProCoverImage />
 											</Item>
-										</Grid>
-									</Grid>
-								</Grid>
-							</Grid>
-							{/* </ProtectedRoute> */}
+											<Item>
+												<Collections />
+											</Item>
+										</Stack>
+									</Box>
+								</Box>
+							</ProtectedRoute>
 						</>
 					}
 				/>
@@ -314,9 +253,14 @@ function App() {
 					element={
 						<>
 							{/* <ProtectedRoute> */}
-							<Navigation
-							/>
-							<Events />
+							<Navigation />
+							<Box sx={{
+								display: "flex", mt: 11, ml: 5, mr: 5, [themeApp.breakpoints.down("md")]: {
+									justifyContent: "center"
+								},
+							}}>
+								<Events />
+							</Box>
 							{/* </ProtectedRoute> */}
 						</>
 					}
@@ -326,8 +270,7 @@ function App() {
 					element={
 						<>
 							{/* <ProtectedRoute> */}
-							<Navigation
-							/>
+							<Navigation />
 							<EventDetail />
 							{/* </ProtectedRoute> */}
 						</>
@@ -343,32 +286,25 @@ function App() {
 							{/* <ProtectedRoute> */}
 							<Navigation
 							/>
-							<Grid sx={{ flexGrow: 1 }} container spacing={2} marginTop={5}>
-								<Grid item xs={12}>
-									<Grid
-										container
-										justifyContent="space-between"
-										paddingLeft={5}
-										paddingRight={5}
-									>
-										<Grid item xs={2}>
-											<div style={{ position: "fixed" }}>
-												<LeftSide />
-											</div>
-										</Grid>
+							<Box sx={{ display: "flex", justifyContent: "center", mt: 11 }}>
+								<Box sx={{ width: "20%", position: "fixed", left: "0" }}>
+									<LeftSide />
+								</Box>
 
-										<Grid item xs={7}>
-											<Groups />
-										</Grid>
+								<Box sx={{
+									width: "55%",
+									[themeApp.breakpoints.down("lg")]: {
+										width: "100%",
+									}
+								}}>
+									<Groups />
+								</Box>
 
-										<Grid item xs={2}>
-											<div style={{ position: "fixed" }}>
-												<RightContainer />
-											</div>
-										</Grid>
-									</Grid>
-								</Grid>
-							</Grid>
+								<Box sx={{ width: "20%", position: "fixed", right: "0" }}>
+									<RightContainer />
+								</Box>
+							</Box>
+
 							{/* </ProtectedRoute> */}
 						</>
 					}

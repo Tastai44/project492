@@ -1,9 +1,8 @@
-import * as React from "react";
+import { useState, useRef, ChangeEvent, useEffect } from "react";
 import { Box, Button, Card, CardMedia, IconButton, Modal } from "@mui/material";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import { stylePreviewPhoto } from "../../utils/styleBox";
 import CancelIcon from "@mui/icons-material/Cancel";
-
 import {
     collection,
     query,
@@ -15,30 +14,30 @@ import { dbFireStore } from "../../config/firebase";
 import { useParams } from "react-router-dom";
 import { User } from "../../interface/User";
 
-
 export default function ProCoverImage() {
     const { userId } = useParams();
+    const [openPre, setOpenPre] = useState(false);
+    const [inFoUser, setInFoUser] = useState<User[]>([]);
 
-    const [openPre, setOpenPre] = React.useState(false);
     const handleOpenPre = () => setOpenPre(true);
     const handleClosePre = () => setOpenPre(false);
     const handleClearImage = () => {
         setPreviewImages([]);
         handleClosePre();
     };
-    const [reFresh, setReFresh] = React.useState(0);
+    const [reFresh, setReFresh] = useState(0);
     const handleRefresh = () => {
         setReFresh((pre) => pre + 1);
     };
-    const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-    const [previewImages, setPreviewImages] = React.useState<string[]>([]);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [previewImages, setPreviewImages] = useState<string[]>([]);
     const handleUploadClick = () => {
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
     };
     const handleFileChange = async (
-        event: React.ChangeEvent<HTMLInputElement>
+        event: ChangeEvent<HTMLInputElement>
     ) => {
         const files = event.target.files;
         if (files) {
@@ -86,8 +85,7 @@ export default function ProCoverImage() {
         }
     };
 
-    const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-    React.useEffect(() => {
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 const q = query(

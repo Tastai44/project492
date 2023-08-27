@@ -1,10 +1,6 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Stack from "@mui/material/Stack";
-import { Button, Divider, Modal, TextField, Typography } from "@mui/material";
+import { Button, Divider, Modal, TextField, Typography, Paper, Box } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { styled } from "@mui/material/styles";
 import UserCard from "./UserCard";
 import "firebase/database";
 import {
@@ -19,14 +15,6 @@ import { User } from "../../interface/User";
 import { IGroup } from "../../interface/Group";
 import ChatBox from "../Chat/ChatBox";
 import GroupChatBox from "../GroupChat/GroupChatBox";
-
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: "center",
-    color: theme.palette.text.secondary,
-}));
 
 export default function RightContainer() {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
@@ -129,7 +117,7 @@ export default function RightContainer() {
     }, [userInfo.uid]);
 
     return (
-        <Box sx={{ width: "100%" }}>
+        <Box sx={{ width: "100%", display: { xs: "none", lg: "flex" } }}>
             <Modal
                 open={openChat}
                 onClose={handleCloseChat}
@@ -150,8 +138,8 @@ export default function RightContainer() {
                     <GroupChatBox groupId={groupId} handleClose={handleCloseGroupChat} />
                 </Box>
             </Modal>
-            <Stack spacing={2}>
-                <Item style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <Box sx={{ width: "100%", mr: 5 }}>
+                <Paper sx={{ display: "flex", flexDirection: "column", mb: 2 }}>
                     <Box
                         sx={{
                             display: "flex",
@@ -163,7 +151,7 @@ export default function RightContainer() {
                     >
                         Friend
                     </Box>
-                    <Box>
+                    <Box sx={{ display: "flex", justifyContent: "center" }} >
                         <TextField
                             id="outlined-size-small"
                             size="small"
@@ -176,7 +164,8 @@ export default function RightContainer() {
                             value={searchValue}
                         />
                     </Box>
-                    <Box sx={{ display: "flex", justifyContent: "space-around", mb: 1 }}>
+                    <Divider style={{ background: "#EAEAEA", marginBottom: 5 }} />
+                    <Box sx={{ display: "flex", justifyContent: "space-around", mb: 0.5 }}>
                         <Button
                             onClick={() => handleIsActive(true)}
                             sx={{
@@ -200,7 +189,7 @@ export default function RightContainer() {
                             General
                         </Button>
                     </Box>
-                    <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
+                    <Divider style={{ background: "#EAEAEA", marginBottom: 5 }} />
                     {isActive ? (
                         <Box>
                             {inFoUser.some((user) => user.friendList?.length !== 0) ? (
@@ -228,7 +217,7 @@ export default function RightContainer() {
                                     )}
                                 </Box>
                             ) : (
-                                <Typography>You have no friend</Typography>
+                                <Typography sx={{ p: 1 }}>You have no friend</Typography>
                             )}
                         </Box>
                     ) : (
@@ -255,13 +244,13 @@ export default function RightContainer() {
                                     )}
                                 </Box>
                             ) : (
-                                <Typography>You have no friend</Typography>
+                                <Typography sx={{ p: 1 }}>You have no friend</Typography>
                             )}
                         </Box>
                     )}
-                </Item>
+                </Paper>
 
-                <Item style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Paper sx={{ display: "flex", flexDirection: "column" }}>
                     <Box
                         sx={{
                             display: "flex",
@@ -273,7 +262,7 @@ export default function RightContainer() {
                     >
                         Groups
                     </Box>
-                    <Box>
+                    <Box sx={{ display: "flex", justifyContent: "center" }}>
                         <TextField
                             id="outlined-size-small"
                             size="small"
@@ -324,11 +313,11 @@ export default function RightContainer() {
                                     ))}
                             </Box>
                         ) : (
-                            <Typography>You have no group</Typography>
+                            <Typography sx={{ p: 1 }}>You have no group</Typography>
                         )}
                     </Box>
-                </Item>
-            </Stack>
+                </Paper>
+            </Box>
         </Box>
     );
 }

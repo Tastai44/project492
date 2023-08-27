@@ -1,20 +1,19 @@
-import * as React from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useParams } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { Stack } from "@mui/material";
-
 import DetailCard from "../../components/Events/DetailCard";
 import LeftSideContainer from "../../components/Events/LeftSideContainer";
-import HeldMap from "../../components/Events/HeldMap";
 import CoverPhoto from "../../components/Events/CoverPhoto";
-
 import { dbFireStore } from "../../config/firebase";
 import { collection, query, orderBy, getDocs, where, onSnapshot } from "firebase/firestore";
-import { useParams } from "react-router-dom";
 import { EventPost } from "../../interface/Event";
 import ShareCard from "../../components/MContainer/ShareCard";
 import { User } from "../../interface/User";
+import { themeApp } from "../../utils/Theme";
+import InterestedContainer from "../../components/Events/InterestedContainer";
 
 const Item = styled(Box)(({ theme }) => ({
 	...theme.typography.body2,
@@ -24,11 +23,11 @@ const Item = styled(Box)(({ theme }) => ({
 
 export default function EventDetail() {
 	const { eventId } = useParams();
-	const [openShare, setOpenShare] = React.useState(false);
+	const [openShare, setOpenShare] = useState(false);
 	const handleOpenShare = () => setOpenShare(true);
 	const handleCloseShare = () => setOpenShare(false);
-	const [data, setData] = React.useState<EventPost[]>([]);
-	React.useEffect(() => {
+	const [data, setData] = useState<EventPost[]>([]);
+	useEffect(() => {
 		const fetchData = query(
 			collection(dbFireStore, "events"),
 			where("eventId", "==", eventId),
@@ -50,9 +49,9 @@ export default function EventDetail() {
 
 	}, [eventId]);
 
-	const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-	React.useMemo(() => {
+	useMemo(() => {
 		const fetchData = async () => {
 			try {
 				const q = query(
@@ -78,12 +77,16 @@ export default function EventDetail() {
 	return (
 		<div>
 			{data.map((e) => (
-				<Grid key={e.eventId} sx={{ flexGrow: 1 }} container marginTop={5}>
+				<Grid key={e.eventId} sx={{ flexGrow: 1 }} container>
 					<Grid
 						container
 						justifyContent="space-between"
-						paddingLeft={5}
-						paddingRight={5}
+						sx={{
+							pl: 5, pr: 5,
+							[themeApp.breakpoints.down("lg")]: {
+								pl: 0, pr: 0, top: 0
+							}
+						}}
 						spacing={10}
 					>
 						<Grid item xs={12}>
@@ -126,14 +129,16 @@ export default function EventDetail() {
 															<LeftSideContainer evenetData={data} />
 														</Item>
 													</Grid>
-													<Grid item xs={7}>
+													<Grid item xs={12} md={7}>
 														<Item>
 															<DetailCard details={e.details} eventId={e.eventId} />
 														</Item>
 													</Grid>
 													<Grid item xs={2.5}>
 														<Item>
-															<HeldMap />
+															<InterestedContainer
+																interestedPeople={e.interest}
+															/>
 														</Item>
 													</Grid>
 												</Grid>

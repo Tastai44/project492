@@ -9,7 +9,7 @@ interface IData {
 
 export default function InterestedContainer({ interestedPeople }: IData) {
     return (
-        <Paper>
+        <Paper sx={{ display: { xs: "none", md: "block" } }}>
             <Box
                 sx={{
                     display: "flex",

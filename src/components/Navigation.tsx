@@ -10,7 +10,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
 import Logo from "/images/logoCmu.png";
 import { Avatar, Button } from "@mui/material";
-
+import MenuIcon from '@mui/icons-material/Menu';
 import { NavLink, useNavigate } from "react-router-dom";
 
 import { auth } from "../config/firebase";
@@ -33,6 +33,7 @@ import SearchContent from "./TopBar/SearchContent";
 import { IGroupMessageNoti, IMessageNoti, INoti } from "../interface/Notification";
 import MessageNoti from "./TopBar/MessageNoti";
 import { IGroup } from "../interface/Group";
+import SmallMenu from "./TopBar/SmallMenu";
 
 export default function Navigation() {
 	const navigate = useNavigate();
@@ -51,6 +52,7 @@ export default function Navigation() {
 	const [groupMessageNoti, setGroupMessageNoti] = useState<IGroupMessageNoti[]>();
 	const [messageNumber, setMessageNumber] = useState(0);
 	const [groupData, setGroupData] = useState<IGroup[]>([]);
+	const [openMenu, setOpenMenu] = useState(false);
 
 	const handleOpenSearch = () => {
 		setOpenSearch(true);
@@ -220,6 +222,10 @@ export default function Navigation() {
 		setOpenMessageNoti(null);
 	};
 
+	const handleOpenMenu = () => {
+		setOpenMenu(!openMenu);
+	};
+
 	const menuId = "primary-search-account-menu";
 	const renderMenu = (
 		<UserMenu
@@ -256,6 +262,13 @@ export default function Navigation() {
 		/>
 	);
 
+	const renderSmallScreenMenu = (
+		<SmallMenu
+			openMenu={openMenu}
+			handleOpenMenu={handleOpenMenu}
+		/>
+	);
+
 	const IsAdmin = inFoUser.some((user) => user.userRole === "admin");
 
 	return (
@@ -265,7 +278,7 @@ export default function Navigation() {
 				handleCloseSearchBar={handleCloseSearch}
 				inFoUser={inFoUser}
 			/>
-			<Box sx={{ flexGrow: 1 }}>
+			<Box sx={{ flexGrow: 1, mb: { sm: 7, md: 9 } }}>
 				<AppBar
 					position="fixed"
 					sx={{ backgroundColor: "#8E51E2", color: "black" }}
@@ -298,6 +311,7 @@ export default function Navigation() {
 							startIcon={<SearchIcon />}
 							sx={{
 								ml: 1, color: "black", backgroundColor: "primary.contrastText",
+								display: { xs: "none", md: "flex" },
 								"&:hover": {
 									backgroundColor: "white"
 								}
@@ -353,11 +367,53 @@ export default function Navigation() {
 								</IconButton>
 							))}
 						</Box>
+						{(!openMenu) && (
+							<>
+								<IconButton
+									sx={{ color: "white", display: { xs: "flex", md: "none" } }}
+									onClick={handleOpenSearch}
+								>
+									<SearchIcon />
+								</IconButton>
+
+								<IconButton
+									size="large"
+									sx={{ display: { xs: "flex", md: "none" } }}
+									aria-label="show 4 new mails"
+									color="inherit"
+									aria-controls={messageNotiList}
+									aria-haspopup="true"
+									onClick={handleOpenMessageNoti}
+								>
+									<Badge badgeContent={messageNumber} color="error">
+										<MailIcon sx={{ color: "white" }} />
+									</Badge>
+								</IconButton>
+								<IconButton
+									size="large"
+									sx={{ display: { xs: "flex", md: "none" } }}
+									aria-label="show 17 new notifications"
+									color="inherit"
+									aria-controls={mobileMenuId}
+									aria-haspopup="true"
+									onClick={handleMobileMenuOpen}
+								>
+									<Badge badgeContent={notifications?.filter((noti) => !noti.isRead && noti.status !== "Private").length} color="error">
+										<NotificationsIcon sx={{ color: "white" }} />
+									</Badge>
+								</IconButton>
+								<IconButton onClick={handleOpenMenu} sx={{ display: { xs: "flex", md: "none" } }}>
+									<MenuIcon sx={{ color: "white" }} />
+								</IconButton>
+							</>
+						)}
+
 					</Toolbar>
 				</AppBar>
 				{renderMobileMenu}
 				{renderMenu}
 				{renderMessageNoti}
+				{renderSmallScreenMenu}
 			</Box>
 		</>
 	);

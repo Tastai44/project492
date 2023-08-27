@@ -1,5 +1,4 @@
-import { Box, Button, Divider, Modal } from "@mui/material";
-import { Item } from "../MContainer/MContainer";
+import { Box, Button, Divider, Modal, Paper } from "@mui/material";
 import FlagCircleIcon from "@mui/icons-material/FlagCircle";
 
 import Tooltip from "@mui/material/Tooltip";
@@ -18,7 +17,7 @@ export default function DetailCard(props: IData) {
     };
     const handleCloseReport = () => setOpenReportPost(false);
     return (
-        <Box>
+        <Box sx={{ width: "100%" }}>
             <Modal
                 open={openReportPost}
                 onClose={handleCloseReport}
@@ -32,7 +31,7 @@ export default function DetailCard(props: IData) {
                     />
                 </Box>
             </Modal>
-            <Item>
+            <Paper sx={{ p: 1 }}>
                 <Box
                     sx={{
                         display: "flex",
@@ -51,7 +50,7 @@ export default function DetailCard(props: IData) {
                 <Box sx={{ textAlign: "left" }}>
                     <Box sx={{ m: 2, textAlign: "justify" }}>{props.details}</Box>
                 </Box>
-            </Item>
+            </Paper>
         </Box>
     );
 }

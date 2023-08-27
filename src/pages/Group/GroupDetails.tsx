@@ -16,6 +16,7 @@ import PostGroupForm from "../../components/Groups/PostGroupForm";
 import { Post } from "../../interface/PostContent";
 import Content from "../../components/Report/Content";
 import ShareContent from "../Profile/ShareContent";
+import { themeApp } from "../../utils/Theme";
 
 export default function GroupDetails() {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
@@ -125,8 +126,12 @@ export default function GroupDetails() {
                     <Grid
                         container
                         justifyContent="space-between"
-                        paddingLeft={5}
-                        paddingRight={5}
+                        sx={{
+                            pl: 5, pr: 5,
+                            [themeApp.breakpoints.down("lg")]: {
+                                pl: 0, pr: 0
+                            }
+                        }}
                         spacing={10}
                     >
                         <Grid item xs={12}>
@@ -157,13 +162,31 @@ export default function GroupDetails() {
                                                             />
                                                         </Item>
                                                     </Grid>
-                                                    <Grid item xs={7}>
+                                                    <Grid item xs={12} md={7}>
                                                         <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
                                                             <PostGroupForm
                                                                 inFoUser={inFoUser}
                                                                 groupName={g.groupName}
                                                                 groupId={g.gId}
                                                             />
+                                                        </Item>
+                                                        <Item sx={{ display: { xs: "block", md: "none" } }}>
+                                                            <FormControl fullWidth sx={{ mb: 1, backgroundColor: "white" }}>
+                                                                <InputLabel id="demo-simple-select-label">
+                                                                    Content type
+                                                                </InputLabel>
+                                                                <Select
+                                                                    labelId="demo-simple-select-label"
+                                                                    id="demo-simple-select"
+                                                                    value={type}
+                                                                    label="Content type"
+                                                                    onChange={handleChangeType}
+                                                                >
+                                                                    <MenuItem value={"General"}>General</MenuItem>
+                                                                    <MenuItem value={"Share"}>Share</MenuItem>
+                                                                    <MenuItem value={"Report"}>Report</MenuItem>
+                                                                </Select>
+                                                            </FormControl>
                                                         </Item>
                                                         <Item>
                                                             {
@@ -256,7 +279,7 @@ export default function GroupDetails() {
                                                         </Item>
                                                     </Grid>
                                                     <Grid item xs={2.5}>
-                                                        <Item>
+                                                        <Item sx={{ display: { xs: "none", md: "block" } }}>
                                                             <FormControl fullWidth sx={{ mb: 1, backgroundColor: "white" }}>
                                                                 <InputLabel id="demo-simple-select-label">
                                                                     Content type

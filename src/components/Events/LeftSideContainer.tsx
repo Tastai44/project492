@@ -9,7 +9,7 @@ interface IData {
 
 export default function LeftSideContainer({ evenetData }: IData) {
     return (
-        <div>
+        <Box sx={{ display: { xs: "none", md: "block" } }}>
             {evenetData.map((e) => (
                 <Box sx={{ display: "flex", flexDirection: "column" }} key={e.eventId}>
                     <Host
@@ -20,6 +20,6 @@ export default function LeftSideContainer({ evenetData }: IData) {
                     />
                 </Box>
             ))}
-        </div>
+        </Box>
     );
 }

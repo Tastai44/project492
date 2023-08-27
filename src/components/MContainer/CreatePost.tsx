@@ -36,19 +36,7 @@ import PopupAlert from "../PopupAlert";
 import LocationCard from "./LocationCard";
 import { User } from "../../interface/User";
 import { createNoti } from "../NotificationFunction";
-
-const styleBoxPop = {
-	position: "absolute",
-	top: "50%",
-	left: "50%",
-	transform: "translate(-50%, -50%)",
-	width: 400,
-	bgcolor: "background.paper",
-	border: "2px solid #000",
-	boxShadow: 24,
-	color: "black",
-	p: 4,
-};
+import { styleCreatePost } from "../../utils/styleBox";
 
 interface IHandle {
 	handleCloseCratePost: () => void;
@@ -251,7 +239,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 				handletSaveLocation={handletSaveLocation}
 				handleChangeLocation={handleChangeLocation}
 			/>
-			<Box sx={styleBoxPop}>
+			<Box sx={styleCreatePost}>
 				<Box sx={{ display: "flex", justifyContent: "space-between" }}>
 					<Box
 						id="modal-modal-title"

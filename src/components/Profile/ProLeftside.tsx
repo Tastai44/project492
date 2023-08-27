@@ -323,7 +323,7 @@ export default function ProLeftside() {
 				</Box>
 			</Modal>
 			{inFoUser.map((m) => (
-				<Box key={m.uid}>
+				<Box key={m.uid} sx={{ display: { xs: "none", lg: "flex" } }}>
 					<Modal
 						open={open}
 						onClose={handleClose}

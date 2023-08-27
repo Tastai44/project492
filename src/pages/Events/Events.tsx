@@ -2,17 +2,11 @@ import { useState, ChangeEvent } from "react";
 import { Button, Modal, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import { styled } from "@mui/material/styles";
 import EventContainer from "../../components/Events/EventContainer";
 import AddEvent from "../../components/Events/AddEvent";
 import SearchBar from "../../helper/SearchBar";
-
-const Item = styled(Box)(({ theme }) => ({
-	...theme.typography.body2,
-	padding: theme.spacing(1),
-	textAlign: "center",
-	color: theme.palette.text.secondary,
-}));
+import { themeApp } from "../../utils/Theme";
+import { Item } from "../../App";
 
 export default function Events() {
 	const [open, setOpen] = useState(false);
@@ -37,13 +31,17 @@ export default function Events() {
 					/>
 				</Box>
 			</Modal>
-			<Box sx={{ width: "100%", marginTop: 7 }}>
-				<Stack spacing={2}>
+			<Box sx={{
+				width: "100%"
+			}}>
+				<Stack>
 					<Item
 						sx={{
 							display: "flex",
 							justifyContent: "space-between",
-							alignItems: "center",
+							alignItems: "center", [themeApp.breakpoints.down("md")]: {
+								flexDirection: "column"
+							},
 						}}
 					>
 						<Typography
@@ -51,7 +49,11 @@ export default function Events() {
 						>
 							CMU Events
 						</Typography>
-						<Box sx={{ display: "flex", alignItems: "center" }}>
+						<Box sx={{
+							display: "flex", alignItems: "center", [themeApp.breakpoints.down("md")]: {
+								flexDirection: "column"
+							},
+						}}>
 							<SearchBar
 								searchValue={searchValue}
 								handleSearch={handleSearch}
@@ -70,13 +72,18 @@ export default function Events() {
 								Add an event
 							</Button>
 						</Box>
-
 					</Item>
-					<Item sx={{ display: "flex", justifyContent: "center" }}>
+
+					<Box sx={{
+						display: "flex",
+						[themeApp.breakpoints.down("md")]: {
+							justifyContent: "center"
+						},
+					}}>
 						<EventContainer
 							searchValue={searchValue}
 						/>
-					</Item>
+					</Box>
 				</Stack>
 			</Box>
 		</>
