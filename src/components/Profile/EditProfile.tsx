@@ -22,18 +22,8 @@ import {
     where,
     getDocs,
 } from "firebase/firestore";
-
-const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 400,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
-};
+import { styleEditProfile } from "../../utils/styleBox";
+import { themeApp } from "../../utils/Theme";
 
 interface Ihandle {
     closeEdit: () => void;
@@ -134,7 +124,7 @@ export default function BasicModal({
 
     return (
         <div style={{ color: "black" }}>
-            <Box sx={style}>
+            <Box sx={styleEditProfile}>
                 <Typography id="modal-modal-title" variant="h5">
                     Edit Profile
                 </Typography>
@@ -161,7 +151,11 @@ export default function BasicModal({
                         />
                     </Box>
                     <TextField
-                        sx={{ width: 400, mb: 1 }}
+                        sx={{
+                            width: 400, mb: 1, [themeApp.breakpoints.down("md")]: {
+                                width: 300,
+                            },
+                        }}
                         id="outlined-basic"
                         label="Username"
                         variant="outlined"
@@ -204,7 +198,11 @@ export default function BasicModal({
                         </FormControl>
                     </Box>
                     <TextField
-                        sx={{ width: 400, mb: 1 }}
+                        sx={{
+                            width: 400, mb: 1, [themeApp.breakpoints.down("md")]: {
+                                width: 300,
+                            }
+                        }}
                         id="outlined-basic"
                         label="Faculty"
                         variant="outlined"
@@ -214,7 +212,11 @@ export default function BasicModal({
                     />
                     <TextField
                         multiline
-                        sx={{ width: 400, mb: 1 }}
+                        sx={{
+                            width: 400, mb: 1, [themeApp.breakpoints.down("md")]: {
+                                width: 300,
+                            }
+                        }}
                         id="outlined-basic"
                         label="About me"
                         variant="outlined"
@@ -223,7 +225,11 @@ export default function BasicModal({
                         value={profile.aboutMe}
                     />
                     <TextField
-                        sx={{ width: 400, mb: 1 }}
+                        sx={{
+                            width: 400, mb: 1, [themeApp.breakpoints.down("md")]: {
+                                width: 300,
+                            }
+                        }}
                         id="outlined-basic"
                         label="Email"
                         variant="outlined"
@@ -232,7 +238,11 @@ export default function BasicModal({
                         value={profile.email}
                     />
                     <TextField
-                        sx={{ width: 400, mb: 1 }}
+                        sx={{
+                            width: 400, mb: 1, [themeApp.breakpoints.down("md")]: {
+                                width: 300,
+                            }
+                        }}
                         id="outlined-basic"
                         label="IG"
                         variant="outlined"

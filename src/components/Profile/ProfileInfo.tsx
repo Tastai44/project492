@@ -174,6 +174,8 @@ export default function ProfileInfo(props: IData) {
                         display: { xs: "flex", md: "none" },
                         alignItems: "center",
                         p: 2,
+                        mr: 1,
+                        ml: 1,
                         justifyContent: "space-between",
                     }}
                 >

@@ -8,7 +8,7 @@ interface IData {
 export default function TabLink(props: IData) {
     return (
         <Box sx={{ borderBottom: 2, borderColor: 'divider', mb: 2, display: { xs: "block", lg: "none" } }}>
-            <Box sx={{ display: "flex", fontSize: "18px", gap: 5, ml: 1, color: "black" }}>
+            <Box sx={{ display: "flex", fontSize: "18px", gap: 5, ml: 1, color: "black", fontFamily: "-moz-initial" }}>
                 <NavLink to={`/profileBlog/${props.userId}`}
                     style={({ isActive, isPending }) => {
                         return {

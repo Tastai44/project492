@@ -162,3 +162,18 @@ export const styleChatList = {
   bgcolor: "background.paper",
   color: "black",
 };
+
+export const styleEditProfile = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  [themeApp.breakpoints.down("md")]: {
+    width: 300,
+  },
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};

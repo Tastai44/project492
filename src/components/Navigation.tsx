@@ -403,9 +403,7 @@ export default function Navigation() {
 										sx={{ display: { xs: "flex", md: "none" } }}
 										onClick={handleOpenChatList}
 									>
-										<Badge badgeContent={messageNumber} color="error">
-											<ChatOutlinedIcon sx={{ color: "white" }} />
-										</Badge>
+										<ChatOutlinedIcon sx={{ color: "white" }} />
 									</IconButton>
 								</Tooltip>
 								<Tooltip title="Messages">
