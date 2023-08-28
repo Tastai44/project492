@@ -31,7 +31,7 @@ export default function EventDetail() {
 		const fetchData = query(
 			collection(dbFireStore, "events"),
 			where("eventId", "==", eventId),
-			orderBy("createAt", "desc")
+			orderBy("dateCreated", "desc")
 		);
 		const unsubscribe = onSnapshot(
 			fetchData,

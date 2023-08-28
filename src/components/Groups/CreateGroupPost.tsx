@@ -28,7 +28,7 @@ import emojiData from "emoji-datasource-facebook";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { Post } from "../../interface/PostContent";
-import { doc } from "firebase/firestore";
+import { doc, serverTimestamp } from "firebase/firestore";
 import Emoji from "../MContainer/Emoji";
 import { User } from "../../interface/User";
 import { collection, query, getDocs, where, setDoc } from "firebase/firestore";
@@ -160,6 +160,7 @@ export default function CreateGroupPost({
             photoPost: previewImages,
             likes: [],
             createAt: new Date().toLocaleString(),
+            dateCreated: serverTimestamp(),
             date: new Date().toLocaleDateString("en-US"),
             emoji: emoji,
             owner: userInfo.uid,

@@ -53,7 +53,7 @@ export default function TopicContainer() {
 	useEffect(() => {
 		const fetchData = query(
 			collection(dbFireStore, "posts"),
-			orderBy("createAt", "desc")
+			orderBy("dateCreated", "desc")
 		);
 		const unsubscribe = onSnapshot(
 			fetchData,

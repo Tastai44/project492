@@ -16,7 +16,7 @@ export default function HomeFeed() {
 	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "posts"),
-			orderBy("createAt", "desc")
+			orderBy("dateCreated", "desc")
 		);
 
 		const unsubscribe = onSnapshot(

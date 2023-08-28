@@ -96,7 +96,7 @@ export default function GroupDetails() {
         const queryPostData = query(
             collection(dbFireStore, "posts"),
             where("participants", "array-contains", groupId),
-            orderBy("createAt", "desc")
+            orderBy("dateCreated", "desc")
         );
         const unsubscribe = onSnapshot(
             queryPostData,

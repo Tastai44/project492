@@ -22,7 +22,7 @@ import PublicIcon from "@mui/icons-material/Public";
 import { IGroup } from "../../interface/Group";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
-import { doc, getDocs } from "firebase/firestore";
+import { doc, getDocs, serverTimestamp } from "firebase/firestore";
 import { collection, setDoc } from "firebase/firestore";
 import { User } from "../../interface/User";
 import { styleBox } from "../../utils/styleBox";
@@ -148,6 +148,7 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 			details: group.details,
 			coverPhoto: previewImages[0],
 			createAt: new Date().toLocaleString(),
+			dateCreated: serverTimestamp(),
 		};
 
 		try {
