@@ -9,6 +9,7 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import TagIcon from "@mui/icons-material/Tag";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Logout } from '@mui/icons-material';
 import Drawer from '@mui/material/Drawer';
 import { NavLink } from 'react-router-dom';
@@ -178,7 +179,7 @@ export default function SmallMenu(props: IData) {
 
                 <ListItemButton onClick={handleClick}>
                     <ListItemIcon>
-                        <Diversity3Icon />
+                        <AccountCircleIcon />
                     </ListItemIcon>
                     <ListItemText primary="Profile" />
                     {open ? <ExpandLess /> : <ExpandMore />}

@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import "./App.css";
 import Navigation from "./components/Navigation";
 import HomeFeed from "./pages/HomeFeed";
 import Members from "./pages/Members";
