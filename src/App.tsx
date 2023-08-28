@@ -142,7 +142,8 @@ function App() {
 										mr: 5,
 										[themeApp.breakpoints.down("lg")]: {
 											width: "100%",
-											ml: "0px",
+											ml: "2px",
+											mr: "2px",
 										}
 									}}>
 										<Stack>
@@ -176,7 +177,8 @@ function App() {
 										mr: 5,
 										[themeApp.breakpoints.down("lg")]: {
 											width: "100%",
-											ml: "0px",
+											ml: "2px",
+											mr: "2px",
 										}
 									}}>
 										<Stack>
@@ -210,7 +212,8 @@ function App() {
 										mr: 5,
 										[themeApp.breakpoints.down("lg")]: {
 											width: "100%",
-											ml: "0px",
+											ml: "2px",
+											mr: "2px",
 										}
 									}}>
 										<Stack>
@@ -244,7 +247,8 @@ function App() {
 										mr: 5,
 										[themeApp.breakpoints.down("lg")]: {
 											width: "100%",
-											ml: "0px",
+											ml: "2px",
+											mr: "2px",
 										}
 									}}>
 										<Stack>
