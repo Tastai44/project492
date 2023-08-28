@@ -379,6 +379,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 										onChange={handleFileChange}
 										multiple
 										hidden
+										accept="image/*"
 									/>
 									<InsertPhotoIcon sx={{ color: "green" }} />
 								</IconButton>

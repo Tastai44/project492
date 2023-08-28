@@ -203,6 +203,7 @@ export default function ProCoverImage() {
                         onChange={handleFileChange}
                         multiple
                         hidden
+                        accept="image/*"
                     />
                     Add cover photo
                 </Button>

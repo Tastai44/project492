@@ -300,6 +300,7 @@ export default function ChatBox(props: IFunction & IData) {
 									onChange={handleFileChange}
 									multiple
 									hidden
+									accept="image/*"
 								/>
 								<CameraAltOutlinedIcon
 									sx={{ color: "primary.main", fontSize: "20px" }}

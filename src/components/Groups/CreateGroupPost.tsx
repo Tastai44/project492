@@ -390,6 +390,7 @@ export default function CreateGroupPost({
                                         onChange={handleFileChange}
                                         multiple
                                         hidden
+                                        accept="image/*"
                                     />
                                     <InsertPhotoIcon sx={{ color: "green" }} />
                                 </IconButton>
