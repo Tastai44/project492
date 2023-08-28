@@ -83,26 +83,36 @@ export default function Members() {
             <Box
                 sx={{
                     display: "flex",
-                    justifyContent: "space-between",
                     alignItems: "end",
                     [themeApp.breakpoints.down("md")]: {
-                        textAlign: "center",
-                        flexDirection: "column",
-
+                        justifyContent: "center",
                     },
                 }}
             >
-                <Typography
+                <Box
                     sx={{
-                        fontSize: "30px",
-                        color: "primary.main",
-                        fontWeight: 500,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        width: "100%",
+                        [themeApp.breakpoints.down("md")]: {
+                            textAlign: "center",
+                            flexDirection: "column",
+
+                        },
                     }}
                 >
-                    People who you may know
-                </Typography>
-                <SearchBar searchValue={searchValue} handleSearch={handleSearch} />
-
+                    <Typography
+                        sx={{
+                            fontSize: "30px",
+                            color: "primary.main",
+                            fontWeight: 500,
+                        }}
+                    >
+                        People who you may know
+                    </Typography>
+                    <SearchBar searchValue={searchValue} handleSearch={handleSearch} />
+                </Box>
             </Box>
             {searchValue == "" ? (
                 <Grid sx={{ flexGrow: 1, gap: "30px" }} container>
