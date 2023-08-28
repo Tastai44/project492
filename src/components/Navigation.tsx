@@ -9,10 +9,10 @@ import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
 import Logo from "/images/logoCmu.png";
-import { Avatar, Button } from "@mui/material";
+import { Avatar, Button, Tooltip } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import { NavLink, useNavigate } from "react-router-dom";
-
+import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import { auth } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import { User } from "../interface/User";
@@ -34,6 +34,7 @@ import { IGroupMessageNoti, IMessageNoti, INoti } from "../interface/Notificatio
 import MessageNoti from "./TopBar/MessageNoti";
 import { IGroup } from "../interface/Group";
 import SmallMenu from "./TopBar/SmallMenu";
+import ChatLists from "./TopBar/ChatLists";
 
 export default function Navigation() {
 	const navigate = useNavigate();
@@ -53,6 +54,7 @@ export default function Navigation() {
 	const [messageNumber, setMessageNumber] = useState(0);
 	const [groupData, setGroupData] = useState<IGroup[]>([]);
 	const [openMenu, setOpenMenu] = useState(false);
+	const [openChatList, setOpenChatList] = useState(false);
 
 	const handleOpenSearch = () => {
 		setOpenSearch(true);
@@ -226,6 +228,13 @@ export default function Navigation() {
 		setOpenMenu(!openMenu);
 	};
 
+	const handleOpenChatList = () => {
+		setOpenChatList(true);
+	};
+	const handleCloseChatList = () => {
+		setOpenChatList(false);
+	};
+
 	const menuId = "primary-search-account-menu";
 	const renderMenu = (
 		<UserMenu
@@ -270,6 +279,13 @@ export default function Navigation() {
 			handleOpenMenu={handleOpenMenu}
 			handleLogout={handleLogout}
 
+		/>
+	);
+
+	const rederChatLists = (
+		<ChatLists
+			openChatList={openChatList}
+			handleCloseChatList={handleCloseChatList}
 		/>
 	);
 
@@ -373,42 +389,60 @@ export default function Navigation() {
 						</Box>
 						{(!openMenu) && (
 							<>
-								<IconButton
-									sx={{ color: "white", display: { xs: "flex", md: "none" } }}
-									onClick={handleOpenSearch}
-								>
-									<SearchIcon />
-								</IconButton>
-
-								<IconButton
-									size="large"
-									sx={{ display: { xs: "flex", md: "none" } }}
-									aria-label="show 4 new mails"
-									color="inherit"
-									aria-controls={messageNotiList}
-									aria-haspopup="true"
-									onClick={handleOpenMessageNoti}
-								>
-									<Badge badgeContent={messageNumber} color="error">
-										<MailIcon sx={{ color: "white" }} />
-									</Badge>
-								</IconButton>
-								<IconButton
-									size="large"
-									sx={{ display: { xs: "flex", md: "none" } }}
-									aria-label="show 17 new notifications"
-									color="inherit"
-									aria-controls={mobileMenuId}
-									aria-haspopup="true"
-									onClick={handleMobileMenuOpen}
-								>
-									<Badge badgeContent={notifications?.filter((noti) => !noti.isRead && noti.status !== "Private").length} color="error">
-										<NotificationsIcon sx={{ color: "white" }} />
-									</Badge>
-								</IconButton>
-								<IconButton onClick={handleOpenMenu} sx={{ display: { xs: "flex", md: "none" } }}>
-									<MenuIcon sx={{ color: "white" }} />
-								</IconButton>
+								<Tooltip title="Search">
+									<IconButton
+										sx={{ color: "white", display: { xs: "flex", md: "none" } }}
+										onClick={handleOpenSearch}
+									>
+										<SearchIcon />
+									</IconButton>
+								</Tooltip>
+								<Tooltip title="Chat lists">
+									<IconButton
+										size="large"
+										sx={{ display: { xs: "flex", md: "none" } }}
+										onClick={handleOpenChatList}
+									>
+										<Badge badgeContent={messageNumber} color="error">
+											<ChatOutlinedIcon sx={{ color: "white" }} />
+										</Badge>
+									</IconButton>
+								</Tooltip>
+								<Tooltip title="Messages">
+									<IconButton
+										size="large"
+										sx={{ display: { xs: "flex", md: "none" } }}
+										aria-label="show 4 new mails"
+										color="inherit"
+										aria-controls={messageNotiList}
+										aria-haspopup="true"
+										onClick={handleOpenMessageNoti}
+									>
+										<Badge badgeContent={messageNumber} color="error">
+											<MailIcon sx={{ color: "white" }} />
+										</Badge>
+									</IconButton>
+								</Tooltip>
+								<Tooltip title="Notifications">
+									<IconButton
+										size="large"
+										sx={{ display: { xs: "flex", md: "none" } }}
+										aria-label="show 17 new notifications"
+										color="inherit"
+										aria-controls={mobileMenuId}
+										aria-haspopup="true"
+										onClick={handleMobileMenuOpen}
+									>
+										<Badge badgeContent={notifications?.filter((noti) => !noti.isRead && noti.status !== "Private").length} color="error">
+											<NotificationsIcon sx={{ color: "white" }} />
+										</Badge>
+									</IconButton>
+								</Tooltip>
+								<Tooltip title="Menu">
+									<IconButton onClick={handleOpenMenu} sx={{ display: { xs: "flex", md: "none" } }}>
+										<MenuIcon sx={{ color: "white" }} />
+									</IconButton>
+								</Tooltip>
 							</>
 						)}
 
@@ -418,6 +452,7 @@ export default function Navigation() {
 				{renderMenu}
 				{renderMessageNoti}
 				{renderSmallScreenMenu}
+				{rederChatLists}
 			</Box>
 		</>
 	);
