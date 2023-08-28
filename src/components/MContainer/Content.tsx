@@ -323,7 +323,7 @@ export default function Content(props: IData & IFunction) {
                             />
                         </Box>
                     </Modal>
-                    <Grid container spacing={1}>
+                    <Grid container>
                         <Grid item lg={6} md={12}>
                             <Item>
                                 <Box sx={{ height: "auto", maxWidth: "lg", minWidth: "sm" }}>
@@ -359,7 +359,7 @@ export default function Content(props: IData & IFunction) {
                                 </Box>
                             </Item>
                         </Grid>
-                        <Grid item lg={6} md={12}>
+                        <Grid item lg={m.photoPost.length !== 0 ? 6 : 12} md={12}>
                             <Item>
                                 <Box sx={{ display: "flex", flexDirection: "column" }}>
                                     <Box>
@@ -408,7 +408,7 @@ export default function Content(props: IData & IFunction) {
                                                                 display: "flex",
                                                                 alignItems: "center",
                                                                 gap: 0.5,
-                                                                [themeApp.breakpoints.down("md")]: {
+                                                                [themeApp.breakpoints.down("xl")]: {
                                                                     flexWrap: "wrap",
                                                                 },
                                                             }}

@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, ChangeEvent, useMemo } from "react";
 import {
 	ListItem,
 	ListItemAvatar,
@@ -17,7 +17,7 @@ import {
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
+// import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
@@ -32,6 +32,7 @@ import {
 } from "firebase/firestore";
 import { Post } from "../../interface/PostContent";
 import { User } from "../../interface/User";
+import { styleCommentBox } from "../../utils/styleBox";
 
 interface IData {
 	text: string;
@@ -42,20 +43,8 @@ interface IData {
 	author: string;
 }
 
-const styleBoxPop = {
-	position: "absolute",
-	top: "50%",
-	left: "50%",
-	transform: "translate(-50%, -50%)",
-	width: "30%",
-	bgcolor: "background.paper",
-	color: "black",
-	p: 3,
-	overflow: "auto",
-};
-
 export default function CommentContent(props: IData) {
-	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+	const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(
 		null
 	);
 	const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -65,7 +54,7 @@ export default function CommentContent(props: IData) {
 		setAnchorElUser(null);
 	};
 
-	const [openEditCom, setOpenEditCom] = React.useState(false);
+	const [openEditCom, setOpenEditCom] = useState(false);
 	const handletOpenEditCom = () => {
 		handleCloseUserMenu();
 		setOpenEditCom(true);
@@ -101,11 +90,11 @@ export default function CommentContent(props: IData) {
 		}
 	};
 
-	const [comment, setComment] = React.useState({
+	const [comment, setComment] = useState({
 		text: props.text
 	});
 	const handleChangeComment = (
-		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+		event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 	) => {
 		const { name, value } = event.target;
 		setComment((prevComment) => ({
@@ -149,8 +138,8 @@ export default function CommentContent(props: IData) {
 			});
 	};
 
-	const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-	React.useMemo(() => {
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	useMemo(() => {
 		const fetchData = async () => {
 			try {
 				const q = query(
@@ -182,7 +171,7 @@ export default function CommentContent(props: IData) {
 				aria-describedby="modal-modal-description"
 			>
 				<Box>
-					<Paper sx={styleBoxPop}>
+					<Paper sx={styleCommentBox}>
 						<Typography sx={{ fontSize: "30px" }}>Edit Comment</Typography>
 						<Box
 							sx={{
@@ -314,7 +303,7 @@ export default function CommentContent(props: IData) {
 										<DeleteOutlineOutlinedIcon /> Delete
 									</Typography>
 								</MenuItem>
-								<MenuItem onClick={handleCloseUserMenu}>
+								{/* <MenuItem onClick={handleCloseUserMenu}>
 									<Typography
 										textAlign="center"
 										sx={{
@@ -326,7 +315,7 @@ export default function CommentContent(props: IData) {
 									>
 										<FlagOutlinedIcon /> Report
 									</Typography>
-								</MenuItem>
+								</MenuItem> */}
 							</Menu>
 						</ListItemAvatar>
 					</ListItem>

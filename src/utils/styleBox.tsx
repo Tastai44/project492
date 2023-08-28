@@ -134,3 +134,18 @@ export const styleBoxReport = {
   overflow: "auto",
   p: 4,
 };
+
+export const styleCommentBox = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  [themeApp.breakpoints.down("md")]: {
+    width: 300,
+  },
+  bgcolor: "background.paper",
+  color: "black",
+  p: 3,
+  overflow: "auto",
+};
