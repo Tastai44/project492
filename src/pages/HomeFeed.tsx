@@ -4,7 +4,7 @@ import PostForm from "../components/MContainer/PostForm";
 import Box from "@mui/material/Box";
 
 import { dbFireStore } from "../config/firebase";
-import { collection, query, orderBy, where, onSnapshot } from "firebase/firestore";
+import { collection, query, orderBy, where, onSnapshot, limit } from "firebase/firestore";
 import { Post } from "../interface/PostContent";
 import { User } from "../interface/User";
 import { Item } from "../App";
@@ -16,6 +16,7 @@ export default function HomeFeed() {
 	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "posts"),
+			limit(10),
 			orderBy("dateCreated", "desc")
 		);
 

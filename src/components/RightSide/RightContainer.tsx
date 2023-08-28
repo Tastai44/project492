@@ -193,7 +193,7 @@ export default function RightContainer() {
                     {isActive ? (
                         <Box>
                             {inFoUser.some((user) => user.friendList?.length !== 0) ? (
-                                <Box>
+                                <Box sx={{ minHeight: "60px", maxHeight: "180px", overflow: "auto" }}>
                                     {inFoUser.map((user) =>
                                         user.friendList
                                             ?.filter((item) => (searchValue ?
@@ -223,7 +223,7 @@ export default function RightContainer() {
                     ) : (
                         <Box>
                             {inFoUser.some((user) => user.friendList?.length !== 0) ? (
-                                <Box>
+                                <Box sx={{ minHeight: "60px", maxHeight: "180px", overflow: "auto" }} >
                                     {inFoUser.map((user) =>
                                         user.friendList?.filter((item) => searchValue ?
                                             otherMembers.some(
@@ -287,7 +287,7 @@ export default function RightContainer() {
                                     (member) => member == userInfo.uid
                                 ) || group.hostId == userInfo.uid
                         ) ? (
-                            <Box>
+                            <Box sx={{ minHeight: "60px", maxHeight: "180px", overflow: "auto" }}>
                                 {groupData
                                     .filter(
                                         (item) => searchGroupValue ?

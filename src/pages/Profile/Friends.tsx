@@ -81,7 +81,7 @@ export default function Friends() {
 					{searchValue === "" ? (
 						<>
 							{inFoUser.map((user) => (
-								<Grid sx={{ flexGrow: 1, gap: 1 }} container key={user.uid}>
+								<Grid sx={{ flexGrow: 1, gap: 2 }} container key={user.uid}>
 									{user.friendList?.length !== 0 ? (
 										<>
 											{user.friendList?.map((friend) => (

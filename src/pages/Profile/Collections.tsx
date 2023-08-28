@@ -12,7 +12,13 @@ import {
 import { useParams } from "react-router-dom";
 import { dbFireStore } from "../../config/firebase";
 import { Like, Post } from "../../interface/PostContent";
-import { collection, query, orderBy, where, onSnapshot } from "firebase/firestore";
+import {
+	collection,
+	query,
+	orderBy,
+	where,
+	onSnapshot,
+} from "firebase/firestore";
 import Content from "../../components/MContainer/Content";
 import { styleBoxPop } from "../../utils/styleBox";
 import SearchPost from "../../components/Profile/SearchPost";
@@ -68,10 +74,8 @@ export default function Collections() {
 	};
 
 	return (
-		<div>
-			<TabLink
-				userId={userId ?? ""}
-			/>
+		<>
+			<TabLink userId={userId ?? ""} />
 			<Modal
 				open={openPost}
 				onClose={handleClosePost}
@@ -107,16 +111,17 @@ export default function Collections() {
 						}}
 					>
 						<Box sx={{ m: 1, fontSize: "20px" }}>Collections</Box>
-						<Box sx={{
-							[themeApp.breakpoints.down("lg")]: {
-								mr: 2,
-							}
-						}}>
+						<Box
+							sx={{
+								[themeApp.breakpoints.down("lg")]: {
+									mr: 2,
+								},
+							}}
+						>
 							<SearchBar
 								searchValue={searchValue}
 								handleSearch={handleSearch}
 							/>
-
 						</Box>
 					</Box>
 					<Divider light sx={{ background: "grey", mb: 1 }} />
@@ -127,7 +132,8 @@ export default function Collections() {
 									<ImageList
 										sx={{
 											width: "100%",
-											m: 1
+											m: 1,
+											cursor: "pointer"
 										}}
 										cols={4}
 									>
@@ -135,9 +141,16 @@ export default function Collections() {
 											m.photoPost.map((img, index) => (
 												<ImageListItem
 													key={index}
-													onClick={() => handletOpenPost(m.id, m.likes, m.owner)}
+													onClick={() =>
+														handletOpenPost(m.id, m.likes, m.owner)
+													}
 												>
-													<img src={img} alt={`Preview ${index}`} loading="lazy" />
+													<img
+														src={img}
+														alt={`Preview ${index}`}
+														loading="lazy"
+														style={{ width: "200px", height: "200px" }}
+													/>
 												</ImageListItem>
 											))
 										)}
@@ -162,13 +175,9 @@ export default function Collections() {
 							postData={postData}
 							handletOpenPost={handletOpenPost}
 						/>
-
 					)}
-
-
-
 				</Paper>
 			</Box>
-		</div>
+		</>
 	);
 }
