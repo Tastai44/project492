@@ -9,6 +9,7 @@ import { EventPost } from "../interface/Event";
 import EventContent from "../components/Report/EventContent";
 import { Box, Stack, Grid, Typography } from "@mui/material";
 import SearchBar from "../helper/SearchBar";
+import { themeApp } from "../utils/Theme";
 
 export default function ReportContent() {
 	const [postData, setPostData] = useState<Post[]>([]);
@@ -57,7 +58,7 @@ export default function ReportContent() {
 	};
 
 	return (
-		<Box sx={{ width: "100%", marginTop: 7 }}>
+		<Box sx={{ width: "100%" }}>
 			<Stack spacing={2}>
 				<Item
 					sx={{
@@ -66,9 +67,14 @@ export default function ReportContent() {
 						alignItems: "center",
 					}}
 				>
-					<div style={{ fontSize: "30px", color: "#920EFA", fontWeight: 500 }}>
+					<Box sx={{
+						fontSize: "30px", color: "#920EFA", fontWeight: 500,
+						[themeApp.breakpoints.down("md")]: {
+							fontSize: "25px"
+						},
+					}}>
 						Report Contents
-					</div>
+					</Box>
 					<SearchBar searchValue={searchValue} handleSearch={handleSearch} />
 				</Item>
 				<Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -143,7 +149,11 @@ export default function ReportContent() {
 
 						{eventData.flatMap((e) => e.reportEvent).length == 0 &&
 							postData.flatMap((s) => s.reportPost).length == 0 && (
-								<Typography variant="h4" sx={{ color: "black" }}>
+								<Typography variant="h4" sx={{
+									color: "black", [themeApp.breakpoints.down("md")]: {
+										fontSize: "20px"
+									},
+								}}>
 									There is no report content.
 								</Typography>
 							)}

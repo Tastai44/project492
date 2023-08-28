@@ -14,7 +14,7 @@ import EventDetail from "./pages/Events/EventDetail";
 import GroupDetails from "./pages/Group/GroupDetails";
 import Login from "./pages/Login";
 import ProtectedRoute from "./utils/ProtectedRoute";
-import { Box, Grid, Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import LeftSide from "./components/LeftSide";
 import RightContainer from "./components/RightSide/RightContainer";
 
@@ -349,12 +349,16 @@ function App() {
 							<ProtectedRoute>
 								<Navigation
 								/>
-								{/* <Members /> */}
-								<Grid sx={{ flexGrow: 1 }} container>
-									<Grid item xs={12}>
-										<ReportContent />
-									</Grid>
-								</Grid>
+								<Box sx={{
+									display: "flex", ml: 5, mr: 5, [themeApp.breakpoints.down("md")]: {
+										justifyContent: "center"
+									},
+									[themeApp.breakpoints.down("md")]: {
+										mt: 10
+									},
+								}}>
+									<ReportContent />
+								</Box>
 							</ProtectedRoute>
 						</>
 					}

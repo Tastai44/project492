@@ -10,6 +10,7 @@ import DateRangeIcon from "@mui/icons-material/DateRange";
 import TagIcon from "@mui/icons-material/Tag";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import FlagIcon from "@mui/icons-material/Flag";
 import { Logout } from '@mui/icons-material';
 import Drawer from '@mui/material/Drawer';
 import { NavLink } from 'react-router-dom';
@@ -173,6 +174,27 @@ export default function SmallMenu(props: IData) {
                                 <Diversity3Icon />
                             </ListItemIcon>
                             <ListItemText primary="Groups" />
+                        </ListItemButton>
+                    </NavLink>
+                </ListItem>
+
+                <ListItem disablePadding onClick={props.handleOpenMenu}>
+                    <NavLink
+                        to="/Report"
+                        style={({ isActive, isPending }) => {
+                            return {
+                                fontWeight: isPending ? "bold" : "",
+                                color: isActive ? "black" : "grey",
+                                backgroundColor: isActive ? "#F1F1F1" : "",
+                                width: isActive ? "100%" : "100%",
+                            };
+                        }}
+                    >
+                        <ListItemButton>
+                            <ListItemIcon>
+                                <FlagIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Report" />
                         </ListItemButton>
                     </NavLink>
                 </ListItem>

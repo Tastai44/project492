@@ -27,6 +27,7 @@ import { createNoti } from "../NotificationFunction";
 import { Post } from "../../interface/PostContent";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
 import { IGroup, IShare } from "../../interface/Group";
+import { themeApp } from "../../utils/Theme";
 
 const columns: GridColDef[] = [
     { field: "id", headerName: "ID", flex: 1 },
@@ -270,7 +271,11 @@ export default function ShareCard(props: IData & IFunction) {
                     <Typography
                         id="modal-modal-title"
                         variant="h5"
-                        sx={{ color: "black" }}
+                        sx={{
+                            color: "black", [themeApp.breakpoints.down("md")]: {
+                                fontSize: "16px"
+                            },
+                        }}
                     >
                         Share Lists
                     </Typography>
@@ -290,9 +295,18 @@ export default function ShareCard(props: IData & IFunction) {
                                             display: "flex",
                                             alignContent: "end",
                                             gap: 0.5,
+                                            [themeApp.breakpoints.down("md")]: {
+                                                fontSize: "14px",
+                                                display: "flex",
+                                                alignItems: "center"
+                                            },
                                         }}
                                     >
-                                        <LockIcon /> Private
+                                        <LockIcon sx={{
+                                            [themeApp.breakpoints.down("md")]: {
+                                                fontSize: "14px"
+                                            },
+                                        }} /> Private
                                     </Box>
                                 </MenuItem>
                                 <MenuItem value={"Friend"}>
@@ -330,10 +344,17 @@ export default function ShareCard(props: IData & IFunction) {
                                 </MenuItem>
                             </Select>
                         </FormControl>
-                        <SearchBar
-                            searchValue={searchValue}
-                            handleSearch={handleSearch}
-                        />
+                        <Box sx={{
+                            [themeApp.breakpoints.down("md")]: {
+                                width: "100px"
+                            },
+                        }}>
+                            <SearchBar
+                                searchValue={searchValue}
+                                handleSearch={handleSearch}
+                            />
+                        </Box>
+
                     </Box>
                 </Box>
                 <Divider sx={{ background: "grey", mb: 1 }} />

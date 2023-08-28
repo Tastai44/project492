@@ -296,6 +296,9 @@ export default function ReportContent(props: Idata) {
 										display: "flex",
 										justifyContent: "start",
 										margin: 1,
+										[themeApp.breakpoints.down("md")]: {
+											fontSize: "20px"
+										},
 									}}
 								>
 									{props.hashTagTopic.startsWith("#")
