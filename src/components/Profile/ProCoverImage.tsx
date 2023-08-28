@@ -210,7 +210,6 @@ export default function ProCoverImage() {
             </Box>
             <ProfileInfo
                 userId={userId ?? ''}
-                userInfo={inFoUser}
             />
         </div>
     );

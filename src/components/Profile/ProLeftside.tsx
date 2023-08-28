@@ -4,8 +4,6 @@ import {
 	Badge,
 	Box,
 	Button,
-	Card,
-	CardMedia,
 	Divider,
 	IconButton,
 	List,
@@ -31,10 +29,9 @@ import {
 	arrayUnion
 } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
-import CancelIcon from "@mui/icons-material/Cancel";
-import { stylePreviewPhoto } from "../../utils/styleBox";
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import PopupAlert from "../PopupAlert";
+import UploadProfile from "./UploadProfile";
 
 const Item = styled(Box)(({ theme }) => ({
 	...theme.typography.body2,
@@ -262,66 +259,13 @@ export default function ProLeftside() {
 
 	return (
 		<>
-			<Modal
-				open={openPre}
-				onClose={handleClosePre}
-				aria-labelledby="modal-modal-title"
-				aria-describedby="modal-modal-description"
-			>
-				<Box sx={stylePreviewPhoto}>
-					{previewImages.length !== 0 && (
-						<Box>
-							<Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-								<IconButton onClick={handleClearImage}>
-									<CancelIcon sx={{ color: "black" }} />
-								</IconButton>
-							</Box>
-							<Box sx={{ display: "flex", justifyContent: "center" }}>
-								{previewImages.map((image, index) => (
-									<Card key={index} sx={{ width: "50%", height: "auto" }}>
-										<CardMedia
-											component="img"
-											image={image}
-											alt="Paella dish"
-										/>
-									</Card>
-								))}
-							</Box>
-						</Box>
-					)}
-					<Box
-						sx={{ display: "flex", justifyContent: "flex-end", gap: 1, m: 1 }}
-					>
-						<Button
-							sx={{
-								backgroundColor: "grey",
-								color: "white",
-								"&:hover": {
-									color: "black",
-									backgroundColor: "#E1E1E1",
-								},
-							}}
-							onClick={handleClosePre}
-						>
-							Cancel
-						</Button>
-						<Button
-							sx={{
-								backgroundColor: "#8E51E2",
-								color: "white",
-								"&:hover": {
-									color: "black",
-									backgroundColor: "#E1E1E1",
-								},
-							}}
-							onClick={handleEditPhotoProfile}
-							type="submit"
-						>
-							Upload
-						</Button>
-					</Box>
-				</Box>
-			</Modal>
+			<UploadProfile
+				openPre={openPre}
+				previewImages={previewImages}
+				handleClearImage={handleClearImage}
+				handleClosePre={handleClosePre}
+				handleEditPhotoProfile={handleEditPhotoProfile}
+			/>
 			{inFoUser.map((m) => (
 				<Box key={m.uid} sx={{ display: { xs: "none", lg: "flex" } }}>
 					<Modal

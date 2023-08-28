@@ -1,24 +1,70 @@
-import { useEffect, useState } from "react";
-import { Avatar, Paper, Box, Button, Modal } from "@mui/material";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { Avatar, Paper, Box, Button, Modal, Badge, IconButton } from "@mui/material";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import { IFriendList, User } from "../../interface/User";
 import EditProfile from "./EditProfile";
 import { collection, where, onSnapshot, query, getDocs, updateDoc, arrayUnion, doc } from "firebase/firestore";
+import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import { dbFireStore } from "../../config/firebase";
 import PopupAlert from "../PopupAlert";
+import UploadProfile from "./UploadProfile";
+import { useParams } from "react-router-dom";
 
 interface IData {
-    userInfo: User[];
     userId: string;
 }
 
 export default function ProfileInfo(props: IData) {
     const [open, setOpen] = useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const [inFoUser, setInFoUser] = useState<User[]>([]);
     const [loginUser, setLoginUser] = useState<User[]>([]);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [previewImages, setPreviewImages] = useState<string[]>([]);
+    const [openPre, setOpenPre] = useState(false);
+    const { userId } = useParams();
+
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    const handleOpenPre = () => setOpenPre(true);
+    const handleClosePre = () => setOpenPre(false);
+
+    const handleUploadClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+    const handleFileChange = async (
+        event: ChangeEvent<HTMLInputElement>
+    ) => {
+        const files = event.target.files;
+        if (files) {
+            try {
+                const selectedFiles = Array.from(files);
+                const readerPromises = selectedFiles.map((file) => {
+                    return new Promise<string>((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            resolve(reader.result as string);
+                        };
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                });
+
+                const base64Images = await Promise.all(readerPromises);
+                setPreviewImages(base64Images);
+                handleOpenPre();
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    };
+    const handleClearImage = () => {
+        setPreviewImages([]);
+        handleClosePre();
+    };
 
     useEffect(() => {
         const queryData = query(
@@ -164,9 +210,38 @@ export default function ProfileInfo(props: IData) {
         }
     };
 
+    const handleEditPhotoProfile = async () => {
+        try {
+            const q = query(
+                collection(dbFireStore, "users"),
+                where("uid", "==", userId)
+            );
+            const querySnapshot = await getDocs(q);
+            const doc = querySnapshot.docs[0];
+
+            if (doc.exists()) {
+                await updateDoc(doc.ref, {
+                    profilePhoto: previewImages[0],
+                });
+                handleClearImage();
+            } else {
+                console.log("Profile does not exist");
+            }
+        } catch (error) {
+            console.error("Error updating profile: ", error);
+        }
+    };
+
     return (
         <>
-            {props.userInfo.map((user) => (
+            <UploadProfile
+                openPre={openPre}
+                previewImages={previewImages}
+                handleClearImage={handleClearImage}
+                handleClosePre={handleClosePre}
+                handleEditPhotoProfile={handleEditPhotoProfile}
+            />
+            {inFoUser.map((user) => (
                 <Paper
                     key={user.uid}
                     sx={{
@@ -202,7 +277,37 @@ export default function ProfileInfo(props: IData) {
                         </Box>
                     </Modal>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
-                        <Avatar src={user.profilePhoto} />
+                        <Badge
+                            overlap="circular"
+                            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                            badgeContent={
+                                <Box onClick={handleUploadClick}>
+                                    <IconButton
+                                        sx={{
+                                            backgroundColor: "white",
+                                            height: "10px",
+                                            width: "10px",
+                                            "&:hover": {
+                                                color: "white",
+                                                backgroundColor: "black",
+                                            },
+                                        }}
+                                    >
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            onChange={handleFileChange}
+                                            multiple
+                                            hidden
+                                            accept="image/*"
+                                        />
+                                        <AddAPhotoIcon style={{ fontSize: "10px" }} />
+                                    </IconButton>
+                                </Box>
+                            }
+                        >
+                            <Avatar src={user.profilePhoto} />
+                        </Badge>
                         <Box sx={{ fontSize: "20px" }}>
                             {`${user.firstName} ${user.lastName}`}{" "}
                         </Box>
