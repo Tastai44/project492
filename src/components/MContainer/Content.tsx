@@ -296,7 +296,7 @@ export default function Content(props: IData & IFunction) {
                     />
                 </Box>
             </Modal>
-            <IconButton onClick={props.handleClosePost}>
+            <IconButton onClick={props.handleClosePost} sx={{ mb: -5 }}>
                 <CancelIcon />
             </IconButton>
             {postData.map((m) => (
