@@ -55,6 +55,7 @@ export default function Navigation() {
 	const [groupData, setGroupData] = useState<IGroup[]>([]);
 	const [openMenu, setOpenMenu] = useState(false);
 	const [openChatList, setOpenChatList] = useState(false);
+	const IsAdmin = inFoUser.some((user) => user.userRole === "admin");
 
 	const handleOpenSearch = () => {
 		setOpenSearch(true);
@@ -276,6 +277,7 @@ export default function Navigation() {
 			openMenu={openMenu}
 			inFoUser={inFoUser}
 			userId={userInfo.uid ?? ""}
+			IsAdmin={IsAdmin}
 			handleOpenMenu={handleOpenMenu}
 			handleLogout={handleLogout}
 
@@ -288,8 +290,6 @@ export default function Navigation() {
 			handleCloseChatList={handleCloseChatList}
 		/>
 	);
-
-	const IsAdmin = inFoUser.some((user) => user.userRole === "admin");
 
 	return (
 		<>

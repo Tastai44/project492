@@ -20,6 +20,7 @@ interface IData {
     openMenu: boolean;
     inFoUser: User[];
     userId: string;
+    IsAdmin: boolean;
     handleOpenMenu: () => void;
     handleLogout: () => void;
 }
@@ -178,26 +179,29 @@ export default function SmallMenu(props: IData) {
                     </NavLink>
                 </ListItem>
 
-                <ListItem disablePadding onClick={props.handleOpenMenu}>
-                    <NavLink
-                        to="/Report"
-                        style={({ isActive, isPending }) => {
-                            return {
-                                fontWeight: isPending ? "bold" : "",
-                                color: isActive ? "black" : "grey",
-                                backgroundColor: isActive ? "#F1F1F1" : "",
-                                width: isActive ? "100%" : "100%",
-                            };
-                        }}
-                    >
-                        <ListItemButton>
-                            <ListItemIcon>
-                                <FlagIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Report" />
-                        </ListItemButton>
-                    </NavLink>
-                </ListItem>
+                {props.IsAdmin && (
+                    <ListItem disablePadding onClick={props.handleOpenMenu}>
+                        <NavLink
+                            to="/Report"
+                            style={({ isActive, isPending }) => {
+                                return {
+                                    fontWeight: isPending ? "bold" : "",
+                                    color: isActive ? "black" : "grey",
+                                    backgroundColor: isActive ? "#F1F1F1" : "",
+                                    width: isActive ? "100%" : "100%",
+                                };
+                            }}
+                        >
+                            <ListItemButton>
+                                <ListItemIcon>
+                                    <FlagIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Report" />
+                            </ListItemButton>
+                        </NavLink>
+                    </ListItem>
+                )}
+
 
                 <ListItemButton onClick={handleClick}>
                     <ListItemIcon>

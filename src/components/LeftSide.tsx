@@ -10,7 +10,7 @@ import {
 	ListItemIcon,
 	ListItemText,
 } from "@mui/material";
-
+import FlagIcon from "@mui/icons-material/Flag";
 import HomeIcon from "@mui/icons-material/Home";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -33,6 +33,8 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function LeftSide() {
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	const IsAdmin = inFoUser.some((user) => user.userRole === "admin");
+
 	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "users"),
@@ -199,6 +201,30 @@ export default function LeftSide() {
 								</ListItemButton>
 							</NavLink>
 						</ListItem>
+
+						{IsAdmin && (
+							<ListItem disablePadding>
+								<NavLink
+									to="/Report"
+									style={({ isActive, isPending }) => {
+										return {
+											fontWeight: isPending ? "bold" : "",
+											color: isActive ? "black" : "grey",
+											backgroundColor: isActive ? "#F1F1F1" : "",
+											width: isActive ? "100%" : "100%",
+										};
+									}}
+								>
+									<ListItemButton>
+										<ListItemIcon>
+											<FlagIcon />
+										</ListItemIcon>
+										<ListItemText primary="Reports" />
+									</ListItemButton>
+								</NavLink>
+							</ListItem>
+						)}
+
 					</List>
 				</Paper>
 			</Box>
