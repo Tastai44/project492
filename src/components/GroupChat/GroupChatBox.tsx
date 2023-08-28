@@ -293,6 +293,7 @@ export default function GroupChatBox
 									onChange={handleFileChange}
 									multiple
 									hidden
+									accept="image/*"
 								/>
 								<CameraAltOutlinedIcon
 									sx={{ color: "primary.main", fontSize: "20px" }}

@@ -20,7 +20,7 @@ export default function Groups() {
 	useEffect(() => {
 		const fetchData = query(
 			collection(dbFireStore, "groups"),
-			orderBy("createAt", "desc")
+			orderBy("dateCreated", "desc")
 		);
 		const unsubscribe = onSnapshot(
 			fetchData,

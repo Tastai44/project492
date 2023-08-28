@@ -31,6 +31,7 @@ import {
     onSnapshot,
     query,
     where,
+    serverTimestamp,
 } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import { locations } from "../../helper/CMULocations";
@@ -184,6 +185,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
             location: location,
             reportEvent: [],
             createAt: new Date().toLocaleString(),
+            dateCreated: serverTimestamp(),
             owner: userInfo.uid,
         };
 

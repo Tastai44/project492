@@ -127,26 +127,32 @@ function App() {
 						<>
 							<ProtectedRoute>
 								<Navigation />
-								<Box sx={{ display: "flex", mt: 11 }}>
+								<Box sx={{
+									display: "flex", mt: 11, [themeApp.breakpoints.down("md")]: {
+										mt: 7
+									},
+								}}>
 									<Box sx={{ width: "20%", position: "fixed", left: "0", ml: 5 }}>
 										<ProLeftside />
 									</Box>
 
 									<Box sx={{
-										width: "75%",
+										width: "80%",
 										ml: "20%",
+										mr: 5,
 										[themeApp.breakpoints.down("lg")]: {
 											width: "100%",
-											ml: "0px",
+											ml: "2px",
+											mr: "2px",
 										}
 									}}>
-										<Stack spacing={2}>
-											<Item>
+										<Stack>
+											<Box sx={{ mb: 2 }}>
 												<ProCoverImage />
-											</Item>
-											<Item>
+											</Box>
+											<Box>
 												<Blog />
-											</Item>
+											</Box>
 										</Stack>
 									</Box>
 								</Box>
@@ -166,20 +172,22 @@ function App() {
 									</Box>
 
 									<Box sx={{
-										width: "75%",
+										width: "80%",
 										ml: "20%",
+										mr: 5,
 										[themeApp.breakpoints.down("lg")]: {
 											width: "100%",
-											ml: "0px",
+											ml: "2px",
+											mr: "2px",
 										}
 									}}>
-										<Stack spacing={2}>
-											<Item>
+										<Stack>
+											<Box sx={{ mb: 2 }}>
 												<ProCoverImage />
-											</Item>
-											<Item>
+											</Box>
+											<Box>
 												<AboutMe />
-											</Item>
+											</Box>
 										</Stack>
 									</Box>
 								</Box>
@@ -199,20 +207,22 @@ function App() {
 									</Box>
 
 									<Box sx={{
-										width: "75%",
+										width: "80%",
 										ml: "20%",
+										mr: 5,
 										[themeApp.breakpoints.down("lg")]: {
 											width: "100%",
-											ml: "0px",
+											ml: "2px",
+											mr: "2px",
 										}
 									}}>
-										<Stack spacing={2}>
-											<Item>
+										<Stack>
+											<Box sx={{ mb: 2 }}>
 												<ProCoverImage />
-											</Item>
-											<Item>
+											</Box>
+											<Box>
 												<Friends />
-											</Item>
+											</Box>
 										</Stack>
 									</Box>
 								</Box>
@@ -232,20 +242,22 @@ function App() {
 									</Box>
 
 									<Box sx={{
-										width: "75%",
+										width: "80%",
 										ml: "20%",
+										mr: 5,
 										[themeApp.breakpoints.down("lg")]: {
 											width: "100%",
-											ml: "0px",
+											ml: "2px",
+											mr: "2px",
 										}
 									}}>
-										<Stack spacing={2}>
-											<Item>
+										<Stack>
+											<Box sx={{ mb: 2 }}>
 												<ProCoverImage />
-											</Item>
-											<Item>
+											</Box>
+											<Box>
 												<Collections />
-											</Item>
+											</Box>
 										</Stack>
 									</Box>
 								</Box>

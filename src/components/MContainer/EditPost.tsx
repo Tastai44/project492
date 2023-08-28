@@ -377,6 +377,7 @@ export default function CreatePost(props: IHandle & Idata) {
 										onChange={handleFileChange}
 										multiple
 										hidden
+										accept="image/*"
 									/>
 									<InsertPhotoIcon sx={{ color: "green" }} />
 								</IconButton>

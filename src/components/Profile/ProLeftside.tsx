@@ -371,6 +371,7 @@ export default function ProLeftside() {
 															onChange={handleFileChange}
 															multiple
 															hidden
+															accept="image/*"
 														/>
 														<AddAPhotoIcon />
 													</IconButton>

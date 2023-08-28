@@ -1,12 +1,12 @@
 import {
     Menu,
-    MenuItem,
     Divider,
     Box,
 } from "@mui/material";
 import { IGroupMessageNoti, IMessageNoti } from "../../interface/Notification";
 import NotiCard from "./NotiCard";
 import GroupNotiCard from "./GroupNotiCard";
+import TitleMessage from "./TitleMessage";
 
 interface IData {
     openMessageNoti: null | HTMLElement;
@@ -64,46 +64,30 @@ export default function MessageNoti(props: IData) {
                 transformOrigin={{ horizontal: "right", vertical: "top" }}
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             >
-                <MenuItem
-                    sx={{
-                        fontSize: "20px",
-                        padding: "5px",
-                        fontWeight: "bold",
-                        color: "black",
-                        margin: 2,
-                        width: "300px",
-                        borderRadius: "10px",
-                        "&:hover": {
-                            color: "black",
-                            backgroundColor: "transparent",
-                        },
-                    }}
-                >
-                    Messages
-                </MenuItem>
+                <TitleMessage />
                 <Divider style={{ background: "white" }} />
-                {combinedNotifications.map((message) => {
-                    if ("groupId" in message) {
+                {combinedNotifications.map((noti) => {
+                    if ("groupId" in noti) {
                         return (
                             <GroupNotiCard
-                                key={message.notiId}
-                                message={message.message}
-                                dateCreated={message.dateCreated}
-                                senderId={message.senderId}
-                                notiId={message.notiId}
-                                groupId={message.groupId}
-                                isRead={message.isRead}
+                                key={noti.notiId}
+                                message={noti.message}
+                                dateCreated={noti.dateCreated}
+                                senderId={noti.senderId}
+                                notiId={noti.notiId}
+                                groupId={noti.groupId}
+                                isRead={noti.isRead}
                             />
                         );
                     } else {
                         return (
                             <NotiCard
-                                key={message.notiId}
-                                message={message.message}
-                                dateCreated={message.dateCreated}
-                                senderId={message.senderId}
-                                notiId={message.notiId}
-                                isRead={message.isRead}
+                                key={noti.notiId}
+                                message={noti.message}
+                                dateCreated={noti.dateCreated}
+                                senderId={noti.senderId}
+                                notiId={noti.notiId}
+                                isRead={noti.isRead}
                             />
                         );
                     }

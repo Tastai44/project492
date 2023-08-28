@@ -30,7 +30,7 @@ import emojiData from "emoji-datasource-facebook";
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import { Post } from "../../interface/PostContent";
-import { doc, onSnapshot, query, where } from "firebase/firestore";
+import { doc, onSnapshot, query, where, serverTimestamp } from "firebase/firestore";
 import { collection, setDoc } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import LocationCard from "./LocationCard";
@@ -144,6 +144,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 			photoPost: previewImages,
 			likes: [],
 			createAt: new Date().toLocaleString(),
+			dateCreated: serverTimestamp(),
 			date: new Date().toLocaleDateString("en-US"),
 			emoji: emoji,
 			owner: userInfo.uid,
@@ -379,6 +380,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 										onChange={handleFileChange}
 										multiple
 										hidden
+										accept="image/*"
 									/>
 									<InsertPhotoIcon sx={{ color: "green" }} />
 								</IconButton>
