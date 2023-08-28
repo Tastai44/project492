@@ -149,3 +149,16 @@ export const styleCommentBox = {
   p: 3,
   overflow: "auto",
 };
+
+export const styleChatList = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  [themeApp.breakpoints.down("md")]: {
+    width: 300,
+  },
+  bgcolor: "background.paper",
+  color: "black",
+};
