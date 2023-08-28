@@ -53,7 +53,12 @@ function App() {
 							<ProtectedRoute>
 								<Navigation
 								/>
-								<Box sx={{ display: "flex", justifyContent: "center", mt: 11 }}>
+								<Box sx={{
+									display: "flex", justifyContent: "center", mt: 11,
+									[themeApp.breakpoints.down("lg")]: {
+										mt: 8
+									}
+								}}>
 									<Box sx={{ width: "20%", position: "fixed", left: "0" }}>
 										<LeftSide />
 									</Box>
@@ -83,7 +88,8 @@ function App() {
 								<Navigation />
 								<Box sx={{
 									display: "flex", mt: 11, ml: 5, mr: 5, [themeApp.breakpoints.down("md")]: {
-										justifyContent: "center"
+										justifyContent: "center",
+										mt: 8
 									},
 								}}>
 									<Members />
@@ -99,7 +105,12 @@ function App() {
 						<>
 							<ProtectedRoute>
 								<Navigation />
-								<Box sx={{ display: "flex", justifyContent: "center", mt: 11 }}>
+								<Box sx={{
+									display: "flex", justifyContent: "center", mt: 11,
+									[themeApp.breakpoints.down("lg")]: {
+										mt: 8
+									}
+								}}>
 									<Box sx={{ width: "20%", position: "fixed", left: "0" }}>
 										<LeftSide />
 									</Box>
@@ -130,7 +141,7 @@ function App() {
 								<Navigation />
 								<Box sx={{
 									display: "flex", mt: 11, [themeApp.breakpoints.down("md")]: {
-										mt: 7
+										mt: 8
 									},
 								}}>
 									<Box sx={{ width: "20%", position: "fixed", left: "0", ml: 5 }}>
@@ -167,7 +178,11 @@ function App() {
 						<>
 							<ProtectedRoute>
 								<Navigation />
-								<Box sx={{ display: "flex", mt: 11 }}>
+								<Box sx={{
+									display: "flex", mt: 11, [themeApp.breakpoints.down("lg")]: {
+										mt: 8
+									}
+								}}>
 									<Box sx={{ width: "20%", position: "fixed", left: "0", ml: 5 }}>
 										<ProLeftside />
 									</Box>
@@ -202,7 +217,11 @@ function App() {
 						<>
 							<ProtectedRoute>
 								<Navigation />
-								<Box sx={{ display: "flex", mt: 11 }}>
+								<Box sx={{
+									display: "flex", mt: 11, [themeApp.breakpoints.down("lg")]: {
+										mt: 8
+									}
+								}}>
 									<Box sx={{ width: "20%", position: "fixed", left: "0", ml: 5 }}>
 										<ProLeftside />
 									</Box>
@@ -237,7 +256,11 @@ function App() {
 						<>
 							<ProtectedRoute>
 								<Navigation />
-								<Box sx={{ display: "flex", mt: 11 }}>
+								<Box sx={{
+									display: "flex", mt: 11, [themeApp.breakpoints.down("lg")]: {
+										mt: 8
+									}
+								}}>
 									<Box sx={{ width: "20%", position: "fixed", left: "0", ml: 5 }}>
 										<ProLeftside />
 									</Box>
@@ -277,7 +300,8 @@ function App() {
 							<Navigation />
 							<Box sx={{
 								display: "flex", mt: 11, ml: 5, mr: 5, [themeApp.breakpoints.down("md")]: {
-									justifyContent: "center"
+									justifyContent: "center",
+									mt: 8
 								},
 							}}>
 								<Events />
@@ -292,7 +316,14 @@ function App() {
 						<>
 							<ProtectedRoute>
 								<Navigation />
-								<EventDetail />
+								<Box sx={{
+									[themeApp.breakpoints.down("lg")]: {
+										mt: 8
+									}
+								}}>
+									<EventDetail />
+								</Box>
+
 							</ProtectedRoute>
 						</>
 					}
@@ -307,7 +338,12 @@ function App() {
 							<ProtectedRoute>
 								<Navigation
 								/>
-								<Box sx={{ display: "flex", justifyContent: "center", mt: 11 }}>
+								<Box sx={{
+									display: "flex", justifyContent: "center", mt: 11,
+									[themeApp.breakpoints.down("lg")]: {
+										mt: 8
+									}
+								}}>
 									<Box sx={{ width: "20%", position: "fixed", left: "0" }}>
 										<LeftSide />
 									</Box>
@@ -335,9 +371,14 @@ function App() {
 					element={
 						<>
 							<ProtectedRoute>
-								<Navigation
-								/>
-								<GroupDetails />
+								<Navigation />
+								<Box sx={{
+									[themeApp.breakpoints.down("lg")]: {
+										mt: 8
+									}
+								}}>
+									<GroupDetails />
+								</Box>
 							</ProtectedRoute>
 						</>
 					}
@@ -354,7 +395,7 @@ function App() {
 										justifyContent: "center"
 									},
 									[themeApp.breakpoints.down("md")]: {
-										mt: 10
+										mt: 8
 									},
 								}}>
 									<ReportContent />
