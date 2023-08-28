@@ -308,6 +308,7 @@ export default function ProLeftside() {
 																backgroundColor: "black",
 															},
 														}}
+														disabled={userInfo.uid != m.uid}
 													>
 														<input
 															type="file"

@@ -19,7 +19,7 @@ export default function ProCoverImage() {
     const { userId } = useParams();
     const [openPre, setOpenPre] = useState(false);
     const [inFoUser, setInFoUser] = useState<User[]>([]);
-
+    const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const handleOpenPre = () => setOpenPre(true);
     const handleClosePre = () => setOpenPre(false);
     const handleClearImage = () => {
@@ -110,7 +110,7 @@ export default function ProCoverImage() {
     }, [userId, reFresh]);
 
     return (
-        <div>
+        <>
             <Modal
                 open={openPre}
                 onClose={handleClosePre}
@@ -170,47 +170,50 @@ export default function ProCoverImage() {
                 </Box>
             </Modal>
             {inFoUser.map((info) => (
-                <Card key={info.coverPhoto} sx={{ maxWidth: "100%" }}>
-                    <CardMedia sx={{ height: 300 }} image={info.coverPhoto} title="green iguana" />
-                </Card>
-            ))}
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    mt: "-40px",
-                    mr: 0.5,
-                    alignItems: "center",
-                    alignContent: "center",
-                }}
-            >
-                <Button
-                    onClick={handleUploadClick}
-                    sx={{
-                        backgroundColor: "white",
-                        color: "black",
-                        "&:hover": {
-                            color: "white",
-                            backgroundColor: "black",
-                        },
-                    }}
-                    variant="outlined"
-                    startIcon={<AddAPhotoIcon />}
-                >
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleFileChange}
-                        multiple
-                        hidden
-                        accept="image/*"
+                <>
+                    <Card key={info.coverPhoto} sx={{ maxWidth: "100%" }}>
+                        <CardMedia sx={{ height: 300 }} image={info.coverPhoto} title="green iguana" />
+                    </Card>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            mt: "-40px",
+                            mr: 0.5,
+                            alignItems: "center",
+                            alignContent: "center",
+                        }}
+                    >
+                        <Button
+                            disabled={userInfo.uid != info.uid}
+                            onClick={handleUploadClick}
+                            sx={{
+                                backgroundColor: "white",
+                                color: "black",
+                                "&:hover": {
+                                    color: "white",
+                                    backgroundColor: "black",
+                                },
+                            }}
+                            variant="outlined"
+                            startIcon={<AddAPhotoIcon />}
+                        >
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                multiple
+                                hidden
+                                accept="image/*"
+                            />
+                            Add cover photo
+                        </Button>
+                    </Box>
+                    <ProfileInfo
+                        userId={userId ?? ''}
                     />
-                    Add cover photo
-                </Button>
-            </Box>
-            <ProfileInfo
-                userId={userId ?? ''}
-            />
-        </div>
+                </>
+            ))}
+        </>
     );
 }
