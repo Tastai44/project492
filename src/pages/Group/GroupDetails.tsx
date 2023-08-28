@@ -184,7 +184,10 @@ export default function GroupDetails() {
                                                                 >
                                                                     <MenuItem value={"General"}>General</MenuItem>
                                                                     <MenuItem value={"Share"}>Share</MenuItem>
-                                                                    <MenuItem value={"Report"}>Report</MenuItem>
+                                                                    {g.hostId == userInfo.uid && (
+                                                                        <MenuItem value={"Report"}>Report</MenuItem>
+                                                                    )}
+
                                                                 </Select>
                                                             </FormControl>
                                                         </Item>

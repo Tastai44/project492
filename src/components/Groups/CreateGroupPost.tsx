@@ -35,19 +35,7 @@ import { collection, query, getDocs, where, setDoc } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import { createNoti } from "../NotificationFunction";
 import LocationCard from "../MContainer/LocationCard";
-
-const styleBoxPop = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 400,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    color: "black",
-    p: 4,
-};
+import { styleCreatePost } from "../../utils/styleBox";
 
 interface IHandle {
     handleCloseCratePost: () => void;
@@ -258,7 +246,7 @@ export default function CreateGroupPost({
                 handletSaveLocation={handletSaveLocation}
                 handleChangeLocation={handleChangeLocation}
             />
-            <Box sx={styleBoxPop}>
+            <Box sx={styleCreatePost}>
                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                     <Box
                         id="modal-modal-title"
@@ -274,7 +262,7 @@ export default function CreateGroupPost({
                 </Box>
                 <Box>
                     {inFoUser.map((u) => (
-                        <ListItem>
+                        <ListItem key={u.uid}>
                             <ListItemAvatar>
                                 <Avatar
                                     src={u.profilePhoto}
