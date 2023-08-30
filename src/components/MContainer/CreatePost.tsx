@@ -53,7 +53,10 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 	const [openLocation, setOpenLocation] = useState(false);
 	const handletOpenLocation = () => setOpenLocation(true);
 	const handletSaveLocation = () => setOpenLocation(false);
-	const handleCloseLocation = () => setOpenLocation(false);
+	const handleCloseLocation = () => {
+		setLocation("");
+		setOpenLocation(false);
+	};
 
 	const [openEmoji, setOpenEmoji] = useState(false);
 	const handletOpenEmoji = () => setOpenEmoji(true);

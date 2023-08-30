@@ -66,7 +66,10 @@ export default function CreateGroupPost({
     const [openLocation, setOpenLocation] = useState(false);
     const handletOpenLocation = () => setOpenLocation(true);
     const handletSaveLocation = () => setOpenLocation(false);
-    const handleCloseLocation = () => setOpenLocation(false);
+    const handleCloseLocation = () => {
+        setLocation("");
+        setOpenLocation(false);
+    };
     const handleClearImage = () => {
         setPreviewImages([]);
     };
@@ -220,7 +223,6 @@ export default function CreateGroupPost({
     ) => {
         if (newValue) {
             setLocation(newValue);
-            handleCloseLocation();
         }
     };
 
