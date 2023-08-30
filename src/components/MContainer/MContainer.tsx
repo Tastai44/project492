@@ -336,7 +336,7 @@ export default function MContainer(props: Idata) {
                                                     <>
                                                         <LocationOnIcon color="error" />
                                                         <NavLink
-                                                            to={`https://www.google.com/search?q=${props.location}`}
+                                                            to={`https://www.google.com/search?q=${props.location} Chiang Mai University`}
                                                             target="_blank"
                                                         >
                                                             {props.location}

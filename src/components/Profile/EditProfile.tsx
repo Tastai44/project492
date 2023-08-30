@@ -1,3 +1,4 @@
+import { useState, ChangeEvent } from "react";
 import {
     Button,
     Divider,
@@ -6,13 +7,12 @@ import {
     MenuItem,
     Select,
     SelectChangeEvent,
+    TextField,
+    Box,
+    Typography,
+    Autocomplete
 } from "@mui/material";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import React from "react";
 import { User } from "../../interface/User";
-
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
 import {
@@ -24,6 +24,7 @@ import {
 } from "firebase/firestore";
 import { styleEditProfile } from "../../utils/styleBox";
 import { themeApp } from "../../utils/Theme";
+import PopupAlert from "../PopupAlert";
 
 interface Ihandle {
     closeEdit: () => void;
@@ -41,38 +42,52 @@ interface IData {
     yearDefault?: string;
 }
 
-export default function BasicModal({
-    userId,
-    username,
-    firstName,
-    lastName,
-    email,
-    aboutMe,
-    faculty,
-    instagram,
-    statusDefault,
-    yearDefault,
-    closeEdit,
-}: Ihandle & IData) {
+export default function BasicModal(props: Ihandle & IData) {
+    const faculties: string[] = [
+        "Agriculture",
+        "Architecture",
+        "Business Administration",
+        "Dentistry",
+        "Economics",
+        "Education",
+        "Engineering",
+        "Fine Arts",
+        "Humanities",
+        "Law",
+        "Mass Communication",
+        "Medical Technology",
+        "Medicine",
+        "Nursing",
+        "Pharmacy",
+        "Political Science",
+        "Science",
+        "Social Sciences",
+        "Veterinary Medicine",
+    ];
     const initialState = {
         uid: "",
-        username: username,
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
+        username: props.username,
+        firstName: props.firstName,
+        lastName: props.lastName,
+        email: props.email,
         profilePhoto: "",
         coverPhoto: "",
-        aboutMe: aboutMe,
-        faculty: faculty,
-        instagram: instagram,
+        aboutMe: props.aboutMe,
+        faculty: props.faculty,
+        instagram: props.instagram,
     };
-    const [profile, setProfile] = React.useState<User>(initialState);
+
+    const [profile, setProfile] = useState<User>(initialState);
+    const [year, setYear] = useState(props.yearDefault);
+    const [status, setStatus] = useState(props.statusDefault);
+    const [faculty, setFaculty] = useState(props.faculty);
+
     const clearState = () => {
         setProfile({ ...initialState });
     };
 
     const handleChangeProfile = (
-        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         const { name, value } = event.target;
         setProfile((prevPost) => ({
@@ -80,11 +95,11 @@ export default function BasicModal({
             [name]: value,
         }));
     };
-    const [year, setYear] = React.useState(yearDefault);
+
     const handleChangeYear = (event: SelectChangeEvent) => {
         setYear(event.target.value as string);
     };
-    const [status, setStatus] = React.useState(statusDefault);
+
     const handleChangeStatus = (event: SelectChangeEvent) => {
         setStatus(event.target.value as string);
     };
@@ -96,7 +111,7 @@ export default function BasicModal({
             lastName: profile.lastName,
             email: profile.email,
             aboutMe: profile.aboutMe,
-            faculty: profile.faculty,
+            faculty: faculty,
             instagram: profile.instagram,
             status: status,
             year: year,
@@ -105,7 +120,7 @@ export default function BasicModal({
         try {
             const q = query(
                 collection(dbFireStore, "users"),
-                where("uid", "==", userId)
+                where("uid", "==", props.userId)
             );
             const querySnapshot = await getDocs(q);
             const doc = querySnapshot.docs[0];
@@ -113,12 +128,22 @@ export default function BasicModal({
             if (doc.exists()) {
                 await updateDoc(doc.ref, updatedProfile);
                 clearState();
-                closeEdit();
+                props.closeEdit();
+                PopupAlert("Edited profile successfully", "success");
             } else {
                 console.log("Profile does not exist");
             }
         } catch (error) {
             console.error("Error updating profile: ", error);
+        }
+    };
+
+    const handleChangeFaclty = (
+        _event: ChangeEvent<unknown>,
+        newValue: string | null
+    ) => {
+        if (newValue) {
+            setFaculty(newValue);
         }
     };
 
@@ -182,7 +207,7 @@ export default function BasicModal({
                             </Select>
                         </FormControl>
 
-                        <FormControl fullWidth sx={{ mb: 1 }}>
+                        <FormControl fullWidth>
                             <InputLabel id="demo-simple-select-label">Status</InputLabel>
                             <Select
                                 labelId="demo-simple-select-label"
@@ -197,7 +222,17 @@ export default function BasicModal({
                             </Select>
                         </FormControl>
                     </Box>
-                    <TextField
+                    <Autocomplete
+                        disablePortal
+                        id="combo-box-demo"
+                        options={faculties}
+                        value={faculty}
+                        onChange={handleChangeFaclty}
+                        isOptionEqualToValue={(option, value) => option === value}
+                        sx={{ width: "100%", mt: 1, mb: 1 }}
+                        renderInput={(params) => <TextField {...params} label="Faclties" />}
+                    />
+                    {/* <TextField
                         sx={{
                             width: 400, mb: 1, [themeApp.breakpoints.down("md")]: {
                                 width: 300,
@@ -209,7 +244,7 @@ export default function BasicModal({
                         name="faculty"
                         onChange={handleChangeProfile}
                         value={profile.faculty}
-                    />
+                    /> */}
                     <TextField
                         multiline
                         sx={{
@@ -263,7 +298,7 @@ export default function BasicModal({
                                 backgroundColor: "#E1E1E1",
                             },
                         }}
-                        onClick={closeEdit}
+                        onClick={props.closeEdit}
                     >
                         Cancel
                     </Button>
