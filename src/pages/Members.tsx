@@ -5,7 +5,6 @@ import {
     query,
     where,
     onSnapshot,
-    getDocs,
 } from "firebase/firestore";
 import { Box, Typography } from "@mui/material";
 import MemberCard from "../components/Members/MemberCard";
@@ -19,7 +18,6 @@ export default function Members() {
     const [otherMembers, setOtherMembers] = useState<User[]>([]);
     const [user, setUser] = useState<User[]>([]);
     const [searchValue, setValue] = useState("");
-    const [reFresh, setReFresh] = useState("");
 
     useEffect(() => {
         const queryData = query(
@@ -39,32 +37,31 @@ export default function Members() {
         return () => {
             unsubscribe();
         };
-    }, [userInfo.uid, reFresh]);
+    }, [userInfo.uid]);
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const queryData = query(
-                    collection(dbFireStore, "users"),
-                    where("uid", "==", userInfo.uid)
-                );
-                const querySnapshot = await getDocs(queryData);
-                const queriedData = querySnapshot.docs.map((doc) => doc.data() as User);
+        const queryData = query(
+            collection(dbFireStore, "users"),
+            where("uid", "==", userInfo.uid)
+        );
+        const unsubscribe = onSnapshot(
+            queryData,
+            (snapshot) => {
+                const queriedData = snapshot.docs.map((doc) => doc.data() as User);
                 setUser(queriedData);
-            } catch (error) {
-                console.error("Error fetching data:", error);
+            },
+            (error) => {
+                console.error("Error fetching data: ", error);
             }
+        );
+        return () => {
+            unsubscribe();
         };
-        fetchUserData();
-    }, [userInfo.uid, reFresh]);
+    }, [userInfo.uid]);
 
     const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         setValue(value);
-    };
-
-    const handleRefresh = () => {
-        setReFresh((pre) => pre + 1);
     };
 
     return (
@@ -131,7 +128,6 @@ export default function Members() {
                                     otherUser.profilePhoto ? otherUser.profilePhoto : ""
                                 }
                                 uId={otherUser.uid}
-                                handleRefresh={handleRefresh}
                             />
                         ))}
                 </Grid>
@@ -154,7 +150,6 @@ export default function Members() {
                                     otherUser.profilePhoto ? otherUser.profilePhoto : ""
                                 }
                                 uId={otherUser.uid}
-                                handleRefresh={handleRefresh}
                             />
                         ))}
                 </Grid>

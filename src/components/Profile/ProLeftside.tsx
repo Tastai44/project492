@@ -276,7 +276,7 @@ export default function ProLeftside() {
 										</Button>
 									) : (
 										<Button
-											onClick={() => handleAddFriend(inFoUser, loginUser, userId)}
+											onClick={() => handleAddFriend(userId)}
 											size="small"
 											sx={{
 												width: "100px",

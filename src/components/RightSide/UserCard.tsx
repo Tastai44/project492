@@ -1,12 +1,13 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Badge from "@mui/material/Badge";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import { Typography, Box } from "@mui/material";
 import { dbFireStore } from "../../config/firebase";
-import { collection, query, onSnapshot } from "firebase/firestore";
+import { collection, query, onSnapshot, where } from "firebase/firestore";
 import { User } from "../../interface/User";
+
 
 export const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": {
@@ -45,13 +46,13 @@ interface IData {
 }
 
 export default function UserCard(props: IData) {
-	const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-	React.useEffect(() => {
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const q = query(
-					collection(dbFireStore, "users")
-					// where("uid", "==", props.userId)
+					collection(dbFireStore, "users"),
+					where("uid", "==", props.userId)
 				);
 				onSnapshot(q, (querySnapshot) => {
 					const queriedData = querySnapshot.docs.map(
@@ -71,6 +72,8 @@ export default function UserCard(props: IData) {
 			fetchData();
 		}
 	}, [props.userId]);
+
+	console.log(inFoUser);
 
 	return (
 		<Stack

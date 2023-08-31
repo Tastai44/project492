@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import Card from "@mui/material/Card";
 import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
@@ -12,6 +13,7 @@ import {
     getDocs,
     updateDoc,
     where,
+    onSnapshot,
 } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
 import { IFriendList, User } from "../../interface/User";
@@ -26,6 +28,28 @@ interface IData {
 
 export default function FriendCard(props: IData) {
     const { userId } = useParams();
+    const [inFoUser, setInFoUser] = useState<User[]>([]);
+
+    useEffect(() => {
+        const queryData = query(
+            collection(dbFireStore, "users"),
+            where("uid", "==", props.uid)
+        );
+        const unsubscribe = onSnapshot(
+            queryData,
+            (snapshot) => {
+                const queriedData = snapshot.docs.map((doc) => doc.data() as User);
+                setInFoUser(queriedData);
+            },
+            (error) => {
+                console.error("Error fetching data: ", error);
+            }
+        );
+        return () => {
+            unsubscribe();
+        };
+    }, [props.uid]);
+
     const unFriendOtherSide = async (id: string) => {
         const IndexFriend = props.friendList.findIndex((index) => index.friendId === id);
         try {
@@ -75,52 +99,57 @@ export default function FriendCard(props: IData) {
     };
 
     return (
-        <Card
-            sx={{
-                width: 210,
-                background: "linear-gradient(to bottom, #000000, #CECCCC8A)",
-                margin: "10px",
-            }}
-        >
-            <CardMedia
-                component="img"
-                height="184"
-                image={props.profilePhoto}
-                alt="userPicture"
-            />
-            <CardContent>
-                <Typography variant="body2" color="white" sx={{ fontSize: "20px" }}>
-                    {props.username}
-                </Typography>
-            </CardContent>
-            <CardActions
-                disableSpacing
-                sx={{ display: "flex", justifyContent: "center", gap: 1 }}
-            >
-                <NavLink to={`/profileBlog/${props.uid}`}>
-                    <Button
-                        sx={{
-                            color: "white",
-                            borderRadius: "5px",
-                            backgroundColor: "#920EFA",
-                            "&:hover": { backgroundColor: "white", color: "black" },
-                        }}
-                    >
-                        View
-                    </Button>
-                </NavLink>
-                <Button
+        <>
+            {inFoUser.map((user) => (
+                <Card
+                    key={user.uid}
                     sx={{
-                        color: "white",
-                        borderRadius: "5px",
-                        backgroundColor: "grey",
-                        "&:hover": { backgroundColor: "white", color: "black" },
+                        width: 210,
+                        background: "linear-gradient(to bottom, #000000, #CECCCC8A)",
+                        margin: "10px",
                     }}
-                    onClick={() => unFriend(props.uid)}
                 >
-                    UnFriend
-                </Button>
-            </CardActions>
-        </Card>
+                    <CardMedia
+                        component="img"
+                        height="184"
+                        image={user.profilePhoto}
+                        alt="userPicture"
+                    />
+                    <CardContent>
+                        <Typography variant="body2" color="white" sx={{ fontSize: "20px", textAlign: "center" }}>
+                            {`${user.firstName} ${user.lastName}`}
+                        </Typography>
+                    </CardContent>
+                    <CardActions
+                        disableSpacing
+                        sx={{ display: "flex", justifyContent: "center", gap: 1 }}
+                    >
+                        <NavLink to={`/profileBlog/${props.uid}`}>
+                            <Button
+                                sx={{
+                                    color: "white",
+                                    borderRadius: "5px",
+                                    backgroundColor: "#920EFA",
+                                    "&:hover": { backgroundColor: "white", color: "black" },
+                                }}
+                            >
+                                View
+                            </Button>
+                        </NavLink>
+                        <Button
+                            sx={{
+                                color: "white",
+                                borderRadius: "5px",
+                                backgroundColor: "grey",
+                                "&:hover": { backgroundColor: "white", color: "black" },
+                            }}
+                            onClick={() => unFriend(props.uid)}
+                        >
+                            UnFriend
+                        </Button>
+                    </CardActions>
+                </Card>
+            ))}
+        </>
     );
 }

@@ -21,9 +21,6 @@ export interface User {
 }
 
 export interface IFriendList {
-	status: boolean;
 	friendId: string;
-	username: string;
-	profilePhoto?: string;
 	createdAt: string;
 }

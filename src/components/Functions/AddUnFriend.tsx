@@ -1,20 +1,16 @@
 
-import { getDocs, collection, where, doc, updateDoc, arrayUnion, query, serverTimestamp } from "firebase/firestore";
+import { getDocs, collection, where, doc, updateDoc, arrayUnion, query } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
-import { IFriendList, User } from "../../interface/User";
+import { User } from "../../interface/User";
 import PopupAlert from "../PopupAlert";
 
 const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
-const addFriendOtherSide = async (loginUser: User[], userId: string | undefined) => {
-    const addFriend: IFriendList[] = loginUser.map((m) => ({
-        status: true,
+const addFriendOtherSide = async (userId: string | undefined) => {
+    const addFriend = {
         friendId: userInfo.uid,
-        username: m.firstName + m.lastName,
-        profilePhoto: m.profilePhoto,
         createdAt: new Date().toLocaleString(),
-
-    }));
+    };
     const querySnapshot = await getDocs(
         query(collection(dbFireStore, "users"), where("uid", "==", userId))
     );
@@ -22,7 +18,7 @@ const addFriendOtherSide = async (loginUser: User[], userId: string | undefined)
         const userDoc = querySnapshot.docs[0];
         const userRef = doc(dbFireStore, "users", userDoc.id);
         updateDoc(userRef, {
-            friendList: addFriend,
+            friendList: arrayUnion(addFriend),
         })
             .then(() => {
                 console.log("Successfully added friend to the friendList.");
@@ -32,15 +28,11 @@ const addFriendOtherSide = async (loginUser: User[], userId: string | undefined)
             });
     }
 };
-export const handleAddFriend = async (inFoUser: User[], loginUser: User[], userId: string | undefined) => {
-    const addFriend: IFriendList[] = inFoUser.map((user) => ({
-        status: true,
-        friendId: userId ?? "",
-        username: `${user.firstName} ${user.lastName}`,
-        profilePhoto: user.profilePhoto,
+export const handleAddFriend = async (userId: string | undefined) => {
+    const addFriend = {
+        friendId: userId,
         createdAt: new Date().toLocaleString(),
-        dateCreated: serverTimestamp(),
-    }));
+    };
     const querySnapshot = await getDocs(
         query(collection(dbFireStore, "users"), where("uid", "==", userInfo.uid))
     );
@@ -48,7 +40,7 @@ export const handleAddFriend = async (inFoUser: User[], loginUser: User[], userI
         const userDoc = querySnapshot.docs[0];
         const userRef = doc(dbFireStore, "users", userDoc.id);
         updateDoc(userRef, {
-            friendList: arrayUnion(addFriend[0]),
+            friendList: arrayUnion(addFriend),
         })
             .then(() => {
                 PopupAlert("Successfully added friend to the friendList", "success");
@@ -56,7 +48,7 @@ export const handleAddFriend = async (inFoUser: User[], loginUser: User[], userI
             .catch((error) => {
                 console.error("Error adding friend to the friendList: ", error);
             });
-        addFriendOtherSide(loginUser, userId);
+        addFriendOtherSide(userId);
     }
 };
 

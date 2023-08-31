@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import Card from "@mui/material/Card";
 import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
@@ -8,29 +8,25 @@ import { Box, Button } from "@mui/material";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import {
     collection,
-    doc,
-    updateDoc,
-    arrayUnion,
     query,
     where,
     getDocs,
 } from "firebase/firestore";
 import { dbFireStore } from "../../config/firebase";
-import { IFriendList, User } from "../../interface/User";
+import { User } from "../../interface/User";
 import { NavLink } from "react-router-dom";
-import PopupAlert from "../PopupAlert";
+import { handleAddFriend } from "../Functions/AddUnFriend";
 
 interface IData {
     username: string;
     profilePhoto: string;
     uId: string;
-    handleRefresh: () => void;
 }
 
 export default function MemberCard(props: IData) {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-    const [user, setUser] = React.useState<User[]>([]);
-    React.useEffect(() => {
+    const [user, setUser] = useState<User[]>([]);
+    useEffect(() => {
         const fetchUSerData = async () => {
             try {
                 const queryData = query(
@@ -47,58 +43,6 @@ export default function MemberCard(props: IData) {
         fetchUSerData();
     }, [user, userInfo.uid]);
 
-    const addFriendOtherSide = async () => {
-        const addFriend: IFriendList[] = user.map((m) => ({
-            status: true,
-            friendId: userInfo.uid,
-            username: m.firstName + m.lastName,
-            profilePhoto: m.profilePhoto,
-            createdAt: new Date().toLocaleString(),
-        }));
-        const querySnapshot = await getDocs(
-            query(collection(dbFireStore, "users"), where("uid", "==", props.uId))
-        );
-        if (!querySnapshot.empty) {
-            const userDoc = querySnapshot.docs[0];
-            const userRef = doc(dbFireStore, "users", userDoc.id);
-            updateDoc(userRef, {
-                friendList: addFriend,
-            })
-                .then(() => {
-                    console.log("Successfully added friend to the friendList.");
-                })
-                .catch((error) => {
-                    console.error("Error adding friend to the friendList: ", error);
-                });
-        }
-    };
-    const handleAddFriend = async () => {
-        const addFriend: IFriendList = {
-            status: true,
-            friendId: props.uId,
-            username: props.username,
-            profilePhoto: props.profilePhoto,
-            createdAt: new Date().toLocaleString(),
-        };
-        const querySnapshot = await getDocs(
-            query(collection(dbFireStore, "users"), where("uid", "==", userInfo.uid))
-        );
-        if (!querySnapshot.empty) {
-            const userDoc = querySnapshot.docs[0];
-            const userRef = doc(dbFireStore, "users", userDoc.id);
-            updateDoc(userRef, {
-                friendList: arrayUnion(addFriend),
-            })
-                .then(() => {
-                    props.handleRefresh();
-                    PopupAlert("Successfully added friend to the friendList", "success");
-                })
-                .catch((error) => {
-                    console.error("Error adding friend to the friendList: ", error);
-                });
-            addFriendOtherSide();
-        }
-    };
     return (
         <Card sx={{ width: 250 }}>
             <CardActions
@@ -118,7 +62,7 @@ export default function MemberCard(props: IData) {
                         backgroundColor: "#A005FF",
                         "&:hover": { color: "black", backgroundColor: "#F1F1F1" },
                     }}
-                    onClick={() => handleAddFriend()}
+                    onClick={() => handleAddFriend(props.uId)}
                 >
                     Add Friend
                 </Button>
