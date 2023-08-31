@@ -73,8 +73,6 @@ export default function UserCard(props: IData) {
 		}
 	}, [props.userId]);
 
-	console.log(inFoUser);
-
 	return (
 		<Stack
 			direction="row"

@@ -116,8 +116,6 @@ export default function RightContainer() {
         };
     }, [userInfo.uid]);
 
-    console.log(inFoUser);
-
     return (
         <Box sx={{ width: "100%", display: { xs: "none", lg: "flex" } }}>
             <Modal

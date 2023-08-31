@@ -55,7 +55,7 @@ export default function ShareEvent(props: Idata) {
 		};
 		fetchData();
 	}, [props.userId]);
-	console.log(props.userId);
+
 	return (
 		<Box>
 			<Box sx={{ width: "100%" }}>
