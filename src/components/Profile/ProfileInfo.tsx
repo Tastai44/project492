@@ -246,7 +246,7 @@ export default function ProfileInfo(props: IData) {
                     key={user.uid}
                     sx={{
                         mt: 5,
-                        display: { xs: "flex", md: "none" },
+                        display: { xs: "flex", lg: "none" },
                         alignItems: "center",
                         p: 2,
                         mr: 1,

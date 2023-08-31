@@ -170,7 +170,7 @@ export default function ProCoverImage() {
                 </Box>
             </Modal>
             {inFoUser.map((info) => (
-                <>
+                <Box key={info.uid}>
                     <Card key={info.coverPhoto} sx={{ maxWidth: "100%" }}>
                         <CardMedia sx={{ height: 300 }} image={info.coverPhoto} title="green iguana" />
                     </Card>
@@ -212,7 +212,7 @@ export default function ProCoverImage() {
                     <ProfileInfo
                         userId={userId ?? ''}
                     />
-                </>
+                </Box>
             ))}
         </>
     );

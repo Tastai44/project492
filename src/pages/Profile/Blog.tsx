@@ -132,6 +132,24 @@ export default function Blog() {
 				<Box sx={{ flexGrow: 1 }} key={m.uid}>
 					<Grid container spacing={2}>
 						<Grid item lg={9} md={12} sm={12}>
+							<Box sx={{ backgroundColor: "#fff", margin: 1, display: { xs: "block", lg: "none" } }}>
+								<FormControl sx={{ backgroundColor: "white", width: "100%" }}>
+									<InputLabel id="demo-simple-select-label">
+										Content type
+									</InputLabel>
+									<Select
+										labelId="demo-simple-select-label"
+										id="demo-simple-select"
+										value={type}
+										label="Content type"
+										onChange={handleChangeType}
+									>
+										<MenuItem value={"General"}>General</MenuItem>
+										<MenuItem value={"Share"}>Share</MenuItem>
+									</Select>
+								</FormControl>
+							</Box>
+
 							<Item sx={{ backgroundColor: "#fff", margin: 1 }}>
 								<PostForm inFoUser={inFoUser} />
 							</Item>

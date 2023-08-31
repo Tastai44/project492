@@ -15,6 +15,7 @@ import TabLink from "./TabLink";
 export default function Friends() {
 	const { userId } = useParams();
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	const [otherUser, setOtherUser] = useState<User[]>([]);
 	const [searchValue, setValue] = useState("");
 
 	useEffect(() => {
@@ -27,6 +28,25 @@ export default function Friends() {
 			(snapshot) => {
 				const queriedData = snapshot.docs.map((doc) => doc.data() as User);
 				setInFoUser(queriedData);
+			},
+			(error) => {
+				console.error("Error fetching data: ", error);
+			}
+		);
+		return () => {
+			unsubscribe();
+		};
+	}, [userId]);
+
+	useEffect(() => {
+		const queryData = query(
+			collection(dbFireStore, "users"),
+		);
+		const unsubscribe = onSnapshot(
+			queryData,
+			(snapshot) => {
+				const queriedData = snapshot.docs.map((doc) => doc.data() as User);
+				setOtherUser(queriedData);
 			},
 			(error) => {
 				console.error("Error fetching data: ", error);
@@ -83,17 +103,15 @@ export default function Friends() {
 							{inFoUser.map((user) => (
 								<Grid sx={{ flexGrow: 1, gap: 2 }} container key={user.uid}>
 									{user.friendList?.length !== 0 ? (
-										<>
-											{user.friendList?.map((friend) => (
-												<FriendCard
-													key={friend.friendId}
-													username={friend.username}
-													profilePhoto={friend.profilePhoto}
-													uid={friend.friendId}
-													friendList={user.friendList ? user.friendList : []}
-												/>
-											))}
-										</>
+										otherUser.filter((other) => user.friendList?.some((friend) => friend.friendId == other.uid)).map((other) => (
+											<FriendCard
+												key={other.uid}
+												username={other.username}
+												profilePhoto={other.profilePhoto}
+												uid={other.uid}
+												friendList={user.friendList ? user.friendList : []}
+											/>
+										))
 									) : (
 										<>
 											<Typography
@@ -114,6 +132,7 @@ export default function Friends() {
 							userId={userId ?? ""}
 							searchValue={searchValue}
 							friendList={inFoUser.find((user) => user.friendList)?.friendList}
+							otherUser={otherUser}
 						/>
 					)}
 

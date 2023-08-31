@@ -14,7 +14,7 @@ import {
     SelectChangeEvent,
     Box
 } from "@mui/material";
-import { IFriendList } from "../../interface/User";
+import { IFriendList, User } from "../../interface/User";
 import LockIcon from "@mui/icons-material/Lock";
 import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
@@ -69,6 +69,7 @@ export default function ShareCard(props: IData & IFunction) {
     const [searchValue, setValue] = useState("");
     const [groupData, setGroupData] = useState<IGroup[]>([]);
     const [status, setStatus] = useState("Private");
+    const [inFoUser, setInFoUser] = useState<User[]>([]);
     const [rows, setRows] = useState<IShare[]>([]);
 
     useEffect(() => {
@@ -93,11 +94,30 @@ export default function ShareCard(props: IData & IFunction) {
     }, [userInfo.uid]);
 
     useEffect(() => {
+        const queryData = query(
+            collection(dbFireStore, "users"),
+        );
+        const unsubscribe = onSnapshot(
+            queryData,
+            (snapshot) => {
+                const queriedData = snapshot.docs.map((doc) => doc.data() as User);
+                setInFoUser(queriedData);
+            },
+            (error) => {
+                console.error("Error fetching data: ", error);
+            }
+        );
+        return () => {
+            unsubscribe();
+        };
+    }, [userInfo.uid]);
+
+    useEffect(() => {
         if (status == "Friend") {
-            const rows = props.friendList.map((row, index) => ({
-                id: `${row.friendId}_${index}`,
-                uid: row.friendId,
-                username: row.username,
+            const rows = inFoUser.filter((user) => props.friendList.some((friend) => friend.friendId == user.uid)).map((row, index) => ({
+                id: `${row.uid}_${index}`,
+                uid: row.uid,
+                username: `${row.firstName} ${row.lastName}`,
                 profilePhoto: row.profilePhoto,
             }));
             setRows(rows);
@@ -109,7 +129,7 @@ export default function ShareCard(props: IData & IFunction) {
                 profilePhoto: group.coverPhoto,
             })));
         }
-    }, [groupData, props.friendList, status]);
+    }, [groupData, inFoUser, props.friendList, status]);
 
     const handleChange = (event: SelectChangeEvent) => {
         setStatus(event.target.value as string);
