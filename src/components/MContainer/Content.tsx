@@ -53,10 +53,11 @@ import {
 import EditPost from "./EditPost";
 import PopupAlert from "../PopupAlert";
 import ReportCard from "../Report/ReportCard";
-import { User } from "../../interface/User";
+import { IFriendList, User } from "../../interface/User";
 import { themeApp } from "../../utils/Theme";
 import { NavLink } from "react-router-dom";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import ShareCard from "./ShareCard";
 
 
 const Item = styled(Box)(({ theme }) => ({
@@ -72,6 +73,9 @@ interface IData {
     owner?: string;
     location?: string;
     likes: Like[];
+    friendList?: IFriendList[];
+    caption?: string;
+
 }
 interface IFunction {
     handleClosePost: () => void;
@@ -81,16 +85,22 @@ export default function Content(props: IData & IFunction) {
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(
         null
     );
+    const initialState = {
+        id: "",
+        text: "",
+        createdAt: "",
+        author: "",
+    };
     const [inFoUser, setInFoUser] = useState<User[]>([]);
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-    const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
-        setAnchorElUser(event.currentTarget);
-    };
-    const handleCloseUserMenu = () => {
-        setAnchorElUser(null);
-    };
-
+    const [openShare, setOpenShare] = useState(false);
+    const [openEditPost, setOpenEditPost] = useState(false);
+    const [comment, setComment] = useState<Comment>(initialState);
     const [postData, setPostData] = useState<Post[]>([]);
+    const [isLike, setIsLike] = useState(false);
+    const [openReportPost, setOpenReportPost] = useState(false);
+    const [userOwner, setUserOwner] = useState<User[]>([]);
+
     useEffect(() => {
         const queryData = query(
             collection(dbFireStore, "posts"),
@@ -113,52 +123,6 @@ export default function Content(props: IData & IFunction) {
         };
     }, [props.postId]);
 
-    const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
-        const emoji = emojiData.find((data) => data.unified === emojiCode);
-        return emoji ? emoji.name : undefined;
-    };
-
-    const initialState = {
-        id: "",
-        text: "",
-        createdAt: "",
-        author: "",
-    };
-
-    const [comment, setComment] = useState<Comment>(initialState);
-    const clearState = () => {
-        setComment({ ...initialState });
-    };
-    const handleChangeComment = (
-        event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
-        const { name, value } = event.target;
-        setComment((prevComment) => ({
-            ...prevComment,
-            [name]: value,
-        }));
-    };
-
-    const postComment = () => {
-        const postsCollection = collection(dbFireStore, "posts");
-        const newComment = {
-            text: comment.text,
-            author: props.userId,
-            createdAt: new Date().toLocaleString(),
-        };
-        const postRef = doc(postsCollection, props.postId);
-        updateDoc(postRef, {
-            comments: arrayUnion(newComment),
-        })
-            .then(() => {
-                clearState();
-            })
-            .catch((error) => {
-                console.error("Error adding comment: ", error);
-            });
-    };
-
-    const [isLike, setIsLike] = useState(false);
     useEffect(() => {
         setIsLike(
             postData.some(
@@ -169,78 +133,6 @@ export default function Content(props: IData & IFunction) {
         );
     }, [postData, props.postId, props.userId]);
 
-    const increaseLike = async () => {
-        const postsCollection = collection(dbFireStore, "posts");
-        const updateLike = {
-            likeBy: props.userId,
-            createdAt: new Date().toLocaleString(),
-        };
-        const postRef = doc(postsCollection, props.postId);
-        await updateDoc(postRef, {
-            likes: arrayUnion(updateLike),
-        });
-    };
-    const decreaseLike = async (id: string) => {
-        const IndexLike = props.likes.findIndex((f) => f.likeBy === props.userId);
-        try {
-            const q = query(collection(dbFireStore, "posts"), where("id", "==", id));
-            const querySnapshot = await getDocs(q);
-            const doc = querySnapshot.docs[0];
-            if (doc.exists()) {
-                const postData = { id: doc.id, ...doc.data() } as Post;
-                const updatedLike = [...postData.likes];
-                updatedLike.splice(IndexLike, 1);
-                const updatedData = { ...postData, likes: updatedLike };
-                await updateDoc(doc.ref, updatedData);
-            } else {
-                console.log("No post found with the specified ID");
-            }
-        } catch (error) {
-            console.error("Error deleting like:", error);
-        }
-    };
-
-    const [openEditPost, setOpenEditPost] = useState(false);
-    const handletOpenEditPost = () => {
-        setOpenEditPost(true);
-        handleCloseUserMenu();
-    };
-    const handleCloseEditPost = () => setOpenEditPost(false);
-
-    const handleDelete = (pId: string) => {
-        const postRef = doc(dbFireStore, "posts", pId);
-        getDoc(postRef)
-            .then((docSnap) => {
-                if (docSnap.exists() && docSnap.data().owner === props.userId) {
-                    deleteDoc(postRef)
-                        .then(() => {
-                            props.handleClosePost();
-                            PopupAlert("Post deleted successfully", "success");
-                        })
-                        .catch((error) => {
-                            console.error("Error deleting post: ", error);
-                        });
-                } else {
-                    PopupAlert(
-                        "You don't have permission to delete this post",
-                        "warning"
-                    );
-                    console.log("You don't have permission to delete this post");
-                }
-            })
-            .catch((error) => {
-                console.error("Error fetching post: ", error);
-            });
-    };
-
-    const [openReportPost, setOpenReportPost] = useState(false);
-    const handletOpenReport = () => {
-        setOpenReportPost(true);
-        handleCloseUserMenu();
-    };
-    const handleCloseReport = () => setOpenReportPost(false);
-
-    const [userOwner, setUserOwner] = useState<User[]>([]);
     useEffect(() => {
         const queryData = query(
             collection(dbFireStore, "users"),
@@ -281,8 +173,131 @@ export default function Content(props: IData & IFunction) {
         };
     }, [userInfo.uid]);
 
+    const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
+        const emoji = emojiData.find((data) => data.unified === emojiCode);
+        return emoji ? emoji.name : undefined;
+    };
+
+    const handleOpenShare = () => setOpenShare(true);
+    const handleCloseShare = () => setOpenShare(false);
+
+    const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
+        setAnchorElUser(event.currentTarget);
+    };
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null);
+    };
+
+    const clearState = () => {
+        setComment({ ...initialState });
+    };
+    const handleChangeComment = (
+        event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+        const { name, value } = event.target;
+        setComment((prevComment) => ({
+            ...prevComment,
+            [name]: value,
+        }));
+    };
+
+    const postComment = () => {
+        const postsCollection = collection(dbFireStore, "posts");
+        const newComment = {
+            text: comment.text,
+            author: props.userId,
+            createdAt: new Date().toLocaleString(),
+        };
+        const postRef = doc(postsCollection, props.postId);
+        updateDoc(postRef, {
+            comments: arrayUnion(newComment),
+        })
+            .then(() => {
+                clearState();
+            })
+            .catch((error) => {
+                console.error("Error adding comment: ", error);
+            });
+    };
+
+    const increaseLike = async () => {
+        const postsCollection = collection(dbFireStore, "posts");
+        const updateLike = {
+            likeBy: props.userId,
+            createdAt: new Date().toLocaleString(),
+        };
+        const postRef = doc(postsCollection, props.postId);
+        await updateDoc(postRef, {
+            likes: arrayUnion(updateLike),
+        });
+    };
+    const decreaseLike = async (id: string) => {
+        const IndexLike = props.likes.findIndex((f) => f.likeBy === props.userId);
+        try {
+            const q = query(collection(dbFireStore, "posts"), where("id", "==", id));
+            const querySnapshot = await getDocs(q);
+            const doc = querySnapshot.docs[0];
+            if (doc.exists()) {
+                const postData = { id: doc.id, ...doc.data() } as Post;
+                const updatedLike = [...postData.likes];
+                updatedLike.splice(IndexLike, 1);
+                const updatedData = { ...postData, likes: updatedLike };
+                await updateDoc(doc.ref, updatedData);
+            } else {
+                console.log("No post found with the specified ID");
+            }
+        } catch (error) {
+            console.error("Error deleting like:", error);
+        }
+    };
+
+    const handletOpenEditPost = () => {
+        setOpenEditPost(true);
+        handleCloseUserMenu();
+    };
+    const handleCloseEditPost = () => setOpenEditPost(false);
+
+    const handleDelete = (pId: string) => {
+        const postRef = doc(dbFireStore, "posts", pId);
+        getDoc(postRef)
+            .then((docSnap) => {
+                if (docSnap.exists() && docSnap.data().owner === props.userId) {
+                    deleteDoc(postRef)
+                        .then(() => {
+                            props.handleClosePost();
+                            PopupAlert("Post deleted successfully", "success");
+                        })
+                        .catch((error) => {
+                            console.error("Error deleting post: ", error);
+                        });
+                } else {
+                    PopupAlert(
+                        "You don't have permission to delete this post",
+                        "warning"
+                    );
+                    console.log("You don't have permission to delete this post");
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching post: ", error);
+            });
+    };
+
+    const handletOpenReport = () => {
+        setOpenReportPost(true);
+        handleCloseUserMenu();
+    };
+    const handleCloseReport = () => setOpenReportPost(false);
+
     return (
         <Box>
+            <ShareCard
+                openShare={openShare}
+                handleCloseShare={handleCloseShare}
+                friendList={props.friendList ?? []}
+                postId={props.postId}
+                postCaption={props.caption ?? ""}
+            />
             <Modal
                 open={openReportPost}
                 onClose={handleCloseReport}
@@ -550,7 +565,7 @@ export default function Content(props: IData & IFunction) {
                                         >
                                             <CommentIcon sx={{ marginRight: 1 }} /> Comment
                                         </Button>
-                                        <Button aria-label="share" sx={{ color: "black" }}>
+                                        <Button aria-label="share" sx={{ color: "black" }} onClick={handleOpenShare}>
                                             <ScreenShareIcon sx={{ marginRight: 1 }} /> Share
                                         </Button>
                                     </CardActions>

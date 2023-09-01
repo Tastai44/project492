@@ -231,6 +231,8 @@ export default function MContainer(props: Idata) {
                                     likes={props.likes}
                                     owner={props.owner}
                                     location={props.location}
+                                    friendList={u.friendList}
+                                    caption={props.caption}
                                 />
                             </Paper>
                         </Box>
