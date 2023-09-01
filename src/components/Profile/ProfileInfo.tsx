@@ -282,27 +282,30 @@ export default function ProfileInfo(props: IData) {
                             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                             badgeContent={
                                 <Box onClick={handleUploadClick}>
-                                    <IconButton
-                                        sx={{
-                                            backgroundColor: "white",
-                                            height: "10px",
-                                            width: "10px",
-                                            "&:hover": {
-                                                color: "white",
-                                                backgroundColor: "black",
-                                            },
-                                        }}
-                                    >
-                                        <input
-                                            type="file"
-                                            ref={fileInputRef}
-                                            onChange={handleFileChange}
-                                            multiple
-                                            hidden
-                                            accept="image/*"
-                                        />
-                                        <AddAPhotoIcon style={{ fontSize: "10px" }} />
-                                    </IconButton>
+                                    {user.uid == userInfo.uid && (
+                                        <IconButton
+                                            sx={{
+                                                backgroundColor: "white",
+                                                height: "10px",
+                                                width: "10px",
+                                                "&:hover": {
+                                                    color: "white",
+                                                    backgroundColor: "black",
+                                                },
+                                            }}
+                                        >
+                                            <input
+                                                type="file"
+                                                ref={fileInputRef}
+                                                onChange={handleFileChange}
+                                                multiple
+                                                hidden
+                                                accept="image/*"
+                                            />
+                                            <AddAPhotoIcon style={{ fontSize: "10px" }} />
+                                        </IconButton>
+                                    )}
+
                                 </Box>
                             }
                         >

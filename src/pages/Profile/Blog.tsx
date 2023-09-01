@@ -149,10 +149,12 @@ export default function Blog() {
 									</Select>
 								</FormControl>
 							</Box>
+							{userInfo.uid == userId && (
+								<Item sx={{ backgroundColor: "#fff", margin: 1 }}>
+									<PostForm inFoUser={inFoUser} />
+								</Item>
+							)}
 
-							<Item sx={{ backgroundColor: "#fff", margin: 1 }}>
-								<PostForm inFoUser={inFoUser} />
-							</Item>
 							{type === "General" ? (
 								<Item
 									sx={{
@@ -195,7 +197,7 @@ export default function Blog() {
 												((share.status == "Private" && (share.shareBy == userInfo.uid && share.shareTo == userInfo.uid)) ||
 													(share.shareBy == userId && share.status == "Public"))
 											)
-										) ? (
+										) && (
 											<Item
 												sx={{
 													display: "flex",
@@ -244,55 +246,57 @@ export default function Blog() {
 														</Box>
 													))}
 											</Item>
-										) : (
-											<Item
-												sx={{
-													display: "flex",
-													flexDirection: "column",
-													gap: 2,
-												}}
-											>
-												{sharePost
-													.filter((f) =>
-														f.shareUsers.some(
-															(share) =>
-																share.shareTo == userId &&
-																share.status == "Friend"
-														)
+										)}
+
+									{(
+										<Item
+											sx={{
+												display: "flex",
+												flexDirection: "column",
+												gap: 2,
+											}}
+										>
+											{sharePost
+												.filter((f) =>
+													f.shareUsers.some(
+														(share) =>
+															share.shareTo == userId &&
+															share.status == "Friend"
 													)
-													.map((m) => (
-														<Box key={m.id}>
-															<ShareContent
-																userId={m.shareUsers.find((user) => user.shareBy)?.shareBy}
-																postId={m.id}
-																shareUsers={m.shareUsers.filter(
-																	(share) =>
-																		share.status == "Friend" &&
-																		share.shareTo == userId
-																)}
-															/>
-															<MContainer
-																owner={m.owner}
-																postId={m.id}
-																caption={m.caption}
-																hashTagTopic={m.hashTagTopic}
-																status={m.status}
-																createAt={m.createAt}
-																emoji={m.emoji}
-																photoPost={m.photoPost}
-																likeNumber={m.likes.length}
-																likes={m.likes}
-																commentNumber={m.comments.length}
-																shareUsers={m.shareUsers}
-																userInfo={inFoUser}
-																groupName={m.groupName}
-																groupId={m.groupId}
-																location={m.location}
-															/>
-														</Box>
-													))}
-											</Item>
-										)
+												)
+												.map((m) => (
+													<Box key={m.id}>
+														<ShareContent
+															userId={m.shareUsers.find((user) => user.shareBy)?.shareBy}
+															postId={m.id}
+															shareUsers={m.shareUsers.filter(
+																(share) =>
+																	share.status == "Friend" &&
+																	share.shareTo == userId
+															)}
+														/>
+														<MContainer
+															owner={m.owner}
+															postId={m.id}
+															caption={m.caption}
+															hashTagTopic={m.hashTagTopic}
+															status={m.status}
+															createAt={m.createAt}
+															emoji={m.emoji}
+															photoPost={m.photoPost}
+															likeNumber={m.likes.length}
+															likes={m.likes}
+															commentNumber={m.comments.length}
+															shareUsers={m.shareUsers}
+															userInfo={inFoUser}
+															groupName={m.groupName}
+															groupId={m.groupId}
+															location={m.location}
+														/>
+													</Box>
+												))}
+										</Item>
+									)
 									}
 
 									{

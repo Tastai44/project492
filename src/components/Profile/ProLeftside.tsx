@@ -191,31 +191,33 @@ export default function ProLeftside() {
 							<Stack spacing={2}>
 								<Item>
 									<Stack direction="row" spacing={2}>
+
 										<Badge
 											overlap="circular"
 											anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
 											badgeContent={
 												<Box onClick={handleUploadClick}>
-													<IconButton
-														sx={{
-															backgroundColor: "white",
-															"&:hover": {
-																color: "white",
-																backgroundColor: "black",
-															},
-														}}
-														disabled={userInfo.uid != m.uid}
-													>
-														<input
-															type="file"
-															ref={fileInputRef}
-															onChange={handleFileChange}
-															multiple
-															hidden
-															accept="image/*"
-														/>
-														<AddAPhotoIcon />
-													</IconButton>
+													{userInfo.uid == m.uid && (
+														<IconButton
+															sx={{
+																backgroundColor: "white",
+																"&:hover": {
+																	color: "white",
+																	backgroundColor: "black",
+																},
+															}}
+														>
+															<input
+																type="file"
+																ref={fileInputRef}
+																onChange={handleFileChange}
+																multiple
+																hidden
+																accept="image/*"
+															/>
+															<AddAPhotoIcon />
+														</IconButton>
+													)}
 												</Box>
 											}
 										>

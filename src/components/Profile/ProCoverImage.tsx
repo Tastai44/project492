@@ -174,41 +174,42 @@ export default function ProCoverImage() {
                     <Card key={info.coverPhoto} sx={{ maxWidth: "100%" }}>
                         <CardMedia sx={{ height: 300 }} image={info.coverPhoto} title="green iguana" />
                     </Card>
-                    <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent: "flex-end",
-                            mt: "-40px",
-                            mr: 0.5,
-                            alignItems: "center",
-                            alignContent: "center",
-                        }}
-                    >
-                        <Button
-                            disabled={userInfo.uid != info.uid}
-                            onClick={handleUploadClick}
+                    {userInfo.uid == info.uid && (
+                        <Box
                             sx={{
-                                backgroundColor: "white",
-                                color: "black",
-                                "&:hover": {
-                                    color: "white",
-                                    backgroundColor: "black",
-                                },
+                                display: "flex",
+                                justifyContent: "flex-end",
+                                mt: "-40px",
+                                mr: 0.5,
+                                alignItems: "center",
+                                alignContent: "center",
                             }}
-                            variant="outlined"
-                            startIcon={<AddAPhotoIcon />}
                         >
-                            <input
-                                type="file"
-                                ref={fileInputRef}
-                                onChange={handleFileChange}
-                                multiple
-                                hidden
-                                accept="image/*"
-                            />
-                            Add cover photo
-                        </Button>
-                    </Box>
+                            <Button
+                                onClick={handleUploadClick}
+                                sx={{
+                                    backgroundColor: "white",
+                                    color: "black",
+                                    "&:hover": {
+                                        color: "white",
+                                        backgroundColor: "black",
+                                    },
+                                }}
+                                variant="outlined"
+                                startIcon={<AddAPhotoIcon />}
+                            >
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    onChange={handleFileChange}
+                                    multiple
+                                    hidden
+                                    accept="image/*"
+                                />
+                                Add cover photo
+                            </Button>
+                        </Box>
+                    )}
                     <ProfileInfo
                         userId={userId ?? ''}
                     />
