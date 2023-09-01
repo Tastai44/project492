@@ -168,6 +168,7 @@ export default function GroupDetails() {
                                                                 inFoUser={inFoUser}
                                                                 groupName={g.groupName}
                                                                 groupId={g.gId}
+                                                                groupStatus={g.status}
                                                             />
                                                         </Item>
                                                         <Item sx={{ display: { xs: "block", md: "none" } }}>

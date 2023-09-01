@@ -43,13 +43,10 @@ interface IHandle {
 interface IData {
     groupName: string;
     groupId: string;
+    groupStatus: string;
 }
 
-export default function CreateGroupPost({
-    handleCloseCratePost,
-    groupName,
-    groupId
-}: IHandle & IData) {
+export default function CreateGroupPost(props: IHandle & IData) {
     const [location, setLocation] = useState("");
     const [status, setStatus] = useState("");
     const handleChange = (event: SelectChangeEvent) => {
@@ -156,8 +153,8 @@ export default function CreateGroupPost({
             emoji: emoji,
             owner: userInfo.uid,
             comments: post.comments,
-            groupName: groupName,
-            groupId: groupId,
+            groupName: props.groupName,
+            groupId: props.groupId,
             shareUsers: [],
             reportPost: [],
         };
@@ -181,7 +178,7 @@ export default function CreateGroupPost({
 
             setPost(updatedPost);
             clearState();
-            handleCloseCratePost();
+            props.handleCloseCratePost();
             PopupAlert("Content was posted successfully", "success");
         } catch (error) {
             console.error("Error adding post: ", error);
@@ -257,7 +254,7 @@ export default function CreateGroupPost({
                         Create A Post
                     </Box>
                     <Box>
-                        <IconButton onClick={handleCloseCratePost}>
+                        <IconButton onClick={props.handleCloseCratePost}>
                             <CancelIcon />
                         </IconButton>
                     </Box>
@@ -292,7 +289,7 @@ export default function CreateGroupPost({
                                                 value={status}
                                                 onChange={handleChange}
                                             >
-                                                <MenuItem value={"Private"}>
+                                                <MenuItem value={"Private"} disabled={props.groupStatus == "Public"}>
                                                     <Box
                                                         sx={{
                                                             display: "flex",
@@ -303,7 +300,7 @@ export default function CreateGroupPost({
                                                         <LockIcon /> Private
                                                     </Box>
                                                 </MenuItem>
-                                                <MenuItem value={"Public"}>
+                                                <MenuItem value={"Public"} disabled={props.groupStatus == "Private"}>
                                                     <Box
                                                         sx={{
                                                             display: "flex",

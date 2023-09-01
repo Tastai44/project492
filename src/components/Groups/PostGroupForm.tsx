@@ -10,13 +10,10 @@ interface IData {
 	inFoUser: User[];
 	groupName: string;
 	groupId: string;
+	groupStatus: string;
 }
 
-export default function PostGroupForm({
-	inFoUser,
-	groupName,
-	groupId
-}: IData) {
+export default function PostGroupForm(props: IData) {
 	const [openCreatePost, setOpenCreatePost] = React.useState(false);
 	const handletOpenCratePost = () => setOpenCreatePost(true);
 	const handleCloseCratePost = () => setOpenCreatePost(false);
@@ -32,12 +29,13 @@ export default function PostGroupForm({
 				<Box>
 					<CreateGroupPost
 						handleCloseCratePost={handleCloseCratePost}
-						groupName={groupName}
-						groupId={groupId}
+						groupName={props.groupName}
+						groupId={props.groupId}
+						groupStatus={props.groupStatus}
 					/>
 				</Box>
 			</Modal>
-			{inFoUser.map((u) => (
+			{props.inFoUser.map((u) => (
 				<div
 					key={u.uid}
 					style={{
