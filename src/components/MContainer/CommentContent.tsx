@@ -44,6 +44,7 @@ interface IData {
 }
 
 export default function CommentContent(props: IData) {
+	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(
 		null
 	);
@@ -65,7 +66,7 @@ export default function CommentContent(props: IData) {
 		try {
 			const q = query(
 				collection(dbFireStore, "posts"),
-				where("__name__", "==", id)
+				where("id", "==", id)
 			);
 			const querySnapshot = await getDocs(q);
 			const doc = querySnapshot.docs[0];
@@ -277,7 +278,7 @@ export default function CommentContent(props: IData) {
 								open={Boolean(anchorElUser)}
 								onClose={handleCloseUserMenu}
 							>
-								<MenuItem onClick={handletOpenEditCom}>
+								<MenuItem onClick={handletOpenEditCom} disabled={props.author !== userInfo.uid}>
 									<Typography
 										textAlign="center"
 										sx={{
@@ -290,7 +291,7 @@ export default function CommentContent(props: IData) {
 										<BorderColorOutlinedIcon /> Edit
 									</Typography>
 								</MenuItem>
-								<MenuItem onClick={() => handleDelete(props.postId, props.commentIndex)}>
+								<MenuItem onClick={() => handleDelete(props.postId, props.commentIndex)} disabled={props.author !== userInfo.uid}>
 									<Typography
 										textAlign="center"
 										sx={{
