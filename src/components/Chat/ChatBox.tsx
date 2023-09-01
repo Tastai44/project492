@@ -1,4 +1,4 @@
-import { useState, useRef, ChangeEvent, useMemo, useEffect } from "react";
+import { useState, useRef, ChangeEvent, useEffect } from "react";
 import {
 	Box,
 	Divider,
@@ -106,27 +106,24 @@ export default function ChatBox(props: IFunction & IData) {
 		setMessage(value);
 	};
 
-	useMemo(() => {
-		const fetchData = async () => {
-			try {
-				const q = query(
-					collection(dbFireStore, "users"),
-					where("uid", "==", props.uId)
-				);
-				const querySnapshot = await getDocs(q);
-				const queriedData = querySnapshot.docs.map(
-					(doc) =>
-					({
-						uid: doc.id,
-						...doc.data(),
-					} as User)
-				);
+	useEffect(() => {
+		const queryData = query(
+			collection(dbFireStore, "users"),
+			where("uid", "==", props.uId)
+		);
+		const unsubscribe = onSnapshot(
+			queryData,
+			(snapshot) => {
+				const queriedData = snapshot.docs.map((doc) => doc.data() as User);
 				setInFoUser(queriedData);
-			} catch (error) {
-				console.error("Error fetching data:", error);
+			},
+			(error) => {
+				console.error("Error fetching data: ", error);
 			}
+		);
+		return () => {
+			unsubscribe();
 		};
-		fetchData();
 	}, [props.uId]);
 
 	const [messages, setMessages] = useState<Message[]>([]);
