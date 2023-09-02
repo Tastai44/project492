@@ -149,7 +149,7 @@ export default function GroupDetails() {
                                         />
                                     </Item>
                                     <Item sx={{
-                                        [themeApp.breakpoints.down("lg")]: {
+                                        [themeApp.breakpoints.down("md")]: {
                                             mt: "-20px"
                                         }
                                     }}>
@@ -165,16 +165,8 @@ export default function GroupDetails() {
                                                     </Item>
                                                 </Grid>
                                                 <Grid item xs={12} md={7}>
-                                                    <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
-                                                        <PostGroupForm
-                                                            inFoUser={inFoUser}
-                                                            groupName={g.groupName}
-                                                            groupId={g.gId}
-                                                            groupStatus={g.status}
-                                                        />
-                                                    </Item>
                                                     <Item sx={{ display: { xs: "block", md: "none" } }}>
-                                                        <FormControl fullWidth sx={{ mb: 1, backgroundColor: "white" }}>
+                                                        <FormControl fullWidth sx={{ backgroundColor: "white" }}>
                                                             <InputLabel id="demo-simple-select-label">
                                                                 Content type
                                                             </InputLabel>
@@ -194,6 +186,15 @@ export default function GroupDetails() {
                                                             </Select>
                                                         </FormControl>
                                                     </Item>
+                                                    <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
+                                                        <PostGroupForm
+                                                            inFoUser={inFoUser}
+                                                            groupName={g.groupName}
+                                                            groupId={g.gId}
+                                                            groupStatus={g.status}
+                                                        />
+                                                    </Item>
+
                                                     <Item>
                                                         {
                                                             type == "General" ? (
@@ -299,7 +300,9 @@ export default function GroupDetails() {
                                                             >
                                                                 <MenuItem value={"General"}>General</MenuItem>
                                                                 <MenuItem value={"Share"}>Share</MenuItem>
-                                                                <MenuItem value={"Report"}>Report</MenuItem>
+                                                                {g.hostId == userInfo.uid && (
+                                                                    <MenuItem value={"Report"}>Report</MenuItem>
+                                                                )}
                                                             </Select>
                                                         </FormControl>
                                                         <AboutGroup details={g.details} />

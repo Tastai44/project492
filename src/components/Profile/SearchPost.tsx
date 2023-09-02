@@ -15,7 +15,8 @@ export default function SearchPost(props: IData) {
                     <ImageList
                         sx={{
                             width: "100%",
-                            m: 1
+                            m: 1,
+                            cursor: "pointer"
                         }}
                         cols={4}
                     >

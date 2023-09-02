@@ -121,7 +121,7 @@ export default function EventDetail() {
 										eventId={e.eventId}
 									/>
 									<Box sx={{
-										[themeApp.breakpoints.down("lg")]: {
+										[themeApp.breakpoints.down("md")]: {
 											mt: "-20px"
 										}
 									}}>
