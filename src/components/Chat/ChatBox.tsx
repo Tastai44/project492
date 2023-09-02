@@ -35,6 +35,8 @@ import Emoji from "../MContainer/Emoji";
 import Header from "./Header";
 import MessageBody from "./MessageBody";
 import { createMessageNoti } from "../MessageNotification";
+import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
+import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 
 interface IFunction {
 	handleClose: () => void;
@@ -51,6 +53,62 @@ export default function ChatBox(props: IFunction & IData) {
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 	const [previewImages, setPreviewImages] = useState<string[]>([]);
 	const [openEmoji, setOpenEmoji] = useState(false);
+	const [emoji, setEmoji] = useState("");
+	const [messages, setMessages] = useState<Message[]>([]);
+	const chatContainerRef = useRef<HTMLDivElement>(null);
+	const [isDown, setIsDown] = useState(false);
+
+	useEffect(() => {
+		const queryData = query(
+			collection(dbFireStore, "users"),
+			where("uid", "==", props.uId)
+		);
+		const unsubscribe = onSnapshot(
+			queryData,
+			(snapshot) => {
+				const queriedData = snapshot.docs.map((doc) => doc.data() as User);
+				setInFoUser(queriedData);
+			},
+			(error) => {
+				console.error("Error fetching data: ", error);
+			}
+		);
+		return () => {
+			unsubscribe();
+		};
+	}, [props.uId]);
+
+	useEffect(() => {
+		const messagesCollectionRef = query(
+			collection(dbFireStore, "messages"),
+			where("participants", "array-contains", userInfo.uid),
+		);
+		const unsubscribe = onSnapshot(messagesCollectionRef, (querySnapshot) => {
+			const messagesData = querySnapshot.docs.map(
+				(doc) => doc.data() as Message
+			);
+			setMessages(messagesData);
+		});
+
+		return () => unsubscribe();
+
+	}, [messages, userInfo.uid]);
+
+	const scrollDown = () => {
+		if (chatContainerRef.current) {
+			chatContainerRef.current.scrollTop =
+				chatContainerRef.current.scrollHeight;
+			setIsDown(true);
+		}
+	};
+
+	const scrollUp = () => {
+		if (chatContainerRef.current) {
+			chatContainerRef.current.scrollTop = 0;
+			setIsDown(false);
+		}
+	};
+
 	const handletOpenEmoji = () => setOpenEmoji(true);
 	const handleCloseEmoji = () => setOpenEmoji(false);
 
@@ -60,7 +118,7 @@ export default function ChatBox(props: IFunction & IData) {
 	const handleClearEmoji = () => {
 		setEmoji("");
 	};
-	const [emoji, setEmoji] = useState("");
+
 	const handleChangeEmoji = (e: string) => {
 		setEmoji(e);
 	};
@@ -105,51 +163,6 @@ export default function ChatBox(props: IFunction & IData) {
 		const { value } = event.target;
 		setMessage(value);
 	};
-
-	useEffect(() => {
-		const queryData = query(
-			collection(dbFireStore, "users"),
-			where("uid", "==", props.uId)
-		);
-		const unsubscribe = onSnapshot(
-			queryData,
-			(snapshot) => {
-				const queriedData = snapshot.docs.map((doc) => doc.data() as User);
-				setInFoUser(queriedData);
-			},
-			(error) => {
-				console.error("Error fetching data: ", error);
-			}
-		);
-		return () => {
-			unsubscribe();
-		};
-	}, [props.uId]);
-
-	const [messages, setMessages] = useState<Message[]>([]);
-	const chatContainerRef = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		if (chatContainerRef.current) {
-			chatContainerRef.current.scrollTop =
-				chatContainerRef.current.scrollHeight;
-		}
-	}, [messages]);
-
-	useEffect(() => {
-		const messagesCollectionRef = query(
-			collection(dbFireStore, "messages"),
-			where("participants", "array-contains", userInfo.uid),
-			// where("participants", "array-contains-any", userInfo.uid),
-		);
-		const unsubscribe = onSnapshot(messagesCollectionRef, (querySnapshot) => {
-			const messagesData = querySnapshot.docs.map(
-				(doc) => doc.data() as Message
-			);
-			setMessages(messagesData);
-		});
-		return () => unsubscribe();
-	}, [props.uId, userInfo.uid]);
 
 	const clearState = () => {
 		setMessage('');
@@ -254,9 +267,12 @@ export default function ChatBox(props: IFunction & IData) {
 						}}
 					>
 						<Header inFoUser={inFoUser} />
-						<Box sx={{ p: 0.2 }}>
-							<IconButton size="small" onClick={props.handleClose}>
+						<Box sx={{ p: 0.2, display: "flex", flexDirection: "column" }}>
+							<IconButton size="small" onClick={props.handleClose} sx={{ p: 1 }}>
 								<CancelIcon sx={{ color: "white", fontSize: "20px" }} />
+							</IconButton>
+							<IconButton size="small" onClick={isDown ? scrollUp : scrollDown} sx={{ color: "white" }}>
+								{isDown ? <ArrowCircleUpIcon /> : <ArrowCircleDownIcon />}
 							</IconButton>
 						</Box>
 					</Box>

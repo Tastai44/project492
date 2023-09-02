@@ -17,6 +17,7 @@ interface IData {
 export default function MessageBody(props: IData) {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const chatMessages = props.messages.filter((message) => message.participants.includes(props.uId));
+
   return (
     <div>
       {chatMessages.sort((a, b) =>

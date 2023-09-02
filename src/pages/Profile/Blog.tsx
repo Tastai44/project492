@@ -128,29 +128,35 @@ export default function Blog() {
 			<TabLink
 				userId={userId ?? ""}
 			/>
+			<Box sx={{ margin: 1, display: { xs: "block", lg: "none" } }}>
+				<FormControl fullWidth sx={{ backgroundColor: "white", mb: 1 }}>
+					<InputLabel id="demo-simple-select-label">
+						Content type
+					</InputLabel>
+					<Select
+						labelId="demo-simple-select-label"
+						id="demo-simple-select"
+						value={type}
+						label="Content type"
+						onChange={handleChangeType}
+					>
+						<MenuItem value={"General"}>General</MenuItem>
+						<MenuItem value={"Share"}>Share</MenuItem>
+					</Select>
+				</FormControl>
+				{userInfo.uid == userId && (
+					<Box sx={{ backgroundColor: "white", p: 1 }}>
+						<PostForm inFoUser={inFoUser} />
+					</Box>
+				)}
+			</Box>
+
 			{inFoUser.map((m) => (
 				<Box sx={{ flexGrow: 1 }} key={m.uid}>
 					<Grid container spacing={2}>
 						<Grid item lg={9} md={12} sm={12}>
-							<Box sx={{ backgroundColor: "#fff", margin: 1, display: { xs: "block", lg: "none" } }}>
-								<FormControl sx={{ backgroundColor: "white", width: "100%" }}>
-									<InputLabel id="demo-simple-select-label">
-										Content type
-									</InputLabel>
-									<Select
-										labelId="demo-simple-select-label"
-										id="demo-simple-select"
-										value={type}
-										label="Content type"
-										onChange={handleChangeType}
-									>
-										<MenuItem value={"General"}>General</MenuItem>
-										<MenuItem value={"Share"}>Share</MenuItem>
-									</Select>
-								</FormControl>
-							</Box>
 							{userInfo.uid == userId && (
-								<Item sx={{ backgroundColor: "#fff", margin: 1 }}>
+								<Item sx={{ backgroundColor: "#fff", margin: 1, display: { xs: "none", lg: "block" } }}>
 									<PostForm inFoUser={inFoUser} />
 								</Item>
 							)}
@@ -296,8 +302,7 @@ export default function Blog() {
 													</Box>
 												))}
 										</Item>
-									)
-									}
+									)}
 
 									{
 										eventData.some((f) =>

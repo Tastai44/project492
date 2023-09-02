@@ -4,7 +4,6 @@ import {
   Avatar,
   ListItemText,
   Box,
-  Typography,
 } from "@mui/material";
 import { User } from "../../interface/User";
 import { StyledBadge } from "../RightSide/UserCard";
@@ -44,17 +43,19 @@ export default function Header(props: IData) {
               </Box>
             }
             secondary={
-              <Typography
+              <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "space-between",
                   gap: 0.5,
                   fontSize: "14px",
                   ml: -1,
+                  color: 'white',
                 }}
               >
                 {user.isActive ? `Active` : "Inactive"}
-              </Typography>
+              </Box>
             }
           />
         </ListItem>

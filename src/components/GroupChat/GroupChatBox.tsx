@@ -36,6 +36,8 @@ import MessageBody from "./MessageBody";
 import { IGroup } from "../../interface/Group";
 import { useState, useRef, ChangeEvent, useMemo, useEffect } from "react";
 import { createGroupMessageNoti } from "../MessageNotification";
+import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
+import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 
 interface IFunction {
 	handleClose: () => void;
@@ -53,24 +55,86 @@ export default function GroupChatBox
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 	const [previewImages, setPreviewImages] = useState<string[]>([]);
 	const [openEmoji, setOpenEmoji] = useState(false);
+	const [messages, setMessages] = useState<GroupMessage[]>([]);
+	const chatContainerRef = useRef<HTMLDivElement>(null);
+	const [emoji, setEmoji] = useState("");
+	const [isDown, setIsDown] = useState(false);
+
+	useMemo(() => {
+		const fetchData = async () => {
+			try {
+				const q = query(
+					collection(dbFireStore, "groups"),
+					where("gId", "==", props.groupId)
+				);
+				const querySnapshot = await getDocs(q);
+				const queriedData = querySnapshot.docs.map(
+					(doc) =>
+					({
+						gId: doc.id,
+						...doc.data(),
+					} as IGroup)
+				);
+				setGroupData(queriedData);
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		};
+		fetchData();
+	}, [props.groupId]);
+
+	useEffect(() => {
+		const messagesCollectionRef = query(
+			collection(dbFireStore, "groupMessages"),
+			where("receiverId", "==", props.groupId),
+			where("participants", "array-contains", userInfo.uid)
+		);
+
+		const unsubscribe = onSnapshot(messagesCollectionRef, (querySnapshot) => {
+			const messagesData = querySnapshot.docs.map(
+				(doc) => doc.data() as GroupMessage
+			);
+			setMessages(messagesData);
+		});
+		return () => unsubscribe();
+	}, [props.groupId, userInfo.uid]);
+
+	const scrollDown = () => {
+		if (chatContainerRef.current) {
+			chatContainerRef.current.scrollTop =
+				chatContainerRef.current.scrollHeight;
+			setIsDown(true);
+		}
+	};
+
+	const scrollUp = () => {
+		if (chatContainerRef.current) {
+			chatContainerRef.current.scrollTop = 0;
+			setIsDown(false);
+		}
+	};
+
 	const handletOpenEmoji = () => setOpenEmoji(true);
 	const handleCloseEmoji = () => setOpenEmoji(false);
 	const handleClearImage = () => {
 		setPreviewImages([]);
 	};
-	const [emoji, setEmoji] = useState("");
+
 	const handleChangeEmoji = (e: string) => {
 		setEmoji(e);
 	};
+
 	const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
 		const emoji = emojiData.find((data) => data.unified === emojiCode);
 		return emoji ? emoji.name : undefined;
 	};
+
 	const handleUploadClick = () => {
 		if (fileInputRef.current) {
 			fileInputRef.current.click();
 		}
 	};
+
 	const handleFileChange = async (
 		event: ChangeEvent<HTMLInputElement>
 	) => {
@@ -103,54 +167,6 @@ export default function GroupChatBox
 		const { value } = event.target;
 		setMessage(value);
 	};
-
-	useMemo(() => {
-		const fetchData = async () => {
-			try {
-				const q = query(
-					collection(dbFireStore, "groups"),
-					where("gId", "==", props.groupId)
-				);
-				const querySnapshot = await getDocs(q);
-				const queriedData = querySnapshot.docs.map(
-					(doc) =>
-					({
-						gId: doc.id,
-						...doc.data(),
-					} as IGroup)
-				);
-				setGroupData(queriedData);
-			} catch (error) {
-				console.error("Error fetching data:", error);
-			}
-		};
-		fetchData();
-	}, [props.groupId]);
-
-	const [messages, setMessages] = useState<GroupMessage[]>([]);
-	const chatContainerRef = useRef<HTMLDivElement>(null);
-	useEffect(() => {
-		if (chatContainerRef.current) {
-			chatContainerRef.current.scrollTop =
-				chatContainerRef.current.scrollHeight;
-		}
-	}, [messages]);
-
-	useEffect(() => {
-		const messagesCollectionRef = query(
-			collection(dbFireStore, "groupMessages"),
-			where("receiverId", "==", props.groupId),
-			where("participants", "array-contains", userInfo.uid)
-		);
-
-		const unsubscribe = onSnapshot(messagesCollectionRef, (querySnapshot) => {
-			const messagesData = querySnapshot.docs.map(
-				(doc) => doc.data() as GroupMessage
-			);
-			setMessages(messagesData);
-		});
-		return () => unsubscribe();
-	}, [props.groupId, userInfo.uid]);
 
 	const clearState = () => {
 		setMessage('');
@@ -253,9 +269,12 @@ export default function GroupChatBox
 						}}
 					>
 						<Header groupData={groupData} />
-						<Box sx={{ p: 0.2 }}>
-							<IconButton size="small" onClick={props.handleClose}>
+						<Box sx={{ p: 0.2, display: "flex", flexDirection: "column" }}>
+							<IconButton size="small" onClick={props.handleClose} sx={{ p: 1 }}>
 								<CancelIcon sx={{ color: "white", fontSize: "20px" }} />
+							</IconButton>
+							<IconButton size="small" onClick={isDown ? scrollUp : scrollDown} sx={{ color: "white" }}>
+								{isDown ? <ArrowCircleUpIcon /> : <ArrowCircleDownIcon />}
 							</IconButton>
 						</Box>
 					</Box>

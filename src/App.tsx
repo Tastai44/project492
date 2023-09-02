@@ -201,7 +201,12 @@ function App() {
 											<Box sx={{ mb: 2 }}>
 												<ProCoverImage />
 											</Box>
-											<Box>
+											<Box sx={{
+												[themeApp.breakpoints.down("lg")]: {
+													ml: "5px",
+													mr: "5px",
+												}
+											}}>
 												<AboutMe />
 											</Box>
 										</Stack>
@@ -240,7 +245,12 @@ function App() {
 											<Box sx={{ mb: 2 }}>
 												<ProCoverImage />
 											</Box>
-											<Box>
+											<Box sx={{
+												[themeApp.breakpoints.down("lg")]: {
+													ml: "5px",
+													mr: "5px",
+												}
+											}}>
 												<Friends />
 											</Box>
 										</Stack>
@@ -279,7 +289,12 @@ function App() {
 											<Box sx={{ mb: 2 }}>
 												<ProCoverImage />
 											</Box>
-											<Box>
+											<Box sx={{
+												[themeApp.breakpoints.down("lg")]: {
+													ml: "5px",
+													mr: "5px",
+												}
+											}}>
 												<Collections />
 											</Box>
 										</Stack>
@@ -318,7 +333,7 @@ function App() {
 								<Navigation />
 								<Box sx={{
 									[themeApp.breakpoints.down("lg")]: {
-										mt: 8
+										mt: 7
 									}
 								}}>
 									<EventDetail />
@@ -374,7 +389,7 @@ function App() {
 								<Navigation />
 								<Box sx={{
 									[themeApp.breakpoints.down("lg")]: {
-										mt: 8
+										mt: 7
 									}
 								}}>
 									<GroupDetails />

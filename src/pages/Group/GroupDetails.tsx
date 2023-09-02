@@ -24,6 +24,8 @@ export default function GroupDetails() {
     const { groupId } = useParams();
     const [groupData, setGroupData] = useState<IGroup[]>([]);
     const [type, setType] = useState("General");
+    const [postData, setPostData] = useState<Post[]>([]);
+    const [shareGroupPost, setShareGroupPost] = useState<Post[]>([]);
 
     useEffect(() => {
         const queryGroupData = query(
@@ -69,7 +71,6 @@ export default function GroupDetails() {
         fetchData();
     }, [userInfo.uid]);
 
-    const [postData, setPostData] = useState<Post[]>([]);
     useEffect(() => {
         const queryPostData = query(
             collection(dbFireStore, "posts"),
@@ -91,7 +92,6 @@ export default function GroupDetails() {
         };
     }, [groupId]);
 
-    const [shareGroupPost, setShareGroupPost] = useState<Post[]>([]);
     useEffect(() => {
         const queryPostData = query(
             collection(dbFireStore, "posts"),
@@ -132,71 +132,112 @@ export default function GroupDetails() {
                                 pl: 0, pr: 0
                             }
                         }}
-                        spacing={10}
                     >
                         <Grid item xs={12}>
-                            <Item>
-                                <Box sx={{ width: "100%" }}>
-                                    <Stack>
-                                        <Item sx={{ mb: 0 }}>
-                                            <CoverPhoto
-                                                gId={g.gId}
-                                                host={g.hostId}
-                                                coverPhoto={g.coverPhoto}
-                                                createAt={g.createAt}
-                                                title={g.groupName}
-                                                members={g.members}
-                                                details={g.details}
-                                                status={g.status}
-                                            />
-                                        </Item>
-                                        <Item>
-                                            <Box sx={{ flexGrow: 1 }}>
-                                                <Grid container spacing={2}>
-                                                    <Grid item xs={2.5}>
-                                                        <Item>
-                                                            <LeftSideContainer
-                                                                hostId={g.hostId}
-                                                                members={g.members}
-                                                                gId={g.gId}
-                                                            />
-                                                        </Item>
-                                                    </Grid>
-                                                    <Grid item xs={12} md={7}>
-                                                        <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
-                                                            <PostGroupForm
-                                                                inFoUser={inFoUser}
-                                                                groupName={g.groupName}
-                                                                groupId={g.gId}
-                                                                groupStatus={g.status}
-                                                            />
-                                                        </Item>
-                                                        <Item sx={{ display: { xs: "block", md: "none" } }}>
-                                                            <FormControl fullWidth sx={{ mb: 1, backgroundColor: "white" }}>
-                                                                <InputLabel id="demo-simple-select-label">
-                                                                    Content type
-                                                                </InputLabel>
-                                                                <Select
-                                                                    labelId="demo-simple-select-label"
-                                                                    id="demo-simple-select"
-                                                                    value={type}
-                                                                    label="Content type"
-                                                                    onChange={handleChangeType}
-                                                                >
-                                                                    <MenuItem value={"General"}>General</MenuItem>
-                                                                    <MenuItem value={"Share"}>Share</MenuItem>
-                                                                    {g.hostId == userInfo.uid && (
-                                                                        <MenuItem value={"Report"}>Report</MenuItem>
-                                                                    )}
+                            <Box sx={{ width: "100%" }}>
+                                <Stack>
+                                    <Item sx={{ mb: 0 }}>
+                                        <CoverPhoto
+                                            gId={g.gId}
+                                            host={g.hostId}
+                                            coverPhoto={g.coverPhoto}
+                                            createAt={g.createAt}
+                                            title={g.groupName}
+                                            members={g.members}
+                                            details={g.details}
+                                            status={g.status}
+                                        />
+                                    </Item>
+                                    <Item sx={{
+                                        [themeApp.breakpoints.down("lg")]: {
+                                            mt: "-20px"
+                                        }
+                                    }}>
+                                        <Box sx={{ flexGrow: 1 }}>
+                                            <Grid container spacing={2}>
+                                                <Grid item xs={2.5}>
+                                                    <Item>
+                                                        <LeftSideContainer
+                                                            hostId={g.hostId}
+                                                            members={g.members}
+                                                            gId={g.gId}
+                                                        />
+                                                    </Item>
+                                                </Grid>
+                                                <Grid item xs={12} md={7}>
+                                                    <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
+                                                        <PostGroupForm
+                                                            inFoUser={inFoUser}
+                                                            groupName={g.groupName}
+                                                            groupId={g.gId}
+                                                            groupStatus={g.status}
+                                                        />
+                                                    </Item>
+                                                    <Item sx={{ display: { xs: "block", md: "none" } }}>
+                                                        <FormControl fullWidth sx={{ mb: 1, backgroundColor: "white" }}>
+                                                            <InputLabel id="demo-simple-select-label">
+                                                                Content type
+                                                            </InputLabel>
+                                                            <Select
+                                                                labelId="demo-simple-select-label"
+                                                                id="demo-simple-select"
+                                                                value={type}
+                                                                label="Content type"
+                                                                onChange={handleChangeType}
+                                                            >
+                                                                <MenuItem value={"General"}>General</MenuItem>
+                                                                <MenuItem value={"Share"}>Share</MenuItem>
+                                                                {g.hostId == userInfo.uid && (
+                                                                    <MenuItem value={"Report"}>Report</MenuItem>
+                                                                )}
 
-                                                                </Select>
-                                                            </FormControl>
-                                                        </Item>
-                                                        <Item>
-                                                            {
-                                                                type == "General" ? (
-                                                                    postData.map((m) => (
+                                                            </Select>
+                                                        </FormControl>
+                                                    </Item>
+                                                    <Item>
+                                                        {
+                                                            type == "General" ? (
+                                                                postData.map((m) => (
+                                                                    <Box key={m.id}>
+                                                                        <MContainer
+                                                                            owner={m.owner}
+                                                                            postId={m.id}
+                                                                            caption={m.caption}
+                                                                            hashTagTopic={m.hashTagTopic}
+                                                                            status={m.status}
+                                                                            createAt={m.createAt}
+                                                                            emoji={m.emoji}
+                                                                            photoPost={m.photoPost}
+                                                                            likeNumber={m.likes.length}
+                                                                            likes={m.likes}
+                                                                            commentNumber={m.comments.length}
+                                                                            groupName={m.groupName}
+                                                                            groupId={m.groupId}
+                                                                            shareUsers={m.shareUsers}
+                                                                            userInfo={inFoUser}
+                                                                            location={m.location}
+                                                                        />
+                                                                    </Box>
+                                                                ))
+                                                            ) : type == "Share" ? (
+                                                                shareGroupPost.filter((f) =>
+                                                                    f.shareUsers.some(
+                                                                        (share) =>
+                                                                            share.shareTo == g.gId &&
+                                                                            share.status == "Group"
+                                                                    )
+                                                                )
+                                                                    .map((m) => (
                                                                         <Box key={m.id}>
+                                                                            <ShareContent
+                                                                                userId={g.gId}
+                                                                                postId={m.id}
+                                                                                shareUsers={m.shareUsers.filter(
+                                                                                    (share) =>
+                                                                                    (share.status == "Group" &&
+                                                                                        share.shareBy == m.shareUsers.find((share) => share.shareBy)?.shareBy)
+                                                                                )}
+                                                                            />
                                                                             <MContainer
                                                                                 owner={m.owner}
                                                                                 postId={m.id}
@@ -217,98 +258,58 @@ export default function GroupDetails() {
                                                                             />
                                                                         </Box>
                                                                     ))
-                                                                ) : type == "Share" ? (
-                                                                    shareGroupPost.filter((f) =>
-                                                                        f.shareUsers.some(
-                                                                            (share) =>
-                                                                                share.shareTo == g.gId &&
-                                                                                share.status == "Group"
-                                                                        )
-                                                                    )
-                                                                        .map((m) => (
-                                                                            <Box key={m.id}>
-                                                                                <ShareContent
-                                                                                    userId={g.gId}
-                                                                                    postId={m.id}
-                                                                                    shareUsers={m.shareUsers.filter(
-                                                                                        (share) =>
-                                                                                        (share.status == "Group" &&
-                                                                                            share.shareBy == m.shareUsers.find((share) => share.shareBy)?.shareBy)
-                                                                                    )}
-                                                                                />
-                                                                                <MContainer
-                                                                                    owner={m.owner}
-                                                                                    postId={m.id}
-                                                                                    caption={m.caption}
-                                                                                    hashTagTopic={m.hashTagTopic}
-                                                                                    status={m.status}
-                                                                                    createAt={m.createAt}
-                                                                                    emoji={m.emoji}
-                                                                                    photoPost={m.photoPost}
-                                                                                    likeNumber={m.likes.length}
-                                                                                    likes={m.likes}
-                                                                                    commentNumber={m.comments.length}
-                                                                                    groupName={m.groupName}
-                                                                                    groupId={m.groupId}
-                                                                                    shareUsers={m.shareUsers}
-                                                                                    userInfo={inFoUser}
-                                                                                    location={m.location}
-                                                                                />
-                                                                            </Box>
-                                                                        ))
-                                                                ) : (
-                                                                    postData
-                                                                        .filter((item) => item.reportPost.length !== 0 && item.status == "Private" && isHost)
-                                                                        .map((post) => (
-                                                                            <Content
-                                                                                key={post.id}
-                                                                                owner={post.owner}
-                                                                                postId={post.id}
-                                                                                caption={post.caption}
-                                                                                hashTagTopic={post.hashTagTopic}
-                                                                                status={post.status}
-                                                                                createAt={post.createAt}
-                                                                                emoji={post.emoji}
-                                                                                photoPost={post.photoPost}
-                                                                                groupName={post.groupName}
-                                                                                groupId={post.groupId}
-                                                                                reportNumber={post.reportPost.length}
-                                                                                reFreshInfo={0}
-                                                                                reportPost={post.reportPost}
-                                                                            />
-                                                                        ))
-                                                                )
+                                                            ) : (
+                                                                postData
+                                                                    .filter((item) => item.reportPost.length !== 0 && item.status == "Private" && isHost)
+                                                                    .map((post) => (
+                                                                        <Content
+                                                                            key={post.id}
+                                                                            owner={post.owner}
+                                                                            postId={post.id}
+                                                                            caption={post.caption}
+                                                                            hashTagTopic={post.hashTagTopic}
+                                                                            status={post.status}
+                                                                            createAt={post.createAt}
+                                                                            emoji={post.emoji}
+                                                                            photoPost={post.photoPost}
+                                                                            groupName={post.groupName}
+                                                                            groupId={post.groupId}
+                                                                            reportNumber={post.reportPost.length}
+                                                                            reFreshInfo={0}
+                                                                            reportPost={post.reportPost}
+                                                                        />
+                                                                    ))
+                                                            )
 
-                                                            }
-                                                        </Item>
-                                                    </Grid>
-                                                    <Grid item xs={2.5}>
-                                                        <Item sx={{ display: { xs: "none", md: "block" } }}>
-                                                            <FormControl fullWidth sx={{ mb: 1, backgroundColor: "white" }}>
-                                                                <InputLabel id="demo-simple-select-label">
-                                                                    Content type
-                                                                </InputLabel>
-                                                                <Select
-                                                                    labelId="demo-simple-select-label"
-                                                                    id="demo-simple-select"
-                                                                    value={type}
-                                                                    label="Content type"
-                                                                    onChange={handleChangeType}
-                                                                >
-                                                                    <MenuItem value={"General"}>General</MenuItem>
-                                                                    <MenuItem value={"Share"}>Share</MenuItem>
-                                                                    <MenuItem value={"Report"}>Report</MenuItem>
-                                                                </Select>
-                                                            </FormControl>
-                                                            <AboutGroup details={g.details} />
-                                                        </Item>
-                                                    </Grid>
+                                                        }
+                                                    </Item>
                                                 </Grid>
-                                            </Box>
-                                        </Item>
-                                    </Stack>
-                                </Box>
-                            </Item>
+                                                <Grid item xs={2.5}>
+                                                    <Item sx={{ display: { xs: "none", md: "block" } }}>
+                                                        <FormControl fullWidth sx={{ mb: 1, backgroundColor: "white" }}>
+                                                            <InputLabel id="demo-simple-select-label">
+                                                                Content type
+                                                            </InputLabel>
+                                                            <Select
+                                                                labelId="demo-simple-select-label"
+                                                                id="demo-simple-select"
+                                                                value={type}
+                                                                label="Content type"
+                                                                onChange={handleChangeType}
+                                                            >
+                                                                <MenuItem value={"General"}>General</MenuItem>
+                                                                <MenuItem value={"Share"}>Share</MenuItem>
+                                                                <MenuItem value={"Report"}>Report</MenuItem>
+                                                            </Select>
+                                                        </FormControl>
+                                                        <AboutGroup details={g.details} />
+                                                    </Item>
+                                                </Grid>
+                                            </Grid>
+                                        </Box>
+                                    </Item>
+                                </Stack>
+                            </Box>
                         </Grid>
                     </Grid>
                 </Grid>

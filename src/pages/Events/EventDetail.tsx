@@ -90,63 +90,65 @@ export default function EventDetail() {
 						spacing={10}
 					>
 						<Grid item xs={12}>
-							<Item>
-								<Box sx={{ width: "100%" }}>
-									<Stack>
-										<Item sx={{ mb: 0 }}>
-											<CoverPhoto
-												coverPhoto={e.coverPhoto}
-												title={e.title}
-												location={e.location}
-												startDate={e.startDate}
-												startTime={e.startTime}
-												eventId={e.eventId}
-												endDate={e.endDate}
-												endTime={e.endTime}
-												topic={e.topic}
-												ageRage={e.ageRage}
-												interest={e.interest}
-												owner={e.owner}
-												handleOpenShare={handleOpenShare}
-												details={e.details}
-												status={e.status}
-											/>
-										</Item>
-										<ShareCard
-											openShare={openShare}
-											handleCloseShare={handleCloseShare}
-											friendList={
-												inFoUser.find((user) => user.friendList)?.friendList ??
-												[]
-											}
+							<Box sx={{ width: "100%" }}>
+								<Stack>
+									<Item sx={{ mb: 0 }}>
+										<CoverPhoto
+											coverPhoto={e.coverPhoto}
+											title={e.title}
+											location={e.location}
+											startDate={e.startDate}
+											startTime={e.startTime}
 											eventId={e.eventId}
+											endDate={e.endDate}
+											endTime={e.endTime}
+											topic={e.topic}
+											ageRage={e.ageRage}
+											interest={e.interest}
+											owner={e.owner}
+											handleOpenShare={handleOpenShare}
+											details={e.details}
+											status={e.status}
 										/>
-										<Item>
-											<Box sx={{ flexGrow: 1 }}>
-												<Grid container spacing={2}>
-													<Grid item xs={2.5}>
-														<Item>
-															<LeftSideContainer evenetData={data} />
-														</Item>
-													</Grid>
-													<Grid item xs={12} md={7}>
-														<Item>
-															<DetailCard details={e.details} eventId={e.eventId} />
-														</Item>
-													</Grid>
-													<Grid item xs={2.5}>
-														<Item>
-															<InterestedContainer
-																interestedPeople={e.interest}
-															/>
-														</Item>
-													</Grid>
+									</Item>
+									<ShareCard
+										openShare={openShare}
+										handleCloseShare={handleCloseShare}
+										friendList={
+											inFoUser.find((user) => user.friendList)?.friendList ??
+											[]
+										}
+										eventId={e.eventId}
+									/>
+									<Box sx={{
+										[themeApp.breakpoints.down("lg")]: {
+											mt: "-20px"
+										}
+									}}>
+										<Box sx={{ flexGrow: 1 }}>
+											<Grid container spacing={2}>
+												<Grid item xs={2.5}>
+													<Item>
+														<LeftSideContainer evenetData={data} />
+													</Item>
 												</Grid>
-											</Box>
-										</Item>
-									</Stack>
-								</Box>
-							</Item>
+												<Grid item xs={12} md={7}>
+													<Item>
+														<DetailCard details={e.details} eventId={e.eventId} />
+													</Item>
+												</Grid>
+												<Grid item xs={2.5}>
+													<Item>
+														<InterestedContainer
+															interestedPeople={e.interest}
+														/>
+													</Item>
+												</Grid>
+											</Grid>
+										</Box>
+									</Box>
+								</Stack>
+							</Box>
 						</Grid>
 					</Grid>
 				</Grid>
