@@ -13,7 +13,7 @@ export interface User {
 	faculty: string;
 	instagram: string;
 	status?: string;
-	year?: string;
+	year: string;
 	isActive?: boolean;
 	posts?: Post[];
 	friendList?: IFriendList[];

@@ -37,7 +37,7 @@ export default function AboutMe() {
 			<TabLink
 				userId={userId ?? ""}
 			/>
-			<Box sx={{ width: "100%" }}>
+			<Box>
 				<Stack
 					direction="row"
 					divider={<Divider orientation="vertical" flexItem />}
@@ -49,7 +49,6 @@ export default function AboutMe() {
 				>
 					<Item
 						sx={{
-							padding: "50px",
 							fontSize: "30px",
 							width: "50%",
 							alignSelf: "center",

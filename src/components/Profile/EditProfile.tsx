@@ -25,6 +25,7 @@ import {
 import { styleEditProfile } from "../../utils/styleBox";
 import { themeApp } from "../../utils/Theme";
 import PopupAlert from "../PopupAlert";
+import { faculties } from "../../helper/Faculties";
 
 interface Ihandle {
     closeEdit: () => void;
@@ -43,27 +44,7 @@ interface IData {
 }
 
 export default function BasicModal(props: Ihandle & IData) {
-    const faculties: string[] = [
-        "Agriculture",
-        "Architecture",
-        "Business Administration",
-        "Dentistry",
-        "Economics",
-        "Education",
-        "Engineering",
-        "Fine Arts",
-        "Humanities",
-        "Law",
-        "Mass Communication",
-        "Medical Technology",
-        "Medicine",
-        "Nursing",
-        "Pharmacy",
-        "Political Science",
-        "Science",
-        "Social Sciences",
-        "Veterinary Medicine",
-    ];
+
     const initialState = {
         uid: "",
         username: props.username,
@@ -72,6 +53,7 @@ export default function BasicModal(props: Ihandle & IData) {
         email: props.email,
         profilePhoto: "",
         coverPhoto: "",
+        year: "",
         aboutMe: props.aboutMe,
         faculty: props.faculty,
         instagram: props.instagram,
@@ -232,19 +214,6 @@ export default function BasicModal(props: Ihandle & IData) {
                         sx={{ width: "100%", mt: 1, mb: 1 }}
                         renderInput={(params) => <TextField {...params} label="Faclties" />}
                     />
-                    {/* <TextField
-                        sx={{
-                            width: 400, mb: 1, [themeApp.breakpoints.down("md")]: {
-                                width: 300,
-                            }
-                        }}
-                        id="outlined-basic"
-                        label="Faculty"
-                        variant="outlined"
-                        name="faculty"
-                        onChange={handleChangeProfile}
-                        value={profile.faculty}
-                    /> */}
                     <TextField
                         multiline
                         sx={{

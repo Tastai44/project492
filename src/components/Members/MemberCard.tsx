@@ -96,7 +96,7 @@ export default function MemberCard(props: IData) {
                 <Typography
                     variant="body2"
                     color="text.secondary"
-                    sx={{ fontSize: "20px" }}
+                    sx={{ fontSize: "20px", textAlign: "center" }}
                 >
                     {props.username}
                 </Typography>

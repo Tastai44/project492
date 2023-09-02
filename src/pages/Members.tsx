@@ -109,15 +109,16 @@ export default function Members() {
                         People who you may know
                     </Typography>
                     <SearchBar searchValue={searchValue} handleSearch={handleSearch} />
+
                 </Box>
             </Box>
             {searchValue == "" ? (
                 <Grid sx={{ flexGrow: 1, gap: "30px" }} container>
                     {otherMembers
                         .filter(
-                            (f) =>
-                                !user.some((m) =>
-                                    m.friendList?.some((s) => f.uid === s.friendId)
+                            (member) =>
+                                !user.some((u) =>
+                                    u.friendList?.some((s) => member.uid == s.friendId)
                                 )
                         )
                         .map((otherUser) => (
@@ -140,7 +141,10 @@ export default function Members() {
                                     m.friendList?.some((s) => f.uid === s.friendId)
                                 ) &&
                                 (f.firstName.includes(searchValue) ||
-                                    f.lastName.includes(searchValue))
+                                    f.lastName.includes(searchValue) ||
+                                    f.faculty.includes(searchValue)
+                                    || f.year == searchValue
+                                )
                         )
                         .map((otherUser) => (
                             <MemberCard
