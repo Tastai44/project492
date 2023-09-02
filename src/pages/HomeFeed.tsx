@@ -4,19 +4,26 @@ import PostForm from "../components/MContainer/PostForm";
 import Box from "@mui/material/Box";
 
 import { dbFireStore } from "../config/firebase";
-import { collection, query, orderBy, where, onSnapshot, limit } from "firebase/firestore";
+import {
+	collection,
+	query,
+	orderBy,
+	where,
+	onSnapshot,
+} from "firebase/firestore";
 import { Post } from "../interface/PostContent";
 import { User } from "../interface/User";
 import { Item } from "../App";
+
 
 export default function HomeFeed() {
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const [postData, setPostData] = useState<Post[]>([]);
+
 	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "posts"),
-			limit(10),
 			orderBy("dateCreated", "desc")
 		);
 
@@ -56,18 +63,29 @@ export default function HomeFeed() {
 		};
 	}, [userInfo.uid]);
 
+
+
+
+
 	return (
 		<>
+
+
 			<Item sx={{ backgroundColor: "#fff", margin: 1 }}>
 				<PostForm inFoUser={inFoUser} />
 			</Item>
 			<Item sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
 				{postData
 					.filter(
-						(post) => post.status == "Public" || (post.status == "Friend" &&
-							inFoUser.some((user) =>
-								user.friendList?.some((friend) => friend.friendId == post.owner))
-						) || post.owner === userInfo.uid
+						(post) =>
+							post.status == "Public" ||
+							(post.status == "Friend" &&
+								inFoUser.some((user) =>
+									user.friendList?.some(
+										(friend) => friend.friendId == post.owner
+									)
+								)) ||
+							post.owner === userInfo.uid
 					)
 					.map((m) => (
 						<Box key={m.id}>

@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import "./App.css";
 import Navigation from "./components/Navigation";
@@ -23,6 +24,8 @@ import ProLeftside from "./components/Profile/ProLeftside";
 import { styled } from "@mui/material/styles";
 import ReportContent from "./pages/ReportContent";
 import { themeApp } from "./utils/Theme";
+import { IconButton } from "@mui/material";
+import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
 
 
 export const Item = styled(Box)(({ theme }) => ({
@@ -33,8 +36,50 @@ export const Item = styled(Box)(({ theme }) => ({
 
 function App() {
 
+	const [isVisible, setIsVisible] = useState(false);
+	useEffect(() => {
+		function handleScroll() {
+			if (window.scrollY > 100) {
+				setIsVisible(true);
+			} else {
+				setIsVisible(false);
+			}
+		}
+		window.addEventListener("scroll", handleScroll);
+		return () => {
+			window.removeEventListener("scroll", handleScroll);
+		};
+	}, []);
+
+	const scrollUp = () => {
+		window.scroll({
+			top: -100,
+			behavior: "smooth",
+		});
+	};
 	return (
 		<>
+			<Box
+				sx={{
+					position: "fixed",
+					right: "10px",
+					bottom: 2,
+					display: isVisible ? "block" : "none",
+					zIndex: 100,
+				}}
+			>
+				<IconButton
+					onClick={scrollUp}
+					sx={{
+						color: "white",
+						backgroundColor: "primary.main",
+						"&:hover": { backgroundColor: "grey" },
+					}}
+				>
+					<ArrowCircleUpIcon />
+				</IconButton>
+			</Box>
+
 			<Routes>
 				<Route path={"/login"} element={
 					<Box sx={{
