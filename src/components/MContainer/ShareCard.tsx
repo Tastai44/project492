@@ -71,6 +71,7 @@ export default function ShareCard(props: IData & IFunction) {
     const [status, setStatus] = useState("Private");
     const [inFoUser, setInFoUser] = useState<User[]>([]);
     const [rows, setRows] = useState<IShare[]>([]);
+    const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
 
     useEffect(() => {
         const fetchData = query(
@@ -134,7 +135,7 @@ export default function ShareCard(props: IData & IFunction) {
     const handleChange = (event: SelectChangeEvent) => {
         setStatus(event.target.value as string);
     };
-    const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
+
     const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
         setSelectedRows(selectionModel);
     };
@@ -160,7 +161,7 @@ export default function ShareCard(props: IData & IFunction) {
             const post = postSnapshot.data() as Post;
 
             //Strill wrong
-            const existingShareIndex = post.shareUsers.findIndex((share) => (
+            const existingShareIndex = post.shareUsers.some((share) => (
                 (share.shareBy === userInfo.uid && share.shareTo === userInfo.uid) &&
                 (status === "Private" || status === "Public")
             ));
@@ -169,12 +170,11 @@ export default function ShareCard(props: IData & IFunction) {
                 filterRowsData.some((row) => row.uid == share.shareTo)
             );
 
-            if (existingShareIndex !== -1 || existingShareFriend) {
+            if (existingShareIndex || existingShareFriend) {
                 PopupAlert("Share already exists for this user and post", "warning");
                 return;
             }
-
-            if (filterRowsData.length !== 0) {
+            if (filterRowsData.length > 0 && (status === "Friend" || status === "Group")) {
                 try {
                     for (let i = 0; i < filterRowsData.length; i++) {
                         const updateShare = {
@@ -186,7 +186,6 @@ export default function ShareCard(props: IData & IFunction) {
                         createNoti(
                             (props.postId ?? ""), ` shared ${props.postCaption}`, userInfo.uid, status, [filterRowsData[i].uid], filterRowsData[i].uid
                         );
-                        const postRef = doc(postsCollection, props.postId);
                         await updateDoc(postRef, {
                             participants: arrayUnion(filterRowsData[i].uid),
                             shareUsers: arrayUnion(updateShare),
@@ -205,7 +204,6 @@ export default function ShareCard(props: IData & IFunction) {
                     status: status,
                     createdAt: new Date().toLocaleString(),
                 };
-                const postRef = doc(postsCollection, props.postId);
                 await updateDoc(postRef, {
                     participants: arrayUnion(userInfo.uid),
                     shareUsers: arrayUnion(updateShare),
@@ -229,9 +227,36 @@ export default function ShareCard(props: IData & IFunction) {
         try {
             const eventCollection = collection(dbFireStore, "events");
             const getRowsId = selectedRows.map((rowId) => rowId);
+            const eventRef = doc(eventCollection, props.eventId);
             const filterRowsData = rows.filter((row) =>
                 getRowsId.includes(row.id ? row.id : "")
             );
+
+            // Check if the post has been shared already by the current user
+            const eventSnapshot = await getDoc(eventRef);
+            const eventExists = eventSnapshot.exists();
+
+            if (!eventExists) {
+                console.error("Post not found");
+                return;
+            }
+
+            const event = eventSnapshot.data() as Post;
+
+            //Strill wrong
+            const existingShareIndex = event.shareUsers.some((share) => (
+                (share.shareBy === userInfo.uid && share.shareTo === userInfo.uid) &&
+                (status === "Private" || status === "Public")
+            ));
+
+            const existingShareFriend = event.shareUsers.some((share) => share.shareBy == userInfo.uid &&
+                filterRowsData.some((row) => row.uid == share.shareTo)
+            );
+
+            if (existingShareIndex || existingShareFriend) {
+                PopupAlert("Share already exists for this user and post", "warning");
+                return;
+            }
 
             if (filterRowsData.length !== 0) {
                 try {
@@ -248,6 +273,7 @@ export default function ShareCard(props: IData & IFunction) {
                             shareUsers: arrayUnion(updatedEvent),
                         });
                     }
+                    props.handleCloseShare();
                     PopupAlert("Share successfully", "success");
                 } catch (error) {
                     console.error("Error share", error);
@@ -264,6 +290,7 @@ export default function ShareCard(props: IData & IFunction) {
                     participants: arrayUnion(userInfo.uid),
                     shareUsers: arrayUnion(updatedEvent),
                 });
+                props.handleCloseShare();
                 PopupAlert("Share successfully", "success");
             }
         } catch (error) {

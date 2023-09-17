@@ -96,7 +96,7 @@ export default function ShareContent(props: Idata) {
 		try {
 			const queryData = query(
 				collection(dbFireStore, "events"),
-				where("id", "==", eventId)
+				where("eventId", "==", eventId)
 			);
 			const querySnapshot = await getDocs(queryData);
 			const doc = querySnapshot.docs[0];
