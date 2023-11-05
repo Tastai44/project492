@@ -12,10 +12,12 @@ interface IData {
 
 export default function DetailCard(props: IData) {
     const [openReportPost, setOpenReportPost] = React.useState(false);
+
     const handletOpenReport = () => {
         setOpenReportPost(true);
     };
     const handleCloseReport = () => setOpenReportPost(false);
+
     return (
         <Box sx={{ width: "100%" }}>
             <Modal

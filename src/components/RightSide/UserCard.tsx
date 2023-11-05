@@ -47,6 +47,7 @@ interface IData {
 
 export default function UserCard(props: IData) {
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
+
 	useEffect(() => {
 		const fetchData = async () => {
 			try {

@@ -40,6 +40,20 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 	const [member, setMember] = useState<string[]>([]);
 	const [users, setUsers] = useState<User[]>([]);
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
+	const [previewImages, setPreviewImages] = useState<string[]>([]);
+	const [status, setStatus] = useState("");
+	const initialState = {
+		gId: "",
+		hostId: "",
+		groupName: "",
+		members: [],
+		status: "",
+		details: "",
+		coverPhoto: "",
+		createAt: "",
+	};
+	const [group, setGroup] = useState<IGroup>(initialState);
 
 	useMemo(() => {
 		const fetchData = async () => {
@@ -68,13 +82,12 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 		setMember(newValue);
 	};
 
-	const fileInputRef = useRef<HTMLInputElement | null>(null);
-	const [previewImages, setPreviewImages] = useState<string[]>([]);
 	const handleUploadClick = () => {
 		if (fileInputRef.current) {
 			fileInputRef.current.click();
 		}
 	};
+
 	const handleFileChange = async (
 		event: ChangeEvent<HTMLInputElement>
 	) => {
@@ -104,22 +117,10 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 		setPreviewImages([]);
 	};
 
-	const [status, setStatus] = useState("");
 	const handleChange = (event: SelectChangeEvent) => {
 		setStatus(event.target.value as string);
 	};
 
-	const initialState = {
-		gId: "",
-		hostId: "",
-		groupName: "",
-		members: [],
-		status: "",
-		details: "",
-		coverPhoto: "",
-		createAt: "",
-	};
-	const [group, setGroup] = useState<IGroup>(initialState);
 	const clearState = () => {
 		setGroup({ ...initialState });
 		handleClearImage();

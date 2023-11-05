@@ -15,6 +15,7 @@ export default function ReportContent() {
 	const [postData, setPostData] = useState<Post[]>([]);
 	const [eventData, setEventData] = useState<EventPost[]>([]);
 	const [searchValue, setValue] = useState("");
+
 	useEffect(() => {
 		const queryPostData = query(
 			collection(dbFireStore, "posts"),

@@ -1,10 +1,10 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Stack from "@mui/material/Stack";
-import { styled } from "@mui/material/styles";
+import { useState, useEffect, MouseEvent } from "react";
 import {
     Avatar,
+    styled,
+    Stack,
+    Paper,
+    Box,
     Button,
     CardActions,
     CardContent,
@@ -70,15 +70,14 @@ interface Idata {
 }
 
 export default function EventContent(props: Idata) {
-    const [openReason, setOpenReason] = React.useState(false);
-    const handleOpenReason = () => {
-        setOpenReason(true);
-    };
-    const handleCloseReason = () => {
-        setOpenReason(false);
-    };
-    const [iconStatus, setIconStatus] = React.useState("");
-    React.useEffect(() => {
+    const [openReason, setOpenReason] = useState(false);
+    const [iconStatus, setIconStatus] = useState("");
+    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(
+        null
+    );
+    const [inFoUser, setInFoUser] = useState<User[]>([]);
+
+    useEffect(() => {
         if (props.status === "Private") {
             setIconStatus("LockIcon");
         } else if (props.status === "Friend") {
@@ -88,10 +87,34 @@ export default function EventContent(props: Idata) {
         }
     }, [iconStatus, props.status]);
 
-    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-        null
-    );
-    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    useEffect(() => {
+        const queryData = query(
+            collection(dbFireStore, "users"),
+            where("uid", "==", props.ownerId)
+        );
+        const unsubscribe = onSnapshot(
+            queryData,
+            (snapshot) => {
+                const queriedData = snapshot.docs.map((doc) => doc.data() as User);
+                setInFoUser(queriedData);
+            },
+            (error) => {
+                console.error("Error fetching data: ", error);
+            }
+        );
+        return () => {
+            unsubscribe();
+        };
+    }, [props.ownerId]);
+
+    const handleOpenReason = () => {
+        setOpenReason(true);
+    };
+    const handleCloseReason = () => {
+        setOpenReason(false);
+    };
+
+    const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
     };
     const handleCloseUserMenu = () => {
@@ -138,27 +161,6 @@ export default function EventContent(props: Idata) {
             console.error("Error approving report:", error);
         }
     };
-
-    const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-    React.useEffect(() => {
-        const queryData = query(
-            collection(dbFireStore, "users"),
-            where("uid", "==", props.ownerId)
-        );
-        const unsubscribe = onSnapshot(
-            queryData,
-            (snapshot) => {
-                const queriedData = snapshot.docs.map((doc) => doc.data() as User);
-                setInFoUser(queriedData);
-            },
-            (error) => {
-                console.error("Error fetching data: ", error);
-            }
-        );
-        return () => {
-            unsubscribe();
-        };
-    }, [props.ownerId]);
 
     return (
         <Box sx={{ mb: 5 }}>

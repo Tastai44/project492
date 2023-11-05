@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
@@ -22,8 +22,9 @@ interface IData {
 }
 
 export default function MediaCard(props: IData) {
-	const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-	React.useEffect(() => {
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+
+	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const q = query(

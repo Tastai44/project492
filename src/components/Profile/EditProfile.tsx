@@ -44,7 +44,6 @@ interface IData {
 }
 
 export default function BasicModal(props: Ihandle & IData) {
-
     const initialState = {
         uid: "",
         username: props.username,

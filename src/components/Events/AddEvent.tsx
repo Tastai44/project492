@@ -47,6 +47,29 @@ export default function AddEvent({ closeAdd }: Ihandle) {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const [inFoUser, setInFoUser] = useState<User[]>([]);
     const [status, setStatus] = useState("");
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [previewImages, setPreviewImages] = useState<string[]>([]);
+    const [location, setLocation] = useState("");
+    const initialState = {
+        eventId: "",
+        title: "",
+        startDate: "",
+        startTime: "",
+        endDate: "",
+        endTime: "",
+        topic: "",
+        ageRage: 0,
+        details: "",
+        status: "",
+        coverPhoto: "",
+        interest: [],
+        owner: "",
+        location: "",
+        createAt: "",
+        shareUsers: [],
+        reportEvent: [],
+    };
+    const [event, setEvent] = useState<EventPost>(initialState);
 
     useEffect(() => {
         const queryData = query(
@@ -71,8 +94,6 @@ export default function AddEvent({ closeAdd }: Ihandle) {
     const handleChange = (event: SelectChangeEvent) => {
         setStatus(event.target.value as string);
     };
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [previewImages, setPreviewImages] = useState<string[]>([]);
 
     const handleClearImage = () => {
         setPreviewImages([]);
@@ -106,27 +127,6 @@ export default function AddEvent({ closeAdd }: Ihandle) {
         }
     };
 
-    const initialState = {
-        eventId: "",
-        title: "",
-        startDate: "",
-        startTime: "",
-        endDate: "",
-        endTime: "",
-        topic: "",
-        ageRage: 0,
-        details: "",
-        status: "",
-        coverPhoto: "",
-        interest: [],
-        owner: "",
-        location: "",
-        createAt: "",
-        shareUsers: [],
-        reportEvent: [],
-    };
-    const [event, setEvent] = useState<EventPost>(initialState);
-    const [location, setLocation] = useState("");
     const clearState = () => {
         setEvent({ ...initialState });
         handleClearImage();

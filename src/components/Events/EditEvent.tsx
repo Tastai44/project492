@@ -51,6 +51,31 @@ interface IData {
 export default function EditEvent(props: IData & Ihandle) {
     const [userId, setUserId] = useState("");
     const [location, setLocation] = useState(props.location);
+    const [status, setStatus] = useState(`${props.status}`);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [previewImages, setPreviewImages] = useState<string[]>([props.coverPhoto]);
+    const initialState = {
+        eventId: "",
+        title: props.title,
+        startDate: props.startDate,
+        startTime: props.startTime,
+        endDate: props.endDate,
+        endTime: props.endTime,
+        topic: props.topic,
+        ageRage: props.ageRage,
+        details: props.details,
+        status: props.status,
+        location: props.location,
+        coverPhoto: props.coverPhoto,
+    };
+    const [event, setEvent] = useState<IData>(initialState);
+
+    useEffect(() => {
+        const getUerInfo = localStorage.getItem("user");
+        const tmp = JSON.parse(getUerInfo ? getUerInfo : "");
+        setUserId(tmp.uid);
+    }, []);
+
     const handleChangeLocation = (
         _event: ChangeEvent<unknown>,
         newValue: string | null
@@ -60,18 +85,9 @@ export default function EditEvent(props: IData & Ihandle) {
         }
     };
 
-    useEffect(() => {
-        const getUerInfo = localStorage.getItem("user");
-        const tmp = JSON.parse(getUerInfo ? getUerInfo : "");
-        setUserId(tmp.uid);
-    }, []);
-
-    const [status, setStatus] = useState(`${props.status}`);
     const handleChange = (event: SelectChangeEvent) => {
         setStatus(event.target.value as string);
     };
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [previewImages, setPreviewImages] = useState<string[]>([props.coverPhoto]);
 
     const handleClearImage = () => {
         setPreviewImages([]);
@@ -107,22 +123,6 @@ export default function EditEvent(props: IData & Ihandle) {
         }
     };
 
-    const initialState = {
-        eventId: "",
-        title: props.title,
-        startDate: props.startDate,
-        startTime: props.startTime,
-        endDate: props.endDate,
-        endTime: props.endTime,
-        topic: props.topic,
-        ageRage: props.ageRage,
-        details: props.details,
-        status: props.status,
-        location: props.location,
-        coverPhoto: props.coverPhoto,
-    };
-
-    const [event, setEvent] = useState<IData>(initialState);
     const clearState = () => {
         setEvent({ ...initialState });
         handleClearImage();
@@ -188,8 +188,6 @@ export default function EditEvent(props: IData & Ihandle) {
             console.error("Error updating post: ", error);
         }
     };
-
-
 
     return (
         <Box sx={{ color: "black" }}>

@@ -17,7 +17,6 @@ import {
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-// import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 
 import "firebase/database";
 import { dbFireStore } from "../../config/firebase";
@@ -48,6 +47,35 @@ export default function CommentContent(props: IData) {
 	const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(
 		null
 	);
+	const [openEditCom, setOpenEditCom] = useState(false);
+	const [comment, setComment] = useState({
+		text: props.text
+	});
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+
+	useMemo(() => {
+		const fetchData = async () => {
+			try {
+				const q = query(
+					collection(dbFireStore, "users"),
+					where("uid", "==", props.author)
+				);
+				const querySnapshot = await getDocs(q);
+				const queriedData = querySnapshot.docs.map(
+					(doc) =>
+					({
+						uid: doc.id,
+						...doc.data(),
+					} as User)
+				);
+				setInFoUser(queriedData);
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		};
+		fetchData();
+	}, [props.author]);
+
 	const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
 		setAnchorElUser(event.currentTarget);
 	};
@@ -55,7 +83,6 @@ export default function CommentContent(props: IData) {
 		setAnchorElUser(null);
 	};
 
-	const [openEditCom, setOpenEditCom] = useState(false);
 	const handletOpenEditCom = () => {
 		handleCloseUserMenu();
 		setOpenEditCom(true);
@@ -91,9 +118,6 @@ export default function CommentContent(props: IData) {
 		}
 	};
 
-	const [comment, setComment] = useState({
-		text: props.text
-	});
 	const handleChangeComment = (
 		event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 	) => {
@@ -138,30 +162,6 @@ export default function CommentContent(props: IData) {
 				console.error("Error updating comment: ", error);
 			});
 	};
-
-	const [inFoUser, setInFoUser] = useState<User[]>([]);
-	useMemo(() => {
-		const fetchData = async () => {
-			try {
-				const q = query(
-					collection(dbFireStore, "users"),
-					where("uid", "==", props.author)
-				);
-				const querySnapshot = await getDocs(q);
-				const queriedData = querySnapshot.docs.map(
-					(doc) =>
-					({
-						uid: doc.id,
-						...doc.data(),
-					} as User)
-				);
-				setInFoUser(queriedData);
-			} catch (error) {
-				console.error("Error fetching data:", error);
-			}
-		};
-		fetchData();
-	}, [props.author]);
 
 	return (
 		<Box>

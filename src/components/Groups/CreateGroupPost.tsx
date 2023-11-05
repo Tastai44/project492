@@ -49,18 +49,59 @@ interface IData {
 export default function CreateGroupPost(props: IHandle & IData) {
     const [location, setLocation] = useState("");
     const [status, setStatus] = useState("");
-    const handleChange = (event: SelectChangeEvent) => {
-        setStatus(event.target.value as string);
-    };
-
     const [openEmoji, setOpenEmoji] = useState(false);
-    const handletOpenEmoji = () => setOpenEmoji(true);
-    const handleCloseEmoji = () => setOpenEmoji(false);
-
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [previewImages, setPreviewImages] = useState<string[]>([]);
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const [openLocation, setOpenLocation] = useState(false);
+    const [emoji, setEmoji] = useState("");
+    const initialState = {
+        id: "",
+        caption: "",
+        hashTagTopic: "",
+        status: "",
+        photoPost: [],
+        comments: [],
+        likes: [],
+        createAt: "",
+        emoji: "",
+        owner: "",
+        shareUsers: [],
+        reportPost: [],
+    };
+    const [post, setPost] = useState<Post>(initialState);
+    const [inFoUser, setInFoUser] = useState<User[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const q = query(
+                    collection(dbFireStore, "users"),
+                    where("uid", "==", userInfo.uid)
+                );
+                const querySnapshot = await getDocs(q);
+                const queriedData = querySnapshot.docs.map(
+                    (doc) =>
+                    ({
+                        uid: doc.id,
+                        ...doc.data(),
+                    } as User)
+                );
+                setInFoUser(queriedData);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        fetchData();
+    }, [userInfo.uid]);
+
+    const handleChange = (event: SelectChangeEvent) => {
+        setStatus(event.target.value as string);
+    };
+
+    const handletOpenEmoji = () => setOpenEmoji(true);
+    const handleCloseEmoji = () => setOpenEmoji(false);
+
     const handletOpenLocation = () => setOpenLocation(true);
     const handletSaveLocation = () => setOpenLocation(false);
     const handleCloseLocation = () => {
@@ -75,6 +116,7 @@ export default function CreateGroupPost(props: IHandle & IData) {
             fileInputRef.current.click();
         }
     };
+
     const handleFileChange = async (
         event: ChangeEvent<HTMLInputElement>
     ) => {
@@ -101,26 +143,10 @@ export default function CreateGroupPost(props: IHandle & IData) {
         }
     };
 
-    const [emoji, setEmoji] = useState("");
     const handleChangeEmoji = (e: string) => {
         setEmoji(e);
     };
 
-    const initialState = {
-        id: "",
-        caption: "",
-        hashTagTopic: "",
-        status: "",
-        photoPost: [],
-        comments: [],
-        likes: [],
-        createAt: "",
-        emoji: "",
-        owner: "",
-        shareUsers: [],
-        reportPost: [],
-    };
-    const [post, setPost] = useState<Post>(initialState);
     const clearState = () => {
         setPost({ ...initialState });
         setStatus("");
@@ -189,30 +215,6 @@ export default function CreateGroupPost(props: IHandle & IData) {
         const emoji = emojiData.find((data) => data.unified === emojiCode);
         return emoji ? emoji.name : undefined;
     };
-
-    const [inFoUser, setInFoUser] = useState<User[]>([]);
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const q = query(
-                    collection(dbFireStore, "users"),
-                    where("uid", "==", userInfo.uid)
-                );
-                const querySnapshot = await getDocs(q);
-                const queriedData = querySnapshot.docs.map(
-                    (doc) =>
-                    ({
-                        uid: doc.id,
-                        ...doc.data(),
-                    } as User)
-                );
-                setInFoUser(queriedData);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-        fetchData();
-    }, [userInfo.uid]);
 
     const handleChangeLocation = (
         _event: ChangeEvent<unknown>,

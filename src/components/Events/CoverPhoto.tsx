@@ -59,8 +59,8 @@ export default function ProCoverImage(props: IData & IFunction) {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const IsOwner = userInfo.uid === props.owner;
     const isInterest = props.interest.some((f) => f.interestBy === userInfo.uid);
-
     const [open, setOpen] = React.useState(false);
+
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 

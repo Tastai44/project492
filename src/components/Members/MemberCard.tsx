@@ -26,6 +26,7 @@ interface IData {
 export default function MemberCard(props: IData) {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const [user, setUser] = useState<User[]>([]);
+
     useEffect(() => {
         const fetchUSerData = async () => {
             try {

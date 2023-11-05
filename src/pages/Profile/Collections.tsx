@@ -1,7 +1,7 @@
 import { useState, useEffect, ChangeEvent } from "react";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
 import {
+	Grid,
+	Box,
 	Divider,
 	ImageList,
 	ImageListItem,

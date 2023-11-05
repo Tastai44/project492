@@ -1,4 +1,4 @@
-import * as React from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Box, Button, Divider, TextField, Typography } from "@mui/material";
 import { styleTable } from "../../utils/styleBox";
 import "firebase/database";
@@ -16,7 +16,6 @@ import {
 	updateDoc,
 	arrayUnion,
 } from "firebase/firestore";
-import { ChangeEvent } from "react";
 
 interface IFunction {
 	handleClose: () => void;
@@ -29,18 +28,11 @@ interface IData {
 }
 
 export default function AddMembers(props: IFunction & IData) {
-	const [member, setMember] = React.useState<string[]>([]);
-	const [users, setUsers] = React.useState<User[]>([]);
+	const [member, setMember] = useState<string[]>([]);
+	const [users, setUsers] = useState<User[]>([]);
 	// const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
-	const handleAddMember = (
-		_event: ChangeEvent<unknown>,
-		newValue: string[]
-	) => {
-		setMember(newValue);
-	};
-
-	React.useEffect(() => {
+	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const q = collection(dbFireStore, "users");
@@ -59,6 +51,13 @@ export default function AddMembers(props: IFunction & IData) {
 		};
 		fetchData();
 	}, []);
+
+	const handleAddMember = (
+		_event: ChangeEvent<unknown>,
+		newValue: string[]
+	) => {
+		setMember(newValue);
+	};
 
 	const addMember = () => {
 		const groupCollection = collection(dbFireStore, "groups");

@@ -37,24 +37,7 @@ export default function ChatLists(props: IData) {
     const [groupData, setGroupData] = useState<IGroup[]>([]);
     const [openChat, setOpenChat] = useState(false);
     const [searchValue, setSearchValue] = useState("");
-
-    const handleOpenChat = (id: string) => {
-        setOpenChat(true);
-        setUserId(id);
-    };
-    const handleCloseChat = () => setOpenChat(false);
-
     const [openGroupChat, setOpenGroupChat] = useState(false);
-    const handleOpenGroupChat = (id: string) => {
-        setOpenGroupChat(true);
-        setGroupId(id);
-    };
-    const handleCloseGroupChat = () => setOpenGroupChat(false);
-
-    const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
-        setSearchValue(value);
-    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -117,6 +100,24 @@ export default function ChatLists(props: IData) {
             unsubscribeOther();
         };
     }, [userInfo.uid]);
+
+    const handleOpenChat = (id: string) => {
+        setOpenChat(true);
+        setUserId(id);
+    };
+    const handleCloseChat = () => setOpenChat(false);
+
+    const handleOpenGroupChat = (id: string) => {
+        setOpenGroupChat(true);
+        setGroupId(id);
+    };
+    const handleCloseGroupChat = () => setOpenGroupChat(false);
+
+    const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setSearchValue(value);
+    };
+
     const handleChange = (_event: SyntheticEvent, newValue: string) => {
         setValue(newValue);
     };

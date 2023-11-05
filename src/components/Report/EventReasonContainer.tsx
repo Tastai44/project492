@@ -50,9 +50,10 @@ interface IFunction {
 
 export default function EventReasonContainer(props: IData & IFunction) {
   const [openShare, setOpenShare] = useState(false);
-  const handleOpenShare = () => setOpenShare(true);
-  const handleCloseShare = () => setOpenShare(false);
   const [data, setData] = useState<EventPost[]>([]);
+  const [inFoUser, setInFoUser] = useState<User[]>([]);
+  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+
   useEffect(() => {
     const fetchData = query(
       collection(dbFireStore, "events"),
@@ -74,8 +75,6 @@ export default function EventReasonContainer(props: IData & IFunction) {
     };
   }, [props.eventId]);
 
-  const [inFoUser, setInFoUser] = useState<User[]>([]);
-  const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   useMemo(() => {
     const fetchData = async () => {
       try {
@@ -98,6 +97,9 @@ export default function EventReasonContainer(props: IData & IFunction) {
     };
     fetchData();
   }, [userInfo.uid]);
+
+  const handleOpenShare = () => setOpenShare(true);
+  const handleCloseShare = () => setOpenShare(false);
 
   const handleDelete = () => {
     const postRef = doc(dbFireStore, "events", props.eventId);

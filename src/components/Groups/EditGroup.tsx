@@ -39,16 +39,20 @@ interface IData {
 
 export default function EditGroup(props: IData & Ihandle) {
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-
 	const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 	const [previewImages, setPreviewImages] = React.useState<string[]>([
 		props.coverPhoto,
 	]);
-	const handleUploadClick = () => {
-		if (fileInputRef.current) {
-			fileInputRef.current.click();
-		}
+	const [status, setStatus] = React.useState(props.status);
+	const initialState = {
+		gId: props.gId,
+		groupName: props.groupName,
+		status: props.status,
+		details: props.details,
+		coverPhoto: props.coverPhoto,
 	};
+	const [group, setGroup] = React.useState<IData>(initialState);
+
 	const handleFileChange = async (
 		event: React.ChangeEvent<HTMLInputElement>
 	) => {
@@ -74,23 +78,21 @@ export default function EditGroup(props: IData & Ihandle) {
 			}
 		}
 	};
+
+	const handleUploadClick = () => {
+		if (fileInputRef.current) {
+			fileInputRef.current.click();
+		}
+	};
+
 	const handleClearImage = () => {
 		setPreviewImages([]);
 	};
 
-	const [status, setStatus] = React.useState(props.status);
 	const handleChange = (event: SelectChangeEvent) => {
 		setStatus(event.target.value as string);
 	};
 
-	const initialState = {
-		gId: props.gId,
-		groupName: props.groupName,
-		status: props.status,
-		details: props.details,
-		coverPhoto: props.coverPhoto,
-	};
-	const [group, setGroup] = React.useState<IData>(initialState);
 	const clearState = () => {
 		setGroup({ ...initialState });
 		handleClearImage();

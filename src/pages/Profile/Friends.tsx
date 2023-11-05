@@ -1,6 +1,5 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import Grid from "@mui/material/Grid";
-import { Divider, Paper, Typography, Box } from "@mui/material";
+import { Divider, Paper, Typography, Box, Grid } from "@mui/material";
 import FriendCard from "../../components/Profile/FriendCard";
 import "firebase/database";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
@@ -61,6 +60,7 @@ export default function Friends() {
 		const value = event.target.value;
 		setValue(value);
 	};
+
 	return (
 		<>
 			<TabLink

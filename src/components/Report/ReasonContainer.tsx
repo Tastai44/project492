@@ -1,7 +1,7 @@
-import * as React from "react";
-import { styled } from "@mui/material/styles";
-import Grid from "@mui/material/Grid";
+import { useState, useEffect, useMemo, MouseEvent } from "react";
 import {
+	styled,
+	Grid,
 	ListItem,
 	ListItemAvatar,
 	Avatar,
@@ -67,17 +67,13 @@ interface IFunction {
 }
 
 export default function ReasonContainer(props: IData & IFunction) {
-	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+	const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(
 		null
 	);
-	const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-		setAnchorElUser(event.currentTarget);
-	};
-	const handleCloseUserMenu = () => {
-		setAnchorElUser(null);
-	};
-	const [postData, setPostData] = React.useState<Post[]>([]);
-	React.useEffect(() => {
+	const [postData, setPostData] = useState<Post[]>([]);
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+
+	useEffect(() => {
 		const q = query(
 			collection(dbFireStore, "posts"),
 			where("id", "==", props.postId),
@@ -100,6 +96,35 @@ export default function ReasonContainer(props: IData & IFunction) {
 		};
 	}, [props.postId]);
 
+	useMemo(() => {
+		const fetchData = async () => {
+			try {
+				const q = query(
+					collection(dbFireStore, "users"),
+					where("uid", "==", props.owner)
+				);
+				const querySnapshot = await getDocs(q);
+				const queriedData = querySnapshot.docs.map(
+					(doc) =>
+					({
+						uid: doc.id,
+						...doc.data(),
+					} as User)
+				);
+				setInFoUser(queriedData);
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		};
+		fetchData();
+	}, [props.owner]);
+
+	const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
+		setAnchorElUser(event.currentTarget);
+	};
+	const handleCloseUserMenu = () => {
+		setAnchorElUser(null);
+	};
 
 	const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
 		const emoji = emojiData.find((data) => data.unified === emojiCode);
@@ -141,29 +166,6 @@ export default function ReasonContainer(props: IData & IFunction) {
 			console.error("Error approving report:", error);
 		}
 	};
-	const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-	React.useMemo(() => {
-		const fetchData = async () => {
-			try {
-				const q = query(
-					collection(dbFireStore, "users"),
-					where("uid", "==", props.owner)
-				);
-				const querySnapshot = await getDocs(q);
-				const queriedData = querySnapshot.docs.map(
-					(doc) =>
-					({
-						uid: doc.id,
-						...doc.data(),
-					} as User)
-				);
-				setInFoUser(queriedData);
-			} catch (error) {
-				console.error("Error fetching data:", error);
-			}
-		};
-		fetchData();
-	}, [props.owner]);
 
 	return (
 		<>

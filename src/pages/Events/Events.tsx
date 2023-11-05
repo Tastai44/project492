@@ -1,7 +1,5 @@
 import { useState, ChangeEvent } from "react";
-import { Button, Modal, Typography } from "@mui/material";
-import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
+import { Button, Modal, Typography, Box, Stack } from "@mui/material";
 import EventContainer from "../../components/Events/EventContainer";
 import AddEvent from "../../components/Events/AddEvent";
 import SearchBar from "../../helper/SearchBar";
@@ -10,13 +8,15 @@ import { Item } from "../../App";
 
 export default function Events() {
 	const [open, setOpen] = useState(false);
+	const [searchValue, setValue] = useState("");
+
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
-	const [searchValue, setValue] = useState("");
 	const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
 		const value = event.target.value;
 		setValue(value);
 	};
+
 	return (
 		<>
 			<Modal

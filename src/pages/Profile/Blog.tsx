@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
 import {
+	Grid,
+	Paper,
+	Box,
 	FormControl,
 	InputLabel,
 	MenuItem,
@@ -226,9 +226,9 @@ export default function Blog() {
 																postId={m.id}
 																shareUsers={m.shareUsers.filter(
 																	(share) =>
-																		share.status == "Private" ||
+																	((share.status == "Private" && share.shareBy == userInfo.uid) ||
 																		(share.status == "Public" &&
-																			share.shareBy == userId)
+																			share.shareBy == userId))
 																)}
 															/>
 															<MContainer

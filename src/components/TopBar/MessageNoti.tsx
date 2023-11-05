@@ -24,6 +24,7 @@ export default function MessageNoti(props: IData) {
         const dateB = new Date(b.dateCreated).getTime();
         return dateB - dateA;
     });
+
     return (
         <Box>
             <Menu

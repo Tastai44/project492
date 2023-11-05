@@ -1,12 +1,11 @@
 import { useState, useEffect, ChangeEvent } from "react";
-import Grid from "@mui/material/Grid";
 import {
     collection,
     query,
     where,
     onSnapshot,
 } from "firebase/firestore";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Grid } from "@mui/material";
 import MemberCard from "../components/Members/MemberCard";
 import { dbFireStore } from "../config/firebase";
 import SearchBar from "../helper/SearchBar";

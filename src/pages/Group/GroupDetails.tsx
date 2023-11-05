@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack } from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, Box, Grid } from "@mui/material";
 import CoverPhoto from "../../components/Groups/CoverPhoto";
 import LeftSideContainer from "../../components/Groups/LeftSideContainer";
 import MContainer from "../../components/MContainer/MContainer";

@@ -24,48 +24,6 @@ export default function ProfileInfo(props: IData) {
     const [openPre, setOpenPre] = useState(false);
     const { userId } = useParams();
 
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-
-    const handleOpenPre = () => setOpenPre(true);
-    const handleClosePre = () => setOpenPre(false);
-
-    const handleUploadClick = () => {
-        if (fileInputRef.current) {
-            fileInputRef.current.click();
-        }
-    };
-    const handleFileChange = async (
-        event: ChangeEvent<HTMLInputElement>
-    ) => {
-        const files = event.target.files;
-        if (files) {
-            try {
-                const selectedFiles = Array.from(files);
-                const readerPromises = selectedFiles.map((file) => {
-                    return new Promise<string>((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                            resolve(reader.result as string);
-                        };
-                        reader.onerror = reject;
-                        reader.readAsDataURL(file);
-                    });
-                });
-
-                const base64Images = await Promise.all(readerPromises);
-                setPreviewImages(base64Images);
-                handleOpenPre();
-            } catch (error) {
-                console.error(error);
-            }
-        }
-    };
-    const handleClearImage = () => {
-        setPreviewImages([]);
-        handleClosePre();
-    };
-
     useEffect(() => {
         const queryData = query(
             collection(dbFireStore, "users"),
@@ -105,6 +63,49 @@ export default function ProfileInfo(props: IData) {
             unsubscribe();
         };
     }, [userInfo.uid]);
+
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    const handleOpenPre = () => setOpenPre(true);
+    const handleClosePre = () => setOpenPre(false);
+
+    const handleUploadClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+    const handleFileChange = async (
+        event: ChangeEvent<HTMLInputElement>
+    ) => {
+        const files = event.target.files;
+        if (files) {
+            try {
+                const selectedFiles = Array.from(files);
+                const readerPromises = selectedFiles.map((file) => {
+                    return new Promise<string>((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            resolve(reader.result as string);
+                        };
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                });
+
+                const base64Images = await Promise.all(readerPromises);
+                setPreviewImages(base64Images);
+                handleOpenPre();
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    };
+
+    const handleClearImage = () => {
+        setPreviewImages([]);
+        handleClosePre();
+    };
 
     const unFriendOtherSide = async (id: string) => {
         const IndexFriend = loginUser.map((user) => user.friendList?.findIndex((index) => index.friendId === id)).flat();

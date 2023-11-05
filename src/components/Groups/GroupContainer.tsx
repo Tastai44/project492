@@ -1,8 +1,5 @@
-// import * as React from "react";
-import Box from "@mui/material/Box";
-
 import EachGroup from "./EachGroup";
-import { Typography, Button, Divider } from "@mui/material";
+import { Typography, Button, Divider, Box } from "@mui/material";
 import { NavLink } from "react-router-dom";
 import { IGroup } from "../../interface/Group";
 import { useMemo, useState } from "react";
@@ -25,15 +22,8 @@ export default function GroupContainer({
 }: IFunction & IData) {
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [openSearch, setOpenSearch] = useState<boolean>(false);
-
-	const handleOpenSearch = () => {
-		setOpenSearch(true);
-	};
-	const handleCloseSearch = () => {
-		setOpenSearch(false);
-	};
-
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
+
 	useMemo(() => {
 		const fetchData = async () => {
 			try {
@@ -56,6 +46,14 @@ export default function GroupContainer({
 		};
 		fetchData();
 	}, [userInfo.uid]);
+
+	const handleOpenSearch = () => {
+		setOpenSearch(true);
+	};
+	const handleCloseSearch = () => {
+		setOpenSearch(false);
+	};
+
 	return (
 		<Box sx={{ width: "100%", bgcolor: "background.paper", color: "black" }}>
 			<SearchContent

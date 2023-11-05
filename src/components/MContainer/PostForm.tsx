@@ -1,8 +1,8 @@
+import { useState } from "react";
 import { Avatar, TextField, Divider, Box, Button, Modal } from "@mui/material";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
-import * as React from "react";
 import CreatePost from "./CreatePost";
 import { User } from "../../interface/User";
 
@@ -13,7 +13,8 @@ interface IData {
 export default function PostForm({
     inFoUser,
 }: IData) {
-    const [openCreatePost, setOpenCreatePost] = React.useState(false);
+    const [openCreatePost, setOpenCreatePost] = useState(false);
+
     const handletOpenCratePost = () => setOpenCreatePost(true);
     const handleCloseCratePost = () => setOpenCreatePost(false);
 

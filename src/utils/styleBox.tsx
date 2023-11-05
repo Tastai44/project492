@@ -177,3 +177,18 @@ export const styleEditProfile = {
   boxShadow: 24,
   p: 4,
 };
+
+export const stylePrivacyBox = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  width: 500,
+  transform: "translate(-50%, -50%)",
+  [themeApp.breakpoints.down("md")]: {
+    width: 300,
+  },
+  bgcolor: "white",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};

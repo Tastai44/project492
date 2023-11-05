@@ -26,6 +26,7 @@ import ReportContent from "./pages/ReportContent";
 import { themeApp } from "./utils/Theme";
 import { IconButton } from "@mui/material";
 import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
+import OAuthRedirect from "./pages/OauthRedirect";
 
 
 export const Item = styled(Box)(({ theme }) => ({
@@ -90,6 +91,17 @@ function App() {
 						<Login />
 					</Box>
 				} />
+
+				<Route path={"/callback"} element={
+					<Box sx={{
+						ml: 5, mr: 5, [themeApp.breakpoints.down("lg")]: {
+							ml: 2, mr: 2
+						}
+					}}>
+						<OAuthRedirect />
+					</Box>
+				} />
+
 
 				<Route
 					path={"/"}

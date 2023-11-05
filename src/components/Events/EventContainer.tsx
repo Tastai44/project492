@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import EventCard from "./EventCard";
 import { Box } from "@mui/material";
@@ -16,8 +16,9 @@ interface IData {
 }
 
 export default function EventContainer(props: IData) {
-    const [eventData, setEventData] = React.useState<EventPost[]>([]);
-    React.useEffect(() => {
+    const [eventData, setEventData] = useState<EventPost[]>([]);
+
+    useEffect(() => {
         const fetchData = query(
             collection(dbFireStore, "events"),
             orderBy("createAt", "desc")
@@ -36,6 +37,7 @@ export default function EventContainer(props: IData) {
             unsubscribe();
         };
     }, []);
+
     return (
         <Box sx={{
             display: "flex"

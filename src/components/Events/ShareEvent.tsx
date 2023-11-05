@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
@@ -32,8 +32,9 @@ interface Idata {
 
 
 export default function ShareEvent(props: Idata) {
-	const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-	React.useEffect(() => {
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+
+	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const q = query(

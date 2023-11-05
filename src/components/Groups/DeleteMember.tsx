@@ -16,7 +16,6 @@ import PopupAlert from "../PopupAlert";
 import SearchBar from "../../helper/SearchBar";
 import { User } from "../../interface/User";
 
-
 const columns: GridColDef[] = [
 	{ field: "id", headerName: "ID", flex: 1 },
 	{ field: "uid" },
@@ -52,6 +51,20 @@ interface IFunction {
 export default function DeleteMember(props: IData & IFunction) {
 	const [searchValue, setValue] = useState("");
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	const rows = props.members.map((row, index) => {
+		const matchingUser = inFoUser.find((user) => user.uid === row);
+		const username = matchingUser ? `${matchingUser.firstName} ${matchingUser.lastName}` : '';
+		const profilePhoto = matchingUser ? matchingUser.profilePhoto : '';
+
+		return {
+			id: `${row}_${index}`,
+			uid: row,
+			username: username,
+			profilePhoto: profilePhoto
+		};
+	});
+
+	const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
 
 	useEffect(() => {
 		const queryData = query(
@@ -73,20 +86,6 @@ export default function DeleteMember(props: IData & IFunction) {
 		};
 	}, [props.members]);
 
-	const rows = props.members.map((row, index) => {
-		const matchingUser = inFoUser.find((user) => user.uid === row);
-		const username = matchingUser ? `${matchingUser.firstName} ${matchingUser.lastName}` : '';
-		const profilePhoto = matchingUser ? matchingUser.profilePhoto : '';
-
-		return {
-			id: `${row}_${index}`,
-			uid: row,
-			username: username,
-			profilePhoto: profilePhoto
-		};
-	});
-
-	const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
 	const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
 		setSelectedRows(selectionModel);
 	};
@@ -110,6 +109,7 @@ export default function DeleteMember(props: IData & IFunction) {
 		const value = event.target.value;
 		setValue(value);
 	};
+
 	return (
 		<Box sx={styleTable}>
 			<Box

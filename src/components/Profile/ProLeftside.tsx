@@ -151,8 +151,6 @@ export default function ProLeftside() {
 		}
 	};
 
-
-
 	return (
 		<>
 			<UploadProfile

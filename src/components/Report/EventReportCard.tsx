@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState, ChangeEvent } from "react";
 import { Box, Button, TextField } from "@mui/material";
 import { styleBoxReport } from "../../utils/styleBox";
 import "firebase/database";
@@ -27,12 +27,13 @@ export default function EventReportCard(props: IFunction & IData) {
 		reason: "",
 		createAt: "",
 	};
-	const [reportEvent, setReportEvent] = React.useState<EventReport>(initialEventState);
+	const [reportEvent, setReportEvent] = useState<EventReport>(initialEventState);
+
 	const clearState = () => {
 		setReportEvent({ ...initialEventState });
 	};
 	const handleChangeReport = (
-		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+		event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 	) => {
 		const { name, value } = event.target;
 		setReportEvent((prev) => ({

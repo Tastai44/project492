@@ -1,9 +1,9 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Stack from "@mui/material/Stack";
-import { styled } from "@mui/material/styles";
+import { useEffect, useState, MouseEvent } from "react";
 import {
+	Box,
+	Paper,
+	styled,
+	Stack,
 	Avatar,
 	Button,
 	CardActions,
@@ -72,7 +72,35 @@ interface Idata {
 }
 
 export default function ReportContent(props: Idata) {
-	const [openReason, setOpenReason] = React.useState(false);
+	const [openReason, setOpenReason] = useState(false);
+	const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(
+		null
+	);
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const q = query(
+					collection(dbFireStore, "users"),
+					where("uid", "==", props.owner)
+				);
+				const querySnapshot = await getDocs(q);
+				const queriedData = querySnapshot.docs.map(
+					(doc) =>
+					({
+						uid: doc.id,
+						...doc.data(),
+					} as User)
+				);
+				setInFoUser(queriedData);
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		};
+		fetchData();
+	}, [props.owner, props.reFreshInfo]);
+
 	const handleOpenReason = () => {
 		setOpenReason(true);
 	};
@@ -85,10 +113,7 @@ export default function ReportContent(props: Idata) {
 		return emoji ? emoji.name : undefined;
 	};
 
-	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-		null
-	);
-	const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+	const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
 		setAnchorElUser(event.currentTarget);
 	};
 	const handleCloseUserMenu = () => {
@@ -135,30 +160,6 @@ export default function ReportContent(props: Idata) {
 			console.error("Error approving report:", error);
 		}
 	};
-
-	const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-	React.useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const q = query(
-					collection(dbFireStore, "users"),
-					where("uid", "==", props.owner)
-				);
-				const querySnapshot = await getDocs(q);
-				const queriedData = querySnapshot.docs.map(
-					(doc) =>
-					({
-						uid: doc.id,
-						...doc.data(),
-					} as User)
-				);
-				setInFoUser(queriedData);
-			} catch (error) {
-				console.error("Error fetching data:", error);
-			}
-		};
-		fetchData();
-	}, [props.owner, props.reFreshInfo]);
 
 	return (
 		<Box sx={{ mb: 5 }}>

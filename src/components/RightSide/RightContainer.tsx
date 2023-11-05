@@ -27,32 +27,7 @@ export default function RightContainer() {
     const [isActive, setIsActive] = useState(false);
     const [searchValue, setValue] = useState("");
     const [searchGroupValue, setGroupValue] = useState("");
-
-    const handleIsActive = (value: boolean) => {
-        setIsActive(value);
-    };
-
-    const handleOpenChat = (id: string) => {
-        setOpenChat(true);
-        setUserId(id);
-    };
-    const handleCloseChat = () => setOpenChat(false);
-
     const [openGroupChat, setOpenGroupChat] = useState(false);
-    const handleOpenGroupChat = (id: string) => {
-        setOpenGroupChat(true);
-        setGroupId(id);
-    };
-    const handleCloseGroupChat = () => setOpenGroupChat(false);
-
-    const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
-        setValue(value);
-    };
-    const handleGroupSearch = (event: ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
-        setGroupValue(value);
-    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -115,6 +90,31 @@ export default function RightContainer() {
             unsubscribeOther();
         };
     }, [userInfo.uid]);
+
+    const handleIsActive = (value: boolean) => {
+        setIsActive(value);
+    };
+
+    const handleOpenChat = (id: string) => {
+        setOpenChat(true);
+        setUserId(id);
+    };
+    const handleCloseChat = () => setOpenChat(false);
+
+    const handleOpenGroupChat = (id: string) => {
+        setOpenGroupChat(true);
+        setGroupId(id);
+    };
+    const handleCloseGroupChat = () => setOpenGroupChat(false);
+
+    const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setValue(value);
+    };
+    const handleGroupSearch = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setGroupValue(value);
+    };
 
     return (
         <Box sx={{ width: "100%", display: { xs: "none", lg: "flex" } }}>

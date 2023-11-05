@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import {
     Paper,
     Divider,
@@ -16,6 +16,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import AddMembers from "./AddMembers";
 import DeleteMember from "./DeleteMember";
+
 interface IData {
     members: string[];
     hostId: string;
@@ -24,11 +25,12 @@ interface IData {
 
 export default function Members(props: IData) {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-    const [openAdd, setOpenAdd] = React.useState(false);
-    const [openDelete, setOpenDelete] = React.useState(false);
-    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    const [openAdd, setOpenAdd] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
+    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(
         null
     );
+
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
     };
