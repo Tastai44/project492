@@ -134,20 +134,17 @@ export default function Topics() {
 
 		const lastDayOfWeek = new Date(firstDayOfWeek);
 		lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+		const startDate = firstDayOfWeek.toLocaleDateString("en-US");
+		const endDate = lastDayOfWeek.toLocaleDateString("en-US");
 
 		const fetchWeeklyData = async () => {
 			try {
-				const startDate = firstDayOfWeek.toLocaleDateString("en-US");
-				const endDate = lastDayOfWeek.toLocaleDateString("en-US");
-
 				const q = query(
-					collection(dbFireStore, "posts"),
-					where("date", ">=", startDate),
-					where("date", "<=", endDate)
+					collection(dbFireStore, "posts")
 				);
 				const querySnapshot = await getDocs(q);
 				const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
-				setPosts(queriedData);
+				setPosts(queriedData.filter((post) => new Date(post.date ?? "") >= new Date(startDate) && new Date(post.date ?? "") <= new Date(endDate)));
 			} catch (error) {
 				console.error("Error fetching data:", error);
 			}
@@ -170,13 +167,11 @@ export default function Topics() {
 				const startOfMonth = firstDayOfMonth.toLocaleDateString("en-US");
 				const endOfMonth = lastDayOfMonth.toLocaleDateString("en-US");
 				const q = query(
-					collection(dbFireStore, "posts"),
-					where("date", ">=", startOfMonth),
-					where("date", "<=", endOfMonth)
+					collection(dbFireStore, "posts")
 				);
 				const querySnapshot = await getDocs(q);
 				const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
-				setPosts(queriedData);
+				setPosts(queriedData.filter((post) => new Date(post.date ?? "") >= new Date(startOfMonth) && new Date(post.date ?? "") <= new Date(endOfMonth)));
 			} catch (error) {
 				console.error("Error fetching data:", error);
 			}

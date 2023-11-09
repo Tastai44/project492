@@ -112,6 +112,7 @@ export default function ProCoverImage(props: IData) {
 						width: "95%",
 						backgroundColor: "white",
 						display: "flex",
+						borderRadius: "10px",
 						[themeApp.breakpoints.down("md")]: {
 							background:
 								"linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 1))",
@@ -246,6 +247,6 @@ export default function ProCoverImage(props: IData) {
 					</Box>
 				</Card>
 			</Box>
-		</div>
+		</div >
 	);
 }

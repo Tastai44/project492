@@ -274,7 +274,7 @@ export default function MContainer(props: Idata) {
 
                     <Box sx={{ width: "100%" }}>
                         <Stack spacing={2}>
-                            <Item sx={{ display: "flex", flexDirection: "column" }}>
+                            <Item sx={{ display: "flex", flexDirection: "column", borderRadius: "10px" }}>
                                 <ListItem>
                                     <ListItemAvatar>
                                         <Avatar

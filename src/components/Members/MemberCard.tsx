@@ -45,7 +45,7 @@ export default function MemberCard(props: IData) {
     }, [user, userInfo.uid]);
 
     return (
-        <Card sx={{ width: 250 }}>
+        <Card sx={{ width: 250, borderRadius: "20px" }}>
             <CardActions
                 disableSpacing
                 sx={{

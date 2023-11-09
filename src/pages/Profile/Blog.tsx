@@ -129,7 +129,7 @@ export default function Blog() {
 				userId={userId ?? ""}
 			/>
 			<Box sx={{ margin: 1, display: { xs: "block", lg: "none" } }}>
-				<FormControl fullWidth sx={{ backgroundColor: "white", mb: 1 }}>
+				<FormControl fullWidth sx={{ backgroundColor: "white", mb: 1, borderRadius: "10px" }}>
 					<InputLabel id="demo-simple-select-label">
 						Content type
 					</InputLabel>
@@ -139,6 +139,7 @@ export default function Blog() {
 						value={type}
 						label="Content type"
 						onChange={handleChangeType}
+						sx={{ borderRadius: "10px" }}
 					>
 						<MenuItem value={"General"}>General</MenuItem>
 						<MenuItem value={"Share"}>Share</MenuItem>
@@ -156,7 +157,7 @@ export default function Blog() {
 					<Grid container spacing={2}>
 						<Grid item lg={9} md={12} sm={12}>
 							{userInfo.uid == userId && (
-								<Item sx={{ backgroundColor: "#fff", margin: 1, display: { xs: "none", lg: "block" } }}>
+								<Item sx={{ backgroundColor: "#fff", borderRadius: "10px", margin: 1, display: { xs: "none", lg: "block" } }}>
 									<PostForm inFoUser={inFoUser} />
 								</Item>
 							)}
@@ -420,7 +421,7 @@ export default function Blog() {
 
 						<Grid item xs={3} sx={{ display: { xs: "none", lg: "block" } }}>
 							<Item>
-								<FormControl fullWidth sx={{ mb: 1, backgroundColor: "white" }}>
+								<FormControl fullWidth sx={{ mb: 1, backgroundColor: "white", borderRadius: "10px" }}>
 									<InputLabel id="demo-simple-select-label">
 										Content type
 									</InputLabel>
@@ -430,6 +431,7 @@ export default function Blog() {
 										value={type}
 										label="Content type"
 										onChange={handleChangeType}
+										sx={{ borderRadius: "10px" }}
 									>
 										<MenuItem value={"General"}>General</MenuItem>
 										<MenuItem value={"Share"}>Share</MenuItem>

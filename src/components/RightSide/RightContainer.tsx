@@ -1,6 +1,5 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import { Button, Divider, Modal, TextField, Typography, Paper, Box } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+import { Button, Divider, Modal, Typography, Paper, Box } from "@mui/material";
 import UserCard from "./UserCard";
 import "firebase/database";
 import {
@@ -15,6 +14,7 @@ import { User } from "../../interface/User";
 import { IGroup } from "../../interface/Group";
 import ChatBox from "../Chat/ChatBox";
 import GroupChatBox from "../GroupChat/GroupChatBox";
+import SearchBar from "../../helper/SearchBar";
 
 export default function RightContainer() {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
@@ -139,7 +139,7 @@ export default function RightContainer() {
                 </Box>
             </Modal>
             <Box sx={{ width: "100%", mr: 5 }}>
-                <Paper sx={{ display: "flex", flexDirection: "column", mb: 2 }}>
+                <Paper sx={{ display: "flex", flexDirection: "column", mb: 2, borderRadius: "10px" }}>
                     <Box
                         sx={{
                             display: "flex",
@@ -152,16 +152,9 @@ export default function RightContainer() {
                         Friend
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "center" }} >
-                        <TextField
-                            id="outlined-size-small"
-                            size="small"
-                            sx={{ m: 1, width: "25vh" }}
-                            InputProps={{
-                                startAdornment: <SearchIcon />,
-                            }}
-                            placeholder="Search for friend"
-                            onChange={handleSearch}
-                            value={searchValue}
+                        <SearchBar
+                            searchValue={searchValue}
+                            handleSearch={handleSearch}
                         />
                     </Box>
                     <Divider style={{ background: "#EAEAEA", marginBottom: 5 }} />
@@ -250,7 +243,7 @@ export default function RightContainer() {
                     )}
                 </Paper>
 
-                <Paper sx={{ display: "flex", flexDirection: "column" }}>
+                <Paper sx={{ display: "flex", flexDirection: "column", borderRadius: "10px" }}>
                     <Box
                         sx={{
                             display: "flex",
@@ -263,16 +256,9 @@ export default function RightContainer() {
                         Groups
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "center" }}>
-                        <TextField
-                            id="outlined-size-small"
-                            size="small"
-                            sx={{ m: 1, width: "25vh" }}
-                            InputProps={{
-                                startAdornment: <SearchIcon />,
-                            }}
-                            placeholder="Search for group"
-                            onChange={handleGroupSearch}
-                            value={searchGroupValue}
+                        <SearchBar
+                            searchValue={searchGroupValue}
+                            handleSearch={handleGroupSearch}
                         />
                     </Box>
                     <div style={{ display: "flex", justifyContent: "space-around" }}>

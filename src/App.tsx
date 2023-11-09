@@ -13,7 +13,7 @@ import Friends from "./pages/Profile/Friends";
 import Collections from "./pages/Profile/Collections";
 import EventDetail from "./pages/Events/EventDetail";
 import GroupDetails from "./pages/Group/GroupDetails";
-import Login from "./pages/Login";
+import Login from "./pages/Login/Login";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import { Box, Stack } from "@mui/material";
 import LeftSide from "./components/LeftSide";

@@ -405,6 +405,7 @@ export default function CreateGroupPost(props: IHandle & IData) {
                                     },
                                 }}
                                 type="submit"
+                                disabled={!post.caption || !post.hashTagTopic || !status}
                             >
                                 Post
                             </Button>

@@ -49,16 +49,16 @@ export default function SearchBar(props: IData) {
         <div>
             <Search
                 sx={{
-                    backgroundColor: "#C5C5C5",
+                    backgroundColor: "#F1F1F1",
                     m: 1,
-                    "&:hover": { backgroundColor: "#F1F1F1" },
+                    "&:hover": { backgroundColor: "#C5C5C5" },
                 }}
             >
                 <SearchIconWrapper>
                     <SearchIcon />
                 </SearchIconWrapper>
                 <StyledInputBase
-                    sx={{ width: "100%" }}
+                    sx={{ width: "100%", color: "#00000" }}
                     placeholder="Search…"
                     inputProps={{ "aria-label": "search" }}
                     onChange={props.handleSearch}

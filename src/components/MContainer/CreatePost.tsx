@@ -408,6 +408,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 									},
 								}}
 								type="submit"
+								disabled={!post.caption || !post.hashTagTopic || !status}
 							>
 								Post
 							</Button>

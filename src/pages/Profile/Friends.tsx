@@ -72,6 +72,7 @@ export default function Friends() {
 						width: "100%",
 						display: "flex",
 						flexDirection: "column",
+						borderRadius: "10px"
 					}}
 				>
 					<Box

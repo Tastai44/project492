@@ -164,7 +164,7 @@ export default function GroupDetails() {
                                                 </Grid>
                                                 <Grid item xs={12} md={7}>
                                                     <Item sx={{ display: { xs: "block", md: "none" } }}>
-                                                        <FormControl fullWidth sx={{ backgroundColor: "white" }}>
+                                                        <FormControl fullWidth sx={{ backgroundColor: "white", borderRadius: "10px" }}>
                                                             <InputLabel id="demo-simple-select-label">
                                                                 Content type
                                                             </InputLabel>
@@ -184,7 +184,7 @@ export default function GroupDetails() {
                                                             </Select>
                                                         </FormControl>
                                                     </Item>
-                                                    <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
+                                                    <Item sx={{ backgroundColor: "#fff", margin: 1, borderRadius: "10px" }}>
                                                         <PostGroupForm
                                                             inFoUser={inFoUser}
                                                             groupName={g.groupName}
@@ -285,7 +285,7 @@ export default function GroupDetails() {
                                                 </Grid>
                                                 <Grid item xs={2.5}>
                                                     <Item sx={{ display: { xs: "none", md: "block" } }}>
-                                                        <FormControl fullWidth sx={{ mb: 1, backgroundColor: "white" }}>
+                                                        <FormControl fullWidth sx={{ mb: 1, backgroundColor: "white", borderRadius: "10px" }}>
                                                             <InputLabel id="demo-simple-select-label">
                                                                 Content type
                                                             </InputLabel>
@@ -295,6 +295,7 @@ export default function GroupDetails() {
                                                                 value={type}
                                                                 label="Content type"
                                                                 onChange={handleChangeType}
+                                                                sx={{ borderRadius: "10px" }}
                                                             >
                                                                 <MenuItem value={"General"}>General</MenuItem>
                                                                 <MenuItem value={"Share"}>Share</MenuItem>
@@ -314,7 +315,8 @@ export default function GroupDetails() {
                         </Grid>
                     </Grid>
                 </Grid>
-            ))}
-        </div>
+            ))
+            }
+        </div >
     );
 }

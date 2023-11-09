@@ -44,12 +44,13 @@ export default function PostGroupForm(props: IData) {
 						alignItems: "center",
 						justifyContent: "space-evenly",
 						marginBottom: 10,
+						borderRadius: "10px",
 					}}
 				>
 					<Avatar
 						alt="User"
 						src={u.profilePhoto}
-						sx={{ width: "40px", height: "40px" }}
+						sx={{ width: "40px", height: "40px", mr: 1 }}
 					/>
 					<div style={{ width: "98%" }}>
 						<TextField

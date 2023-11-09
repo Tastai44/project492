@@ -101,6 +101,7 @@ export default function Collections() {
 						width: "100%",
 						display: "flex",
 						flexDirection: "column",
+						borderRadius: "10px"
 					}}
 				>
 					<Box
@@ -149,7 +150,7 @@ export default function Collections() {
 														src={img}
 														alt={`Preview ${index}`}
 														loading="lazy"
-														style={{ width: "200px", height: "200px" }}
+														style={{ width: "200px", height: "200px", borderRadius: "10px" }}
 													/>
 												</ImageListItem>
 											))

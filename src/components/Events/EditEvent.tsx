@@ -7,10 +7,8 @@ import {
     IconButton,
     ImageList,
     ImageListItem,
-    InputAdornment,
     InputLabel,
     MenuItem,
-    OutlinedInput,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -28,6 +26,7 @@ import { collection, getDoc, updateDoc } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import { locations } from "../../helper/CMULocations";
 import { styleBox } from "../../utils/styleBox";
+import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 
 interface Ihandle {
     closeAdd: () => void;
@@ -198,7 +197,7 @@ export default function EditEvent(props: IData & Ihandle) {
                     </IconButton>
                 </Box>
                 <Typography id="modal-modal-title" variant="h5">
-                    Add an event
+                    Edit an event
                 </Typography>
 
                 <Divider sx={{ background: "grey" }} />
@@ -366,18 +365,30 @@ export default function EditEvent(props: IData & Ihandle) {
                         variant="outlined"
                         onClick={handleUploadClick}
                     >
-                        <OutlinedInput
-                            id="outlined-insertPhoto"
-                            type={"file"}
-                            inputProps={{ "aria-label": " " }}
+                        <input
+                            type="file"
                             ref={fileInputRef}
                             onChange={handleFileChange}
-                            endAdornment={
-                                <InputAdornment position="end" sx={{ fontSize: "20px" }}>
-                                    Cover photo
-                                </InputAdornment>
-                            }
+                            multiple
+                            hidden
+                            accept="image/*"
                         />
+
+                        <Box sx={{
+                            p: 1, display: "flex", justifyContent: "center", textAlign: "center",
+                            cursor: "pointer", "&:hover": { backgroundColor: "#CCCCCC" },
+                            border: "1px solid #C5C5C5", borderRadius: "5px"
+                        }}>
+                            <Box sx={{ flexDirection: "column" }}>
+                                <Box>
+                                    <AddAPhotoIcon />
+                                </Box>
+                                <Box>
+                                    Add cover photo
+                                </Box>
+                            </Box>
+
+                        </Box>
                     </FormControl>
                 </Box>
                 <Box

@@ -67,6 +67,8 @@ export default function LeftSide() {
 								alignItems: "center",
 								gap: "10px",
 								fontWeight: "bold",
+								borderRadius: "10px",
+								"&:hover": { backgroundColor: "#F1F1F1" }
 							}}
 						>
 							<Avatar alt="Remy Sharp" src={user.profilePhoto} />
@@ -75,7 +77,7 @@ export default function LeftSide() {
 					))}
 				</NavLink>
 
-				<Paper sx={{ backgroundColor: "#FFF", mt: 1, p: 1, borderRadius: 1 }}>
+				<Paper sx={{ backgroundColor: "#FFF", mt: 1, p: 1, borderRadius: "10px" }}>
 					<List>
 						<ListItem disablePadding>
 							<NavLink
@@ -86,10 +88,11 @@ export default function LeftSide() {
 										color: isActive ? "black" : "grey",
 										backgroundColor: isActive ? "#F1F1F1" : "",
 										width: isActive ? "100%" : "100%",
+										borderRadius: "10px",
 									};
 								}}
 							>
-								<ListItemButton>
+								<ListItemButton sx={{ "&:hover": { borderRadius: "10px" } }}>
 									<ListItemIcon>
 										<HomeIcon />
 									</ListItemIcon>
@@ -107,10 +110,11 @@ export default function LeftSide() {
 										color: isActive ? "black" : "grey",
 										backgroundColor: isActive ? "#F1F1F1" : "",
 										width: isActive ? "100%" : "100%",
+										borderRadius: "10px",
 									};
 								}}
 							>
-								<ListItemButton>
+								<ListItemButton sx={{ "&:hover": { borderRadius: "10px" } }}>
 									<ListItemIcon>
 										<PeopleAltIcon />
 									</ListItemIcon>
@@ -128,10 +132,11 @@ export default function LeftSide() {
 										color: isActive ? "black" : "grey",
 										backgroundColor: isActive ? "#F1F1F1" : "",
 										width: isActive ? "100%" : "100%",
+										borderRadius: "10px",
 									};
 								}}
 							>
-								<ListItemButton>
+								<ListItemButton sx={{ "&:hover": { borderRadius: "10px" } }}>
 									<ListItemIcon>
 										<GroupsIcon />
 									</ListItemIcon>
@@ -149,10 +154,11 @@ export default function LeftSide() {
 										color: isActive ? "black" : "grey",
 										backgroundColor: isActive ? "#F1F1F1" : "",
 										width: isActive ? "100%" : "100%",
+										borderRadius: "10px",
 									};
 								}}
 							>
-								<ListItemButton>
+								<ListItemButton sx={{ "&:hover": { borderRadius: "10px" } }}>
 									<ListItemIcon>
 										<DateRangeIcon />
 									</ListItemIcon>
@@ -170,10 +176,11 @@ export default function LeftSide() {
 										color: isActive ? "black" : "grey",
 										backgroundColor: isActive ? "#F1F1F1" : "",
 										width: isActive ? "100%" : "100%",
+										borderRadius: "10px",
 									};
 								}}
 							>
-								<ListItemButton>
+								<ListItemButton sx={{ "&:hover": { borderRadius: "10px" } }}>
 									<ListItemIcon>
 										<TagIcon />
 									</ListItemIcon>
@@ -190,10 +197,11 @@ export default function LeftSide() {
 										color: isActive ? "black" : "grey",
 										backgroundColor: isActive ? "#F1F1F1" : "",
 										width: isActive ? "100%" : "100%",
+										borderRadius: "10px",
 									};
 								}}
 							>
-								<ListItemButton>
+								<ListItemButton sx={{ "&:hover": { borderRadius: "10px" } }}>
 									<ListItemIcon>
 										<Diversity3Icon />
 									</ListItemIcon>
@@ -212,10 +220,11 @@ export default function LeftSide() {
 											color: isActive ? "black" : "grey",
 											backgroundColor: isActive ? "#F1F1F1" : "",
 											width: isActive ? "100%" : "100%",
+											borderRadius: "10px",
 										};
 									}}
 								>
-									<ListItemButton>
+									<ListItemButton sx={{ "&:hover": { borderRadius: "10px" } }}>
 										<ListItemIcon>
 											<FlagIcon />
 										</ListItemIcon>

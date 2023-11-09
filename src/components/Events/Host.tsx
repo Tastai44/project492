@@ -37,7 +37,7 @@ export default function Host({ hostId }: IData) {
     return (
         <div>
             {inFoUser.map((u) => (
-                <Paper key={u.uid}>
+                <Paper key={u.uid} sx={{ borderRadius: "10px" }}>
                     <NavLink to={`/profileBlog/${u.uid}`} style={{ color: "black" }}>
                         <Box
                             sx={{

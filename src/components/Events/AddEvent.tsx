@@ -7,10 +7,8 @@ import {
     IconButton,
     ImageList,
     ImageListItem,
-    InputAdornment,
     InputLabel,
     MenuItem,
-    OutlinedInput,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -38,6 +36,7 @@ import { locations } from "../../helper/CMULocations";
 import { createNoti } from "../NotificationFunction";
 import { User } from "../../interface/User";
 import { styleBox } from "../../utils/styleBox";
+import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 
 interface Ihandle {
     closeAdd: () => void;
@@ -220,7 +219,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
         <div style={{ color: "black" }}>
             <Box sx={styleBox}>
                 <Typography id="modal-modal-title" variant="h5">
-                    Add an event
+                    Create an event
                 </Typography>
                 <Divider sx={{ background: "grey" }} />
                 <Box sx={{ mt: 1 }}>
@@ -388,18 +387,30 @@ export default function AddEvent({ closeAdd }: Ihandle) {
                         variant="outlined"
                         onClick={handleUploadClick}
                     >
-                        <OutlinedInput
-                            id="outlined-insertPhoto"
-                            type={"file"}
-                            inputProps={{ "aria-label": " " }}
+                        <input
+                            type="file"
                             ref={fileInputRef}
                             onChange={handleFileChange}
-                            endAdornment={
-                                <InputAdornment position="end" sx={{ fontSize: "20px" }}>
-                                    Cover photo
-                                </InputAdornment>
-                            }
+                            multiple
+                            hidden
+                            accept="image/*"
                         />
+
+                        <Box sx={{
+                            p: 1, display: "flex", justifyContent: "center", textAlign: "center",
+                            cursor: "pointer", "&:hover": { backgroundColor: "#CCCCCC" },
+                            border: "1px solid #C5C5C5", borderRadius: "5px"
+                        }}>
+                            <Box sx={{ flexDirection: "column" }}>
+                                <Box>
+                                    <AddAPhotoIcon />
+                                </Box>
+                                <Box>
+                                    Add cover photo
+                                </Box>
+                            </Box>
+
+                        </Box>
                     </FormControl>
                 </Box>
                 <Typography
@@ -429,8 +440,9 @@ export default function AddEvent({ closeAdd }: Ihandle) {
                             },
                         }}
                         type="submit"
+                        disabled={!previewImages || !event.title || !event.details || !event.topic || !location || !event.ageRage || !status}
                     >
-                        Save
+                        Create
                     </Button>
                 </Typography>
                 {previewImages.length !== 0 && (

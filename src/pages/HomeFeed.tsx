@@ -69,9 +69,7 @@ export default function HomeFeed() {
 
 	return (
 		<>
-
-
-			<Item sx={{ backgroundColor: "#fff", margin: 1 }}>
+			<Item sx={{ backgroundColor: "#fff", margin: 1, borderRadius: "10px" }}>
 				<PostForm inFoUser={inFoUser} />
 			</Item>
 			<Item sx={{ display: "flex", flexDirection: "column", gap: 2 }}>

@@ -107,6 +107,7 @@ export default function FriendCard(props: IData) {
                         width: 210,
                         background: "linear-gradient(to bottom, #000000, #CECCCC8A)",
                         margin: "10px",
+                        borderRadius: "20px"
                     }}
                 >
                     <CardMedia

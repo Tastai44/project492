@@ -45,6 +45,7 @@ export default function AboutMe() {
 						backgroundColor: "white",
 						display: "flex",
 						justifyContent: "center",
+						borderRadius: "10px"
 					}}
 				>
 					<Item

@@ -48,7 +48,7 @@ export default function MediaCard(props: IData) {
 	}, [props.ownerId]);
 
 	return (
-		<Card sx={{ width: 258, height: 360 }}>
+		<Card sx={{ width: 258, height: 360, borderRadius: "20px" }}>
 			<NavLink to={`/eventsDetail/${props.eventId}`}>
 				<CardMedia
 					sx={{ height: 194 }}
