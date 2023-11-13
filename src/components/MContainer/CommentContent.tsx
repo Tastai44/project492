@@ -233,7 +233,7 @@ export default function CommentContent(props: IData) {
 					</Paper>
 				</Box>
 			</Modal>
-			<Paper sx={{ backgroundColor: "primary.contrastText", mb: 1 }}>
+			<Paper sx={{ backgroundColor: "primary.contrastText", mb: 1, borderRadius: "10px" }}>
 				{inFoUser.map((user) => (
 					<ListItem key={user.uid}>
 						<ListItemAvatar>
@@ -321,7 +321,7 @@ export default function CommentContent(props: IData) {
 						</ListItemAvatar>
 					</ListItem>
 				))}
-				<Box sx={{ ml: 1, pb: 1 }}>{props.text}</Box>
+				<Box sx={{ ml: 2, pb: 1 }}>{props.text}</Box>
 			</Paper>
 		</Box>
 	);

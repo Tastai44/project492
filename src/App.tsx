@@ -13,7 +13,8 @@ import Friends from "./pages/Profile/Friends";
 import Collections from "./pages/Profile/Collections";
 import EventDetail from "./pages/Events/EventDetail";
 import GroupDetails from "./pages/Group/GroupDetails";
-import Login from "./pages/Login/Login";
+// import Login from "./pages/Login/Login";
+import Login from "./pages/Login";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import { Box, Stack } from "@mui/material";
 import LeftSide from "./components/LeftSide";
@@ -27,6 +28,7 @@ import { themeApp } from "./utils/Theme";
 import { IconButton } from "@mui/material";
 import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
 import OAuthRedirect from "./pages/OauthRedirect";
+import Loading from "./components/Loading";
 
 
 export const Item = styled(Box)(({ theme }) => ({
@@ -108,8 +110,7 @@ function App() {
 					element={
 						<>
 							<ProtectedRoute>
-								<Navigation
-								/>
+								<Navigation />
 								<Box sx={{
 									display: "flex", justifyContent: "center", mt: 11,
 									[themeApp.breakpoints.down("lg")]: {
@@ -121,7 +122,7 @@ function App() {
 									</Box>
 
 									<Box sx={{
-										width: "55%",
+										width: "45%",
 										[themeApp.breakpoints.down("lg")]: {
 											width: "100%",
 										}
@@ -463,14 +464,12 @@ function App() {
 								<Navigation
 								/>
 								<Box sx={{
-									display: "flex", ml: 5, mr: 5, [themeApp.breakpoints.down("md")]: {
-										justifyContent: "center"
-									},
-									[themeApp.breakpoints.down("md")]: {
-										mt: 8
+									display: "flex", justifyContent: "center", [themeApp.breakpoints.down("lg")]: {
+										justifyContent: "center", mt: 8, mr: 1, ml: 1
 									},
 								}}>
 									<ReportContent />
+
 								</Box>
 							</ProtectedRoute>
 						</>

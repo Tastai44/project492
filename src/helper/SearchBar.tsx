@@ -1,6 +1,7 @@
 import { ChangeEvent } from "react";
 import SearchIcon from "@mui/icons-material/Search";
-import { styled, alpha, InputBase } from "@mui/material";
+import { styled, alpha, InputBase, Box } from "@mui/material";
+import { themeApp } from "../utils/Theme";
 
 export const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -35,7 +36,7 @@ export const StyledInputBase = styled(InputBase)(({ theme }) => ({
         transition: theme.transitions.create("width"),
         width: "100%",
         [theme.breakpoints.up("md")]: {
-            width: "20ch",
+            width: "100%",
         },
     },
 }));
@@ -43,28 +44,34 @@ export const StyledInputBase = styled(InputBase)(({ theme }) => ({
 interface IData {
     searchValue: string;
     handleSearch: (event: ChangeEvent<HTMLInputElement>) => void;
+    backgroupColor: string;
 }
 export default function SearchBar(props: IData) {
     return (
-        <div>
+        <Box sx={{ width: "100%" }}>
             <Search
                 sx={{
-                    backgroundColor: "#F1F1F1",
+                    backgroundColor: `${props.backgroupColor}`,
                     m: 1,
                     "&:hover": { backgroundColor: "#C5C5C5" },
+                    width: "100px",
+                    [themeApp.breakpoints.down("md")]: {
+                        width: "100%",
+                    },
+                    borderRadius: "20px"
                 }}
             >
                 <SearchIconWrapper>
-                    <SearchIcon />
+                    <SearchIcon color="inherit" sx={{ color: "gray" }} />
                 </SearchIconWrapper>
                 <StyledInputBase
-                    sx={{ width: "100%", color: "#00000" }}
+                    sx={{ width: "100%" }}
                     placeholder="Search…"
                     inputProps={{ "aria-label": "search" }}
                     onChange={props.handleSearch}
                     value={props.searchValue}
                 />
             </Search>
-        </div>
+        </Box>
     );
 }

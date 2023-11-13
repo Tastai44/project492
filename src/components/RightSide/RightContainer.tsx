@@ -151,33 +151,41 @@ export default function RightContainer() {
                     >
                         Friend
                     </Box>
-                    <Box sx={{ display: "flex", justifyContent: "center" }} >
+                    <Box sx={{ display: "flex", justifyContent: "flex-start" }} >
                         <SearchBar
                             searchValue={searchValue}
                             handleSearch={handleSearch}
+                            backgroupColor={'#F1F1F1'}
                         />
                     </Box>
                     <Divider style={{ background: "#EAEAEA", marginBottom: 5 }} />
-                    <Box sx={{ display: "flex", justifyContent: "space-around", mb: 0.5 }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", p: 1 }}>
                         <Button
                             onClick={() => handleIsActive(true)}
                             sx={{
+                                fontSize: "16px",
                                 color: isActive ? "white" : "black",
                                 backgroundColor: isActive ? "primary.main" : "",
                                 cursor: "pointer",
-                                "&:hover": { color: isActive ? "black" : "black" }
+                                "&:hover": { color: isActive ? "black" : "black" },
+                                borderRadius: "10px"
                             }}
+                            size="small"
                         >
                             Active
                         </Button>
                         <Button
                             onClick={() => handleIsActive(false)}
                             sx={{
+                                p: 1,
+                                fontSize: "16px",
                                 color: isActive ? "black" : "white",
                                 backgroundColor: isActive ? "" : "primary.main",
                                 cursor: "pointer",
-                                "&:hover": { color: isActive ? "black" : "black" }
+                                "&:hover": { color: isActive ? "black" : "black" },
+                                borderRadius: "10px"
                             }}
+                            size="small"
                         >
                             General
                         </Button>
@@ -259,6 +267,7 @@ export default function RightContainer() {
                         <SearchBar
                             searchValue={searchGroupValue}
                             handleSearch={handleGroupSearch}
+                            backgroupColor={'#F1F1F1'}
                         />
                     </Box>
                     <div style={{ display: "flex", justifyContent: "space-around" }}>

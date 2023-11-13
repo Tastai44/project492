@@ -330,6 +330,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 						name="caption"
 						label="What is in your mind?"
 						variant="outlined"
+						size="small"
 						multiline
 						maxRows={4}
 						sx={{

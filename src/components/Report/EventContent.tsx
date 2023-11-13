@@ -163,7 +163,7 @@ export default function EventContent(props: Idata) {
     };
 
     return (
-        <Box sx={{ mb: 5 }}>
+        <Box sx={{ mb: 5, display: "flex", justifyContent: 'center', width: "100%" }}>
             <EventReasonContainer
                 eventId={props.eventId}
                 openReason={openReason}
@@ -172,163 +172,164 @@ export default function EventContent(props: Idata) {
                 ownerId={props.ownerId}
             />
             {inFoUser.map((u) => (
-                <Box key={u.uid}>
-                    <Box sx={{ width: "100%" }}>
-                        <Stack spacing={2}>
-                            <Item sx={{ display: "flex", flexDirection: "column" }}>
-                                <ListItem>
-                                    <ListItemAvatar>
-                                        <Avatar
-                                            src={u.profilePhoto}
-                                            sx={{
-                                                width: "60px",
-                                                height: "60px",
-                                                marginRight: "10px",
-                                            }}
-                                        />
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={
-                                            <Box sx={{ fontSize: "20px" }}>
-                                                <b>
-                                                    <NavLink
-                                                        to={`/profileBlog/${props.ownerId}`}
-                                                        style={{ color: "black", fontWeight: "bold" }}
-                                                    >
-                                                        {`${u.firstName} ${u.lastName} `}
-                                                    </NavLink>
-                                                </b>
-                                                <NavLink
-                                                    to={`/eventsDetail/${props.eventId}`}
-                                                    style={{ color: themeApp.palette.primary.main }}
-                                                >
-                                                    {`(${props.title})`}
-                                                </NavLink>
-                                            </Box>
-                                        }
-                                        secondary={
-                                            <Typography
-                                                sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
-                                            >
-                                                {props.createAt}
-                                                {iconStatus === "LockIcon" && <LockIcon />}
-                                                {iconStatus === "GroupIcon" && <GroupIcon />}
-                                                {iconStatus === "PublicIcon" && <PublicIcon />}
-                                                {props.status}
-                                            </Typography>
-                                        }
+                <Box key={u.uid} sx={{
+                    width: "50%", [themeApp.breakpoints.down("lg")]: {
+                        width: "100%"
+                    }
+                }}>
+                    <Stack spacing={2}>
+                        <Item sx={{ display: "flex", flexDirection: "column", borderRadius: "10px" }}>
+                            <ListItem>
+                                <ListItemAvatar>
+                                    <Avatar
+                                        src={u.profilePhoto}
+                                        sx={{
+                                            width: "60px",
+                                            height: "60px",
+                                            marginRight: "10px",
+                                        }}
                                     />
-                                    <ListItemAvatar>
-                                        <IconButton onClick={handleOpenUserMenu}>
-                                            <MoreHorizIcon />
-                                        </IconButton>
-                                        <Menu
-                                            sx={{ mt: "30px" }}
-                                            id="menu-appbar"
-                                            anchorEl={anchorElUser}
-                                            anchorOrigin={{
-                                                vertical: "top",
-                                                horizontal: "right",
-                                            }}
-                                            keepMounted
-                                            transformOrigin={{
-                                                vertical: "top",
-                                                horizontal: "right",
-                                            }}
-                                            open={Boolean(anchorElUser)}
-                                            onClose={handleCloseUserMenu}
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={
+                                        <Box sx={{ fontSize: "16px" }}>
+                                            <b>
+                                                <NavLink
+                                                    to={`/profileBlog/${props.ownerId}`}
+                                                    style={{ color: "black", fontWeight: "bold" }}
+                                                >
+                                                    {`${u.firstName} ${u.lastName} `}
+                                                </NavLink>
+                                            </b>
+                                            <NavLink
+                                                to={`/eventsDetail/${props.eventId}`}
+                                                style={{ color: themeApp.palette.primary.main }}
+                                            >
+                                                {`(${props.title})`}
+                                            </NavLink>
+                                        </Box>
+                                    }
+                                    secondary={
+                                        <Typography
+                                            sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
                                         >
-                                            <MenuItem onClick={() => handleApprove(props.eventId)}>
-                                                <Typography
-                                                    textAlign="center"
-                                                    sx={{
-                                                        display: "flex",
-                                                        gap: 1,
-                                                        alignItems: "start",
-                                                        fontSize: "18px",
-                                                    }}
-                                                >
-                                                    <AddTaskIcon /> Approve
-                                                </Typography>
-                                            </MenuItem>
-                                            <MenuItem onClick={() => handleDelete(props.eventId)}>
-                                                <Typography
-                                                    textAlign="center"
-                                                    sx={{
-                                                        display: "flex",
-                                                        gap: 1,
-                                                        alignItems: "start",
-                                                        fontSize: "18px",
-                                                    }}
-                                                >
-                                                    <DeleteOutlineOutlinedIcon /> Delete
-                                                </Typography>
-                                            </MenuItem>
-                                        </Menu>
-                                    </ListItemAvatar>
-                                </ListItem>
-
-                                <CardContent>
-                                    <Typography
-                                        variant="body1"
-                                        color="text.secondary"
-                                        sx={{ textAlign: "justify", fontSize: "25px" }}
+                                            {props.createAt}
+                                            {iconStatus === "LockIcon" && <LockIcon />}
+                                            {iconStatus === "GroupIcon" && <GroupIcon />}
+                                            {iconStatus === "PublicIcon" && <PublicIcon />}
+                                            {props.status}
+                                        </Typography>
+                                    }
+                                />
+                                <ListItemAvatar>
+                                    <IconButton onClick={handleOpenUserMenu}>
+                                        <MoreHorizIcon />
+                                    </IconButton>
+                                    <Menu
+                                        sx={{ mt: "30px" }}
+                                        id="menu-appbar"
+                                        anchorEl={anchorElUser}
+                                        anchorOrigin={{
+                                            vertical: "top",
+                                            horizontal: "right",
+                                        }}
+                                        keepMounted
+                                        transformOrigin={{
+                                            vertical: "top",
+                                            horizontal: "right",
+                                        }}
+                                        open={Boolean(anchorElUser)}
+                                        onClose={handleCloseUserMenu}
                                     >
-                                        {props.details}
-                                    </Typography>
-                                </CardContent>
-                                <Box
-                                    sx={{
-                                        fontSize: "25px",
-                                        display: "flex",
-                                        justifyContent: "start",
-                                        margin: 1,
-                                    }}
+                                        <MenuItem onClick={() => handleApprove(props.eventId)}>
+                                            <Typography
+                                                textAlign="center"
+                                                sx={{
+                                                    display: "flex",
+                                                    gap: 1,
+                                                    alignItems: "start",
+                                                    fontSize: "18px",
+                                                }}
+                                            >
+                                                <AddTaskIcon /> Approve
+                                            </Typography>
+                                        </MenuItem>
+                                        <MenuItem onClick={() => handleDelete(props.eventId)}>
+                                            <Typography
+                                                textAlign="center"
+                                                sx={{
+                                                    display: "flex",
+                                                    gap: 1,
+                                                    alignItems: "start",
+                                                    fontSize: "18px",
+                                                }}
+                                            >
+                                                <DeleteOutlineOutlinedIcon /> Delete
+                                            </Typography>
+                                        </MenuItem>
+                                    </Menu>
+                                </ListItemAvatar>
+                            </ListItem>
+
+                            <CardContent>
+                                <Typography
+                                    variant="body1"
+                                    color="text.secondary"
+                                    sx={{ textAlign: "justify" }}
+                                >
+                                    {props.details}
+                                </Typography>
+                                <Typography
+                                    variant="body1"
+                                    color="text.secondary"
+                                    sx={{ textAlign: "justify" }}
                                 >
                                     {props.topic.startsWith("#")
                                         ? props.topic
                                         : `#${props.topic}`}
-                                </Box>
-                                <ImageList
-                                    sx={{
-                                        width: "100%",
-                                        minHeight: "300px",
-                                        maxHeight: "auto",
-                                        justifyContent: "center",
-                                    }}
-                                    cols={1}
-                                >
-                                    <ImageListItem onClick={handleOpenReason}>
-                                        <img
-                                            src={props.coverPhoto}
-                                            alt={`Preview`}
-                                            loading="lazy"
-                                        />
-                                    </ImageListItem>
-                                </ImageList>
-                                <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
+                                </Typography>
+                            </CardContent>
+                            <ImageList
+                                sx={{
+                                    width: "100%",
+                                    minHeight: "300px",
+                                    maxHeight: "auto",
+                                    justifyContent: "center",
+                                    borderRadius: "10px",
+                                    cursor: "pointer"
+                                }}
+                                cols={1}
+                            >
+                                <ImageListItem onClick={handleOpenReason}>
+                                    <img
+                                        src={props.coverPhoto}
+                                        alt={`Preview`}
+                                        loading="lazy"
+                                    />
+                                </ImageListItem>
+                            </ImageList>
+                            <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
 
-                                <CardActions
-                                    disableSpacing
-                                    sx={{ display: "flex", justifyContent: "space-between" }}
-                                >
-                                    <Button aria-label="add to favorites" sx={{ color: "grey" }}>
-                                        <FlagOutlinedIcon />
+                            <CardActions
+                                disableSpacing
+                                sx={{ display: "flex", justifyContent: "space-between" }}
+                            >
+                                <Button aria-label="add to favorites" sx={{ color: "grey" }}>
+                                    <FlagOutlinedIcon />
+                                </Button>
+                                <Box>
+                                    <Button
+                                        onClick={handleOpenReason}
+                                        aria-label="add to favorites"
+                                        sx={{ color: "grey" }}
+                                    >
+                                        {props.reportNumber} Reports
                                     </Button>
-                                    <Box>
-                                        <Button
-                                            onClick={handleOpenReason}
-                                            aria-label="add to favorites"
-                                            sx={{ color: "grey" }}
-                                        >
-                                            {props.reportNumber} Reports
-                                        </Button>
-                                    </Box>
-                                </CardActions>
-                                <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
-                            </Item>
-                        </Stack>
-                    </Box>
+                                </Box>
+                            </CardActions>
+                            <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
+                        </Item>
+                    </Stack>
                 </Box>
             ))}
         </Box>

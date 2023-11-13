@@ -93,6 +93,7 @@ export default function Friends() {
 							<SearchBar
 								searchValue={searchValue}
 								handleSearch={handleSearch}
+								backgroupColor={'#F1F1F1'}
 							/>
 
 						</Box>

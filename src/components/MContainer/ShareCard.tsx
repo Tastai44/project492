@@ -399,6 +399,7 @@ export default function ShareCard(props: IData & IFunction) {
                             <SearchBar
                                 searchValue={searchValue}
                                 handleSearch={handleSearch}
+                                backgroupColor={'#F1F1F1'}
                             />
                         </Box>
 

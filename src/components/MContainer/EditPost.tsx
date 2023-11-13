@@ -322,6 +322,7 @@ export default function CreatePost(props: IHandle & Idata) {
 					<TextField
 						name="caption"
 						label="What is in your mind?"
+						size="small"
 						variant="outlined"
 						multiline
 						maxRows={4}

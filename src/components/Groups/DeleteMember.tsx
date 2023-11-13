@@ -127,6 +127,7 @@ export default function DeleteMember(props: IData & IFunction) {
 				<SearchBar
 					searchValue={searchValue}
 					handleSearch={handleSearch}
+					backgroupColor={'#F1F1F1'}
 				/>
 			</Box>
 			<Divider sx={{ background: "grey", mb: 1 }} />

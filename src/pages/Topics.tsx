@@ -208,7 +208,7 @@ export default function Topics() {
 					</Paper>
 				</Box>
 			</Modal>
-			<Box sx={{ width: "100%", bgcolor: "background.paper", color: "black" }}>
+			<Box sx={{ width: "100%", bgcolor: "background.paper", color: "black", borderRadius: "10px" }}>
 				<Box
 					sx={{
 						display: "flex",
@@ -235,17 +235,20 @@ export default function Topics() {
 								border: "1px solid #CCCCCC",
 								width: "200px",
 								color: "black",
+								borderRadius: "20px",
 								"&:hover": {
-									backgroundColor: "primary.contrastText"
-								}
+									backgroundColor: "white"
+								},
+								backgroundColor: "primary.contrastText"
 							}}
 							onClick={handleOpenSearch}
 						>
 							Search...
 						</Button>
-						<FormControl fullWidth>
+						<FormControl fullWidth sx={{ borderRadius: "20px" }} >
 							<InputLabel id="demo-simple-select-label">D/W/M</InputLabel>
 							<Select
+								sx={{ borderRadius: "20px" }}
 								size="small"
 								labelId="demo-simple-select-label"
 								id="demo-simple-select"

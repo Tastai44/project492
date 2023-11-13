@@ -180,9 +180,10 @@ export default function Events() {
 								<SearchBar
 									searchValue={searchValue}
 									handleSearch={handleSearch}
+									backgroupColor={'#FFFFFF'}
 								/>
 
-								<FormControl fullWidth sx={{ width: "100px" }}>
+								<FormControl fullWidth sx={{ width: "200px" }}>
 									<InputLabel id="demo-simple-select-label">D/W/M</InputLabel>
 									<Select
 										size="small"
@@ -191,6 +192,11 @@ export default function Events() {
 										value={dateType}
 										label="D/W/M"
 										onChange={handleDateType}
+										sx={{
+											'& fieldset': {
+												borderRadius: '20px',
+											},
+										}}
 									>
 										<MenuItem onClick={handleRefresh} value={"All"}>
 											All
@@ -216,7 +222,7 @@ export default function Events() {
 								sx={{
 									fontSize: "16px",
 									"&:hover": { backgroundColor: "white", color: "black" },
-									borderRadius: "10px",
+									borderRadius: "20px",
 									backgroundColor: "#A020F0",
 									padding: "5px",
 									color: "#fff",

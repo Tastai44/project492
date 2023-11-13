@@ -326,7 +326,7 @@ export default function Navigation() {
 							sx={{
 								ml: 1, color: "black", backgroundColor: "primary.contrastText",
 								display: { xs: "none", md: "flex" },
-								borderRadius: "10px",
+								borderRadius: "20px",
 								p: 1,
 								"&:hover": {
 									backgroundColor: "white"

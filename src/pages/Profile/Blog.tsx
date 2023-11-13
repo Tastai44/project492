@@ -437,7 +437,7 @@ export default function Blog() {
 										<MenuItem value={"Share"}>Share</MenuItem>
 									</Select>
 								</FormControl>
-								<Paper>
+								<Paper sx={{ borderRadius: "10px" }}>
 									<Typography
 										sx={{
 											fontSize: "16px",

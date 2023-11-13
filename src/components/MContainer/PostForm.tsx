@@ -53,8 +53,13 @@ export default function PostForm({
                             label="What is in your mind?"
                             variant="outlined"
                             maxRows={4}
-                            sx={{ width: "99%" }}
+                            sx={{
+                                width: "99%", '& fieldset': {
+                                    borderRadius: '20px',
+                                },
+                            }}
                             onClick={handletOpenCratePost}
+                            size="small"
                         />
                     </Box>
                 </Box>

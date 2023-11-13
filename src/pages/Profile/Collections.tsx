@@ -122,6 +122,7 @@ export default function Collections() {
 							<SearchBar
 								searchValue={searchValue}
 								handleSearch={handleSearch}
+								backgroupColor={'#F1F1F1'}
 							/>
 						</Box>
 					</Box>

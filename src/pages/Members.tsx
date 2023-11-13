@@ -103,11 +103,24 @@ export default function Members() {
                             fontSize: "30px",
                             color: "primary.main",
                             fontWeight: 500,
+                            width: "50%"
                         }}
                     >
                         People who you may know
                     </Typography>
-                    <SearchBar searchValue={searchValue} handleSearch={handleSearch} />
+                    <Box sx={{
+                        width: "20%",
+                        [themeApp.breakpoints.down("md")]: {
+                            width: "100%",
+                        },
+                    }}>
+                        <SearchBar
+                            searchValue={searchValue}
+                            handleSearch={handleSearch}
+                            backgroupColor={'white'}
+                        />
+                    </Box>
+
 
                 </Box>
             </Box>

@@ -432,19 +432,21 @@ export default function MContainer(props: Idata) {
                                     >
                                         {props.caption}
                                     </Typography>
+                                    <Typography
+                                        sx={{
+                                            textAlign: "justify",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "pre-wrap",
+                                            wordWrap: "break-word",
+                                        }}
+                                    >
+                                        {props.hashTagTopic.startsWith("#")
+                                            ? props.hashTagTopic
+                                            : `#${props.hashTagTopic}`}
+                                    </Typography>
                                 </CardContent>
-                                <Box
-                                    sx={{
-                                        fontSize: "16px",
-                                        display: "flex",
-                                        justifyContent: "start",
-                                        margin: 1,
-                                    }}
-                                >
-                                    {props.hashTagTopic.startsWith("#")
-                                        ? props.hashTagTopic
-                                        : `#${props.hashTagTopic}`}
-                                </Box>
+
                                 {props.photoPost.length == 1 ? (
                                     <ImageList
                                         sx={{
@@ -453,6 +455,7 @@ export default function MContainer(props: Idata) {
                                             maxHeight: "auto",
                                             justifyContent: "center",
                                             cursor: "pointer",
+                                            borderRadius: "20px"
                                         }}
                                         cols={1}
                                         onClick={handletOpenPost}
@@ -473,6 +476,7 @@ export default function MContainer(props: Idata) {
                                         cols={2}
                                         gap={2}
                                         onClick={handletOpenPost}
+                                        sx={{ borderRadius: "20px" }}
                                     >
                                         {props.photoPost.map((image, index) => (
                                             <ImageListItem key={index}>
@@ -570,7 +574,7 @@ export default function MContainer(props: Idata) {
                                         <Avatar
                                             alt="User"
                                             src={user.profilePhoto}
-                                            sx={{ width: "45px", height: "45px" }}
+                                            sx={{ width: "40px", height: "40px" }}
                                         />
                                         <Box style={{ width: "98%" }}>
                                             <TextField
@@ -579,7 +583,12 @@ export default function MContainer(props: Idata) {
                                                 variant="outlined"
                                                 multiline
                                                 maxRows={4}
-                                                sx={{ width: "99%" }}
+                                                sx={{
+                                                    width: "99%", '& fieldset': {
+                                                        borderRadius: '20px',
+                                                    },
+                                                }}
+                                                size="small"
                                                 onClick={handletOpenPost}
                                             />
                                         </Box>

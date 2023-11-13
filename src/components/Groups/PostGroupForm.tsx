@@ -60,6 +60,7 @@ export default function PostGroupForm(props: IData) {
 							maxRows={4}
 							sx={{ width: "99%" }}
 							onClick={handletOpenCratePost}
+							size="small"
 						/>
 					</div>
 				</div>

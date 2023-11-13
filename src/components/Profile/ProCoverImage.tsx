@@ -146,6 +146,7 @@ export default function ProCoverImage() {
                             sx={{
                                 backgroundColor: "grey",
                                 color: "white",
+                                borderRadius: "5px",
                                 "&:hover": {
                                     color: "black",
                                     backgroundColor: "#E1E1E1",
@@ -159,6 +160,7 @@ export default function ProCoverImage() {
                             sx={{
                                 backgroundColor: "#8E51E2",
                                 color: "white",
+                                borderRadius: "5px",
                                 "&:hover": {
                                     color: "black",
                                     backgroundColor: "#E1E1E1",
@@ -174,7 +176,7 @@ export default function ProCoverImage() {
             </Modal>
             {inFoUser.map((info) => (
                 <Box key={info.uid}>
-                    <Card key={info.coverPhoto} sx={{ maxWidth: "100%" }}>
+                    <Card key={info.coverPhoto} sx={{ maxWidth: "100%", borderRadius: "10px" }}>
                         <CardMedia sx={{ height: 300 }} image={info.coverPhoto} title="green iguana" />
                     </Card>
                     {userInfo.uid == info.uid && (
@@ -193,6 +195,7 @@ export default function ProCoverImage() {
                                 sx={{
                                     backgroundColor: "white",
                                     color: "black",
+                                    borderRadius: "5px",
                                     "&:hover": {
                                         color: "white",
                                         backgroundColor: "black",

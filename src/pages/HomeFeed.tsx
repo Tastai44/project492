@@ -14,14 +14,18 @@ import {
 import { Post } from "../interface/PostContent";
 import { User } from "../interface/User";
 import { Item } from "../App";
+import Loading from "../components/Loading";
+import { CircularProgress } from "@mui/material";
 
 
 export default function HomeFeed() {
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const [postData, setPostData] = useState<Post[]>([]);
+	const [openLoading, setOpenLoading] = useState(false);
 
 	useEffect(() => {
+		setOpenLoading(true);
 		const queryData = query(
 			collection(dbFireStore, "posts"),
 			orderBy("dateCreated", "desc")
@@ -32,6 +36,7 @@ export default function HomeFeed() {
 			(snapshot) => {
 				const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
 				setPostData(queriedData);
+				setOpenLoading(false);
 			},
 			(error) => {
 				console.error("Error fetching data:", error);
@@ -69,6 +74,9 @@ export default function HomeFeed() {
 
 	return (
 		<>
+			{/* <Loading
+				openLoading={true}
+			/> */}
 			<Item sx={{ backgroundColor: "#fff", margin: 1, borderRadius: "10px" }}>
 				<PostForm inFoUser={inFoUser} />
 			</Item>

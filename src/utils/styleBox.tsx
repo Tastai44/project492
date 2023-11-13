@@ -30,6 +30,7 @@ export const styleBoxPop = {
 
 export const styleBoxChat = {
   position: "fixed",
+  borderRadius: "10px",
   left: 10,
   bottom: 0,
   width: 400,
@@ -126,6 +127,7 @@ export const styleBoxReport = {
   borderRadius: "10px",
   boxShadow: 24,
   overflow: "auto",
+  bgcolor: "background.paper",
   p: 4,
 };
 
@@ -142,6 +144,7 @@ export const styleCommentBox = {
   color: "black",
   p: 3,
   overflow: "auto",
+  borderRadius: "10px",
 };
 
 export const styleChatList = {
@@ -181,6 +184,19 @@ export const stylePrivacyBox = {
     width: 300,
   },
   bgcolor: "white",
+  borderRadius: "10px",
+  p: 4,
+};
+
+export const styleLoading = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  width: 500,
+  transform: "translate(-50%, -50%)",
+  [themeApp.breakpoints.down("md")]: {
+    width: 300,
+  },
   borderRadius: "10px",
   p: 4,
 };

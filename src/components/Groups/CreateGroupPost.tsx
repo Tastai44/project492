@@ -324,6 +324,7 @@ export default function CreateGroupPost(props: IHandle & IData) {
                         name="caption"
                         label="What is in your mind?"
                         variant="outlined"
+                        size="small"
                         multiline
                         maxRows={4}
                         sx={{

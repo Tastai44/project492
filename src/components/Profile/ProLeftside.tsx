@@ -243,7 +243,8 @@ export default function ProLeftside() {
 										<Button
 											size="small"
 											sx={{
-												width: "30px",
+												width: "79px",
+												borderRadius: "5px",
 												fontSize: "16px",
 												alignItems: "center",
 												backgroundColor: "#8E51E2",

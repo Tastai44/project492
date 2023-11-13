@@ -118,6 +118,7 @@ export default function Groups() {
 								"&:hover": {
 									backgroundColor: "primary.contrastText"
 								},
+								borderRadius: "20px",
 							}}
 							onClick={handleOpenSearch}
 						>
@@ -130,6 +131,7 @@ export default function Groups() {
 								"&:hover": { backgroundColor: "#e8e8e8", color: "black" },
 								backgroundColor: "#A020F0",
 								color: "#fff",
+								borderRadius: "20px",
 							}}
 							onClick={handleOpen}
 						>
