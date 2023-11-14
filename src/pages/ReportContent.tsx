@@ -10,13 +10,16 @@ import EventContent from "../components/Report/EventContent";
 import { Box, Stack, Typography } from "@mui/material";
 import SearchBar from "../helper/SearchBar";
 import { themeApp } from "../utils/Theme";
+import Loading from "../components/Loading";
 
 export default function ReportContent() {
 	const [postData, setPostData] = useState<Post[]>([]);
 	const [eventData, setEventData] = useState<EventPost[]>([]);
 	const [searchValue, setValue] = useState("");
+	const [openLoading, setOpenLoading] = useState(false);
 
 	useEffect(() => {
+		setOpenLoading(true);
 		const queryPostData = query(
 			collection(dbFireStore, "posts"),
 			orderBy("createAt", "desc")
@@ -41,12 +44,12 @@ export default function ReportContent() {
 			(snapshot) => {
 				const queriedData = snapshot.docs.map((doc) => doc.data() as EventPost);
 				setEventData(queriedData);
+				setOpenLoading(false);
 			},
 			(error) => {
 				console.error("Error fetching data:", error);
 			}
 		);
-
 		return () => {
 			postUnsubscribe();
 			eventUnsubscribe();
@@ -60,6 +63,9 @@ export default function ReportContent() {
 
 	return (
 		<Box sx={{ width: "100%" }}>
+			<Loading
+				openLoading={openLoading}
+			/>
 			<Stack spacing={2}>
 				<Item
 					sx={{
@@ -280,8 +286,8 @@ export default function ReportContent() {
 					</Box>
 				)}
 				<Box sx={{ display: "flex", justifyContent: "center" }}>
-					{eventData.flatMap((e) => e.reportEvent).length == 0 &&
-						postData.flatMap((s) => s.reportPost).length == 0 && (
+					{(!openLoading && eventData.flatMap((e) => e.reportEvent).length == 0 &&
+						postData.flatMap((s) => s.reportPost).length == 0) && (
 							<Typography variant="h4" sx={{
 								color: "black", [themeApp.breakpoints.down("md")]: {
 									fontSize: "20px"

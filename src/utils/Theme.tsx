@@ -7,6 +7,37 @@ export const themeApp = createTheme({
       textTransform: "none",
     },
   },
+
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          border: "0px",
+          "&:focus": {
+            outline: "none",
+          },
+          "&:active": {
+            boxShadow: "none",
+          },
+        },
+      },
+    },
+
+    MuiCircularProgress: {
+      styleOverrides: {
+        root: {
+          border: "0px",
+          "&:focus": {
+            outline: "none",
+          },
+          "&:active": {
+            boxShadow: "none",
+          },
+        },
+      },
+    },
+  },
+
   palette: {
     primary: { main: "#8E51E2", dark: "#000000", contrastText: "#CCCCCC" },
     secondary: { main: "#456086", dark: "#CCC1BE" },

@@ -11,14 +11,17 @@ import { dbFireStore } from "../config/firebase";
 import SearchBar from "../helper/SearchBar";
 import { themeApp } from "../utils/Theme";
 import { User } from "../interface/User";
+import Loading from "../components/Loading";
 
 export default function Members() {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const [otherMembers, setOtherMembers] = useState<User[]>([]);
     const [user, setUser] = useState<User[]>([]);
     const [searchValue, setValue] = useState("");
+    const [openLoading, setOpenLoading] = useState(false);
 
     useEffect(() => {
+        setOpenLoading(true);
         const queryData = query(
             collection(dbFireStore, "users"),
             where("uid", "!=", userInfo.uid)
@@ -28,6 +31,7 @@ export default function Members() {
             (snapshot) => {
                 const queriedData = snapshot.docs.map((doc) => doc.data() as User);
                 setOtherMembers(queriedData);
+                setOpenLoading(false);
             },
             (error) => {
                 console.error("Error fetching data: ", error);
@@ -76,6 +80,9 @@ export default function Members() {
                 },
             }}
         >
+            <Loading
+                openLoading={openLoading}
+            />
             <Box
                 sx={{
                     display: "flex",
@@ -125,7 +132,11 @@ export default function Members() {
                 </Box>
             </Box>
             {searchValue == "" ? (
-                <Grid sx={{ flexGrow: 1, gap: "30px" }} container>
+                <Grid sx={{
+                    flexGrow: 1, gap: "30px", [themeApp.breakpoints.down("md")]: {
+                        justifyContent: "center",
+                    },
+                }} container >
                     {otherMembers
                         .filter(
                             (member) =>

@@ -29,6 +29,7 @@ import { Post, Like } from "../interface/PostContent";
 import { styleBoxPop } from "../utils/styleBox";
 import { User } from "../interface/User";
 import { themeApp } from "../utils/Theme";
+import Loading from "../components/Loading";
 
 export default function Topics() {
 	const [dateType, setDateType] = useState("All");
@@ -41,6 +42,7 @@ export default function Topics() {
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [openSearch, setOpenSearch] = useState<boolean>(false);
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	const [openLoading, setOpenLoading] = useState(false);
 
 	useMemo(() => {
 		const fetchData = async () => {
@@ -66,6 +68,7 @@ export default function Topics() {
 	}, [userInfo.uid]);
 
 	useEffect(() => {
+		setOpenLoading(true);
 		const fetchData = query(
 			collection(dbFireStore, "posts"),
 			orderBy("createAt", "desc")
@@ -75,6 +78,7 @@ export default function Topics() {
 			(snapshot) => {
 				const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
 				setPosts(queriedData);
+				setOpenLoading(false);
 			},
 			(error) => {
 				console.error("Error fetching data", error);
@@ -185,6 +189,9 @@ export default function Topics() {
 
 	return (
 		<div>
+			<Loading
+				openLoading={openLoading}
+			/>
 			<SearchContent
 				openSearchBar={openSearch}
 				handleCloseSearchBar={handleCloseSearch}

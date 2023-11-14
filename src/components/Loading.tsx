@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Modal } from '@mui/material';
+import { Box, CircularProgress, Modal, Typography } from '@mui/material';
 import { styleLoading } from '../utils/styleBox';
 
 interface ILoading {
@@ -7,14 +7,17 @@ interface ILoading {
 
 export default function Loading(props: ILoading) {
     return (
-        <div>
+        <>
             <Modal
                 open={props.openLoading}
             >
-                {/* <Box sx={styleLoading}> */}
-                <CircularProgress disableShrink />
-                {/* </Box> */}
+                <Box sx={styleLoading}>
+                    <CircularProgress disableShrink size={80} color="inherit" sx={{ color: "#ECD0FF" }} />
+                    <Typography variant='h5'>
+                        Please wait...
+                    </Typography>
+                </Box>
             </Modal>
-        </div >
+        </ >
     );
 }

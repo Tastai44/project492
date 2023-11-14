@@ -15,6 +15,7 @@ import {
 	onSnapshot,
 	getDocs,
 } from "firebase/firestore";
+import Loading from "../../components/Loading";
 
 export default function Events() {
 	const [open, setOpen] = useState(false);
@@ -23,8 +24,10 @@ export default function Events() {
 	const [refresh, setRefresh] = useState(0);
 	const [interested, setInterested] = useState(false);
 	const [eventData, setEventData] = useState<EventPost[]>([]);
+	const [openLoading, setOpenLoading] = useState(false);
 
 	useEffect(() => {
+		setOpenLoading(true);
 		const fetchData = query(
 			collection(dbFireStore, "events"),
 			orderBy("createAt", "desc")
@@ -34,6 +37,7 @@ export default function Events() {
 			(snapshot) => {
 				const queriedData = snapshot.docs.map((doc) => doc.data() as EventPost);
 				setEventData(queriedData);
+				setOpenLoading(false);
 			},
 			(error) => {
 				console.error("Error fetching data", error);
@@ -139,6 +143,9 @@ export default function Events() {
 
 	return (
 		<>
+			<Loading
+				openLoading={openLoading}
+			/>
 			<Modal
 				open={open}
 				onClose={handleClose}
@@ -174,9 +181,14 @@ export default function Events() {
 					<Item sx={{ ml: -1 }}>
 						<Box sx={{
 							display: "flex", alignItems: "center", [themeApp.breakpoints.down("md")]: {
+								flexDirection: "column"
 							}, justifyContent: "space-between"
 						}}>
-							<Box sx={{ display: "flex", alignContent: "center", alignItems: "center", gap: 2 }}>
+							<Box sx={{
+								display: "flex", alignContent: "center", alignItems: "center", gap: 2, [themeApp.breakpoints.down("md")]: {
+									flexDirection: "column"
+								},
+							}}>
 								<SearchBar
 									searchValue={searchValue}
 									handleSearch={handleSearch}
@@ -237,8 +249,9 @@ export default function Events() {
 
 					<Box sx={{
 						display: "flex",
+						width: "100%",
 						[themeApp.breakpoints.down("md")]: {
-							justifyContent: "center"
+							justifyContent: "center",
 						},
 					}}>
 						<EventContainer
@@ -248,8 +261,8 @@ export default function Events() {
 							eventData={eventData}
 						/>
 					</Box>
-				</Stack>
-			</Box>
+				</Stack >
+			</Box >
 		</>
 	);
 }

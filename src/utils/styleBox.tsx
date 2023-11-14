@@ -62,7 +62,7 @@ export const styleBox = {
   [themeApp.breakpoints.down("md")]: {
     width: 300,
   },
-  maxHeight: 600,
+  maxHeight: 700,
   bgcolor: "background.paper",
   overflow: "auto",
   p: 4,
@@ -192,11 +192,12 @@ export const styleLoading = {
   position: "absolute",
   top: "50%",
   left: "50%",
-  width: 500,
   transform: "translate(-50%, -50%)",
-  [themeApp.breakpoints.down("md")]: {
-    width: 300,
+  "&:focus": {
+    outline: "none",
   },
-  borderRadius: "10px",
-  p: 4,
+  "&:active": {
+    boxShadow: "none",
+  },
+  textAlign: "center",
 };

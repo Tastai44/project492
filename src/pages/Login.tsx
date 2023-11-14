@@ -1,23 +1,26 @@
+import { useState } from "react";
 import {
 	Box,
 	Button,
 	CardMedia,
 	Grid,
+	Modal,
 	Paper,
 	TextField,
 	styled,
 } from "@mui/material";
-import * as React from "react";
 // import { createUserWithEmailAndPassword } from "firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, dbFireStore } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
 import community from "/images/communityPic.png";
+import CMUIcon from "../assets/logoCmu.png";
 
 import "firebase/database";
 import { doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { collection, setDoc } from "firebase/firestore";
 import { themeApp } from "../utils/Theme";
+import Privacy from "../components/Privacy";
 
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -28,10 +31,15 @@ const Item = styled(Paper)(({ theme }) => ({
 	height: "600px",
 }));
 
+
 export default function Login() {
 	const navigate = useNavigate();
-	const [email, setEmail] = React.useState("");
-	const [password, setPassword] = React.useState("");
+	const [openPrivacy, setOpenPrivacy] = useState(false);
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const oauthClientId = import.meta.env.VITE_OAUTH_CLIENT_ID;
+	const redirect_uri = 'https://www.cmuexplore.com/callback';
+	const cmuUrl = `https://oauth.cmu.ac.th/v1/Authorize.aspx?response_type=code&client_id=${oauthClientId}&redirect_uri=${redirect_uri}&scope=cmuitaccount.basicinfo&state=xyz`;
 
 	// const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
 	//     e.preventDefault();
@@ -96,104 +104,151 @@ export default function Login() {
 		}
 	};
 
+	const fakeData = () => {
+		const userData = {
+			uid: '630615022',
+			firstName: 'TASTAI',
+			lastName: 'KHIANHAI'
+		};
+		localStorage.setItem("user", JSON.stringify(userData));
+		navigate("/");
+	};
+
 	return (
-		// <Box sx={{ mt: 8 }}>
-		//   <TextField
-		//     id="email"
-		//     label="Email"
-		//     variant="outlined"
-		//     type="email"
-		//     value={email}
-		//     onChange={(e) => setEmail(e.target.value)}
-		//   />
-		//   <TextField
-		//     id="password"
-		//     label="Password"
-		//     variant="outlined"
-		//     type="password"
-		//     value={password}
-		//     onChange={(e) => setPassword(e.target.value)}
-		//   />
-		//   <Button onClick={handleSignIn}>Sign In</Button>
-		// </Box>
-		<Box sx={{
-			flexGrow: 1, mt: 8,
-			[themeApp.breakpoints.down("lg")]: {
-				mt: 2
-			}
-		}}>
-			<Grid container spacing={1} sx={{
+		<>
+			<Modal
+				open={openPrivacy}
+			>
+				<Box>
+					<Privacy handleclose={() => setOpenPrivacy(false)} />
+				</Box>
+			</Modal>
+			{/* // <Box sx={{ mt: 8 }}>
+					//   <TextField
+					//     id="email"
+					//     label="Email"
+					//     variant="outlined"
+					//     type="email"
+					//     value={email}
+					//     onChange={(e) => setEmail(e.target.value)}
+					//   />
+					//   <TextField
+					//     id="password"
+					//     label="Password"
+					//     variant="outlined"
+					//     type="password"
+					//     value={password}
+					//     onChange={(e) => setPassword(e.target.value)}
+					//   />
+					//   <Button onClick={handleSignIn}>Sign In</Button>
+					// </Box> */}
+			<Box sx={{
+				flexGrow: 1, mt: 8,
 				[themeApp.breakpoints.down("lg")]: {
-					flexDirection: "column"
+					mt: 2
 				}
 			}}>
-				<Grid item xs={12} md={6}>
-					<Item>
-						<Box sx={{ fontSize: "25px" }}>
-							WELCOME <br />
-							TO <br />
-							CMU <br />
-							COMMUNITY
-						</Box>
-						<CardMedia
-							sizes="medium"
-							component="img"
-							width={"100%"}
-							height={"70%"}
-							image={community}
-							alt="Paella dish"
-						/>
-					</Item>
-				</Grid>
-				<Grid item xs={12} md={6}>
-					<Item>
-						<Box
-							sx={{
-								mt: "20%",
-								display: "flex",
-								flexDirection: "column",
-								gap: 1,
-							}}
-						>
-							<Box sx={{ fontSize: "40px", mb: 5 }}>Log in</Box>
-							<TextField
-								required
-								id="email"
-								label="Email"
-								variant="outlined"
-								type="email"
-								value={email}
-								onChange={(e) => setEmail(e.target.value)}
+				<Grid container spacing={1} sx={{
+					[themeApp.breakpoints.down("lg")]: {
+						flexDirection: "column"
+					}
+				}}>
+					<Grid item xs={12} md={6}>
+						<Item>
+							<Box sx={{ fontSize: "25px" }}>
+								WELCOME <br />
+								TO <br />
+								CMU <br />
+								COMMUNITY
+							</Box>
+							<CardMedia
+								sizes="medium"
+								component="img"
+								width={"100%"}
+								height={"70%"}
+								image={community}
+								alt="Paella dish"
 							/>
-							<TextField
-								required
-								id="password"
-								label="Password"
-								variant="outlined"
-								type="password"
-								value={password}
-								onChange={(e) => setPassword(e.target.value)}
-							/>
-							<Button
-								size="small"
+						</Item>
+					</Grid>
+					<Grid item xs={12} md={6}>
+						<Item>
+							<Box
 								sx={{
+									mt: "20%",
 									display: "flex",
-									width: "50px",
-									backgroundColor: "primary.main",
-									color: "white",
-									"&:hover": {
-										background: "primary.contrastText",
-										color: "black",
-									},
+									flexDirection: "column",
+									gap: 1,
 								}}
-								onClick={handleSignIn}
 							>
-								Sign In
-							</Button>
-						</Box>
-					</Item>
+								<Box sx={{ fontSize: "40px", mb: 5 }}>Log in</Box>
+								<TextField
+									required
+									id="email"
+									label="Email"
+									variant="outlined"
+									type="email"
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
+								/>
+								<TextField
+									required
+									id="password"
+									label="Password"
+									variant="outlined"
+									type="password"
+									value={password}
+									onChange={(e) => setPassword(e.target.value)}
+								/>
+								<Button
+									size="small"
+									sx={{
+										display: "flex",
+										width: "50px",
+										backgroundColor: "primary.main",
+										color: "white",
+										"&:hover": {
+											background: "primary.contrastText",
+											color: "black",
+										},
+									}}
+									onClick={handleSignIn}
+								>
+									Sign In
+								</Button>
+								<Box sx={{ display: "flex", justifyContent: "center" }}>
+									<Button
+										onClick={() => (window.location.href = cmuUrl)}
+										variant="contained"
+										sx={{ width: "50%", fontSize: "20px", fontWeight: "bold" }}
+										startIcon={
+											<img src={`${CMUIcon}`} style={{ width: "40px" }} />
+										}
+									>
+										Login with CMU account
+									</Button>
+								</Box>
+								<Box sx={{ display: "flex", justifyContent: "center" }}>
+									<Button onClick={() => setOpenPrivacy(true)} sx={{ width: "20px", fontSize: "14px", color: "red" }}>Privacy</Button>
+								</Box>
+								<Box sx={{ display: "flex", justifyContent: "center" }}>
+									<Button
+										onClick={() => fakeData()}
+										variant="contained"
+										sx={{ width: "50%", fontSize: "20px", fontWeight: "bold" }}
+										startIcon={
+											<img src={`${CMUIcon}`} style={{ width: "40px" }} />
+										}
+									>
+										Fake CMU
+									</Button>
+								</Box>
+
+							</Box>
+						</Item>
+					</Grid>
 				</Grid>
-			</Grid>
-		</Box>
+			</Box>
+		</>
 	);
 }

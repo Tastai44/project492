@@ -15,8 +15,6 @@ import { Post } from "../interface/PostContent";
 import { User } from "../interface/User";
 import { Item } from "../App";
 import Loading from "../components/Loading";
-import { CircularProgress } from "@mui/material";
-
 
 export default function HomeFeed() {
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
@@ -68,15 +66,11 @@ export default function HomeFeed() {
 		};
 	}, [userInfo.uid]);
 
-
-
-
-
 	return (
 		<>
-			{/* <Loading
-				openLoading={true}
-			/> */}
+			<Loading
+				openLoading={openLoading}
+			/>
 			<Item sx={{ backgroundColor: "#fff", margin: 1, borderRadius: "10px" }}>
 				<PostForm inFoUser={inFoUser} />
 			</Item>

@@ -2,6 +2,7 @@ import Grid from "@mui/material/Grid";
 import EventCard from "./EventCard";
 import { Box } from "@mui/material";
 import { EventPost } from "../../interface/Event";
+import { themeApp } from "../../utils/Theme";
 
 interface IData {
     searchValue: string;
@@ -14,11 +15,13 @@ export default function EventContainer(props: IData) {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
     return (
-        <Box sx={{
-            display: "flex"
-        }}>
+        <Box >
             {props.searchValue == "" ? (
-                <Grid sx={{ flexGrow: 1, gap: "40px" }} container>
+                <Grid sx={{
+                    flexGrow: 1, gap: "40px", [themeApp.breakpoints.down("md")]: {
+                        justifyContent: "center",
+                    },
+                }} container>
                     <>
                         {
                             props.interested ? (

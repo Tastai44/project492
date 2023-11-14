@@ -28,8 +28,6 @@ import { themeApp } from "./utils/Theme";
 import { IconButton } from "@mui/material";
 import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
 import OAuthRedirect from "./pages/OauthRedirect";
-import Loading from "./components/Loading";
-
 
 export const Item = styled(Box)(({ theme }) => ({
 	...theme.typography.body2,
@@ -369,17 +367,17 @@ function App() {
 					path={"/events"}
 					element={
 						<>
-							{/* <ProtectedRoute> */}
-							<Navigation />
-							<Box sx={{
-								display: "flex", mt: 11, ml: 5, mr: 5, [themeApp.breakpoints.down("md")]: {
-									justifyContent: "center",
-									mt: 8
-								},
-							}}>
-								<Events />
-							</Box>
-							{/* </ProtectedRoute> */}
+							<ProtectedRoute>
+								<Navigation />
+								<Box sx={{
+									display: "flex", mt: 11, ml: 5, mr: 5, [themeApp.breakpoints.down("md")]: {
+										justifyContent: "center",
+										mt: 8
+									},
+								}}>
+									<Events />
+								</Box>
+							</ProtectedRoute>
 						</>
 					}
 				/>

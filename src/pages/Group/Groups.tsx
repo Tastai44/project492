@@ -10,14 +10,18 @@ import { NavLink } from "react-router-dom";
 import EachGroup from "../../components/Groups/EachGroup";
 import SearchIcon from "@mui/icons-material/Search";
 import { themeApp } from "../../utils/Theme";
+import Loading from "../../components/Loading";
 
 export default function Groups() {
 	const [open, setOpen] = useState(false);
 	const [groupData, setGroupData] = useState<IGroup[]>([]);
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [openSearch, setOpenSearch] = useState<boolean>(false);
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	const [openLoading, setOpenLoading] = useState(false);
 
 	useEffect(() => {
+		setOpenLoading(true);
 		const fetchData = query(
 			collection(dbFireStore, "groups"),
 			orderBy("dateCreated", "desc")
@@ -27,6 +31,7 @@ export default function Groups() {
 			(snapshot) => {
 				const queriedData = snapshot.docs.map((doc) => doc.data() as IGroup);
 				setGroupData(queriedData);
+				setOpenLoading(false);
 			},
 			(error) => {
 				console.error("Error fetching data", error);
@@ -37,7 +42,6 @@ export default function Groups() {
 		};
 	}, []);
 
-	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	useMemo(() => {
 		const fetchData = async () => {
 			try {
@@ -73,6 +77,9 @@ export default function Groups() {
 
 	return (
 		<>
+			<Loading
+				openLoading={openLoading}
+			/>
 			<Modal
 				open={open}
 				onClose={handleClose}
