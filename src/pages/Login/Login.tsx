@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Box, Button, Modal, Paper } from '@mui/material';
 
@@ -9,21 +9,21 @@ import Privacy from '../../components/Privacy';
 
 
 export default function Login() {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const [openPrivacy, setOpenPrivacy] = useState(false);
     const oauthClientId = import.meta.env.VITE_OAUTH_CLIENT_ID;
     const redirect_uri = 'https://www.cmuexplore.com/callback';
     const cmuUrl = `https://oauth.cmu.ac.th/v1/Authorize.aspx?response_type=code&client_id=${oauthClientId}&redirect_uri=${redirect_uri}&scope=cmuitaccount.basicinfo&state=xyz`;
 
-    const fakeData = () => {
-        const userData = {
-            uid: '630615022',
-            firstName: 'TASTAI',
-            lastName: 'KHIANHAI'
-        };
-        localStorage.setItem("user", JSON.stringify(userData));
-        navigate("/");
-    };
+    // const fakeData = () => {
+    //     const userData = {
+    //         uid: '630615022',
+    //         firstName: 'TASTAI',
+    //         lastName: 'KHIANHAI'
+    //     };
+    //     localStorage.setItem("user", JSON.stringify(userData));
+    //     navigate("/");
+    // };
 
     return (
         <Box sx={{ display: "flex", justifyContent: "center", textAlign: "center" }}>
