@@ -83,7 +83,7 @@ export default function Login() {
 
 			if (docUser) {
 				handleActiveUser(user?.uid ?? "");
-				navigate("/");
+				navigate("/home");
 			} else {
 				const newUser = {
 					uid: user?.uid,
@@ -96,7 +96,7 @@ export default function Login() {
 				};
 				const docRef = doc(userCollection);
 				await setDoc(docRef, newUser);
-				navigate("/");
+				navigate("/home");
 			}
 
 		} catch (error) {
@@ -111,7 +111,7 @@ export default function Login() {
 			lastName: 'KHIANHAI'
 		};
 		localStorage.setItem("user", JSON.stringify(userData));
-		navigate("/");
+		navigate("/home");
 	};
 
 	return (

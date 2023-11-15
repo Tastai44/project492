@@ -81,7 +81,7 @@ export default function LeftSide() {
 					<List>
 						<ListItem disablePadding>
 							<NavLink
-								to="/"
+								to="/home"
 								style={({ isActive, isPending }) => {
 									return {
 										fontWeight: isPending ? "bold" : "",

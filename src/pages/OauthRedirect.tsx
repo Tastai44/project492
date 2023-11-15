@@ -1,19 +1,23 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { IUserLocalStorage, IUserReturnFromToken } from '../interface/User';
 import { useNavigate } from 'react-router-dom';
 import { doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { collection, setDoc } from "firebase/firestore";
 import { dbFireStore } from "../config/firebase";
+import Loading from '../components/Loading';
 
 export default function OAuthRedirect() {
     const navigate = useNavigate();
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const code = urlParams.get('code');
-    const accessToken = urlParams.get('access_token');
+    // const accessToken = urlParams.get('access_token');
+    const [accessToken, setAccessToken] = useState('');
+    const [openLoading, setOpenLoading] = useState(false);
 
     useEffect(() => {
+        setOpenLoading(true);
         const fetchData = async () => {
             const requestData = {
                 code: code,
@@ -31,6 +35,7 @@ export default function OAuthRedirect() {
                 .post('https://oauth.cmu.ac.th/v1/GetToken.aspx', requestData, { headers })
                 .then((response) => {
                     console.log('Response:', response.data);
+                    setAccessToken(response.data.access_token);
                 })
                 .catch((error) => {
                     console.error('Error:', error);
@@ -61,7 +66,8 @@ export default function OAuthRedirect() {
                 }).catch(error => {
                     console.error("An error occurred:", error);
                 }).finally(() => {
-                    navigate("/");
+                    navigate("/home");
+                    setOpenLoading(false);
                 });
             };
             accessData();
@@ -95,7 +101,7 @@ export default function OAuthRedirect() {
 
             if (docUser) {
                 handleActiveUser(docUser.student_id ?? "");
-                navigate("/");
+                navigate("/home");
             } else {
                 const newUser = {
                     uid: user.student_id,
@@ -113,7 +119,7 @@ export default function OAuthRedirect() {
                 };
                 const docRef = doc(userCollection);
                 await setDoc(docRef, newUser);
-                navigate("/");
+                // navigate("/");
             }
 
         } catch (error) {
@@ -122,6 +128,10 @@ export default function OAuthRedirect() {
     };
 
     return (
-        <div style={{ color: "black" }}>OAuthRedirect</div>
+        <div style={{ color: "black" }}>
+            <Loading
+                openLoading={openLoading}
+            />
+        </div>
     );
 }
