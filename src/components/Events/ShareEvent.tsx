@@ -61,10 +61,10 @@ export default function ShareEvent(props: Idata) {
 		<Box>
 			<Box sx={{ width: "100%" }}>
 				<Stack spacing={2}>
-					<Item sx={{ display: "flex", flexDirection: "column" }}>
+					<Item sx={{ display: "flex", flexDirection: "column", borderRadius: "10px" }}>
 						<NavLink to={`/eventsDetail/${props.eventId}`}>
 							<CardMedia
-								sx={{ height: 300 }}
+								sx={{ height: 300, borderRadius: "10px" }}
 								image={props.coverPhoto}
 								title="green iguana"
 							/>

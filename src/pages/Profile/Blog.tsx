@@ -102,7 +102,7 @@ export default function Blog() {
 	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "users"),
-			where("uid", "==", userInfo.uid)
+			where("uid", "==", userId)
 		);
 		const unsubscribe = onSnapshot(
 			queryData,
@@ -117,7 +117,7 @@ export default function Blog() {
 		return () => {
 			unsubscribe();
 		};
-	}, [userInfo.uid]);
+	}, [userId]);
 
 	const handleChangeType = (event: SelectChangeEvent) => {
 		setType(event.target.value as string);
@@ -201,7 +201,7 @@ export default function Blog() {
 										sharePost.some((f) =>
 											f.shareUsers.some(
 												(share) =>
-												((share.status == "Private" && (share.shareBy == userInfo.uid && share.shareTo == userInfo.uid)) ||
+												((share.status == "Private" && (share.shareBy == userId && share.shareTo == userId)) ||
 													(share.shareBy == userId && share.status == "Public"))
 											)
 										) && (
@@ -216,7 +216,7 @@ export default function Blog() {
 													.filter((f) =>
 														f.shareUsers.some(
 															(share) =>
-															((share.status == "Private" && (share.shareBy == userInfo.uid && share.shareTo == userInfo.uid)) ||
+															((share.status == "Private" && (share.shareBy == userId && share.shareTo == userId)) ||
 																(share.shareBy == userId && share.status == "Public"))
 														)
 													)
@@ -227,7 +227,7 @@ export default function Blog() {
 																postId={m.id}
 																shareUsers={m.shareUsers.filter(
 																	(share) =>
-																	((share.status == "Private" && share.shareBy == userInfo.uid) ||
+																	((share.status == "Private" && share.shareBy == userId) ||
 																		(share.status == "Public" &&
 																			share.shareBy == userId))
 																)}

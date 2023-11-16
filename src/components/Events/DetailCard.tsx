@@ -33,7 +33,7 @@ export default function DetailCard(props: IData) {
                     />
                 </Box>
             </Modal>
-            <Paper sx={{ p: 1 }}>
+            <Paper sx={{ p: 1, borderRadius: "10px" }}>
                 <Box
                     sx={{
                         display: "flex",

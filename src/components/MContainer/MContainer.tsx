@@ -432,19 +432,21 @@ export default function MContainer(props: Idata) {
                                     >
                                         {props.caption}
                                     </Typography>
-                                    <Typography
-                                        sx={{
-                                            textAlign: "justify",
-                                            overflow: "hidden",
-                                            textOverflow: "ellipsis",
-                                            whiteSpace: "pre-wrap",
-                                            wordWrap: "break-word",
-                                        }}
-                                    >
-                                        {props.hashTagTopic.startsWith("#")
-                                            ? props.hashTagTopic
-                                            : `#${props.hashTagTopic}`}
-                                    </Typography>
+                                    <NavLink to={`/hashtag/${props.hashTagTopic}`}>
+                                        <Typography
+                                            sx={{
+                                                textAlign: "justify",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                whiteSpace: "pre-wrap",
+                                                wordWrap: "break-word",
+                                            }}
+                                        >
+                                            {props.hashTagTopic.startsWith("#")
+                                                ? props.hashTagTopic
+                                                : `#${props.hashTagTopic}`}
+                                        </Typography>
+                                    </NavLink>
                                 </CardContent>
 
                                 {props.photoPost.length == 1 ? (

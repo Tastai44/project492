@@ -51,6 +51,7 @@ export const stylePreviewPhoto = {
   bgcolor: "background.paper",
   color: "black",
   overflow: "auto",
+  borderRadius: "10px",
 };
 
 export const styleBox = {

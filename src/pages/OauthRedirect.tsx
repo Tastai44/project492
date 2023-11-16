@@ -114,7 +114,7 @@ export default function OAuthRedirect() {
                     userRole: "user",
                     isActive: true,
                     createdAt: new Date().toLocaleString(),
-                    profilePhoto: 'images/logoCmu.png',
+                    profilePhoto: '',
                     year: 0
                 };
                 const docRef = doc(userCollection);

@@ -28,6 +28,7 @@ import { themeApp } from "./utils/Theme";
 import { IconButton } from "@mui/material";
 import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
 import OAuthRedirect from "./pages/OauthRedirect";
+import Hashtag from "./pages/Hashtag/Hashtag";
 
 export const Item = styled(Box)(({ theme }) => ({
 	...theme.typography.body2,
@@ -126,6 +127,39 @@ function App() {
 										}
 									}}>
 										<HomeFeed />
+									</Box>
+
+									<Box sx={{ width: "20%", position: "fixed", right: "0" }}>
+										<RightContainer />
+									</Box>
+								</Box>
+							</ProtectedRoute>
+						</>
+					}
+				/>
+				<Route
+					path={"/hashtag/:hashtag"}
+					element={
+						<>
+							<ProtectedRoute>
+								<Navigation />
+								<Box sx={{
+									display: "flex", justifyContent: "center", mt: 11,
+									[themeApp.breakpoints.down("lg")]: {
+										mt: 8
+									}
+								}}>
+									<Box sx={{ width: "20%", position: "fixed", left: "0" }}>
+										<LeftSide />
+									</Box>
+
+									<Box sx={{
+										width: "45%",
+										[themeApp.breakpoints.down("lg")]: {
+											width: "100%",
+										}
+									}}>
+										<Hashtag />
 									</Box>
 
 									<Box sx={{ width: "20%", position: "fixed", right: "0" }}>
