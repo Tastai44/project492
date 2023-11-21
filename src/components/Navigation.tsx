@@ -188,7 +188,7 @@ export default function Navigation() {
 		signOut(auth)
 			.then(() => {
 				localStorage.removeItem("user");
-				navigate("/");
+				navigate("/login");
 			})
 			.catch((error) => {
 				console.log(error);
@@ -298,7 +298,7 @@ export default function Navigation() {
 					sx={{ backgroundColor: "#8E51E2", color: "black" }}
 				>
 					<Toolbar>
-						<NavLink to="/home">
+						<NavLink to="/">
 							<IconButton
 								size="medium"
 								edge="start"

@@ -66,7 +66,7 @@ export default function OAuthRedirect() {
                 }).catch(error => {
                     console.error("An error occurred:", error);
                 }).finally(() => {
-                    navigate("/home");
+                    navigate("/");
                     setOpenLoading(false);
                 });
             };
@@ -101,7 +101,7 @@ export default function OAuthRedirect() {
 
             if (docUser) {
                 handleActiveUser(docUser.student_id ?? "");
-                navigate("/home");
+                navigate("/");
             } else {
                 const newUser = {
                     uid: user.student_id,

@@ -83,7 +83,7 @@ function App() {
 			</Box>
 
 			<Routes>
-				<Route path={"/"} element={
+				<Route path={"/login"} element={
 					<Box sx={{
 						ml: 5, mr: 5, [themeApp.breakpoints.down("lg")]: {
 							ml: 2, mr: 2
@@ -105,7 +105,7 @@ function App() {
 
 
 				<Route
-					path={"/home"}
+					path={"/"}
 					element={
 						<>
 							<ProtectedRoute>
