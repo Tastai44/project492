@@ -17,7 +17,7 @@ export default function PageIcons(props: IData) {
     return (
         <Box sx={{ display: { xs: "none", md: "flex", gap: 30 } }}>
             <NavLink
-                to="/home"
+                to="/"
                 style={({ isActive, isPending }) => {
                     return {
                         fontWeight: isPending ? "bold" : "",

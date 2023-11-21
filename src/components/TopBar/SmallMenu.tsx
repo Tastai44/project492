@@ -56,7 +56,7 @@ export default function SmallMenu(props: IData) {
             <List>
                 <ListItem disablePadding onClick={props.handleOpenMenu}>
                     <NavLink
-                        to="/home"
+                        to="/"
                         style={({ isActive, isPending }) => {
                             return {
                                 fontWeight: isPending ? "bold" : "",
