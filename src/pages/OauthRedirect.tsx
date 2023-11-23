@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { IUserLocalStorage, IUserReturnFromToken } from '../interface/User';
 import { useNavigate } from 'react-router-dom';
 import { doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { collection, setDoc } from "firebase/firestore";
 import { dbFireStore } from "../config/firebase";
 import Loading from '../components/Loading';
+import { getUserInfo, requestAccessToken } from '../api/AccessToken';
 
 export default function OAuthRedirect() {
     const navigate = useNavigate();
@@ -13,67 +13,88 @@ export default function OAuthRedirect() {
     const urlParams = new URLSearchParams(queryString);
     const code = urlParams.get('code');
     // const accessToken = urlParams.get('access_token');
-    const [accessToken, setAccessToken] = useState('');
+    // const [accessToken, setAccessToken] = useState('');
     const [openLoading, setOpenLoading] = useState(false);
 
     useEffect(() => {
         setOpenLoading(true);
+        // const fetchData = async () => {
+        //     const requestData = {
+        //         code: code,
+        //         redirect_uri: 'https://www.cmuexplore.com/callback',
+        //         client_id: import.meta.env.VITE_OAUTH_CLIENT_ID,
+        //         client_secret: import.meta.env.VITE_OAUTH_CLIENT_SECRET,
+        //         grant_type: 'authorization_code',
+        //     };
+
+        //     const headers = {
+        //         'Content-Type': 'application/x-www-form-urlencoded',
+        //     };
+
+        //     axios
+        //         .post('https://oauth.cmu.ac.th/v1/GetToken.aspx', requestData, { headers })
+        //         .then((response) => {
+        //             console.log('Response:', response.data);
+        //             setAccessToken(response.data.access_token);
+        //         })
+        //         .catch((error) => {
+        //             console.error('Error:', error);
+        //         });
+        // };
+
+        // fetchData();
         const fetchData = async () => {
-            const requestData = {
-                code: code,
-                redirect_uri: 'https://www.cmuexplore.com/callback',
-                client_id: import.meta.env.VITE_OAUTH_CLIENT_ID,
-                client_secret: import.meta.env.VITE_OAUTH_CLIENT_SECRET,
-                grant_type: 'authorization_code',
-            };
-
-            const headers = {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            };
-
-            axios
-                .post('https://oauth.cmu.ac.th/v1/GetToken.aspx', requestData, { headers })
-                .then((response) => {
-                    console.log('Response:', response.data);
-                    setAccessToken(response.data.access_token);
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
-        };
-
-        fetchData();
-    }, [code]);
-
-    useEffect(() => {
-        if (accessToken) {
-            const accessData = async () => {
-                axios.request({
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`
-                    },
-                    method: "GET",
-                    url: 'https://misapi.cmu.ac.th/cmuitaccount/v1/api/cmuitaccount/basicinfo'
-                }).then(response => {
-                    console.log(response.data);
-                    const userData = response.data.map((user: IUserLocalStorage) => ({
+            if (code) {
+                const accessToken = await requestAccessToken(code);
+                console.log(accessToken);
+                if (accessToken) {
+                    const userInfo = await getUserInfo(accessToken);
+                    const userData = userInfo.map((user: IUserLocalStorage) => ({
                         uid: user.student_id,
                         firstName: user.firstname_EN,
                         lastName: user.lastname_EN
                     }));
-                    handleStoreUserInfo(response.data);
+                    handleStoreUserInfo(userInfo);
                     localStorage.setItem("user", JSON.stringify(userData));
-                }).catch(error => {
-                    console.error("An error occurred:", error);
-                }).finally(() => {
                     navigate("/");
                     setOpenLoading(false);
-                });
-            };
-            accessData();
-        }
+                }
+            }
+        };
+
+        fetchData();
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [accessToken]);
+    }, [code]);
+
+    // useEffect(() => {
+    //     if (accessToken) {
+    //         const accessData = async () => {
+    //             axios.request({
+    //                 headers: {
+    //                     Authorization: `Bearer ${accessToken}`
+    //                 },
+    //                 method: "GET",
+    //                 url: 'https://misapi.cmu.ac.th/cmuitaccount/v1/api/cmuitaccount/basicinfo'
+    //             }).then(response => {
+    //                 console.log(response.data);
+    //                 const userData = response.data.map((user: IUserLocalStorage) => ({
+    //                     uid: user.student_id,
+    //                     firstName: user.firstname_EN,
+    //                     lastName: user.lastname_EN
+    //                 }));
+    //                 handleStoreUserInfo(response.data);
+    //                 localStorage.setItem("user", JSON.stringify(userData));
+    //             }).catch(error => {
+    //                 console.error("An error occurred:", error);
+    //             }).finally(() => {
+    //                 navigate("/");
+    //                 setOpenLoading(false);
+    //             });
+    //         };
+    //         accessData();
+    //     }
+    // }, [accessToken]);
 
     const handleActiveUser = async (userId: string) => {
         try {
