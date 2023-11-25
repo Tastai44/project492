@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { IUserLocalStorage, IUserReturnFromToken } from '../interface/User';
+import { useMemo, useState } from 'react';
+import { IUserReturnFromToken } from '../interface/User';
 import { useNavigate } from 'react-router-dom';
 import { doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { collection, setDoc } from "firebase/firestore";
@@ -12,48 +12,22 @@ export default function OAuthRedirect() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const code = urlParams.get('code');
-    // const accessToken = urlParams.get('access_token');
-    // const [accessToken, setAccessToken] = useState('');
     const [openLoading, setOpenLoading] = useState(false);
 
-    useEffect(() => {
+    useMemo(() => {
         setOpenLoading(true);
-        // const fetchData = async () => {
-        //     const requestData = {
-        //         code: code,
-        //         redirect_uri: 'https://www.cmuexplore.com/callback',
-        //         client_id: import.meta.env.VITE_OAUTH_CLIENT_ID,
-        //         client_secret: import.meta.env.VITE_OAUTH_CLIENT_SECRET,
-        //         grant_type: 'authorization_code',
-        //     };
-
-        //     const headers = {
-        //         'Content-Type': 'application/x-www-form-urlencoded',
-        //     };
-
-        //     axios
-        //         .post('https://oauth.cmu.ac.th/v1/GetToken.aspx', requestData, { headers })
-        //         .then((response) => {
-        //             console.log('Response:', response.data);
-        //             setAccessToken(response.data.access_token);
-        //         })
-        //         .catch((error) => {
-        //             console.error('Error:', error);
-        //         });
-        // };
-
-        // fetchData();
         const fetchData = async () => {
             if (code) {
                 const accessToken = await requestAccessToken(code);
                 console.log(accessToken);
                 if (accessToken) {
-                    const userInfo = await getUserInfo(accessToken);
-                    const userData = userInfo.map((user: IUserLocalStorage) => ({
-                        uid: user.student_id,
-                        firstName: user.firstname_EN,
-                        lastName: user.lastname_EN
-                    }));
+                    const userInfo = await getUserInfo(accessToken.access_token);
+                    console.log(userInfo);
+                    const userData = {
+                        uid: userInfo.student_id,
+                        firstName: userInfo.firstname_EN,
+                        lastName: userInfo.lastname_EN
+                    };
                     handleStoreUserInfo(userInfo);
                     localStorage.setItem("user", JSON.stringify(userData));
                     navigate("/");
@@ -63,38 +37,8 @@ export default function OAuthRedirect() {
         };
 
         fetchData();
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [code]);
-
-    // useEffect(() => {
-    //     if (accessToken) {
-    //         const accessData = async () => {
-    //             axios.request({
-    //                 headers: {
-    //                     Authorization: `Bearer ${accessToken}`
-    //                 },
-    //                 method: "GET",
-    //                 url: 'https://misapi.cmu.ac.th/cmuitaccount/v1/api/cmuitaccount/basicinfo'
-    //             }).then(response => {
-    //                 console.log(response.data);
-    //                 const userData = response.data.map((user: IUserLocalStorage) => ({
-    //                     uid: user.student_id,
-    //                     firstName: user.firstname_EN,
-    //                     lastName: user.lastname_EN
-    //                 }));
-    //                 handleStoreUserInfo(response.data);
-    //                 localStorage.setItem("user", JSON.stringify(userData));
-    //             }).catch(error => {
-    //                 console.error("An error occurred:", error);
-    //             }).finally(() => {
-    //                 navigate("/");
-    //                 setOpenLoading(false);
-    //             });
-    //         };
-    //         accessData();
-    //     }
-    // }, [accessToken]);
+    }, []);
 
     const handleActiveUser = async (userId: string) => {
         try {
@@ -140,7 +84,6 @@ export default function OAuthRedirect() {
                 };
                 const docRef = doc(userCollection);
                 await setDoc(docRef, newUser);
-                // navigate("/");
             }
 
         } catch (error) {

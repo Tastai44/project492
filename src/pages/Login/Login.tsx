@@ -6,24 +6,13 @@ import CMUSubLogo from '../../assets/CMU_Sub_Logo 1.png';
 import CMUIcon from "../../assets/logoCmu.png";
 import Privacy from '../../components/Privacy';
 
-
-
 export default function Login() {
     // const navigate = useNavigate();
     const [openPrivacy, setOpenPrivacy] = useState(false);
+    const cmuLogin = import.meta.env.VITE_OAUTH;
     const oauthClientId = import.meta.env.VITE_OAUTH_CLIENT_ID;
-    const redirect_uri = 'https://www.cmuexplore.com/callback';
-    const cmuUrl = `https://oauth.cmu.ac.th/v1/Authorize.aspx?response_type=code&client_id=${oauthClientId}&redirect_uri=${redirect_uri}&scope=cmuitaccount.basicinfo&state=xyz`;
-
-    // const fakeData = () => {
-    //     const userData = {
-    //         uid: '630615022',
-    //         firstName: 'TASTAI',
-    //         lastName: 'KHIANHAI'
-    //     };
-    //     localStorage.setItem("user", JSON.stringify(userData));
-    //     navigate("/");
-    // };
+    const redirect_uri = `${import.meta.env.VITE_CLIENT_ENDPOINT}callback`;
+    const cmuUrl = `${cmuLogin}?response_type=code&client_id=${oauthClientId}&redirect_uri=${redirect_uri}&scope=cmuitaccount.basicinfo&state=xyz`;
 
     return (
         <Box sx={{ display: "flex", justifyContent: "center", textAlign: "center" }}>
@@ -54,18 +43,6 @@ export default function Login() {
                         Login with CMU account
                     </Button>
                 </Box>
-                {/* <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-                    <Button
-                        onClick={() => fakeData()}
-                        variant="contained"
-                        sx={{ width: "50%", fontSize: "20px", fontWeight: "bold" }}
-                        startIcon={
-                            <img src={`${CMUIcon}`} style={{ width: "40px" }} />
-                        }
-                    >
-                        Fake CMU
-                    </Button>
-                </Box> */}
             </Paper>
         </Box>
     );
