@@ -1,4 +1,3 @@
-// import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Box, Button, Modal, Paper } from '@mui/material';
 
@@ -7,7 +6,6 @@ import CMUIcon from "../../assets/logoCmu.png";
 import Privacy from '../../components/Privacy';
 
 export default function Login() {
-    // const navigate = useNavigate();
     const [openPrivacy, setOpenPrivacy] = useState(false);
     const cmuLogin = import.meta.env.VITE_OAUTH;
     const oauthClientId = import.meta.env.VITE_OAUTH_CLIENT_ID;
