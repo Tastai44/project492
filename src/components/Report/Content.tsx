@@ -1,9 +1,7 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Stack from "@mui/material/Stack";
-import { styled } from "@mui/material/styles";
+import { useEffect, useState, MouseEvent } from "react";
 import {
+	Box,
+	Stack,
 	Avatar,
 	Button,
 	CardActions,
@@ -46,14 +44,7 @@ import PopupAlert from "../PopupAlert";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import { Post, PostReport } from "../../interface/PostContent";
 import ReasonContainer from "./ReasonContainer";
-
-export const Item = styled(Paper)(({ theme }) => ({
-	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-	...theme.typography.body2,
-	padding: theme.spacing(1),
-	textAlign: "center",
-	color: theme.palette.text.secondary,
-}));
+import { Item } from "./EventContent";
 
 interface Idata {
 	caption: string;
@@ -72,7 +63,35 @@ interface Idata {
 }
 
 export default function ReportContent(props: Idata) {
-	const [openReason, setOpenReason] = React.useState(false);
+	const [openReason, setOpenReason] = useState(false);
+	const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(
+		null
+	);
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const q = query(
+					collection(dbFireStore, "users"),
+					where("uid", "==", props.owner)
+				);
+				const querySnapshot = await getDocs(q);
+				const queriedData = querySnapshot.docs.map(
+					(doc) =>
+					({
+						uid: doc.id,
+						...doc.data(),
+					} as User)
+				);
+				setInFoUser(queriedData);
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		};
+		fetchData();
+	}, [props.owner, props.reFreshInfo]);
+
 	const handleOpenReason = () => {
 		setOpenReason(true);
 	};
@@ -85,10 +104,7 @@ export default function ReportContent(props: Idata) {
 		return emoji ? emoji.name : undefined;
 	};
 
-	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-		null
-	);
-	const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+	const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
 		setAnchorElUser(event.currentTarget);
 	};
 	const handleCloseUserMenu = () => {
@@ -136,32 +152,10 @@ export default function ReportContent(props: Idata) {
 		}
 	};
 
-	const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-	React.useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const q = query(
-					collection(dbFireStore, "users"),
-					where("uid", "==", props.owner)
-				);
-				const querySnapshot = await getDocs(q);
-				const queriedData = querySnapshot.docs.map(
-					(doc) =>
-					({
-						uid: doc.id,
-						...doc.data(),
-					} as User)
-				);
-				setInFoUser(queriedData);
-			} catch (error) {
-				console.error("Error fetching data:", error);
-			}
-		};
-		fetchData();
-	}, [props.owner, props.reFreshInfo]);
-
 	return (
-		<Box sx={{ mb: 5 }}>
+		<Box sx={{
+			mb: 5, display: "flex", justifyContent: 'center', width: "100%"
+		}}>
 			<ReasonContainer
 				postId={props.postId}
 				openReason={openReason}
@@ -170,127 +164,145 @@ export default function ReportContent(props: Idata) {
 				owner={props.owner}
 			/>
 			{inFoUser.map((u) => (
-				<Box key={u.uid}>
-					<Box sx={{ width: "100%" }}>
-						<Stack spacing={2}>
-							<Item sx={{ display: "flex", flexDirection: "column" }}>
-								<ListItem>
-									<ListItemAvatar>
-										<Avatar
-											src={u.profilePhoto}
-											sx={{
-												width: "60px",
-												height: "60px",
-												marginRight: "10px",
-											}}
-										/>
-									</ListItemAvatar>
-									<ListItemText
-										primary={
-											<Box sx={{ fontSize: "20px" }}>
-												<b>
-													<NavLink
-														to={`/profileBlog/${props.owner}`}
-														style={{ color: "black", fontWeight: "bold" }}
-													>
-														{`${u.firstName} ${u.lastName} `}
-													</NavLink>
-													<NavLink
-														to={`/groupDetail/${props.groupId}`}
-														style={{ color: themeApp.palette.primary.main }}
-													>
-														{props.groupName ? ` (${props.groupName}) ` : ""}
-													</NavLink>
-												</b>
-												{props.emoji && (
-													<>
-														is feeling {" "}
-														{String.fromCodePoint(parseInt(props.emoji, 16))}{" "}
-														{convertEmojiCodeToName(
-															props.emoji
-														)?.toLocaleLowerCase()}
-													</>
-												)}
-											</Box>
-										}
-										secondary={
-											<Typography
-												sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
-											>
-												{props.createAt}
-												{props.status === "Private" && <LockIcon />}
-												{props.status === "Friend" && <GroupIcon />}
-												{props.status === "Public" && <PublicIcon />}
-												{props.status}
-											</Typography>
-										}
-									/>
-									<ListItemAvatar>
-										<IconButton onClick={handleOpenUserMenu}>
-											<MoreHorizIcon />
-										</IconButton>
-										<Menu
-											sx={{ mt: "30px" }}
-											id="menu-appbar"
-											anchorEl={anchorElUser}
-											anchorOrigin={{
-												vertical: "top",
-												horizontal: "right",
-											}}
-											keepMounted
-											transformOrigin={{
-												vertical: "top",
-												horizontal: "right",
-											}}
-											open={Boolean(anchorElUser)}
-											onClose={handleCloseUserMenu}
-										>
-											<MenuItem onClick={() => handleApprove(props.postId)}>
-												<Typography
-													textAlign="center"
-													sx={{
-														display: "flex",
-														gap: 1,
-														alignItems: "start",
-														fontSize: "18px",
-													}}
-												>
-													<AddTaskIcon /> Approve
-												</Typography>
-											</MenuItem>
-											<MenuItem onClick={() => handleDelete(props.postId)}>
-												<Typography
-													textAlign="center"
-													sx={{
-														display: "flex",
-														gap: 1,
-														alignItems: "start",
-														fontSize: "18px",
-													}}
-												>
-													<DeleteOutlineOutlinedIcon /> Delete
-												</Typography>
-											</MenuItem>
-										</Menu>
-									</ListItemAvatar>
-								</ListItem>
-
-								<CardContent>
-									<Typography
-										variant="body1"
-										color="text.secondary"
+				<Box key={u.uid} sx={{
+					width: "50%", [themeApp.breakpoints.down("lg")]: {
+						width: "100%"
+					}
+				}}>
+					<Stack spacing={2}>
+						<Item sx={{ display: "flex", flexDirection: "column", borderRadius: "10px" }}>
+							<ListItem>
+								<ListItemAvatar>
+									<Avatar
+										src={u.profilePhoto}
 										sx={{
-											textAlign: "justify",
-											overflow: "hidden",
-											textOverflow: "ellipsis",
-											whiteSpace: "pre-wrap",
-											wordWrap: "break-word",
+											width: "60px",
+											height: "60px",
+											marginRight: "10px",
 										}}
+									/>
+								</ListItemAvatar>
+								<ListItemText
+									primary={
+										<Box sx={{ fontSize: "16px" }}>
+											<b>
+												<NavLink
+													to={`/profileBlog/${props.owner}`}
+													style={{ color: "black", fontWeight: "bold" }}
+												>
+													{`${u.firstName} ${u.lastName} `}
+												</NavLink>
+												<NavLink
+													to={`/groupDetail/${props.groupId}`}
+													style={{ color: themeApp.palette.primary.main }}
+												>
+													{props.groupName ? ` (${props.groupName}) ` : ""}
+												</NavLink>
+											</b>
+											{props.emoji && (
+												<>
+													is feeling {" "}
+													{String.fromCodePoint(parseInt(props.emoji, 16))}{" "}
+													{convertEmojiCodeToName(
+														props.emoji
+													)?.toLocaleLowerCase()}
+												</>
+											)}
+										</Box>
+									}
+									secondary={
+										<Typography
+											sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
+										>
+											{props.createAt}
+											{props.status === "Private" && <LockIcon />}
+											{props.status === "Friend" && <GroupIcon />}
+											{props.status === "Public" && <PublicIcon />}
+											{props.status}
+										</Typography>
+									}
+								/>
+								<ListItemAvatar>
+									<IconButton onClick={handleOpenUserMenu}>
+										<MoreHorizIcon />
+									</IconButton>
+									<Menu
+										sx={{ mt: "30px" }}
+										id="menu-appbar"
+										anchorEl={anchorElUser}
+										anchorOrigin={{
+											vertical: "top",
+											horizontal: "right",
+										}}
+										keepMounted
+										transformOrigin={{
+											vertical: "top",
+											horizontal: "right",
+										}}
+										open={Boolean(anchorElUser)}
+										onClose={handleCloseUserMenu}
 									>
-										{props.caption}
-									</Typography>
-								</CardContent>
-								<Box
+										<MenuItem onClick={() => handleApprove(props.postId)}>
+											<Typography
+												textAlign="center"
+												sx={{
+													display: "flex",
+													gap: 1,
+													alignItems: "start",
+													fontSize: "18px",
+												}}
+											>
+												<AddTaskIcon /> Approve
+											</Typography>
+										</MenuItem>
+										<MenuItem onClick={() => handleDelete(props.postId)}>
+											<Typography
+												textAlign="center"
+												sx={{
+													display: "flex",
+													gap: 1,
+													alignItems: "start",
+													fontSize: "18px",
+												}}
+											>
+												<DeleteOutlineOutlinedIcon /> Delete
+											</Typography>
+										</MenuItem>
+									</Menu>
+								</ListItemAvatar>
+							</ListItem>
+
+							<CardContent>
+								<Typography
+									variant="body1"
+									color="text.secondary"
+									sx={{
+										textAlign: "justify",
+										overflow: "hidden",
+										textOverflow: "ellipsis",
+										whiteSpace: "pre-wrap",
+										wordWrap: "break-word",
+									}}
+								>
+									{props.caption}
+								</Typography>
+								<Typography
+									variant="body1"
+									color="text.secondary"
+									sx={{
+										textAlign: "justify",
+										overflow: "hidden",
+										textOverflow: "ellipsis",
+										whiteSpace: "pre-wrap",
+										wordWrap: "break-word",
+									}}
+								>
+									{props.hashTagTopic.startsWith("#")
+										? props.hashTagTopic
+										: `#${props.hashTagTopic}`}
+								</Typography>
+							</CardContent>
+							{/* <Box
 									sx={{
 										fontSize: "25px",
 										display: "flex",
@@ -304,69 +316,69 @@ export default function ReportContent(props: Idata) {
 									{props.hashTagTopic.startsWith("#")
 										? props.hashTagTopic
 										: `#${props.hashTagTopic}`}
-								</Box>
-								{props.photoPost.length == 1 ? (
-									<ImageList
-										onClick={handleOpenReason}
-										sx={{
-											width: "100%",
-											minHeight: "300px",
-											maxHeight: "auto",
-											justifyContent: "center",
-										}}
-										cols={1}
-									>
-										{props.photoPost.map((image, index) => (
-											<ImageListItem key={index}>
-												<img
-													src={image}
-													alt={`Preview ${index}`}
-													loading="lazy"
-												/>
-											</ImageListItem>
-										))}
-									</ImageList>
-								) : (
-									<ImageList
-										onClick={handleOpenReason}
-										variant="masonry"
-										cols={2}
-										gap={2}
-									>
-										{props.photoPost.map((image, index) => (
-											<ImageListItem key={index}>
-												<img
-													src={image}
-													alt={`Preview ${index}`}
-													loading="lazy"
-												/>
-											</ImageListItem>
-										))}
-									</ImageList>
-								)}
-								<Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
-
-								<CardActions
-									disableSpacing
-									sx={{ display: "flex", justifyContent: "space-between" }}
+								</Box> */}
+							{props.photoPost.length == 1 ? (
+								<ImageList
+									onClick={handleOpenReason}
+									sx={{
+										width: "100%",
+										minHeight: "300px",
+										maxHeight: "auto",
+										justifyContent: "center",
+										cursor: "pointer"
+									}}
+									cols={1}
 								>
-									<Button aria-label="add to favorites" sx={{ color: "grey" }}>
-										<FlagOutlinedIcon />
+									{props.photoPost.map((image, index) => (
+										<ImageListItem key={index}>
+											<img
+												src={image}
+												alt={`Preview ${index}`}
+												loading="lazy"
+											/>
+										</ImageListItem>
+									))}
+								</ImageList>
+							) : (
+								<ImageList
+									onClick={handleOpenReason}
+									variant="masonry"
+									cols={2}
+									gap={2}
+								>
+									{props.photoPost.map((image, index) => (
+										<ImageListItem key={index}>
+											<img
+												src={image}
+												alt={`Preview ${index}`}
+												loading="lazy"
+											/>
+										</ImageListItem>
+									))}
+								</ImageList>
+							)}
+							<Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
+
+							<CardActions
+								disableSpacing
+								sx={{ display: "flex", justifyContent: "space-between" }}
+							>
+								<Button aria-label="add to favorites" sx={{ color: "grey" }}>
+									<FlagOutlinedIcon />
+								</Button>
+								<Box>
+									<Button
+										onClick={handleOpenReason}
+										aria-label="add to favorites"
+										sx={{ color: "grey" }}
+									>
+										{props.reportNumber} Reports
 									</Button>
-									<Box>
-										<Button
-											onClick={handleOpenReason}
-											aria-label="add to favorites"
-											sx={{ color: "grey" }}
-										>
-											{props.reportNumber} Reports
-										</Button>
-									</Box>
-								</CardActions>
-								<Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
-							</Item>
-						</Stack>
-					</Box>
+								</Box>
+							</CardActions>
+							<Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
+						</Item>
+					</Stack>
 				</Box>
 			))}
 		</Box>

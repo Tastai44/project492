@@ -28,6 +28,7 @@ export default function ReportCard(props: IFunction & IData) {
 		createAt: "",
 	};
 	const [report, setReport] = useState<PostReport>(initialPostState);
+
 	const clearState = () => {
 		setReport({ ...initialPostState });
 	};

@@ -59,8 +59,8 @@ export default function ProCoverImage(props: IData & IFunction) {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const IsOwner = userInfo.uid === props.owner;
     const isInterest = props.interest.some((f) => f.interestBy === userInfo.uid);
-
     const [open, setOpen] = React.useState(false);
+
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
@@ -153,7 +153,7 @@ export default function ProCoverImage(props: IData & IFunction) {
                 maxWidth: "100%"
             }}>
                 <CardMedia
-                    sx={{ height: 300 }}
+                    sx={{ height: 300, borderRadius: "10px" }}
                     image={props.coverPhoto}
                     title="green iguana"
                 />
@@ -166,7 +166,7 @@ export default function ProCoverImage(props: IData & IFunction) {
                 }}
             >
                 <Card sx={{
-                    width: "95%", backgroundColor: "white", display: "flex", [themeApp.breakpoints.down("md")]: {
+                    borderRadius: "10px", width: "95%", backgroundColor: "white", display: "flex", [themeApp.breakpoints.down("md")]: {
                         background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 1))',
                         width: "100%",
                     }
@@ -310,12 +310,16 @@ export default function ProCoverImage(props: IData & IFunction) {
                                     , {props.endTime}
                                 </div>
                             </Box>
+
                             <Box sx={{ display: "flex", gap: 1, m: 1, alignItems: "center" }}>
                                 {/* <TagIcon /> */}
                                 <div>
-                                    {props.topic} | {props.ageRage}+ | {props.status}
+                                    <NavLink to={`/hashtag/${props.topic}`}>
+                                        {props.topic}
+                                    </NavLink> | {props.ageRage}+ | {props.status}
                                 </div>
                             </Box>
+
                         </Box>
                     </Box>
                 </Card>

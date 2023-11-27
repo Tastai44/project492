@@ -1,8 +1,8 @@
+import { useState } from "react";
 import { Avatar, TextField, Divider, Box, Button, Modal } from "@mui/material";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
-import * as React from "react";
 import { User } from "../../interface/User";
 import CreateGroupPost from "./CreateGroupPost";
 
@@ -14,7 +14,8 @@ interface IData {
 }
 
 export default function PostGroupForm(props: IData) {
-	const [openCreatePost, setOpenCreatePost] = React.useState(false);
+	const [openCreatePost, setOpenCreatePost] = useState(false);
+
 	const handletOpenCratePost = () => setOpenCreatePost(true);
 	const handleCloseCratePost = () => setOpenCreatePost(false);
 
@@ -43,12 +44,13 @@ export default function PostGroupForm(props: IData) {
 						alignItems: "center",
 						justifyContent: "space-evenly",
 						marginBottom: 10,
+						borderRadius: "10px",
 					}}
 				>
 					<Avatar
 						alt="User"
 						src={u.profilePhoto}
-						sx={{ width: "40px", height: "40px" }}
+						sx={{ width: "40px", height: "40px", mr: 1 }}
 					/>
 					<div style={{ width: "98%" }}>
 						<TextField
@@ -58,6 +60,7 @@ export default function PostGroupForm(props: IData) {
 							maxRows={4}
 							sx={{ width: "99%" }}
 							onClick={handletOpenCratePost}
+							size="small"
 						/>
 					</div>
 				</div>

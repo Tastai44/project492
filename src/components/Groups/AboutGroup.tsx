@@ -7,7 +7,7 @@ interface IData {
 export default function AboutGroup({ details }: IData) {
 	return (
 		<div>
-			<Paper sx={{ display: { xs: "none", md: "block" } }}>
+			<Paper sx={{ display: { xs: "none", md: "block", borderRadius: "10px" } }}>
 				<Box
 					sx={{
 						fontSize: "20px",

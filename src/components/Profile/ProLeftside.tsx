@@ -151,8 +151,6 @@ export default function ProLeftside() {
 		}
 	};
 
-
-
 	return (
 		<>
 			<UploadProfile
@@ -245,7 +243,8 @@ export default function ProLeftside() {
 										<Button
 											size="small"
 											sx={{
-												width: "30px",
+												width: "79px",
+												borderRadius: "5px",
 												fontSize: "16px",
 												alignItems: "center",
 												backgroundColor: "#8E51E2",
@@ -308,10 +307,11 @@ export default function ProLeftside() {
 															color: isActive ? "black" : "grey",
 															backgroundColor: isActive ? "#B8B8B8" : "",
 															width: isActive ? "100%" : "100%",
+															borderRadius: "10px"
 														};
 													}}
 												>
-													<ListItemButton>
+													<ListItemButton sx={{ "&:hover": { borderRadius: "10px" } }}>
 														<ListItemText primary="Blog" />
 													</ListItemButton>
 												</NavLink>
@@ -325,10 +325,11 @@ export default function ProLeftside() {
 															color: isActive ? "black" : "grey",
 															backgroundColor: isActive ? "#B8B8B8" : "",
 															width: isActive ? "100%" : "100%",
+															borderRadius: "10px"
 														};
 													}}
 												>
-													<ListItemButton>
+													<ListItemButton sx={{ "&:hover": { borderRadius: "10px" } }}>
 														<ListItemText primary="About Me" />
 													</ListItemButton>
 												</NavLink>
@@ -342,10 +343,11 @@ export default function ProLeftside() {
 															color: isActive ? "black" : "grey",
 															backgroundColor: isActive ? "#B8B8B8" : "",
 															width: isActive ? "100%" : "100%",
+															borderRadius: "10px"
 														};
 													}}
 												>
-													<ListItemButton>
+													<ListItemButton sx={{ "&:hover": { borderRadius: "10px" } }}>
 														<ListItemText primary="Friends" />
 													</ListItemButton>
 												</NavLink>
@@ -359,10 +361,11 @@ export default function ProLeftside() {
 															color: isActive ? "black" : "grey",
 															backgroundColor: isActive ? "#B8B8B8" : "",
 															width: isActive ? "100%" : "100%",
+															borderRadius: "10px"
 														};
 													}}
 												>
-													<ListItemButton>
+													<ListItemButton sx={{ "&:hover": { borderRadius: "10px" } }}>
 														<ListItemText primary="Collections" />
 													</ListItemButton>
 												</NavLink>

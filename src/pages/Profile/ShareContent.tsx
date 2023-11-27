@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
-import Box from "@mui/material/Box";
 import {
+	Box,
 	Avatar,
 	ListItem,
 	ListItemAvatar,
@@ -160,10 +160,8 @@ export default function ShareContent(props: Idata) {
 							disabled={
 								!props.shareUsers.some(
 									(share) =>
-										(share.shareBy == userInfo.uid &&
-											share.shareTo == userInfo.uid) ||
-										(share.shareTo == userInfo.uid ||
-											share.shareTo == props.userId)
+										(share.shareBy == userInfo.uid) ||
+										(share.shareTo == userInfo.uid)
 								)
 							}
 							onClick={

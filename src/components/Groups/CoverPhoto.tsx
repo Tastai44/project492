@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import { Box, Button, Card, CardMedia, Divider, Modal } from "@mui/material";
 import MessageIcon from "@mui/icons-material/Message";
 import DateRangeIcon from "@mui/icons-material/DateRange";
@@ -14,6 +14,7 @@ import GroupChatBox from "../GroupChat/GroupChatBox";
 import PopupAlert from "../PopupAlert";
 import { themeApp } from "../../utils/Theme";
 
+
 interface IData {
 	coverPhoto: string;
 	createAt: string;
@@ -27,12 +28,14 @@ interface IData {
 
 export default function ProCoverImage(props: IData) {
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-	const [open, setOpen] = React.useState(false);
+	const [open, setOpen] = useState(false);
+	const navigate = useNavigate();
+	const [groupId, setGroupId] = useState("");
+	const [openGroupChat, setOpenGroupChat] = useState(false);
+
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
-	const navigate = useNavigate();
-	const [groupId, setGroupId] = React.useState("");
-	const [openGroupChat, setOpenGroupChat] = React.useState(false);
+
 	const handleOpenGroupChat = (id: string) => {
 		setOpenGroupChat(true);
 		setGroupId(id);
@@ -60,6 +63,7 @@ export default function ProCoverImage(props: IData) {
 				console.error("Error fetching Event: ", error);
 			});
 	};
+
 	return (
 		<div>
 			<Modal
@@ -108,6 +112,7 @@ export default function ProCoverImage(props: IData) {
 						width: "95%",
 						backgroundColor: "white",
 						display: "flex",
+						borderRadius: "10px",
 						[themeApp.breakpoints.down("md")]: {
 							background:
 								"linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 1))",
@@ -242,6 +247,6 @@ export default function ProCoverImage(props: IData) {
 					</Box>
 				</Card>
 			</Box>
-		</div>
+		</div >
 	);
 }

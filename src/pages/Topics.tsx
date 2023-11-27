@@ -29,6 +29,7 @@ import { Post, Like } from "../interface/PostContent";
 import { styleBoxPop } from "../utils/styleBox";
 import { User } from "../interface/User";
 import { themeApp } from "../utils/Theme";
+import Loading from "../components/Loading";
 
 export default function Topics() {
 	const [dateType, setDateType] = useState("All");
@@ -40,6 +41,53 @@ export default function Topics() {
 	const [postOwner, setPostOwner] = useState("");
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [openSearch, setOpenSearch] = useState<boolean>(false);
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	const [openLoading, setOpenLoading] = useState(false);
+
+	useMemo(() => {
+		const fetchData = async () => {
+			try {
+				const q = query(
+					collection(dbFireStore, "users"),
+					where("uid", "==", userInfo.uid)
+				);
+				const querySnapshot = await getDocs(q);
+				const queriedData = querySnapshot.docs.map(
+					(doc) =>
+					({
+						uid: doc.id,
+						...doc.data(),
+					} as User)
+				);
+				setInFoUser(queriedData);
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		};
+		fetchData();
+	}, [userInfo.uid]);
+
+	useEffect(() => {
+		setOpenLoading(true);
+		const fetchData = query(
+			collection(dbFireStore, "posts"),
+			orderBy("createAt", "desc")
+		);
+		const unsubscribe = onSnapshot(
+			fetchData,
+			(snapshot) => {
+				const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
+				setPosts(queriedData);
+				setOpenLoading(false);
+			},
+			(error) => {
+				console.error("Error fetching data", error);
+			}
+		);
+		return () => {
+			unsubscribe();
+		};
+	}, [reFresh]);
 
 	const handleOpenSearch = () => {
 		setOpenSearch(true);
@@ -50,25 +98,6 @@ export default function Topics() {
 	const handleRefresh = () => {
 		setReFresh((pre) => pre + 1);
 	};
-	useEffect(() => {
-		const fetchData = query(
-			collection(dbFireStore, "posts"),
-			orderBy("createAt", "desc")
-		);
-		const unsubscribe = onSnapshot(
-			fetchData,
-			(snapshot) => {
-				const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
-				setPosts(queriedData);
-			},
-			(error) => {
-				console.error("Error fetching data", error);
-			}
-		);
-		return () => {
-			unsubscribe();
-		};
-	}, [reFresh]);
 
 	const handletOpenPost = (id: string, likeData: Like[], owner: string) => {
 		setOpenPost(true);
@@ -109,20 +138,17 @@ export default function Topics() {
 
 		const lastDayOfWeek = new Date(firstDayOfWeek);
 		lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+		const startDate = firstDayOfWeek.toLocaleDateString("en-US");
+		const endDate = lastDayOfWeek.toLocaleDateString("en-US");
 
 		const fetchWeeklyData = async () => {
 			try {
-				const startDate = firstDayOfWeek.toLocaleDateString("en-US");
-				const endDate = lastDayOfWeek.toLocaleDateString("en-US");
-
 				const q = query(
-					collection(dbFireStore, "posts"),
-					where("date", ">=", startDate),
-					where("date", "<=", endDate)
+					collection(dbFireStore, "posts")
 				);
 				const querySnapshot = await getDocs(q);
 				const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
-				setPosts(queriedData);
+				setPosts(queriedData.filter((post) => new Date(post.date ?? "") >= new Date(startDate) && new Date(post.date ?? "") <= new Date(endDate)));
 			} catch (error) {
 				console.error("Error fetching data:", error);
 			}
@@ -145,13 +171,11 @@ export default function Topics() {
 				const startOfMonth = firstDayOfMonth.toLocaleDateString("en-US");
 				const endOfMonth = lastDayOfMonth.toLocaleDateString("en-US");
 				const q = query(
-					collection(dbFireStore, "posts"),
-					where("date", ">=", startOfMonth),
-					where("date", "<=", endOfMonth)
+					collection(dbFireStore, "posts")
 				);
 				const querySnapshot = await getDocs(q);
 				const queriedData = querySnapshot.docs.map((doc) => doc.data() as Post);
-				setPosts(queriedData);
+				setPosts(queriedData.filter((post) => new Date(post.date ?? "") >= new Date(startOfMonth) && new Date(post.date ?? "") <= new Date(endOfMonth)));
 			} catch (error) {
 				console.error("Error fetching data:", error);
 			}
@@ -163,32 +187,11 @@ export default function Topics() {
 		setDateType(e.target.value as string);
 	};
 
-	const [inFoUser, setInFoUser] = useState<User[]>([]);
-	useMemo(() => {
-		const fetchData = async () => {
-			try {
-				const q = query(
-					collection(dbFireStore, "users"),
-					where("uid", "==", userInfo.uid)
-				);
-				const querySnapshot = await getDocs(q);
-				const queriedData = querySnapshot.docs.map(
-					(doc) =>
-					({
-						uid: doc.id,
-						...doc.data(),
-					} as User)
-				);
-				setInFoUser(queriedData);
-			} catch (error) {
-				console.error("Error fetching data:", error);
-			}
-		};
-		fetchData();
-	}, [userInfo.uid]);
-
 	return (
 		<div>
+			<Loading
+				openLoading={openLoading}
+			/>
 			<SearchContent
 				openSearchBar={openSearch}
 				handleCloseSearchBar={handleCloseSearch}
@@ -212,7 +215,7 @@ export default function Topics() {
 					</Paper>
 				</Box>
 			</Modal>
-			<Box sx={{ width: "100%", bgcolor: "background.paper", color: "black" }}>
+			<Box sx={{ width: "100%", bgcolor: "background.paper", color: "black", borderRadius: "10px" }}>
 				<Box
 					sx={{
 						display: "flex",
@@ -239,17 +242,20 @@ export default function Topics() {
 								border: "1px solid #CCCCCC",
 								width: "200px",
 								color: "black",
+								borderRadius: "20px",
 								"&:hover": {
-									backgroundColor: "primary.contrastText"
-								}
+									backgroundColor: "white"
+								},
+								backgroundColor: "primary.contrastText"
 							}}
 							onClick={handleOpenSearch}
 						>
 							Search...
 						</Button>
-						<FormControl fullWidth>
+						<FormControl fullWidth sx={{ borderRadius: "20px" }} >
 							<InputLabel id="demo-simple-select-label">D/W/M</InputLabel>
 							<Select
+								sx={{ borderRadius: "20px" }}
 								size="small"
 								labelId="demo-simple-select-label"
 								id="demo-simple-select"

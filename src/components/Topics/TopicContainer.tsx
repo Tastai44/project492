@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-import Box from "@mui/material/Box";
-
 import EachTopic from "./EachTopic";
 import {
+	Box,
 	Typography,
 	Divider,
 	Modal,
@@ -40,16 +39,31 @@ export default function TopicContainer() {
 	const [postOwner, setPostOwner] = useState("");
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [openSearch, setOpenSearch] = useState<boolean>(false);
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
 
-	const handleOpenSearch = () => {
-		setOpenSearch(true);
-	};
-	const handleCloseSearch = () => {
-		setOpenSearch(false);
-	};
-	const handleRefresh = () => {
-		setReFresh((pre) => pre + 1);
-	};
+	useMemo(() => {
+		const fetchData = async () => {
+			try {
+				const q = query(
+					collection(dbFireStore, "users"),
+					where("uid", "==", userInfo.uid)
+				);
+				const querySnapshot = await getDocs(q);
+				const queriedData = querySnapshot.docs.map(
+					(doc) =>
+					({
+						uid: doc.id,
+						...doc.data(),
+					} as User)
+				);
+				setInFoUser(queriedData);
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		};
+		fetchData();
+	}, [userInfo.uid]);
+
 	useEffect(() => {
 		const fetchData = query(
 			collection(dbFireStore, "posts"),
@@ -69,6 +83,16 @@ export default function TopicContainer() {
 			unsubscribe();
 		};
 	}, [reFresh]);
+
+	const handleOpenSearch = () => {
+		setOpenSearch(true);
+	};
+	const handleCloseSearch = () => {
+		setOpenSearch(false);
+	};
+	const handleRefresh = () => {
+		setReFresh((pre) => pre + 1);
+	};
 
 	const handletOpenPost = (id: string, likeData: Like[], owner: string) => {
 		setOpenPost(true);
@@ -162,30 +186,6 @@ export default function TopicContainer() {
 	const handleDateType = (e: SelectChangeEvent) => {
 		setDateType(e.target.value as string);
 	};
-
-	const [inFoUser, setInFoUser] = useState<User[]>([]);
-	useMemo(() => {
-		const fetchData = async () => {
-			try {
-				const q = query(
-					collection(dbFireStore, "users"),
-					where("uid", "==", userInfo.uid)
-				);
-				const querySnapshot = await getDocs(q);
-				const queriedData = querySnapshot.docs.map(
-					(doc) =>
-					({
-						uid: doc.id,
-						...doc.data(),
-					} as User)
-				);
-				setInFoUser(queriedData);
-			} catch (error) {
-				console.error("Error fetching data:", error);
-			}
-		};
-		fetchData();
-	}, [userInfo.uid]);
 
 	return (
 		<div>

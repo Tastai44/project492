@@ -1,7 +1,7 @@
-
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
+import { useState, useRef, ChangeEvent, useEffect } from "react";
 import {
+	Button,
+	Box,
 	Avatar,
 	IconButton,
 	InputLabel,
@@ -13,9 +13,9 @@ import {
 	MenuItem,
 	ImageList,
 	ImageListItem,
-	Typography
+	Typography,
+	FormControl
 } from "@mui/material";
-import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -32,7 +32,6 @@ import { dbFireStore } from "../../config/firebase";
 import { Post } from "../../interface/PostContent";
 import { doc, updateDoc, collection, getDoc, onSnapshot, query, where } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
-import { useState, useRef, ChangeEvent, useEffect } from "react";
 import LocationCard from "./LocationCard";
 import { User } from "../../interface/User";
 import { styleCreatePost } from "../../utils/styleBox";
@@ -53,11 +52,53 @@ interface Idata {
 export default function CreatePost(props: IHandle & Idata) {
 	const [status, setStatus] = useState(`${props.oldStatus}`);
 	const [location, setLocation] = useState(props.location);
+	const [openLocation, setOpenLocation] = useState(false);
+	const [openEmoji, setOpenEmoji] = useState(false);
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
+	const [previewImages, setPreviewImages] = useState<string[]>(props.oldPhoto);
+	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	const [emoji, setEmoji] = useState(props.oldEmoji ? props.oldEmoji : "");
+	const initialState = {
+		id: "",
+		caption: props.caption,
+		hashTagTopic: props.hashTagTopic,
+		status: "",
+		photoPost: [],
+		comments: [],
+		updateAt: "",
+		likes: [],
+		emoji: "",
+		owner: "",
+		shareUsers: [],
+		reportPost: [],
+	};
+	const [post, setPost] = useState<Post>(initialState);
+
+	useEffect(() => {
+		const queryData = query(
+			collection(dbFireStore, "users"),
+			where("uid", "==", userInfo.uid)
+		);
+		const unsubscribe = onSnapshot(
+			queryData,
+			(snapshot) => {
+				const queriedData = snapshot.docs.map((doc) => doc.data() as User);
+				setInFoUser(queriedData);
+			},
+			(error) => {
+				console.error("Error fetching data: ", error);
+			}
+		);
+		return () => {
+			unsubscribe();
+		};
+	}, [userInfo.uid]);
+
 	const handleChange = (event: SelectChangeEvent) => {
 		setStatus(event.target.value as string);
 	};
 
-	const [openLocation, setOpenLocation] = useState(false);
 	const handletOpenLocation = () => setOpenLocation(true);
 	const handletSaveLocation = () => setOpenLocation(false);
 	const handleCloseLocation = () => {
@@ -73,15 +114,9 @@ export default function CreatePost(props: IHandle & Idata) {
 			setLocation(newValue);
 		}
 	};
-	const [openEmoji, setOpenEmoji] = useState(false);
+
 	const handletOpenEmoji = () => setOpenEmoji(true);
 	const handleCloseEmoji = () => setOpenEmoji(false);
-
-	const fileInputRef = useRef<HTMLInputElement | null>(null);
-	const [previewImages, setPreviewImages] = useState<string[]>(props.oldPhoto);
-
-	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-	const [inFoUser, setInFoUser] = useState<User[]>([]);
 
 	const handleClearImage = () => {
 		setPreviewImages([]);
@@ -117,26 +152,10 @@ export default function CreatePost(props: IHandle & Idata) {
 		}
 	};
 
-	const [emoji, setEmoji] = useState(props.oldEmoji ? props.oldEmoji : "");
 	const handleChangeEmoji = (e: string) => {
 		setEmoji(e);
 	};
 
-	const initialState = {
-		id: "",
-		caption: props.caption,
-		hashTagTopic: props.hashTagTopic,
-		status: "",
-		photoPost: [],
-		comments: [],
-		updateAt: "",
-		likes: [],
-		emoji: "",
-		owner: "",
-		shareUsers: [],
-		reportPost: [],
-	};
-	const [post, setPost] = useState<Post>(initialState);
 	const clearState = () => {
 		setPost({ ...initialState });
 		setStatus("");
@@ -191,26 +210,6 @@ export default function CreatePost(props: IHandle & Idata) {
 		const emoji = emojiData.find((data) => data.unified === emojiCode);
 		return emoji ? emoji.name : undefined;
 	};
-
-	useEffect(() => {
-		const queryData = query(
-			collection(dbFireStore, "users"),
-			where("uid", "==", userInfo.uid)
-		);
-		const unsubscribe = onSnapshot(
-			queryData,
-			(snapshot) => {
-				const queriedData = snapshot.docs.map((doc) => doc.data() as User);
-				setInFoUser(queriedData);
-			},
-			(error) => {
-				console.error("Error fetching data: ", error);
-			}
-		);
-		return () => {
-			unsubscribe();
-		};
-	}, [userInfo.uid]);
 
 	return (
 		<div>
@@ -323,6 +322,7 @@ export default function CreatePost(props: IHandle & Idata) {
 					<TextField
 						name="caption"
 						label="What is in your mind?"
+						size="small"
 						variant="outlined"
 						multiline
 						maxRows={4}

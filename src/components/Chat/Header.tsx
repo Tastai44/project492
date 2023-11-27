@@ -49,7 +49,7 @@ export default function Header(props: IData) {
                   alignItems: "center",
                   justifyContent: "space-between",
                   gap: 0.5,
-                  fontSize: "14px",
+                  fontSize: "12px",
                   ml: -1,
                   color: 'white',
                 }}

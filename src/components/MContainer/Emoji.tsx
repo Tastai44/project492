@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import emojiData from "emoji-datasource-facebook";
 import { Box, Paper, Grid, IconButton, Divider } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -14,16 +14,19 @@ export default function Emoji({ handleClose, handleChangeEmoji }: IHandle) {
     const emotionEmojis = emojiData.filter(
         (emoji) => emoji.category === "Smileys & Emotion"
     );
-    const [emojiKey, setEmojiKey] = React.useState("");
-    const handleGetEmoji = (e: string) => {
-        setEmojiKey(e);
-    };
-    React.useEffect(() => {
+    const [emojiKey, setEmojiKey] = useState("");
+
+    useEffect(() => {
         handleChangeEmoji(emojiKey);
         if (emojiKey) {
             handleClose();
         }
     }, [emojiKey, handleChangeEmoji, handleClose]);
+
+    const handleGetEmoji = (e: string) => {
+        setEmojiKey(e);
+    };
+
     return (
         <Box sx={styleBoxEmoji}>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>

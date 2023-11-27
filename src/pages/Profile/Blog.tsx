@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
 import {
+	Grid,
+	Paper,
+	Box,
 	FormControl,
 	InputLabel,
 	MenuItem,
@@ -102,7 +102,7 @@ export default function Blog() {
 	useEffect(() => {
 		const queryData = query(
 			collection(dbFireStore, "users"),
-			where("uid", "==", userInfo.uid)
+			where("uid", "==", userId)
 		);
 		const unsubscribe = onSnapshot(
 			queryData,
@@ -117,7 +117,7 @@ export default function Blog() {
 		return () => {
 			unsubscribe();
 		};
-	}, [userInfo.uid]);
+	}, [userId]);
 
 	const handleChangeType = (event: SelectChangeEvent) => {
 		setType(event.target.value as string);
@@ -129,7 +129,7 @@ export default function Blog() {
 				userId={userId ?? ""}
 			/>
 			<Box sx={{ margin: 1, display: { xs: "block", lg: "none" } }}>
-				<FormControl fullWidth sx={{ backgroundColor: "white", mb: 1 }}>
+				<FormControl fullWidth sx={{ backgroundColor: "white", mb: 1, borderRadius: "10px" }}>
 					<InputLabel id="demo-simple-select-label">
 						Content type
 					</InputLabel>
@@ -139,6 +139,7 @@ export default function Blog() {
 						value={type}
 						label="Content type"
 						onChange={handleChangeType}
+						sx={{ borderRadius: "10px" }}
 					>
 						<MenuItem value={"General"}>General</MenuItem>
 						<MenuItem value={"Share"}>Share</MenuItem>
@@ -156,7 +157,7 @@ export default function Blog() {
 					<Grid container spacing={2}>
 						<Grid item lg={9} md={12} sm={12}>
 							{userInfo.uid == userId && (
-								<Item sx={{ backgroundColor: "#fff", margin: 1, display: { xs: "none", lg: "block" } }}>
+								<Item sx={{ backgroundColor: "#fff", borderRadius: "10px", margin: 1, display: { xs: "none", lg: "block" } }}>
 									<PostForm inFoUser={inFoUser} />
 								</Item>
 							)}
@@ -200,7 +201,7 @@ export default function Blog() {
 										sharePost.some((f) =>
 											f.shareUsers.some(
 												(share) =>
-												((share.status == "Private" && (share.shareBy == userInfo.uid && share.shareTo == userInfo.uid)) ||
+												((share.status == "Private" && (share.shareBy == userId && share.shareTo == userId)) ||
 													(share.shareBy == userId && share.status == "Public"))
 											)
 										) && (
@@ -215,7 +216,7 @@ export default function Blog() {
 													.filter((f) =>
 														f.shareUsers.some(
 															(share) =>
-															((share.status == "Private" && (share.shareBy == userInfo.uid && share.shareTo == userInfo.uid)) ||
+															((share.status == "Private" && (share.shareBy == userId && share.shareTo == userId)) ||
 																(share.shareBy == userId && share.status == "Public"))
 														)
 													)
@@ -226,9 +227,9 @@ export default function Blog() {
 																postId={m.id}
 																shareUsers={m.shareUsers.filter(
 																	(share) =>
-																		share.status == "Private" ||
+																	((share.status == "Private" && share.shareBy == userId) ||
 																		(share.status == "Public" &&
-																			share.shareBy == userId)
+																			share.shareBy == userId))
 																)}
 															/>
 															<MContainer
@@ -420,7 +421,7 @@ export default function Blog() {
 
 						<Grid item xs={3} sx={{ display: { xs: "none", lg: "block" } }}>
 							<Item>
-								<FormControl fullWidth sx={{ mb: 1, backgroundColor: "white" }}>
+								<FormControl fullWidth sx={{ mb: 1, backgroundColor: "white", borderRadius: "10px" }}>
 									<InputLabel id="demo-simple-select-label">
 										Content type
 									</InputLabel>
@@ -430,12 +431,13 @@ export default function Blog() {
 										value={type}
 										label="Content type"
 										onChange={handleChangeType}
+										sx={{ borderRadius: "10px" }}
 									>
 										<MenuItem value={"General"}>General</MenuItem>
 										<MenuItem value={"Share"}>Share</MenuItem>
 									</Select>
 								</FormControl>
-								<Paper>
+								<Paper sx={{ borderRadius: "10px" }}>
 									<Typography
 										sx={{
 											fontSize: "16px",

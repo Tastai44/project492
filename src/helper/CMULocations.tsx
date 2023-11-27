@@ -1,5 +1,3 @@
-
-
 export const locations: string[] = [
     "Angkaew reservoir",
     "Tard chowpoo reservior",

@@ -7,10 +7,8 @@ import {
     IconButton,
     ImageList,
     ImageListItem,
-    InputAdornment,
     InputLabel,
     MenuItem,
-    OutlinedInput,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -28,6 +26,7 @@ import { collection, getDoc, updateDoc } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import { locations } from "../../helper/CMULocations";
 import { styleBox } from "../../utils/styleBox";
+import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 
 interface Ihandle {
     closeAdd: () => void;
@@ -51,6 +50,31 @@ interface IData {
 export default function EditEvent(props: IData & Ihandle) {
     const [userId, setUserId] = useState("");
     const [location, setLocation] = useState(props.location);
+    const [status, setStatus] = useState(`${props.status}`);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [previewImages, setPreviewImages] = useState<string[]>([props.coverPhoto]);
+    const initialState = {
+        eventId: "",
+        title: props.title,
+        startDate: props.startDate,
+        startTime: props.startTime,
+        endDate: props.endDate,
+        endTime: props.endTime,
+        topic: props.topic,
+        ageRage: props.ageRage,
+        details: props.details,
+        status: props.status,
+        location: props.location,
+        coverPhoto: props.coverPhoto,
+    };
+    const [event, setEvent] = useState<IData>(initialState);
+
+    useEffect(() => {
+        const getUerInfo = localStorage.getItem("user");
+        const tmp = JSON.parse(getUerInfo ? getUerInfo : "");
+        setUserId(tmp.uid);
+    }, []);
+
     const handleChangeLocation = (
         _event: ChangeEvent<unknown>,
         newValue: string | null
@@ -60,18 +84,9 @@ export default function EditEvent(props: IData & Ihandle) {
         }
     };
 
-    useEffect(() => {
-        const getUerInfo = localStorage.getItem("user");
-        const tmp = JSON.parse(getUerInfo ? getUerInfo : "");
-        setUserId(tmp.uid);
-    }, []);
-
-    const [status, setStatus] = useState(`${props.status}`);
     const handleChange = (event: SelectChangeEvent) => {
         setStatus(event.target.value as string);
     };
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [previewImages, setPreviewImages] = useState<string[]>([props.coverPhoto]);
 
     const handleClearImage = () => {
         setPreviewImages([]);
@@ -107,22 +122,6 @@ export default function EditEvent(props: IData & Ihandle) {
         }
     };
 
-    const initialState = {
-        eventId: "",
-        title: props.title,
-        startDate: props.startDate,
-        startTime: props.startTime,
-        endDate: props.endDate,
-        endTime: props.endTime,
-        topic: props.topic,
-        ageRage: props.ageRage,
-        details: props.details,
-        status: props.status,
-        location: props.location,
-        coverPhoto: props.coverPhoto,
-    };
-
-    const [event, setEvent] = useState<IData>(initialState);
     const clearState = () => {
         setEvent({ ...initialState });
         handleClearImage();
@@ -189,8 +188,6 @@ export default function EditEvent(props: IData & Ihandle) {
         }
     };
 
-
-
     return (
         <Box sx={{ color: "black" }}>
             <Box sx={styleBox}>
@@ -200,7 +197,7 @@ export default function EditEvent(props: IData & Ihandle) {
                     </IconButton>
                 </Box>
                 <Typography id="modal-modal-title" variant="h5">
-                    Add an event
+                    Edit an event
                 </Typography>
 
                 <Divider sx={{ background: "grey" }} />
@@ -368,18 +365,30 @@ export default function EditEvent(props: IData & Ihandle) {
                         variant="outlined"
                         onClick={handleUploadClick}
                     >
-                        <OutlinedInput
-                            id="outlined-insertPhoto"
-                            type={"file"}
-                            inputProps={{ "aria-label": " " }}
+                        <input
+                            type="file"
                             ref={fileInputRef}
                             onChange={handleFileChange}
-                            endAdornment={
-                                <InputAdornment position="end" sx={{ fontSize: "20px" }}>
-                                    Cover photo
-                                </InputAdornment>
-                            }
+                            multiple
+                            hidden
+                            accept="image/*"
                         />
+
+                        <Box sx={{
+                            p: 1, display: "flex", justifyContent: "center", textAlign: "center",
+                            cursor: "pointer", "&:hover": { backgroundColor: "#CCCCCC" },
+                            border: "1px solid #C5C5C5", borderRadius: "5px"
+                        }}>
+                            <Box sx={{ flexDirection: "column" }}>
+                                <Box>
+                                    <AddAPhotoIcon />
+                                </Box>
+                                <Box>
+                                    Add cover photo
+                                </Box>
+                            </Box>
+
+                        </Box>
                     </FormControl>
                 </Box>
                 <Box

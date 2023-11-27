@@ -1,7 +1,7 @@
 import { useState, useEffect, ChangeEvent } from "react";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
 import {
+	Grid,
+	Box,
 	Divider,
 	ImageList,
 	ImageListItem,
@@ -101,6 +101,7 @@ export default function Collections() {
 						width: "100%",
 						display: "flex",
 						flexDirection: "column",
+						borderRadius: "10px"
 					}}
 				>
 					<Box
@@ -121,6 +122,7 @@ export default function Collections() {
 							<SearchBar
 								searchValue={searchValue}
 								handleSearch={handleSearch}
+								backgroupColor={'#F1F1F1'}
 							/>
 						</Box>
 					</Box>
@@ -149,7 +151,7 @@ export default function Collections() {
 														src={img}
 														alt={`Preview ${index}`}
 														loading="lazy"
-														style={{ width: "200px", height: "200px" }}
+														style={{ width: "200px", height: "200px", borderRadius: "10px" }}
 													/>
 												</ImageListItem>
 											))

@@ -1,3 +1,4 @@
+import { useState, useMemo } from "react";
 import {
 	ListItem,
 	ListItemAvatar,
@@ -16,7 +17,6 @@ import {
 	getDocs,
 	where,
 } from "firebase/firestore";
-import React from "react";
 import { User } from "../../interface/User";
 
 interface IData {
@@ -26,9 +26,9 @@ interface IData {
 }
 
 export default function ReasonContent(props: IData) {
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
 
-	const [inFoUser, setInFoUser] = React.useState<User[]>([]);
-	React.useMemo(() => {
+	useMemo(() => {
 		const fetchData = async () => {
 			try {
 				const q = query(

@@ -10,9 +10,8 @@ export const styleCreatePost = {
     width: 300,
   },
   bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
   color: "black",
+  borderRadius: "10px",
   p: 4,
 };
 
@@ -31,6 +30,7 @@ export const styleBoxPop = {
 
 export const styleBoxChat = {
   position: "fixed",
+  borderRadius: "10px",
   left: 10,
   bottom: 0,
   width: 400,
@@ -51,6 +51,7 @@ export const stylePreviewPhoto = {
   bgcolor: "background.paper",
   color: "black",
   overflow: "auto",
+  borderRadius: "10px",
 };
 
 export const styleBox = {
@@ -62,12 +63,11 @@ export const styleBox = {
   [themeApp.breakpoints.down("md")]: {
     width: 300,
   },
-  height: 600,
+  maxHeight: 700,
   bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
   overflow: "auto",
   p: 4,
+  borderRadius: "10px",
 };
 
 export const styleTable = {
@@ -80,8 +80,7 @@ export const styleTable = {
     width: 300,
   },
   bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
+  borderRadius: "10px",
   p: 2,
 };
 
@@ -95,8 +94,7 @@ export const styleSearchBox = {
     width: 300,
   },
   bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
+  borderRadius: "10px",
   color: "black",
   p: 2,
 };
@@ -111,8 +109,7 @@ export const styleBoxEmoji = {
     width: 300,
   },
   bgcolor: "white",
-  border: "2px solid #000",
-  boxShadow: 24,
+  borderRadius: "10px",
   color: "black",
   p: 3,
   overflowY: "scroll",
@@ -128,10 +125,10 @@ export const styleBoxReport = {
   [themeApp.breakpoints.down("md")]: {
     width: 300,
   },
-  bgcolor: "background.paper",
-  border: "2px solid #000",
+  borderRadius: "10px",
   boxShadow: 24,
   overflow: "auto",
+  bgcolor: "background.paper",
   p: 4,
 };
 
@@ -148,6 +145,7 @@ export const styleCommentBox = {
   color: "black",
   p: 3,
   overflow: "auto",
+  borderRadius: "10px",
 };
 
 export const styleChatList = {
@@ -173,7 +171,34 @@ export const styleEditProfile = {
     width: 300,
   },
   bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
+  borderRadius: "10px",
   p: 4,
+};
+
+export const stylePrivacyBox = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  width: 500,
+  transform: "translate(-50%, -50%)",
+  [themeApp.breakpoints.down("md")]: {
+    width: 300,
+  },
+  bgcolor: "white",
+  borderRadius: "10px",
+  p: 4,
+};
+
+export const styleLoading = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  "&:focus": {
+    outline: "none",
+  },
+  "&:active": {
+    boxShadow: "none",
+  },
+  textAlign: "center",
 };

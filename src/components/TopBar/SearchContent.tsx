@@ -115,6 +115,7 @@ export default function SearchContent(props: IData) {
                     <SearchBar
                         searchValue={searchValue}
                         handleSearch={handleSearch}
+                        backgroupColor={'#F1F1F1'}
                     />
 
                     <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />

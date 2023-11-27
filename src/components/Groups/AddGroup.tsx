@@ -6,10 +6,8 @@ import {
 	IconButton,
 	ImageList,
 	ImageListItem,
-	InputAdornment,
 	InputLabel,
 	MenuItem,
-	OutlinedInput,
 	Select,
 	SelectChangeEvent,
 } from "@mui/material";
@@ -31,6 +29,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import PopupAlert from "../PopupAlert";
+import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 
 interface Ihandle {
 	closeEdit: () => void;
@@ -40,6 +39,20 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 	const [member, setMember] = useState<string[]>([]);
 	const [users, setUsers] = useState<User[]>([]);
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
+	const [previewImages, setPreviewImages] = useState<string[]>([]);
+	const [status, setStatus] = useState("");
+	const initialState = {
+		gId: "",
+		hostId: "",
+		groupName: "",
+		members: [],
+		status: "",
+		details: "",
+		coverPhoto: "",
+		createAt: "",
+	};
+	const [group, setGroup] = useState<IGroup>(initialState);
 
 	useMemo(() => {
 		const fetchData = async () => {
@@ -68,13 +81,12 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 		setMember(newValue);
 	};
 
-	const fileInputRef = useRef<HTMLInputElement | null>(null);
-	const [previewImages, setPreviewImages] = useState<string[]>([]);
 	const handleUploadClick = () => {
 		if (fileInputRef.current) {
 			fileInputRef.current.click();
 		}
 	};
+
 	const handleFileChange = async (
 		event: ChangeEvent<HTMLInputElement>
 	) => {
@@ -104,22 +116,10 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 		setPreviewImages([]);
 	};
 
-	const [status, setStatus] = useState("");
 	const handleChange = (event: SelectChangeEvent) => {
 		setStatus(event.target.value as string);
 	};
 
-	const initialState = {
-		gId: "",
-		hostId: "",
-		groupName: "",
-		members: [],
-		status: "",
-		details: "",
-		coverPhoto: "",
-		createAt: "",
-	};
-	const [group, setGroup] = useState<IGroup>(initialState);
 	const clearState = () => {
 		setGroup({ ...initialState });
 		handleClearImage();
@@ -269,18 +269,30 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 						variant="outlined"
 						onClick={handleUploadClick}
 					>
-						<OutlinedInput
-							id="outlined-insertPhoto"
-							type={"file"}
-							inputProps={{ "aria-label": " " }}
+						<input
+							type="file"
 							ref={fileInputRef}
 							onChange={handleFileChange}
-							endAdornment={
-								<InputAdornment position="end" sx={{ fontSize: "20px" }}>
-									Cover photo
-								</InputAdornment>
-							}
+							multiple
+							hidden
+							accept="image/*"
 						/>
+
+						<Box sx={{
+							p: 1, display: "flex", justifyContent: "center", textAlign: "center",
+							cursor: "pointer", "&:hover": { backgroundColor: "#CCCCCC" },
+							border: "1px solid #C5C5C5", borderRadius: "5px"
+						}}>
+							<Box sx={{ flexDirection: "column" }}>
+								<Box>
+									<AddAPhotoIcon />
+								</Box>
+								<Box>
+									Add cover photo
+								</Box>
+							</Box>
+
+						</Box>
 					</FormControl>
 				</Box>
 				<Box
@@ -310,6 +322,7 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 						}}
 						onClick={createGroup}
 						type="submit"
+						disabled={!group.details || !group.groupName || !member || !status || !fileInputRef}
 					>
 						Save
 					</Button>

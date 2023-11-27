@@ -20,18 +20,44 @@ export default function ProCoverImage() {
     const [openPre, setOpenPre] = useState(false);
     const [inFoUser, setInFoUser] = useState<User[]>([]);
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+    const [reFresh, setReFresh] = useState(0);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [previewImages, setPreviewImages] = useState<string[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const q = query(
+                    collection(dbFireStore, "users"),
+                    where("uid", "==", userId)
+                );
+                const querySnapshot = await getDocs(q);
+                const queriedData = querySnapshot.docs.map(
+                    (doc) =>
+                    ({
+                        uid: doc.id,
+                        ...doc.data(),
+                    } as User)
+                );
+                setInFoUser(queriedData);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        fetchData();
+    }, [userId, reFresh]);
+
     const handleOpenPre = () => setOpenPre(true);
     const handleClosePre = () => setOpenPre(false);
     const handleClearImage = () => {
         setPreviewImages([]);
         handleClosePre();
     };
-    const [reFresh, setReFresh] = useState(0);
+
     const handleRefresh = () => {
         setReFresh((pre) => pre + 1);
     };
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [previewImages, setPreviewImages] = useState<string[]>([]);
+
     const handleUploadClick = () => {
         if (fileInputRef.current) {
             fileInputRef.current.click();
@@ -86,29 +112,6 @@ export default function ProCoverImage() {
         }
     };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const q = query(
-                    collection(dbFireStore, "users"),
-                    where("uid", "==", userId)
-                );
-                const querySnapshot = await getDocs(q);
-                const queriedData = querySnapshot.docs.map(
-                    (doc) =>
-                    ({
-                        uid: doc.id,
-                        ...doc.data(),
-                    } as User)
-                );
-                setInFoUser(queriedData);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-        fetchData();
-    }, [userId, reFresh]);
-
     return (
         <>
             <Modal
@@ -143,6 +146,7 @@ export default function ProCoverImage() {
                             sx={{
                                 backgroundColor: "grey",
                                 color: "white",
+                                borderRadius: "5px",
                                 "&:hover": {
                                     color: "black",
                                     backgroundColor: "#E1E1E1",
@@ -156,6 +160,7 @@ export default function ProCoverImage() {
                             sx={{
                                 backgroundColor: "#8E51E2",
                                 color: "white",
+                                borderRadius: "5px",
                                 "&:hover": {
                                     color: "black",
                                     backgroundColor: "#E1E1E1",
@@ -171,7 +176,7 @@ export default function ProCoverImage() {
             </Modal>
             {inFoUser.map((info) => (
                 <Box key={info.uid}>
-                    <Card key={info.coverPhoto} sx={{ maxWidth: "100%" }}>
+                    <Card key={info.coverPhoto} sx={{ maxWidth: "100%", borderRadius: "10px" }}>
                         <CardMedia sx={{ height: 300 }} image={info.coverPhoto} title="green iguana" />
                     </Card>
                     {userInfo.uid == info.uid && (
@@ -190,6 +195,7 @@ export default function ProCoverImage() {
                                 sx={{
                                     backgroundColor: "white",
                                     color: "black",
+                                    borderRadius: "5px",
                                     "&:hover": {
                                         color: "white",
                                         backgroundColor: "black",

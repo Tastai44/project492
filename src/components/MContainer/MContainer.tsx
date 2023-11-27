@@ -19,9 +19,9 @@ import {
     Paper,
     Stack,
     styled,
+    TextField
 } from "@mui/material";
 
-import TextField from "@mui/material/TextField";
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";
 import CommentIcon from "@mui/icons-material/Comment";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
@@ -89,12 +89,40 @@ interface Idata {
 }
 
 export default function MContainer(props: Idata) {
+    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+    const [openPost, setOpenPost] = useState(false);
+    const [openEditPost, setOpenEditPost] = useState(false);
+    const [openReportPost, setOpenReportPost] = useState(false);
+    const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+    const isLike = props.likes.some((f) => f.likeBy === userInfo.uid);
+    const [inFoUser, setInFoUser] = useState<User[]>([]);
+    const [openShare, setOpenShare] = useState(false);
+
+    useEffect(() => {
+        const queryData = query(
+            collection(dbFireStore, "users"),
+            where("uid", "==", props.owner)
+        );
+        const unsubscribe = onSnapshot(
+            queryData,
+            (snapshot) => {
+                const queriedData = snapshot.docs.map((doc) => doc.data() as User);
+                setInFoUser(queriedData);
+            },
+            (error) => {
+                console.error("Error fetching data: ", error);
+            }
+        );
+        return () => {
+            unsubscribe();
+        };
+    }, [props.owner]);
+
     const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
         const emoji = emojiData.find((data) => data.unified === emojiCode);
         return emoji ? emoji.name : undefined;
     };
 
-    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
     const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
     };
@@ -102,27 +130,22 @@ export default function MContainer(props: Idata) {
         setAnchorElUser(null);
     };
 
-    const [openPost, setOpenPost] = useState(false);
     const handletOpenPost = () => setOpenPost(true);
     const handleClosePost = () => {
         setOpenPost(false);
     };
 
-    const [openEditPost, setOpenEditPost] = useState(false);
     const handletOpenEditPost = () => {
         setOpenEditPost(true);
         handleCloseUserMenu();
     };
     const handleCloseEditPost = () => setOpenEditPost(false);
 
-    const [openReportPost, setOpenReportPost] = useState(false);
     const handletOpenReport = () => {
         setOpenReportPost(true);
         handleCloseUserMenu();
     };
     const handleCloseReport = () => setOpenReportPost(false);
-
-    const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
     const handleDelete = (pId: string) => {
         const postRef = doc(dbFireStore, "posts", pId);
@@ -165,7 +188,6 @@ export default function MContainer(props: Idata) {
         }
     };
 
-    const isLike = props.likes.some((f) => f.likeBy === userInfo.uid);
     const decreaseLike = async (id: string) => {
         const IndexLike = props.likes.findIndex((f) => f.likeBy === userInfo.uid);
         try {
@@ -187,28 +209,6 @@ export default function MContainer(props: Idata) {
         }
     };
 
-    const [inFoUser, setInFoUser] = useState<User[]>([]);
-    useEffect(() => {
-        const queryData = query(
-            collection(dbFireStore, "users"),
-            where("uid", "==", props.owner)
-        );
-        const unsubscribe = onSnapshot(
-            queryData,
-            (snapshot) => {
-                const queriedData = snapshot.docs.map((doc) => doc.data() as User);
-                setInFoUser(queriedData);
-            },
-            (error) => {
-                console.error("Error fetching data: ", error);
-            }
-        );
-        return () => {
-            unsubscribe();
-        };
-    }, [props.owner]);
-
-    const [openShare, setOpenShare] = useState(false);
     const handleOpenShare = () => setOpenShare(true);
     const handleCloseShare = () => setOpenShare(false);
 
@@ -274,7 +274,7 @@ export default function MContainer(props: Idata) {
 
                     <Box sx={{ width: "100%" }}>
                         <Stack spacing={2}>
-                            <Item sx={{ display: "flex", flexDirection: "column" }}>
+                            <Item sx={{ display: "flex", flexDirection: "column", borderRadius: "10px" }}>
                                 <ListItem>
                                     <ListItemAvatar>
                                         <Avatar
@@ -432,19 +432,23 @@ export default function MContainer(props: Idata) {
                                     >
                                         {props.caption}
                                     </Typography>
+                                    <NavLink to={`/hashtag/${props.hashTagTopic}`}>
+                                        <Typography
+                                            sx={{
+                                                textAlign: "justify",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                whiteSpace: "pre-wrap",
+                                                wordWrap: "break-word",
+                                            }}
+                                        >
+                                            {props.hashTagTopic.startsWith("#")
+                                                ? props.hashTagTopic
+                                                : `#${props.hashTagTopic}`}
+                                        </Typography>
+                                    </NavLink>
                                 </CardContent>
-                                <Box
-                                    sx={{
-                                        fontSize: "16px",
-                                        display: "flex",
-                                        justifyContent: "start",
-                                        margin: 1,
-                                    }}
-                                >
-                                    {props.hashTagTopic.startsWith("#")
-                                        ? props.hashTagTopic
-                                        : `#${props.hashTagTopic}`}
-                                </Box>
+
                                 {props.photoPost.length == 1 ? (
                                     <ImageList
                                         sx={{
@@ -453,6 +457,7 @@ export default function MContainer(props: Idata) {
                                             maxHeight: "auto",
                                             justifyContent: "center",
                                             cursor: "pointer",
+                                            borderRadius: "20px"
                                         }}
                                         cols={1}
                                         onClick={handletOpenPost}
@@ -473,6 +478,7 @@ export default function MContainer(props: Idata) {
                                         cols={2}
                                         gap={2}
                                         onClick={handletOpenPost}
+                                        sx={{ borderRadius: "20px" }}
                                     >
                                         {props.photoPost.map((image, index) => (
                                             <ImageListItem key={index}>
@@ -570,7 +576,7 @@ export default function MContainer(props: Idata) {
                                         <Avatar
                                             alt="User"
                                             src={user.profilePhoto}
-                                            sx={{ width: "45px", height: "45px" }}
+                                            sx={{ width: "40px", height: "40px" }}
                                         />
                                         <Box style={{ width: "98%" }}>
                                             <TextField
@@ -579,7 +585,12 @@ export default function MContainer(props: Idata) {
                                                 variant="outlined"
                                                 multiline
                                                 maxRows={4}
-                                                sx={{ width: "99%" }}
+                                                sx={{
+                                                    width: "99%", '& fieldset': {
+                                                        borderRadius: '20px',
+                                                    },
+                                                }}
+                                                size="small"
                                                 onClick={handletOpenPost}
                                             />
                                         </Box>

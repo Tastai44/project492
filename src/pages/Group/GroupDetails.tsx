@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack } from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, Box, Grid } from "@mui/material";
 import CoverPhoto from "../../components/Groups/CoverPhoto";
 import LeftSideContainer from "../../components/Groups/LeftSideContainer";
 import MContainer from "../../components/MContainer/MContainer";
@@ -166,7 +164,7 @@ export default function GroupDetails() {
                                                 </Grid>
                                                 <Grid item xs={12} md={7}>
                                                     <Item sx={{ display: { xs: "block", md: "none" } }}>
-                                                        <FormControl fullWidth sx={{ backgroundColor: "white" }}>
+                                                        <FormControl fullWidth sx={{ backgroundColor: "white", borderRadius: "10px" }}>
                                                             <InputLabel id="demo-simple-select-label">
                                                                 Content type
                                                             </InputLabel>
@@ -186,7 +184,7 @@ export default function GroupDetails() {
                                                             </Select>
                                                         </FormControl>
                                                     </Item>
-                                                    <Item sx={{ backgroundColor: "#fff", margin: 1 }}>
+                                                    <Item sx={{ backgroundColor: "#fff", margin: 1, borderRadius: "10px" }}>
                                                         <PostGroupForm
                                                             inFoUser={inFoUser}
                                                             groupName={g.groupName}
@@ -287,7 +285,7 @@ export default function GroupDetails() {
                                                 </Grid>
                                                 <Grid item xs={2.5}>
                                                     <Item sx={{ display: { xs: "none", md: "block" } }}>
-                                                        <FormControl fullWidth sx={{ mb: 1, backgroundColor: "white" }}>
+                                                        <FormControl fullWidth sx={{ mb: 1, backgroundColor: "white", borderRadius: "10px" }}>
                                                             <InputLabel id="demo-simple-select-label">
                                                                 Content type
                                                             </InputLabel>
@@ -297,6 +295,7 @@ export default function GroupDetails() {
                                                                 value={type}
                                                                 label="Content type"
                                                                 onChange={handleChangeType}
+                                                                sx={{ borderRadius: "10px" }}
                                                             >
                                                                 <MenuItem value={"General"}>General</MenuItem>
                                                                 <MenuItem value={"Share"}>Share</MenuItem>
@@ -316,7 +315,8 @@ export default function GroupDetails() {
                         </Grid>
                     </Grid>
                 </Grid>
-            ))}
-        </div>
+            ))
+            }
+        </div >
     );
 }

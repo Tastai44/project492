@@ -45,6 +45,7 @@ export default function AboutMe() {
 						backgroundColor: "white",
 						display: "flex",
 						justifyContent: "center",
+						borderRadius: "10px"
 					}}
 				>
 					<Item
@@ -52,7 +53,7 @@ export default function AboutMe() {
 							fontSize: "30px",
 							width: "50%",
 							alignSelf: "center",
-							textAlign: "center"
+							textAlign: "center",
 						}}
 					>
 						About me

@@ -14,14 +14,16 @@ import {
 import { Post } from "../interface/PostContent";
 import { User } from "../interface/User";
 import { Item } from "../App";
-
+import Loading from "../components/Loading";
 
 export default function HomeFeed() {
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const [postData, setPostData] = useState<Post[]>([]);
+	const [openLoading, setOpenLoading] = useState(false);
 
 	useEffect(() => {
+		setOpenLoading(true);
 		const queryData = query(
 			collection(dbFireStore, "posts"),
 			orderBy("dateCreated", "desc")
@@ -32,6 +34,7 @@ export default function HomeFeed() {
 			(snapshot) => {
 				const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
 				setPostData(queriedData);
+				setOpenLoading(false);
 			},
 			(error) => {
 				console.error("Error fetching data:", error);
@@ -63,15 +66,12 @@ export default function HomeFeed() {
 		};
 	}, [userInfo.uid]);
 
-
-
-
-
 	return (
 		<>
-
-
-			<Item sx={{ backgroundColor: "#fff", margin: 1 }}>
+			<Loading
+				openLoading={openLoading}
+			/>
+			<Item sx={{ backgroundColor: "#fff", margin: 1, borderRadius: "10px" }}>
 				<PostForm inFoUser={inFoUser} />
 			</Item>
 			<Item sx={{ display: "flex", flexDirection: "column", gap: 2 }}>

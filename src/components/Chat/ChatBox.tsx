@@ -255,6 +255,7 @@ export default function ChatBox(props: IFunction & IData) {
 						height: "100%",
 						justifyContent: "space-between",
 						color: "white",
+						borderRadius: "10px"
 					}}
 				>
 					<Box
@@ -264,6 +265,7 @@ export default function ChatBox(props: IFunction & IData) {
 							display: "flex",
 							justifyContent: "space-between",
 							pl: 0.5,
+							borderRadius: "10px"
 						}}
 					>
 						<Header inFoUser={inFoUser} />

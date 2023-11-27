@@ -1,9 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { styled } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import { Stack } from "@mui/material";
+import { styled, Box, Grid, Stack } from "@mui/material";
 import DetailCard from "../../components/Events/DetailCard";
 import LeftSideContainer from "../../components/Events/LeftSideContainer";
 import CoverPhoto from "../../components/Events/CoverPhoto";
@@ -24,9 +21,10 @@ const Item = styled(Box)(({ theme }) => ({
 export default function EventDetail() {
 	const { eventId } = useParams();
 	const [openShare, setOpenShare] = useState(false);
-	const handleOpenShare = () => setOpenShare(true);
-	const handleCloseShare = () => setOpenShare(false);
 	const [data, setData] = useState<EventPost[]>([]);
+	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+
 	useEffect(() => {
 		const fetchData = query(
 			collection(dbFireStore, "events"),
@@ -49,8 +47,6 @@ export default function EventDetail() {
 
 	}, [eventId]);
 
-	const [inFoUser, setInFoUser] = useState<User[]>([]);
-	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	useMemo(() => {
 		const fetchData = async () => {
 			try {
@@ -73,6 +69,9 @@ export default function EventDetail() {
 		};
 		fetchData();
 	}, [userInfo.uid]);
+
+	const handleOpenShare = () => setOpenShare(true);
+	const handleCloseShare = () => setOpenShare(false);
 
 	return (
 		<div>

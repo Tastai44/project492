@@ -344,7 +344,7 @@ export default function Content(props: IData & IFunction) {
                                 <Box sx={{ height: "auto", maxWidth: "lg", minWidth: "sm" }}>
                                     {m.photoPost.length == 1 ? (
                                         <>
-                                            <ImageList variant="masonry" cols={1}>
+                                            <ImageList variant="masonry" cols={1} sx={{ borderRadius: '20px' }}>
                                                 {m.photoPost.map((image, index) => (
                                                     <ImageListItem key={index}>
                                                         <img
@@ -358,7 +358,7 @@ export default function Content(props: IData & IFunction) {
                                             </ImageList>
                                         </>
                                     ) : (
-                                        <ImageList variant="masonry" cols={2} gap={10}>
+                                        <ImageList variant="masonry" cols={2} gap={10} sx={{ borderRadius: '20px' }}>
                                             {m.photoPost.map((image, index) => (
                                                 <ImageListItem key={index}>
                                                     <img
@@ -526,19 +526,20 @@ export default function Content(props: IData & IFunction) {
                                             >
                                                 {m.caption}
                                             </Typography>
+                                            <Typography
+                                                sx={{
+                                                    textAlign: "justify",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                    whiteSpace: "pre-wrap",
+                                                    wordWrap: "break-word",
+                                                }}
+                                            >
+                                                {m.hashTagTopic.startsWith("#")
+                                                    ? m.hashTagTopic
+                                                    : `#${m.hashTagTopic}`}
+                                            </Typography>
                                         </CardContent>
-                                        <Box
-                                            sx={{
-                                                fontSize: "16px",
-                                                display: "flex",
-                                                justifyContent: "start",
-                                                margin: 1,
-                                            }}
-                                        >
-                                            {m.hashTagTopic.startsWith("#")
-                                                ? m.hashTagTopic
-                                                : `#${m.hashTagTopic}`}
-                                        </Box>
                                     </Box>
                                     <Divider />
                                     <CardActions
@@ -606,7 +607,11 @@ export default function Content(props: IData & IFunction) {
                                                 variant="outlined"
                                                 multiline
                                                 maxRows={4}
-                                                sx={{ width: "99%" }}
+                                                sx={{
+                                                    width: "99%", '& fieldset': {
+                                                        borderRadius: '20px',
+                                                    },
+                                                }}
                                                 value={comment.text}
                                                 onChange={handleChangeComment}
                                             />

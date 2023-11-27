@@ -13,7 +13,8 @@ import Friends from "./pages/Profile/Friends";
 import Collections from "./pages/Profile/Collections";
 import EventDetail from "./pages/Events/EventDetail";
 import GroupDetails from "./pages/Group/GroupDetails";
-import Login from "./pages/Login";
+import Login from "./pages/Login/Login";
+// import Login from "./pages/Login";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import { Box, Stack } from "@mui/material";
 import LeftSide from "./components/LeftSide";
@@ -26,7 +27,8 @@ import ReportContent from "./pages/ReportContent";
 import { themeApp } from "./utils/Theme";
 import { IconButton } from "@mui/material";
 import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
-
+import OAuthRedirect from "./pages/OauthRedirect";
+import Hashtag from "./pages/Hashtag/Hashtag";
 
 export const Item = styled(Box)(({ theme }) => ({
 	...theme.typography.body2,
@@ -91,13 +93,23 @@ function App() {
 					</Box>
 				} />
 
+				<Route path={"/callback"} element={
+					<Box sx={{
+						ml: 5, mr: 5, [themeApp.breakpoints.down("lg")]: {
+							ml: 2, mr: 2
+						}
+					}}>
+						<OAuthRedirect />
+					</Box>
+				} />
+
+
 				<Route
 					path={"/"}
 					element={
 						<>
 							<ProtectedRoute>
-								<Navigation
-								/>
+								<Navigation />
 								<Box sx={{
 									display: "flex", justifyContent: "center", mt: 11,
 									[themeApp.breakpoints.down("lg")]: {
@@ -109,12 +121,45 @@ function App() {
 									</Box>
 
 									<Box sx={{
-										width: "55%",
+										width: "45%",
 										[themeApp.breakpoints.down("lg")]: {
 											width: "100%",
 										}
 									}}>
 										<HomeFeed />
+									</Box>
+
+									<Box sx={{ width: "20%", position: "fixed", right: "0" }}>
+										<RightContainer />
+									</Box>
+								</Box>
+							</ProtectedRoute>
+						</>
+					}
+				/>
+				<Route
+					path={"/hashtag/:hashtag"}
+					element={
+						<>
+							<ProtectedRoute>
+								<Navigation />
+								<Box sx={{
+									display: "flex", justifyContent: "center", mt: 11,
+									[themeApp.breakpoints.down("lg")]: {
+										mt: 8
+									}
+								}}>
+									<Box sx={{ width: "20%", position: "fixed", left: "0" }}>
+										<LeftSide />
+									</Box>
+
+									<Box sx={{
+										width: "45%",
+										[themeApp.breakpoints.down("lg")]: {
+											width: "100%",
+										}
+									}}>
+										<Hashtag />
 									</Box>
 
 									<Box sx={{ width: "20%", position: "fixed", right: "0" }}>
@@ -356,17 +401,17 @@ function App() {
 					path={"/events"}
 					element={
 						<>
-							{/* <ProtectedRoute> */}
-							<Navigation />
-							<Box sx={{
-								display: "flex", mt: 11, ml: 5, mr: 5, [themeApp.breakpoints.down("md")]: {
-									justifyContent: "center",
-									mt: 8
-								},
-							}}>
-								<Events />
-							</Box>
-							{/* </ProtectedRoute> */}
+							<ProtectedRoute>
+								<Navigation />
+								<Box sx={{
+									display: "flex", mt: 11, ml: 5, mr: 5, [themeApp.breakpoints.down("md")]: {
+										justifyContent: "center",
+										mt: 8
+									},
+								}}>
+									<Events />
+								</Box>
+							</ProtectedRoute>
 						</>
 					}
 				/>
@@ -451,14 +496,12 @@ function App() {
 								<Navigation
 								/>
 								<Box sx={{
-									display: "flex", ml: 5, mr: 5, [themeApp.breakpoints.down("md")]: {
-										justifyContent: "center"
-									},
-									[themeApp.breakpoints.down("md")]: {
-										mt: 8
+									display: "flex", justifyContent: "center", [themeApp.breakpoints.down("lg")]: {
+										justifyContent: "center", mt: 8, mr: 1, ml: 1
 									},
 								}}>
 									<ReportContent />
+
 								</Box>
 							</ProtectedRoute>
 						</>

@@ -1,15 +1,9 @@
-import React, { useEffect, useState } from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Badge from "@mui/material/Badge";
+import { useEffect, useState, MouseEvent } from "react";
+import { Box, AppBar, Toolbar, IconButton, Typography, Badge, Avatar, Button, Tooltip } from "@mui/material";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
 import Logo from "/images/logoCmu.png";
-import { Avatar, Button, Tooltip } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import { NavLink, useNavigate } from "react-router-dom";
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
@@ -56,38 +50,6 @@ export default function Navigation() {
 	const [openMenu, setOpenMenu] = useState(false);
 	const [openChatList, setOpenChatList] = useState(false);
 	const IsAdmin = inFoUser.some((user) => user.userRole === "admin");
-
-	const handleOpenSearch = () => {
-		setOpenSearch(true);
-	};
-	const handleCloseSearch = () => {
-		setOpenSearch(false);
-	};
-
-	const handleActiveUser = async (userId: string) => {
-		try {
-			const q = query(
-				collection(dbFireStore, "users"),
-				where("uid", "==", userId)
-			);
-			const querySnapshot = await getDocs(q);
-			const doc = querySnapshot.docs[0];
-			await updateDoc(doc.ref, { isActive: false });
-		} catch (error) {
-			console.error("Error updating profile: ", error);
-		}
-	};
-	const handleLogout = async () => {
-		await handleActiveUser(userInfo.uid);
-		signOut(auth)
-			.then(() => {
-				localStorage.removeItem("user");
-				navigate("/login");
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
 
 	useEffect(() => {
 		const fetchData = query(
@@ -201,7 +163,39 @@ export default function Navigation() {
 		setMessageNumber((messageNumber ? messageNumber : 0) + (groupMessageNumber ? groupMessageNumber : 0));
 	}, [groupMessageNoti, messageNoti]);
 
-	const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+	const handleOpenSearch = () => {
+		setOpenSearch(true);
+	};
+	const handleCloseSearch = () => {
+		setOpenSearch(false);
+	};
+
+	const handleActiveUser = async (userId: string) => {
+		try {
+			const q = query(
+				collection(dbFireStore, "users"),
+				where("uid", "==", userId)
+			);
+			const querySnapshot = await getDocs(q);
+			const doc = querySnapshot.docs[0];
+			await updateDoc(doc.ref, { isActive: false });
+		} catch (error) {
+			console.error("Error updating profile: ", error);
+		}
+	};
+	const handleLogout = async () => {
+		await handleActiveUser(userInfo.uid);
+		signOut(auth)
+			.then(() => {
+				localStorage.removeItem("user");
+				navigate("/login");
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
+
+	const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) => {
 		setAnchorEl(event.currentTarget);
 	};
 
@@ -214,11 +208,11 @@ export default function Navigation() {
 		handleMobileMenuClose();
 	};
 
-	const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+	const handleMobileMenuOpen = (event: MouseEvent<HTMLElement>) => {
 		setMobileMoreAnchorEl(event.currentTarget);
 	};
 
-	const handleOpenMessageNoti = (event: React.MouseEvent<HTMLElement>) => {
+	const handleOpenMessageNoti = (event: MouseEvent<HTMLElement>) => {
 		setOpenMessageNoti(event.currentTarget);
 	};
 	const handleCloseMessageNoti = () => {
@@ -332,13 +326,15 @@ export default function Navigation() {
 							sx={{
 								ml: 1, color: "black", backgroundColor: "primary.contrastText",
 								display: { xs: "none", md: "flex" },
+								borderRadius: "20px",
+								p: 1,
 								"&:hover": {
 									backgroundColor: "white"
 								}
 							}}
 							onClick={handleOpenSearch}
 						>
-							Searching
+							Searching CMU Explore
 						</Button>
 
 						{/* Middle */}

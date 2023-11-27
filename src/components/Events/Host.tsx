@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import { Paper, Divider, CardMedia, Box } from "@mui/material";
 import { collection, query, getDocs, where } from "firebase/firestore";
 import { User } from "../../interface/User";
@@ -9,9 +9,9 @@ interface IData {
     hostId: string;
 }
 export default function Host({ hostId }: IData) {
-    const [inFoUser, setInFoUser] = React.useState<User[]>([]);
+    const [inFoUser, setInFoUser] = useState<User[]>([]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 const q = query(
@@ -37,7 +37,7 @@ export default function Host({ hostId }: IData) {
     return (
         <div>
             {inFoUser.map((u) => (
-                <Paper key={u.uid}>
+                <Paper key={u.uid} sx={{ borderRadius: "10px" }}>
                     <NavLink to={`/profileBlog/${u.uid}`} style={{ color: "black" }}>
                         <Box
                             sx={{

@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import {
     Paper,
     Divider,
@@ -16,6 +16,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import AddMembers from "./AddMembers";
 import DeleteMember from "./DeleteMember";
+
 interface IData {
     members: string[];
     hostId: string;
@@ -24,11 +25,12 @@ interface IData {
 
 export default function Members(props: IData) {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-    const [openAdd, setOpenAdd] = React.useState(false);
-    const [openDelete, setOpenDelete] = React.useState(false);
-    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    const [openAdd, setOpenAdd] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
+    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(
         null
     );
+
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
     };
@@ -79,78 +81,72 @@ export default function Members(props: IData) {
                 </Box>
             </Modal>
 
-            <Paper>
+            <Paper sx={{ borderRadius: "10px" }}>
                 <Box
                     sx={{
+                        p: 1,
+                        ml: 1,
+                        mr: 1,
                         display: "flex",
-                        justifyContent: "center",
                         alignItems: "center",
+                        gap: 5,
+                        justifyContent: "space-between",
                     }}
                 >
-                    <Box
-                        sx={{
-                            p: 1,
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 5,
-                            justifyContent: "space-between",
+                    <Typography sx={{ fontSize: "20px", fontWeight: "bold" }}>
+                        Members
+                    </Typography>
+                    <IconButton onClick={handleOpenUserMenu}>
+                        <MoreHorizIcon />
+                    </IconButton>
+                    <Menu
+                        sx={{ mt: "30px" }}
+                        id="menu-appbar"
+                        anchorEl={anchorElUser}
+                        anchorOrigin={{
+                            vertical: "top",
+                            horizontal: "right",
                         }}
+                        keepMounted
+                        transformOrigin={{
+                            vertical: "top",
+                            horizontal: "right",
+                        }}
+                        open={Boolean(anchorElUser)}
+                        onClose={handleCloseUserMenu}
                     >
-                        <Typography sx={{ fontSize: "20px", fontWeight: "bold" }}>
-                            Members
-                        </Typography>
-                        <IconButton onClick={handleOpenUserMenu}>
-                            <MoreHorizIcon />
-                        </IconButton>
-                        <Menu
-                            sx={{ mt: "30px" }}
-                            id="menu-appbar"
-                            anchorEl={anchorElUser}
-                            anchorOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                            }}
-                            open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
-                        >
-                            <MenuItem
-                                disabled={props.hostId !== userInfo.uid}
-                                onClick={handleOpenAdd}>
-                                <Typography
-                                    textAlign="center"
-                                    sx={{
-                                        display: "flex",
-                                        gap: 1,
-                                        alignItems: "start",
-                                        fontSize: "18px",
-                                    }}
-                                >
-                                    <AddCircleOutlineOutlinedIcon /> Add
-                                </Typography>
-                            </MenuItem>
-                            <MenuItem
-                                disabled={props.hostId !== userInfo.uid}
-                                onClick={handleOpenDelete}
+                        <MenuItem
+                            disabled={props.hostId !== userInfo.uid}
+                            onClick={handleOpenAdd}>
+                            <Typography
+                                textAlign="center"
+                                sx={{
+                                    display: "flex",
+                                    gap: 1,
+                                    alignItems: "start",
+                                    fontSize: "18px",
+                                }}
                             >
-                                <Typography
-                                    textAlign="center"
-                                    sx={{
-                                        display: "flex",
-                                        gap: 1,
-                                        alignItems: "start",
-                                        fontSize: "18px",
-                                    }}
-                                >
-                                    <DeleteOutlineOutlinedIcon /> Delete
-                                </Typography>
-                            </MenuItem>
-                        </Menu>
-                    </Box>
+                                <AddCircleOutlineOutlinedIcon /> Add
+                            </Typography>
+                        </MenuItem>
+                        <MenuItem
+                            disabled={props.hostId !== userInfo.uid}
+                            onClick={handleOpenDelete}
+                        >
+                            <Typography
+                                textAlign="center"
+                                sx={{
+                                    display: "flex",
+                                    gap: 1,
+                                    alignItems: "start",
+                                    fontSize: "18px",
+                                }}
+                            >
+                                <DeleteOutlineOutlinedIcon /> Delete
+                            </Typography>
+                        </MenuItem>
+                    </Menu>
                 </Box>
                 <Divider light />
                 {props.members.map((member, index) => (

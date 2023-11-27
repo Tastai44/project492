@@ -1,6 +1,5 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import { Button, Divider, Modal, TextField, Typography, Paper, Box } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+import { Button, Divider, Modal, Typography, Paper, Box } from "@mui/material";
 import UserCard from "./UserCard";
 import "firebase/database";
 import {
@@ -15,6 +14,7 @@ import { User } from "../../interface/User";
 import { IGroup } from "../../interface/Group";
 import ChatBox from "../Chat/ChatBox";
 import GroupChatBox from "../GroupChat/GroupChatBox";
+import SearchBar from "../../helper/SearchBar";
 
 export default function RightContainer() {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
@@ -27,32 +27,7 @@ export default function RightContainer() {
     const [isActive, setIsActive] = useState(false);
     const [searchValue, setValue] = useState("");
     const [searchGroupValue, setGroupValue] = useState("");
-
-    const handleIsActive = (value: boolean) => {
-        setIsActive(value);
-    };
-
-    const handleOpenChat = (id: string) => {
-        setOpenChat(true);
-        setUserId(id);
-    };
-    const handleCloseChat = () => setOpenChat(false);
-
     const [openGroupChat, setOpenGroupChat] = useState(false);
-    const handleOpenGroupChat = (id: string) => {
-        setOpenGroupChat(true);
-        setGroupId(id);
-    };
-    const handleCloseGroupChat = () => setOpenGroupChat(false);
-
-    const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
-        setValue(value);
-    };
-    const handleGroupSearch = (event: ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
-        setGroupValue(value);
-    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -116,6 +91,31 @@ export default function RightContainer() {
         };
     }, [userInfo.uid]);
 
+    const handleIsActive = (value: boolean) => {
+        setIsActive(value);
+    };
+
+    const handleOpenChat = (id: string) => {
+        setOpenChat(true);
+        setUserId(id);
+    };
+    const handleCloseChat = () => setOpenChat(false);
+
+    const handleOpenGroupChat = (id: string) => {
+        setOpenGroupChat(true);
+        setGroupId(id);
+    };
+    const handleCloseGroupChat = () => setOpenGroupChat(false);
+
+    const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setValue(value);
+    };
+    const handleGroupSearch = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setGroupValue(value);
+    };
+
     return (
         <Box sx={{ width: "100%", display: { xs: "none", lg: "flex" } }}>
             <Modal
@@ -139,7 +139,7 @@ export default function RightContainer() {
                 </Box>
             </Modal>
             <Box sx={{ width: "100%", mr: 5 }}>
-                <Paper sx={{ display: "flex", flexDirection: "column", mb: 2 }}>
+                <Paper sx={{ display: "flex", flexDirection: "column", mb: 2, borderRadius: "10px" }}>
                     <Box
                         sx={{
                             display: "flex",
@@ -151,40 +151,41 @@ export default function RightContainer() {
                     >
                         Friend
                     </Box>
-                    <Box sx={{ display: "flex", justifyContent: "center" }} >
-                        <TextField
-                            id="outlined-size-small"
-                            size="small"
-                            sx={{ m: 1, width: "25vh" }}
-                            InputProps={{
-                                startAdornment: <SearchIcon />,
-                            }}
-                            placeholder="Search for friend"
-                            onChange={handleSearch}
-                            value={searchValue}
+                    <Box sx={{ display: "flex", justifyContent: "flex-start" }} >
+                        <SearchBar
+                            searchValue={searchValue}
+                            handleSearch={handleSearch}
+                            backgroupColor={'#F1F1F1'}
                         />
                     </Box>
                     <Divider style={{ background: "#EAEAEA", marginBottom: 5 }} />
-                    <Box sx={{ display: "flex", justifyContent: "space-around", mb: 0.5 }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", p: 1 }}>
                         <Button
                             onClick={() => handleIsActive(true)}
                             sx={{
+                                fontSize: "16px",
                                 color: isActive ? "white" : "black",
                                 backgroundColor: isActive ? "primary.main" : "",
                                 cursor: "pointer",
-                                "&:hover": { color: isActive ? "black" : "black" }
+                                "&:hover": { color: isActive ? "black" : "black" },
+                                borderRadius: "10px"
                             }}
+                            size="small"
                         >
                             Active
                         </Button>
                         <Button
                             onClick={() => handleIsActive(false)}
                             sx={{
+                                p: 1,
+                                fontSize: "16px",
                                 color: isActive ? "black" : "white",
                                 backgroundColor: isActive ? "" : "primary.main",
                                 cursor: "pointer",
-                                "&:hover": { color: isActive ? "black" : "black" }
+                                "&:hover": { color: isActive ? "black" : "black" },
+                                borderRadius: "10px"
                             }}
+                            size="small"
                         >
                             General
                         </Button>
@@ -250,7 +251,7 @@ export default function RightContainer() {
                     )}
                 </Paper>
 
-                <Paper sx={{ display: "flex", flexDirection: "column" }}>
+                <Paper sx={{ display: "flex", flexDirection: "column", borderRadius: "10px" }}>
                     <Box
                         sx={{
                             display: "flex",
@@ -263,16 +264,10 @@ export default function RightContainer() {
                         Groups
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "center" }}>
-                        <TextField
-                            id="outlined-size-small"
-                            size="small"
-                            sx={{ m: 1, width: "25vh" }}
-                            InputProps={{
-                                startAdornment: <SearchIcon />,
-                            }}
-                            placeholder="Search for group"
-                            onChange={handleGroupSearch}
-                            value={searchGroupValue}
+                        <SearchBar
+                            searchValue={searchGroupValue}
+                            handleSearch={handleGroupSearch}
+                            backgroupColor={'#F1F1F1'}
                         />
                     </Box>
                     <div style={{ display: "flex", justifyContent: "space-around" }}>

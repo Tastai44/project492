@@ -1,8 +1,8 @@
 import { useState, useRef, ChangeEvent, useEffect } from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import {
 	Avatar,
+	Box,
+	Button,
 	IconButton,
 	InputLabel,
 	ListItem,
@@ -46,11 +46,52 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 	const [location, setLocation] = useState("");
 	const [status, setStatus] = useState("");
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	const [openLocation, setOpenLocation] = useState(false);
+	const [openEmoji, setOpenEmoji] = useState(false);
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
+	const [previewImages, setPreviewImages] = useState<string[]>([]);
+	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+	const [emoji, setEmoji] = useState("");
+	const initialState = {
+		id: "",
+		caption: "",
+		hashTagTopic: "",
+		status: "",
+		photoPost: [],
+		comments: [],
+		likes: [],
+		createAt: "",
+		emoji: "",
+		owner: "",
+		shareUsers: [],
+		reportPost: [],
+	};
+	const [post, setPost] = useState<Post>(initialState);
+
+	useEffect(() => {
+		const queryData = query(
+			collection(dbFireStore, "users"),
+			where("uid", "==", userInfo.uid)
+		);
+		const unsubscribe = onSnapshot(
+			queryData,
+			(snapshot) => {
+				const queriedData = snapshot.docs.map((doc) => doc.data() as User);
+				setInFoUser(queriedData);
+			},
+			(error) => {
+				console.error("Error fetching data: ", error);
+			}
+		);
+		return () => {
+			unsubscribe();
+		};
+	}, [userInfo.uid]);
+
 	const handleChange = (event: SelectChangeEvent) => {
 		setStatus(event.target.value as string);
 	};
 
-	const [openLocation, setOpenLocation] = useState(false);
 	const handletOpenLocation = () => setOpenLocation(true);
 	const handletSaveLocation = () => setOpenLocation(false);
 	const handleCloseLocation = () => {
@@ -58,13 +99,8 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 		setOpenLocation(false);
 	};
 
-	const [openEmoji, setOpenEmoji] = useState(false);
 	const handletOpenEmoji = () => setOpenEmoji(true);
 	const handleCloseEmoji = () => setOpenEmoji(false);
-
-	const fileInputRef = useRef<HTMLInputElement | null>(null);
-	const [previewImages, setPreviewImages] = useState<string[]>([]);
-	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
 	const handleClearImage = () => {
 		setPreviewImages([]);
@@ -100,26 +136,10 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 		}
 	};
 
-	const [emoji, setEmoji] = useState("");
 	const handleChangeEmoji = (e: string) => {
 		setEmoji(e);
 	};
 
-	const initialState = {
-		id: "",
-		caption: "",
-		hashTagTopic: "",
-		status: "",
-		photoPost: [],
-		comments: [],
-		likes: [],
-		createAt: "",
-		emoji: "",
-		owner: "",
-		shareUsers: [],
-		reportPost: [],
-	};
-	const [post, setPost] = useState<Post>(initialState);
 	const clearState = () => {
 		setPost({ ...initialState });
 		setStatus('');
@@ -200,26 +220,6 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 			setLocation(newValue);
 		}
 	};
-
-	useEffect(() => {
-		const queryData = query(
-			collection(dbFireStore, "users"),
-			where("uid", "==", userInfo.uid)
-		);
-		const unsubscribe = onSnapshot(
-			queryData,
-			(snapshot) => {
-				const queriedData = snapshot.docs.map((doc) => doc.data() as User);
-				setInFoUser(queriedData);
-			},
-			(error) => {
-				console.error("Error fetching data: ", error);
-			}
-		);
-		return () => {
-			unsubscribe();
-		};
-	}, [userInfo.uid]);
 
 	return (
 		<div>
@@ -330,6 +330,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 						name="caption"
 						label="What is in your mind?"
 						variant="outlined"
+						size="small"
 						multiline
 						maxRows={4}
 						sx={{
@@ -408,6 +409,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 									},
 								}}
 								type="submit"
+								disabled={!post.caption || !post.hashTagTopic || !status}
 							>
 								Post
 							</Button>
