@@ -31,7 +31,6 @@ export default function OAuthRedirect() {
                     handleStoreUserInfo(userInfo);
                     localStorage.setItem("user", JSON.stringify(userData));
                     navigate("/");
-                    setOpenLoading(false);
                 }
             }
         };
@@ -63,8 +62,13 @@ export default function OAuthRedirect() {
         const userCollection = collection(dbFireStore, "users");
         const user: IUserReturnFromToken = docUser;
         try {
-
-            if (docUser) {
+            const q = query(
+                collection(dbFireStore, "users"),
+                where("uid", "==", user.student_id)
+            );
+            const querySnapshot = await getDocs(q);
+            const userData = querySnapshot.docs[0];
+            if (userData.exists()) {
                 handleActiveUser(docUser.student_id ?? "");
                 navigate("/");
             } else {
