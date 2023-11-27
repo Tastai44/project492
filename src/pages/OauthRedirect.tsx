@@ -60,24 +60,26 @@ export default function OAuthRedirect() {
 
     const handleStoreUserInfo = async (docUser: IUserReturnFromToken) => {
         const userCollection = collection(dbFireStore, "users");
-        const user: IUserReturnFromToken = docUser;
+
         try {
             const q = query(
                 collection(dbFireStore, "users"),
-                where("uid", "==", user.student_id)
+                where("uid", "==", docUser.student_id)
             );
+
             const querySnapshot = await getDocs(q);
             const userData = querySnapshot.docs[0];
-            if (userData.exists()) {
+
+            if (userData) {
                 handleActiveUser(docUser.student_id ?? "");
                 navigate("/");
             } else {
                 const newUser = {
-                    uid: user.student_id,
-                    email: user.cmuitaccount,
-                    firstName: user.firstname_EN,
-                    lastName: user.lastname_EN,
-                    faculty: user.organization_name_EN,
+                    uid: docUser.student_id,
+                    email: docUser.cmuitaccount,
+                    firstName: docUser.firstname_EN,
+                    lastName: docUser.lastname_EN,
+                    faculty: docUser.organization_name_EN,
                     friendList: [],
                     posts: [],
                     userRole: "user",
