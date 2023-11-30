@@ -28,9 +28,8 @@ export default function OAuthRedirect() {
                         firstName: userInfo.firstname_EN,
                         lastName: userInfo.lastname_EN
                     };
-                    handleStoreUserInfo(userInfo);
                     localStorage.setItem("user", JSON.stringify(userData));
-                    navigate("/");
+                    handleStoreUserInfo(userInfo);
                 }
             }
         };
@@ -71,7 +70,7 @@ export default function OAuthRedirect() {
             const userData = querySnapshot.docs[0];
 
             if (userData) {
-                handleActiveUser(docUser.student_id ?? "");
+                await handleActiveUser(docUser.student_id ?? "");
                 navigate("/");
             } else {
                 const newUser = {
@@ -90,6 +89,7 @@ export default function OAuthRedirect() {
                 };
                 const docRef = doc(userCollection);
                 await setDoc(docRef, newUser);
+                navigate("/");
             }
 
         } catch (error) {

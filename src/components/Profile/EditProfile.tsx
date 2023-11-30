@@ -87,17 +87,17 @@ export default function BasicModal(props: Ihandle & IData) {
 
     const handleEditProfile = async () => {
         const updatedProfile = {
-            username: profile.username,
-            firstName: profile.firstName,
-            lastName: profile.lastName,
-            email: profile.email,
-            aboutMe: profile.aboutMe,
-            faculty: faculty,
-            instagram: profile.instagram,
-            status: status,
-            year: year,
+            username: profile.username ?? "",
+            firstName: profile.firstName ?? "",
+            lastName: profile.lastName ?? "",
+            email: profile.email ?? "",
+            aboutMe: profile.aboutMe ?? "",
+            faculty: faculty ?? "",
+            instagram: profile.instagram ?? "",
+            status: status ?? "",
+            year: year ?? 0,
         };
-
+        console.log(props.userId, updatedProfile);
         try {
             const q = query(
                 collection(dbFireStore, "users"),
