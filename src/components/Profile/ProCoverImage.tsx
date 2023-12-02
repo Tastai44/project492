@@ -1,8 +1,7 @@
 import { useState, useRef, ChangeEvent, useEffect } from "react";
-import { Box, Button, Card, CardMedia, IconButton, Modal } from "@mui/material";
+import { Box, Button, Card, CardMedia } from "@mui/material";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import { stylePreviewPhoto } from "../../utils/styleBox";
-import CancelIcon from "@mui/icons-material/Cancel";
+import { storage } from '../../config/firebase';
 import {
     collection,
     query,
@@ -10,10 +9,14 @@ import {
     where,
     updateDoc,
 } from "firebase/firestore";
+import { ref, uploadBytes, listAll, getDownloadURL, StorageReference } from "firebase/storage";
 import { dbFireStore } from "../../config/firebase";
 import { useParams } from "react-router-dom";
 import { User } from "../../interface/User";
-import ProfileInfo from "./ProfileInfo";
+import ProfileInfo, { removeSpacesBetweenWords } from "./ProfileInfo";
+import heic2any from 'heic2any';
+import Loading from "../Loading";
+import UploadProfile from "./UploadProfile";
 
 export default function ProCoverImage() {
     const { userId } = useParams();
@@ -22,7 +25,10 @@ export default function ProCoverImage() {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const [reFresh, setReFresh] = useState(0);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [previewImages, setPreviewImages] = useState<string[]>([]);
+    const [previewImages, setPreviewImages] = useState<string>('');
+    const [openLoading, setLopenLoading] = useState(false);
+    const [imageUpload, setImageUpload] = useState<File | null>(null);
+    const [imageUrls, setImageUrls] = useState<string[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -47,10 +53,80 @@ export default function ProCoverImage() {
         fetchData();
     }, [userId, reFresh]);
 
+    useEffect(() => {
+        const fetchImages = async () => {
+            try {
+                const listRef: StorageReference = ref(storage, '/Images');
+                const res = await listAll(listRef);
+                const urls = await Promise.all(
+                    res.items.map(async (itemRef) => {
+                        const imageUrl = await getDownloadURL(itemRef);
+                        return imageUrl;
+                    })
+                );
+                setImageUrls(urls);
+            } catch (error) {
+                console.error('Error fetching images:', error);
+            }
+        };
+        fetchImages();
+    }, [reFresh]);
+
+    const handleUpload = async () => {
+        setLopenLoading(true);
+        if (imageUpload == null) return;
+        const fileName = removeSpacesBetweenWords(imageUpload.name);
+        const imageRef = ref(storage, `Images/${userId}${fileName}`);
+        uploadBytes(imageRef, imageUpload).then(() => {
+            handleEditPhotoProfile(`${userId}${imageUpload.name}`);
+        });
+    };
+
+    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+        setLopenLoading(true);
+        const fileInput = event.target;
+        const fileName = fileInput.value;
+        const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+        const reader = new FileReader();
+
+        if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
+            const blob = fileInput.files?.[0];
+            try {
+                if (blob) {
+                    const resultBlob = await heic2any({ blob, toType: 'image/jpg' }) as BlobPart;
+                    const file = new File([resultBlob], `${event.target.files?.[0].name.split('.')[0]}.jpg`, {
+                        type: 'image/jpeg',
+                        lastModified: new Date().getTime(),
+                    });
+                    setImageUpload(file);
+                    reader.onloadend = () => {
+                        setPreviewImages(reader.result as string);
+                    };
+                    reader.readAsDataURL(file);
+                    setLopenLoading(false);
+                    handleOpenPre();
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        } else {
+            const selectedFile = event.target.files?.[0];
+            if (selectedFile) {
+                reader.onloadend = () => {
+                    setPreviewImages(reader.result as string);
+                };
+                reader.readAsDataURL(selectedFile);
+                setLopenLoading(false);
+                handleOpenPre();
+                setImageUpload(selectedFile);
+            }
+        }
+    };
+
     const handleOpenPre = () => setOpenPre(true);
     const handleClosePre = () => setOpenPre(false);
     const handleClearImage = () => {
-        setPreviewImages([]);
+        setPreviewImages('');
         handleClosePre();
     };
 
@@ -63,33 +139,8 @@ export default function ProCoverImage() {
             fileInputRef.current.click();
         }
     };
-    const handleFileChange = async (
-        event: ChangeEvent<HTMLInputElement>
-    ) => {
-        const files = event.target.files;
-        if (files) {
-            try {
-                const selectedFiles = Array.from(files);
-                const readerPromises = selectedFiles.map((file) => {
-                    return new Promise<string>((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                            resolve(reader.result as string);
-                        };
-                        reader.onerror = reject;
-                        reader.readAsDataURL(file);
-                    });
-                });
 
-                const base64Images = await Promise.all(readerPromises);
-                setPreviewImages(base64Images);
-                handleOpenPre();
-            } catch (error) {
-                console.error(error);
-            }
-        }
-    };
-    const handleEditPhotoProfile = async () => {
+    const handleEditPhotoProfile = async (picPatch: string) => {
         try {
             const q = query(
                 collection(dbFireStore, "users"),
@@ -100,10 +151,12 @@ export default function ProCoverImage() {
 
             if (doc.exists()) {
                 await updateDoc(doc.ref, {
-                    coverPhoto: previewImages[0],
+                    coverPhoto: removeSpacesBetweenWords(picPatch),
                 });
                 handleClearImage();
                 handleRefresh();
+                handleClosePre();
+                setLopenLoading(false);
             } else {
                 console.log("Profile does not exist");
             }
@@ -114,70 +167,20 @@ export default function ProCoverImage() {
 
     return (
         <>
-            <Modal
-                open={openPre}
-                onClose={handleClosePre}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={stylePreviewPhoto}>
-                    {previewImages.length !== 0 && (
-                        <Box>
-                            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                                <IconButton onClick={handleClearImage}>
-                                    <CancelIcon sx={{ color: "black" }} />
-                                </IconButton>
-                            </Box>
-                            <Box sx={{ display: "flex", justifyContent: "center" }}>
-                                {previewImages.map((image, index) => (
-                                    <Card key={index} sx={{ width: "50%", height: "auto" }}>
-                                        <CardMedia
-                                            component="img"
-                                            image={image}
-                                            alt="Paella dish"
-                                        />
-                                    </Card>
-                                ))}
-                            </Box>
-                        </Box>
-                    )}
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, m: 1 }}>
-                        <Button
-                            sx={{
-                                backgroundColor: "grey",
-                                color: "white",
-                                borderRadius: "5px",
-                                "&:hover": {
-                                    color: "black",
-                                    backgroundColor: "#E1E1E1",
-                                },
-                            }}
-                            onClick={handleClosePre}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            sx={{
-                                backgroundColor: "#8E51E2",
-                                color: "white",
-                                borderRadius: "5px",
-                                "&:hover": {
-                                    color: "black",
-                                    backgroundColor: "#E1E1E1",
-                                },
-                            }}
-                            onClick={handleEditPhotoProfile}
-                            type="submit"
-                        >
-                            Upload
-                        </Button>
-                    </Box>
-                </Box>
-            </Modal>
+            <Loading
+                openLoading={openLoading}
+            />
+            <UploadProfile
+                openPre={openPre}
+                previewImages={previewImages}
+                handleClearImage={handleClearImage}
+                handleClosePre={handleClosePre}
+                handleUpload={handleUpload}
+            />
             {inFoUser.map((info) => (
                 <Box key={info.uid}>
                     <Card key={info.coverPhoto} sx={{ maxWidth: "100%", borderRadius: "10px" }}>
-                        <CardMedia sx={{ height: 300 }} image={info.coverPhoto} title="green iguana" />
+                        <CardMedia sx={{ height: 300 }} image={imageUrls.find((item) => item.includes(info.coverPhoto ?? ""))} title="green iguana" />
                     </Card>
                     {userInfo.uid == info.uid && (
                         <Box
@@ -199,6 +202,7 @@ export default function ProCoverImage() {
                                     "&:hover": {
                                         color: "white",
                                         backgroundColor: "black",
+                                        border: "0px"
                                     },
                                 }}
                                 variant="outlined"
@@ -210,7 +214,7 @@ export default function ProCoverImage() {
                                     onChange={handleFileChange}
                                     multiple
                                     hidden
-                                    accept="image/*"
+                                    accept="*"
                                 />
                                 Add cover photo
                             </Button>

@@ -39,7 +39,7 @@ import EditPost from "./EditPost";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 import "firebase/database";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import {
     collection,
     query,
@@ -60,6 +60,7 @@ import { themeApp } from "../../utils/Theme";
 import PopupAlert from "../PopupAlert";
 import ReportCard from "../Report/ReportCard";
 import ShareCard from "./ShareCard";
+import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
 
 export const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -97,6 +98,7 @@ export default function MContainer(props: Idata) {
     const isLike = props.likes.some((f) => f.likeBy === userInfo.uid);
     const [inFoUser, setInFoUser] = useState<User[]>([]);
     const [openShare, setOpenShare] = useState(false);
+    const [imageUrls, setImageUrls] = useState<string[]>([]);
 
     useEffect(() => {
         const queryData = query(
@@ -117,6 +119,25 @@ export default function MContainer(props: Idata) {
             unsubscribe();
         };
     }, [props.owner]);
+
+    useEffect(() => {
+        const fetchImages = async () => {
+            try {
+                const listRef: StorageReference = ref(storage, '/Images');
+                const res = await listAll(listRef);
+                const urls = await Promise.all(
+                    res.items.map(async (itemRef) => {
+                        const imageUrl = await getDownloadURL(itemRef);
+                        return imageUrl;
+                    })
+                );
+                setImageUrls(urls);
+            } catch (error) {
+                console.error('Error fetching images:', error);
+            }
+        };
+        fetchImages();
+    }, []);
 
     const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
         const emoji = emojiData.find((data) => data.unified === emojiCode);
@@ -278,7 +299,7 @@ export default function MContainer(props: Idata) {
                                 <ListItem>
                                     <ListItemAvatar>
                                         <Avatar
-                                            src={u.profilePhoto}
+                                            src={imageUrls.find(item => item.includes(u.profilePhoto ?? ""))}
                                             sx={{
                                                 width: "60px",
                                                 height: "60px",
@@ -575,7 +596,7 @@ export default function MContainer(props: Idata) {
                                         />
                                         <Avatar
                                             alt="User"
-                                            src={user.profilePhoto}
+                                            src={imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))}
                                             sx={{ width: "40px", height: "40px" }}
                                         />
                                         <Box style={{ width: "98%" }}>

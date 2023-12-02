@@ -7,7 +7,7 @@ import Logo from "/images/logoCmu.png";
 import MenuIcon from '@mui/icons-material/Menu';
 import { NavLink, useNavigate } from "react-router-dom";
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
-import { auth } from "../config/firebase";
+import { auth, storage } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import { User } from "../interface/User";
 import {
@@ -29,6 +29,7 @@ import MessageNoti from "./TopBar/MessageNoti";
 import { IGroup } from "../interface/Group";
 import SmallMenu from "./TopBar/SmallMenu";
 import ChatLists from "./TopBar/ChatLists";
+import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
 
 export default function Navigation() {
 	const navigate = useNavigate();
@@ -50,6 +51,26 @@ export default function Navigation() {
 	const [openMenu, setOpenMenu] = useState(false);
 	const [openChatList, setOpenChatList] = useState(false);
 	const IsAdmin = inFoUser.some((user) => user.userRole === "admin");
+	const [imageUrls, setImageUrls] = useState<string[]>([]);
+
+	useEffect(() => {
+		const fetchImages = async () => {
+			try {
+				const listRef: StorageReference = ref(storage, '/Images');
+				const res = await listAll(listRef);
+				const urls = await Promise.all(
+					res.items.map(async (itemRef) => {
+						const imageUrl = await getDownloadURL(itemRef);
+						return imageUrl;
+					})
+				);
+				setImageUrls(urls);
+			} catch (error) {
+				console.error('Error fetching images:', error);
+			}
+		};
+		fetchImages();
+	}, []);
 
 	useEffect(() => {
 		const fetchData = query(
@@ -238,6 +259,7 @@ export default function Navigation() {
 			isMenuOpen={isMenuOpen}
 			inFoUser={inFoUser}
 			userId={userInfo.uid ?? ""}
+			imageUrls={imageUrls}
 			handleMenuClose={handleMenuClose}
 			handleLogout={handleLogout}
 		/>
@@ -250,6 +272,7 @@ export default function Navigation() {
 			mobileMenuId={mobileMenuId}
 			isMobileMenuOpen={isMobileMenuOpen}
 			notifications={notifications ?? []}
+			imageUrls={imageUrls}
 			handleMobileMenuClose={handleMobileMenuClose}
 		/>
 	);
@@ -262,6 +285,7 @@ export default function Navigation() {
 			isMessageMenuOpen={isMessageMenuOpen}
 			messageNoti={messageNoti ?? []}
 			groupMessageNoti={groupMessageNoti ?? []}
+			imageUrls={imageUrls}
 			handleCloseMessageNoti={handleCloseMessageNoti}
 		/>
 	);
@@ -272,6 +296,7 @@ export default function Navigation() {
 			inFoUser={inFoUser}
 			userId={userInfo.uid ?? ""}
 			IsAdmin={IsAdmin}
+			imageUrls={imageUrls}
 			handleOpenMenu={handleOpenMenu}
 			handleLogout={handleLogout}
 
@@ -379,7 +404,7 @@ export default function Navigation() {
 									onClick={handleProfileMenuOpen}
 									color="inherit"
 								>
-									<Avatar alt="Profile" src={m.profilePhoto} />
+									<Avatar alt="Profile" src={imageUrls.find((item) => item.includes(m.profilePhoto ?? ""))} />
 								</IconButton>
 							))}
 						</Box>

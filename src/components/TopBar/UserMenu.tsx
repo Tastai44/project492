@@ -9,6 +9,7 @@ interface IData {
     isMenuOpen: boolean;
     inFoUser: User[];
     userId: string;
+    imageUrls: string[];
     handleMenuClose: () => void;
     handleLogout: () => void;
 }
@@ -69,7 +70,7 @@ export default function UserMenu(props: IData) {
                             },
                         }}
                     >
-                        <Avatar src={m.profilePhoto} />
+                        <Avatar src={props.imageUrls.find((item) => item.includes(m.profilePhoto ?? ""))} />
                         <Typography>{`${m.firstName} ${m.lastName}`}</Typography>
                     </MenuItem>
                 ))}
