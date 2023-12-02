@@ -37,7 +37,7 @@ import CommentContent from "./CommentContent";
 import "firebase/database";
 import { Post, Comment, Like } from "../../interface/PostContent";
 
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import {
     collection,
     query,
@@ -58,6 +58,7 @@ import { themeApp } from "../../utils/Theme";
 import { NavLink } from "react-router-dom";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ShareCard from "./ShareCard";
+import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
 
 
 const Item = styled(Box)(({ theme }) => ({
@@ -100,6 +101,7 @@ export default function Content(props: IData & IFunction) {
     const [isLike, setIsLike] = useState(false);
     const [openReportPost, setOpenReportPost] = useState(false);
     const [userOwner, setUserOwner] = useState<User[]>([]);
+    const [imageUrls, setImageUrls] = useState<string[]>([]);
 
     useEffect(() => {
         const queryData = query(
@@ -172,6 +174,25 @@ export default function Content(props: IData & IFunction) {
             unsubscribe();
         };
     }, [userInfo.uid]);
+
+    useEffect(() => {
+        const fetchImages = async () => {
+            try {
+                const listRef: StorageReference = ref(storage, '/Images');
+                const res = await listAll(listRef);
+                const urls = await Promise.all(
+                    res.items.map(async (itemRef) => {
+                        const imageUrl = await getDownloadURL(itemRef);
+                        return imageUrl;
+                    })
+                );
+                setImageUrls(urls);
+            } catch (error) {
+                console.error('Error fetching images:', error);
+            }
+        };
+        fetchImages();
+    }, []);
 
     const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
         const emoji = emojiData.find((data) => data.unified === emojiCode);
@@ -297,6 +318,7 @@ export default function Content(props: IData & IFunction) {
                 friendList={props.friendList ?? []}
                 postId={props.postId}
                 postCaption={props.caption ?? ""}
+                imageUrls={imageUrls}
             />
             <Modal
                 open={openReportPost}
@@ -334,7 +356,7 @@ export default function Content(props: IData & IFunction) {
                                 oldEmoji={m.emoji !== undefined ? m.emoji : ""}
                                 postId={props.postId}
                                 location={props.location}
-
+                                imageUrls={imageUrls}
                             />
                         </Box>
                     </Modal>
@@ -382,7 +404,7 @@ export default function Content(props: IData & IFunction) {
                                             <ListItem key={user.uid}>
                                                 <ListItemAvatar>
                                                     <Avatar
-                                                        src={user.profilePhoto}
+                                                        src={imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))}
                                                         sx={{
                                                             width: "60px",
                                                             height: "60px",
@@ -595,7 +617,7 @@ export default function Content(props: IData & IFunction) {
                                     >
                                         <Avatar
                                             alt="User"
-                                            src={inFoUser.find((user) => user.profilePhoto)?.profilePhoto}
+                                            src={imageUrls.find((item) => item.includes(inFoUser.find((user) => user.profilePhoto)?.profilePhoto ?? ""))}
                                             sx={{ width: "45px", height: "45px" }}
                                         />
                                         <Box sx={{ width: "98%", display: "flex", gap: 2 }}>
@@ -654,6 +676,7 @@ export default function Content(props: IData & IFunction) {
                                                             postId={m.id}
                                                             author={comment.author}
                                                             userId={props.userId}
+                                                            imageUrls={imageUrls}
                                                         />
                                                     </Box>
                                                 ))}

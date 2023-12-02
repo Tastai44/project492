@@ -4,13 +4,14 @@ import { styled, Box, Grid, Stack } from "@mui/material";
 import DetailCard from "../../components/Events/DetailCard";
 import LeftSideContainer from "../../components/Events/LeftSideContainer";
 import CoverPhoto from "../../components/Events/CoverPhoto";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import { collection, query, orderBy, getDocs, where, onSnapshot } from "firebase/firestore";
 import { EventPost } from "../../interface/Event";
 import ShareCard from "../../components/MContainer/ShareCard";
 import { User } from "../../interface/User";
 import { themeApp } from "../../utils/Theme";
 import InterestedContainer from "../../components/Events/InterestedContainer";
+import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
 
 const Item = styled(Box)(({ theme }) => ({
 	...theme.typography.body2,
@@ -24,6 +25,7 @@ export default function EventDetail() {
 	const [data, setData] = useState<EventPost[]>([]);
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+	const [imageUrls, setImageUrls] = useState<string[]>([]);
 
 	useEffect(() => {
 		const fetchData = query(
@@ -70,6 +72,25 @@ export default function EventDetail() {
 		fetchData();
 	}, [userInfo.uid]);
 
+	useEffect(() => {
+		const fetchImages = async () => {
+			try {
+				const listRef: StorageReference = ref(storage, '/Images');
+				const res = await listAll(listRef);
+				const urls = await Promise.all(
+					res.items.map(async (itemRef) => {
+						const imageUrl = await getDownloadURL(itemRef);
+						return imageUrl;
+					})
+				);
+				setImageUrls(urls);
+			} catch (error) {
+				console.error('Error fetching images:', error);
+			}
+		};
+		fetchImages();
+	}, []);
+
 	const handleOpenShare = () => setOpenShare(true);
 	const handleCloseShare = () => setOpenShare(false);
 
@@ -108,6 +129,7 @@ export default function EventDetail() {
 											handleOpenShare={handleOpenShare}
 											details={e.details}
 											status={e.status}
+											imageUrls={imageUrls}
 										/>
 									</Item>
 									<ShareCard
@@ -118,6 +140,7 @@ export default function EventDetail() {
 											[]
 										}
 										eventId={e.eventId}
+										imageUrls={imageUrls}
 									/>
 									<Box sx={{
 										[themeApp.breakpoints.down("md")]: {
@@ -128,7 +151,10 @@ export default function EventDetail() {
 											<Grid container spacing={2}>
 												<Grid item xs={2.5}>
 													<Item>
-														<LeftSideContainer evenetData={data} />
+														<LeftSideContainer
+															evenetData={data}
+															imageUrls={imageUrls}
+														/>
 													</Item>
 												</Grid>
 												<Grid item xs={12} md={7}>

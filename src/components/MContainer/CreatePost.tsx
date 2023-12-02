@@ -26,9 +26,10 @@ import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
 import Emoji from "./Emoji";
 import emojiData from "emoji-datasource-facebook";
+import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
 
 import "firebase/database";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import { Post } from "../../interface/PostContent";
 import { doc, onSnapshot, query, where, serverTimestamp } from "firebase/firestore";
 import { collection, setDoc } from "firebase/firestore";
@@ -52,6 +53,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 	const [previewImages, setPreviewImages] = useState<string[]>([]);
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [emoji, setEmoji] = useState("");
+	const [imageUrls, setImageUrls] = useState<string[]>([]);
 	const initialState = {
 		id: "",
 		caption: "",
@@ -87,6 +89,25 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 			unsubscribe();
 		};
 	}, [userInfo.uid]);
+
+	useEffect(() => {
+		const fetchImages = async () => {
+			try {
+				const listRef: StorageReference = ref(storage, '/Images');
+				const res = await listAll(listRef);
+				const urls = await Promise.all(
+					res.items.map(async (itemRef) => {
+						const imageUrl = await getDownloadURL(itemRef);
+						return imageUrl;
+					})
+				);
+				setImageUrls(urls);
+			} catch (error) {
+				console.error('Error fetching images:', error);
+			}
+		};
+		fetchImages();
+	}, []);
 
 	const handleChange = (event: SelectChangeEvent) => {
 		setStatus(event.target.value as string);
@@ -262,7 +283,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 						<ListItem key={user.uid}>
 							<ListItemAvatar>
 								<Avatar
-									src={user.profilePhoto}
+									src={imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))}
 									sx={{ width: "40px", height: "40px", marginRight: "10px" }}
 								/>
 							</ListItemAvatar>

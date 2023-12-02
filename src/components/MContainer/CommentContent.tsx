@@ -40,6 +40,7 @@ interface IData {
 	postId: string;
 	userId: string;
 	author: string;
+	imageUrls: string[];
 }
 
 export default function CommentContent(props: IData) {
@@ -237,7 +238,10 @@ export default function CommentContent(props: IData) {
 				{inFoUser.map((user) => (
 					<ListItem key={user.uid}>
 						<ListItemAvatar>
-							<Avatar src={user.profilePhoto} sx={{ width: "40px", height: "40px" }} />
+							<Avatar
+								src={props.imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))}
+								sx={{ width: "40px", height: "40px" }}
+							/>
 						</ListItemAvatar>
 						<ListItemText
 							primary={

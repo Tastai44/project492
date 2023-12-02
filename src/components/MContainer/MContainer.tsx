@@ -275,6 +275,7 @@ export default function MContainer(props: Idata) {
                                 oldEmoji={props.emoji !== undefined ? props.emoji : ""}
                                 postId={props.postId}
                                 location={props.location}
+                                imageUrls={imageUrls}
                             />
                         </Box>
                     </Modal>
@@ -540,11 +541,6 @@ export default function MContainer(props: Idata) {
                                     </Button>
                                     <Button
                                         onClick={handleOpenShare}
-                                        // onClick={
-                                        //   isShare
-                                        //     ? () => unShare(props.postId)
-                                        //     : () => handleShare()
-                                        // }
                                         sx={{ color: "black" }}
                                         aria-label="share"
                                     >
@@ -593,6 +589,7 @@ export default function MContainer(props: Idata) {
                                             friendList={user.friendList ?? []}
                                             postId={props.postId}
                                             postCaption={props.caption ?? ""}
+                                            imageUrls={imageUrls}
                                         />
                                         <Avatar
                                             alt="User"

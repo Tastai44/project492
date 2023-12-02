@@ -26,7 +26,7 @@ import PublicIcon from "@mui/icons-material/Public";
 import emojiData from "emoji-datasource-facebook";
 
 import "firebase/database";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import { Post } from "../../interface/PostContent";
 import { doc, serverTimestamp } from "firebase/firestore";
 import Emoji from "../MContainer/Emoji";
@@ -36,6 +36,7 @@ import PopupAlert from "../PopupAlert";
 import { createNoti } from "../NotificationFunction";
 import LocationCard from "../MContainer/LocationCard";
 import { styleCreatePost } from "../../utils/styleBox";
+import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
 
 interface IHandle {
     handleCloseCratePost: () => void;
@@ -55,6 +56,7 @@ export default function CreateGroupPost(props: IHandle & IData) {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const [openLocation, setOpenLocation] = useState(false);
     const [emoji, setEmoji] = useState("");
+    const [imageUrls, setImageUrls] = useState<string[]>([]);
     const initialState = {
         id: "",
         caption: "",
@@ -94,6 +96,25 @@ export default function CreateGroupPost(props: IHandle & IData) {
         };
         fetchData();
     }, [userInfo.uid]);
+
+    useEffect(() => {
+        const fetchImages = async () => {
+            try {
+                const listRef: StorageReference = ref(storage, '/Images');
+                const res = await listAll(listRef);
+                const urls = await Promise.all(
+                    res.items.map(async (itemRef) => {
+                        const imageUrl = await getDownloadURL(itemRef);
+                        return imageUrl;
+                    })
+                );
+                setImageUrls(urls);
+            } catch (error) {
+                console.error('Error fetching images:', error);
+            }
+        };
+        fetchImages();
+    }, []);
 
     const handleChange = (event: SelectChangeEvent) => {
         setStatus(event.target.value as string);
@@ -266,7 +287,7 @@ export default function CreateGroupPost(props: IHandle & IData) {
                         <ListItem key={u.uid}>
                             <ListItemAvatar>
                                 <Avatar
-                                    src={u.profilePhoto}
+                                    src={imageUrls.find((item) => item.includes(u.profilePhoto ?? ""))}
                                     sx={{ width: "40px", height: "40px", marginRight: "10px" }}
                                 />
                             </ListItemAvatar>

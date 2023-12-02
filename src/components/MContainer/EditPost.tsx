@@ -38,6 +38,7 @@ import { styleCreatePost } from "../../utils/styleBox";
 
 interface IHandle {
 	handleCloseEditPost: () => void;
+	imageUrls: string[];
 }
 interface Idata {
 	postId: string;
@@ -49,7 +50,7 @@ interface Idata {
 	oldEmoji: string;
 }
 
-export default function CreatePost(props: IHandle & Idata) {
+export default function EditPost(props: IHandle & Idata) {
 	const [status, setStatus] = useState(`${props.oldStatus}`);
 	const [location, setLocation] = useState(props.location);
 	const [openLocation, setOpenLocation] = useState(false);
@@ -252,7 +253,7 @@ export default function CreatePost(props: IHandle & Idata) {
 						<ListItem key={user.uid}>
 							<ListItemAvatar>
 								<Avatar
-									src={user.profilePhoto}
+									src={props.imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))}
 									sx={{ width: "40px", height: "40px", marginRight: "10px" }}
 								/>
 							</ListItemAvatar>

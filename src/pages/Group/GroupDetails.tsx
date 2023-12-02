@@ -6,7 +6,7 @@ import MContainer from "../../components/MContainer/MContainer";
 import AboutGroup from "../../components/Groups/AboutGroup";
 import { useParams } from "react-router-dom";
 import { Item } from "../../App";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import { collection, query, orderBy, getDocs, where, onSnapshot } from "firebase/firestore";
 import { IGroup } from "../../interface/Group";
 import { User } from "../../interface/User";
@@ -15,6 +15,7 @@ import { Post } from "../../interface/PostContent";
 import Content from "../../components/Report/Content";
 import ShareContent from "../Profile/ShareContent";
 import { themeApp } from "../../utils/Theme";
+import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
 
 export default function GroupDetails() {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
@@ -24,6 +25,7 @@ export default function GroupDetails() {
     const [type, setType] = useState("General");
     const [postData, setPostData] = useState<Post[]>([]);
     const [shareGroupPost, setShareGroupPost] = useState<Post[]>([]);
+    const [imageUrls, setImageUrls] = useState<string[]>([]);
 
     useEffect(() => {
         const queryGroupData = query(
@@ -111,6 +113,25 @@ export default function GroupDetails() {
         };
     }, [groupId]);
 
+    useEffect(() => {
+        const fetchImages = async () => {
+            try {
+                const listRef: StorageReference = ref(storage, '/Images');
+                const res = await listAll(listRef);
+                const urls = await Promise.all(
+                    res.items.map(async (itemRef) => {
+                        const imageUrl = await getDownloadURL(itemRef);
+                        return imageUrl;
+                    })
+                );
+                setImageUrls(urls);
+            } catch (error) {
+                console.error('Error fetching images:', error);
+            }
+        };
+        fetchImages();
+    }, []);
+
     const handleChangeType = (event: SelectChangeEvent) => {
         setType(event.target.value as string);
     };
@@ -159,6 +180,7 @@ export default function GroupDetails() {
                                                             hostId={g.hostId}
                                                             members={g.members}
                                                             gId={g.gId}
+                                                            imageUrls={imageUrls}
                                                         />
                                                     </Item>
                                                 </Grid>

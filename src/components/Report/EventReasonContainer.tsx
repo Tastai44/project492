@@ -9,7 +9,7 @@ import LeftSideContainer from "../../components/Events/LeftSideContainer";
 import CoverPhoto from "../../components/Events/CoverPhoto";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import {
   collection,
   query,
@@ -31,6 +31,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import PopupAlert from "../PopupAlert";
 import ReasonContent from "./ReasonContent";
 import InterestedContainer from "../Events/InterestedContainer";
+import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
@@ -53,6 +54,7 @@ export default function EventReasonContainer(props: IData & IFunction) {
   const [data, setData] = useState<EventPost[]>([]);
   const [inFoUser, setInFoUser] = useState<User[]>([]);
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchData = query(
@@ -97,6 +99,25 @@ export default function EventReasonContainer(props: IData & IFunction) {
     };
     fetchData();
   }, [userInfo.uid]);
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const listRef: StorageReference = ref(storage, '/Images');
+        const res = await listAll(listRef);
+        const urls = await Promise.all(
+          res.items.map(async (itemRef) => {
+            const imageUrl = await getDownloadURL(itemRef);
+            return imageUrl;
+          })
+        );
+        setImageUrls(urls);
+      } catch (error) {
+        console.error('Error fetching images:', error);
+      }
+    };
+    fetchImages();
+  }, []);
 
   const handleOpenShare = () => setOpenShare(true);
   const handleCloseShare = () => setOpenShare(false);
@@ -216,6 +237,7 @@ export default function EventReasonContainer(props: IData & IFunction) {
                             details={e.details}
                             status={e.status}
                             location={e.location}
+                            imageUrls={imageUrls}
                           />
                         </Item>
                         <ShareCard
@@ -226,13 +248,17 @@ export default function EventReasonContainer(props: IData & IFunction) {
                               ?.friendList ?? []
                           }
                           eventId={e.eventId}
+                          imageUrls={imageUrls}
                         />
                         <Item>
                           <Box sx={{ flexGrow: 1 }}>
                             <Grid container spacing={2}>
                               <Grid item xs={2.5}>
                                 <Item>
-                                  <LeftSideContainer evenetData={data} />
+                                  <LeftSideContainer
+                                    evenetData={data}
+                                    imageUrls={imageUrls}
+                                  />
                                 </Item>
                               </Grid>
                               <Grid item xs={12} md={7}>

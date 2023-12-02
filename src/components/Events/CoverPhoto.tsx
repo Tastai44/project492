@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import {
     Box,
     Button,
@@ -53,13 +53,14 @@ interface IData {
 
 interface IFunction {
     handleOpenShare: () => void;
+    imageUrls: string[];
 }
 
 export default function ProCoverImage(props: IData & IFunction) {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const IsOwner = userInfo.uid === props.owner;
     const isInterest = props.interest.some((f) => f.interestBy === userInfo.uid);
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -82,7 +83,7 @@ export default function ProCoverImage(props: IData & IFunction) {
         try {
             const q = query(
                 collection(dbFireStore, "events"),
-                where("id", "==", id)
+                where("eventId", "==", id)
             );
             const querySnapshot = await getDocs(q);
             const doc = querySnapshot.docs[0];
@@ -145,6 +146,7 @@ export default function ProCoverImage(props: IData & IFunction) {
                         details={props.details}
                         status={props.status}
                         location={props.location}
+                        imageUrls={props.imageUrls}
                     />
                 </Box>
             </Modal>
@@ -154,7 +156,7 @@ export default function ProCoverImage(props: IData & IFunction) {
             }}>
                 <CardMedia
                     sx={{ height: 300, borderRadius: "10px" }}
-                    image={props.coverPhoto}
+                    image={props.imageUrls.find((item) => item.includes(props.coverPhoto ?? ""))}
                     title="green iguana"
                 />
             </Card>
@@ -236,10 +238,10 @@ export default function ProCoverImage(props: IData & IFunction) {
                                             : !isInterest
                                                 ? "black"
                                                 : "black",
-                                        border: "1px soild",
+                                        border: "1px solid #8E51E2",
                                         "&:hover": {
                                             color: "white",
-                                            border: "1px soild",
+                                            border: "1px solid",
                                             backgroundColor: "primary.main",
                                         },
                                     }}
