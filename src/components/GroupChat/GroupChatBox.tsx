@@ -1,4 +1,3 @@
-
 import {
 	Box,
 	Divider,
@@ -242,10 +241,6 @@ export default function GroupChatBox
 			const data = doc.data();
 			if (data.content && Array.isArray(data.content)) {
 				const content: Conversation[] = data.content;
-
-				// const hasUserAsSender = content.some((con) => con.senderId === userInfo.uid);
-				// const hasUserAsReceiver = content.some((con) => con.receiverId === userInfo.uid);
-				// const hasPropsUserAsSender = content.some((con) => con.senderId === props.groupId);
 				const hasPropsUserAsReceiver = content.some((con) => con.receiverId === props.groupId);
 
 				if (hasPropsUserAsReceiver) {

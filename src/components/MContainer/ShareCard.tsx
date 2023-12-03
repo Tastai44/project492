@@ -150,7 +150,6 @@ export default function ShareCard(props: IData & IFunction) {
                 getRowsId.includes(row.id ? row.id : "")
             );
 
-            // Check if the post has been shared already by the current user
             const postSnapshot = await getDoc(postRef);
             const postExists = postSnapshot.exists();
 
@@ -161,7 +160,6 @@ export default function ShareCard(props: IData & IFunction) {
 
             const post = postSnapshot.data() as Post;
 
-            //Strill wrong
             const existingShareIndex = post.shareUsers.some((share) => (
                 (share.shareBy === userInfo.uid && share.shareTo === userInfo.uid) &&
                 (status === "Private" || status === "Public")
@@ -233,7 +231,6 @@ export default function ShareCard(props: IData & IFunction) {
                 getRowsId.includes(row.id ? row.id : "")
             );
 
-            // Check if the post has been shared already by the current user
             const eventSnapshot = await getDoc(eventRef);
             const eventExists = eventSnapshot.exists();
 
@@ -244,7 +241,6 @@ export default function ShareCard(props: IData & IFunction) {
 
             const event = eventSnapshot.data() as Post;
 
-            //Strill wrong
             const existingShareIndex = event.shareUsers.some((share) => (
                 (share.shareBy === userInfo.uid && share.shareTo === userInfo.uid) &&
                 (status === "Private" || status === "Public")
