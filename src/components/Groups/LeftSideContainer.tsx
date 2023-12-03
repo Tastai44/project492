@@ -12,7 +12,7 @@ interface IData {
 export default function LeftSideContainer(props: IData) {
 	return (
 		<div>
-			<Box sx={{ display: { xs: "none", md: "flex" }, flexDirection: "column" }}>
+			<Box sx={{ display: { xs: "none", md: "flex" }, flexDirection: "column", gap: 1 }}>
 				<Host
 					hostId={props.hostId}
 					imageUrls={props.imageUrls}

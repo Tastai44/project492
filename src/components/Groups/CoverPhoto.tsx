@@ -24,6 +24,8 @@ interface IData {
 	members: string[];
 	status: string;
 	details: string;
+	imageUrls: string[];
+	handleReFreshImage: () => void;
 }
 
 export default function ProCoverImage(props: IData) {
@@ -85,18 +87,20 @@ export default function ProCoverImage(props: IData) {
 				<Box>
 					<EditGroup
 						closeEdit={handleClose}
+						handleReFreshImage={props.handleReFreshImage}
 						gId={props.gId}
 						groupName={props.title}
 						status={props.status}
 						details={props.details}
 						coverPhoto={props.coverPhoto}
+						imageUrls={props.imageUrls}
 					/>
 				</Box>
 			</Modal>
 			<Card sx={{ maxWidth: "100%" }}>
 				<CardMedia
 					sx={{ height: 300 }}
-					image={props.coverPhoto}
+					image={props.imageUrls.find((item) => item.includes(props.coverPhoto ?? ""))}
 					title="green iguana"
 				/>
 			</Card>

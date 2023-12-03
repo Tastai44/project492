@@ -103,6 +103,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
     };
 
     const handleUpload = async () => {
+        setLopenLoading(true);
         if (imageUpload == null) return;
         const fileName = removeSpacesBetweenWords(imageUpload.name);
         const imageRef = ref(storage, `Images/event_${userInfo.uid}${fileName}`);

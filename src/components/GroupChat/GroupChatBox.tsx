@@ -16,7 +16,7 @@ import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import emojiData from "emoji-datasource-facebook";
 import "firebase/database";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import {
 	collection,
 	query,
@@ -38,6 +38,10 @@ import { useState, useRef, ChangeEvent, useMemo, useEffect } from "react";
 import { createGroupMessageNoti } from "../MessageNotification";
 import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
+import { uploadBytes, StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
+import heic2any from "heic2any";
+import { removeSpacesBetweenWords } from "../Profile/ProfileInfo";
+import Loading from "../Loading";
 
 interface IFunction {
 	handleClose: () => void;
@@ -59,6 +63,10 @@ export default function GroupChatBox
 	const chatContainerRef = useRef<HTMLDivElement>(null);
 	const [emoji, setEmoji] = useState("");
 	const [isDown, setIsDown] = useState(false);
+	const [openLoading, setLopenLoading] = useState(false);
+	const [imagePath, setImagePath] = useState<string[]>([]);
+	const [imageUrls, setImageUrls] = useState<string[]>([]);
+	const [reFreshImage, setReFreshImage] = useState(0);
 
 	useMemo(() => {
 		const fetchData = async () => {
@@ -99,6 +107,25 @@ export default function GroupChatBox
 		return () => unsubscribe();
 	}, [props.groupId, userInfo.uid]);
 
+	useEffect(() => {
+		const fetchImages = async () => {
+			try {
+				const listRef: StorageReference = ref(storage, '/Images');
+				const res = await listAll(listRef);
+				const urls = await Promise.all(
+					res.items.map(async (itemRef) => {
+						const imageUrl = await getDownloadURL(itemRef);
+						return imageUrl;
+					})
+				);
+				setImageUrls(urls);
+			} catch (error) {
+				console.error('Error fetching images:', error);
+			}
+		};
+		fetchImages();
+	}, [reFreshImage]);
+
 	const scrollDown = () => {
 		if (chatContainerRef.current) {
 			chatContainerRef.current.scrollTop =
@@ -118,6 +145,7 @@ export default function GroupChatBox
 	const handleCloseEmoji = () => setOpenEmoji(false);
 	const handleClearImage = () => {
 		setPreviewImages([]);
+		setImagePath([]);
 	};
 
 	const handleChangeEmoji = (e: string) => {
@@ -135,31 +163,60 @@ export default function GroupChatBox
 		}
 	};
 
-	const handleFileChange = async (
-		event: ChangeEvent<HTMLInputElement>
-	) => {
-		const files = event.target.files;
-		if (files) {
+	const handleUpload = async (file: File) => {
+		if (file == null) return;
+		const fileName = removeSpacesBetweenWords(file.name);
+		const imageRef = ref(storage, `Images/groupChat_${userInfo.uid}${fileName}`);
+		uploadBytes(imageRef, file).then(() => {
+			setImagePath((pre) => [...pre, `groupChat_${userInfo.uid}${fileName}`]);
+		});
+	};
+
+	const handleConvertFile = async (file: File) => {
+		setLopenLoading(true);
+		const fileName = file.name;
+		const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+		const reader = new FileReader();
+
+		if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
 			try {
-				const selectedFiles = Array.from(files);
-				const readerPromises = selectedFiles.map((file) => {
-					return new Promise<string>((resolve, reject) => {
-						const reader = new FileReader();
-						reader.onloadend = () => {
-							resolve(reader.result as string);
-						};
-						reader.onerror = reject;
-						reader.readAsDataURL(file);
-					});
+				const resultBlob = await heic2any({ blob: file, toType: 'Image/jpg' }) as BlobPart;
+				const convertedFile = new File([resultBlob], `${file.name.split('.')[0]}.jpg`, {
+					type: 'Image/jpeg',
+					lastModified: new Date().getTime(),
 				});
 
-				const base64Images = await Promise.all(readerPromises);
-				setPreviewImages(base64Images);
+				handleUpload(convertedFile);
+
+				reader.onloadend = () => {
+					setPreviewImages((prevImages) => [...prevImages, reader.result as string]);
+				};
+
+				reader.readAsDataURL(convertedFile);
 			} catch (error) {
 				console.error(error);
 			}
+		} else {
+			reader.onloadend = () => {
+				setPreviewImages((prevImages) => [...prevImages, reader.result as string]);
+			};
+
+			reader.readAsDataURL(file);
+			handleUpload(file);
+		}
+		setLopenLoading(false);
+	};
+
+	const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+		if (event.target.files) {
+			setMessage('');
+			const fileArray = Array.from(event.target.files);
+			fileArray.forEach((file) => {
+				handleConvertFile(file);
+			});
 		}
 	};
+
 
 	const handleMessage = (
 		event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -172,6 +229,7 @@ export default function GroupChatBox
 		setMessage('');
 		setEmoji('');
 		setPreviewImages([]);
+		setImagePath([]);
 	};
 
 	const handleSendMessage = async () => {
@@ -199,8 +257,8 @@ export default function GroupChatBox
 		const newMessage = {
 			receiverId: props.groupId,
 			content: [{
-				message: message,
-				photoMessage: previewImages,
+				message: (imagePath.length == 0) ? message : "",
+				photoMessage: imagePath,
 				emoji: emoji,
 				senderId: userInfo.uid,
 				receiverId: props.groupId,
@@ -229,6 +287,7 @@ export default function GroupChatBox
 				createGroupMessageNoti(conversationId, userInfo.uid, props.groupId, groupData.flatMap(member => member.members), message);
 				clearState();
 			}
+			setReFreshImage(pre => pre + 1);
 		} catch (error) {
 			console.error("Error sending message:", error);
 		}
@@ -249,6 +308,9 @@ export default function GroupChatBox
 					/>
 				</Box>
 			</Modal>
+			<Loading
+				openLoading={openLoading}
+			/>
 			<Paper sx={styleBoxChat}>
 				<Box
 					sx={{
@@ -268,7 +330,10 @@ export default function GroupChatBox
 							pl: 0.5,
 						}}
 					>
-						<Header groupData={groupData} />
+						<Header
+							groupData={groupData}
+							imageUrls={imageUrls}
+						/>
 						<Box sx={{ p: 0.2, display: "flex", flexDirection: "column" }}>
 							<IconButton size="small" onClick={props.handleClose} sx={{ p: 1 }}>
 								<CancelIcon sx={{ color: "white", fontSize: "20px" }} />
@@ -292,6 +357,7 @@ export default function GroupChatBox
 							messages={messages}
 							groupId={props.groupId}
 							members={groupData.flatMap((member) => member.members)}
+							imageUrls={imageUrls}
 						/>
 					</Box>
 					<Divider />
@@ -312,7 +378,7 @@ export default function GroupChatBox
 									onChange={handleFileChange}
 									multiple
 									hidden
-									accept="image/*"
+									accept="*"
 								/>
 								<CameraAltOutlinedIcon
 									sx={{ color: "primary.main", fontSize: "20px" }}

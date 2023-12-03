@@ -79,6 +79,7 @@ export default function MessageNoti(props: IData) {
                                 notiId={noti.notiId}
                                 groupId={noti.groupId}
                                 isRead={noti.isRead}
+                                imageUrls={props.imageUrls}
                             />
                         );
                     } else {

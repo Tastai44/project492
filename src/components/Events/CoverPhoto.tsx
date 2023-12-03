@@ -53,6 +53,7 @@ interface IData {
 
 interface IFunction {
     handleOpenShare: () => void;
+    handleReFreshImage: () => void;
     imageUrls: string[];
 }
 
@@ -134,6 +135,7 @@ export default function ProCoverImage(props: IData & IFunction) {
                 <Box>
                     <EditEvent
                         closeAdd={handleClose}
+                        handleReFreshImage={handleReFreshImage}
                         eventId={props.eventId}
                         startDate={props.startDate}
                         startTime={props.startTime}

@@ -11,6 +11,7 @@ interface IData {
 	groupName: string;
 	groupId: string;
 	groupStatus: string;
+	imageUrls: string[];
 }
 
 export default function PostGroupForm(props: IData) {
@@ -49,7 +50,7 @@ export default function PostGroupForm(props: IData) {
 				>
 					<Avatar
 						alt="User"
-						src={u.profilePhoto}
+						src={props.imageUrls.find((item) => item.includes(u.profilePhoto ?? ""))}
 						sx={{ width: "40px", height: "40px", mr: 1 }}
 					/>
 					<div style={{ width: "98%" }}>

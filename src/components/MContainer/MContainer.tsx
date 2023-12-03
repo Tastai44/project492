@@ -254,6 +254,7 @@ export default function MContainer(props: Idata) {
                                     location={props.location}
                                     friendList={u.friendList}
                                     caption={props.caption}
+                                    imageUrls={imageUrls}
                                 />
                             </Paper>
                         </Box>
@@ -485,9 +486,9 @@ export default function MContainer(props: Idata) {
                                         onClick={handletOpenPost}
                                     >
                                         {props.photoPost.map((image, index) => (
-                                            <ImageListItem key={index}>
+                                            <ImageListItem key={index} sx={{ cursor: "pointer" }}>
                                                 <img
-                                                    src={image}
+                                                    src={imageUrls.find((item) => item.includes(image))}
                                                     alt={`Preview ${index}`}
                                                     loading="lazy"
                                                 />
@@ -503,9 +504,9 @@ export default function MContainer(props: Idata) {
                                         sx={{ borderRadius: "20px" }}
                                     >
                                         {props.photoPost.map((image, index) => (
-                                            <ImageListItem key={index}>
+                                            <ImageListItem key={index} sx={{ cursor: "pointer" }}>
                                                 <img
-                                                    src={image}
+                                                    src={imageUrls.find((item) => item.includes(image))}
                                                     alt={`Preview ${index}`}
                                                     loading="lazy"
                                                 />

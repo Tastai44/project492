@@ -34,6 +34,7 @@ import { removeSpacesBetweenWords } from "../Profile/ProfileInfo";
 
 interface Ihandle {
     closeAdd: () => void;
+    handleReFreshImage: () => void;
     imageUrls: string[];
 }
 
@@ -111,7 +112,7 @@ export default function EditEvent(props: IData & Ihandle) {
         const fileName = removeSpacesBetweenWords(imageUpload.name);
         const imageRef = ref(storage, `Images/event_${userId}${fileName}`);
         uploadBytes(imageRef, imageUpload).then(() => {
-            // handleEditEvent(`event_${userId}${fileName}`);
+            props.handleReFreshImage();
         });
     };
 

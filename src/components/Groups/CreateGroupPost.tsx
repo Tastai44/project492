@@ -36,7 +36,10 @@ import PopupAlert from "../PopupAlert";
 import { createNoti } from "../NotificationFunction";
 import LocationCard from "../MContainer/LocationCard";
 import { styleCreatePost } from "../../utils/styleBox";
-import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
+import { StorageReference, listAll, getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import heic2any from "heic2any";
+import Loading from "../Loading";
+import { removeSpacesBetweenWords } from "../Profile/ProfileInfo";
 
 interface IHandle {
     handleCloseCratePost: () => void;
@@ -57,6 +60,8 @@ export default function CreateGroupPost(props: IHandle & IData) {
     const [openLocation, setOpenLocation] = useState(false);
     const [emoji, setEmoji] = useState("");
     const [imageUrls, setImageUrls] = useState<string[]>([]);
+    const [openLoading, setLopenLoading] = useState(false);
+    const [imagePath, setImagePath] = useState<string[]>([]);
     const initialState = {
         id: "",
         caption: "",
@@ -138,29 +143,56 @@ export default function CreateGroupPost(props: IHandle & IData) {
         }
     };
 
-    const handleFileChange = async (
-        event: ChangeEvent<HTMLInputElement>
-    ) => {
-        const files = event.target.files;
-        if (files) {
+    const handleUpload = async (file: File) => {
+        if (file == null) return;
+        const fileName = removeSpacesBetweenWords(file.name);
+        const imageRef = ref(storage, `Images/post_${userInfo.uid}${fileName}`);
+        uploadBytes(imageRef, file).then(() => {
+            setImagePath((pre) => [...pre, `post_${userInfo.uid}${fileName}`]);
+        });
+    };
+
+    const handleConvertFile = async (file: File) => {
+        setLopenLoading(true);
+        const fileName = file.name;
+        const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+        const reader = new FileReader();
+
+        if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
             try {
-                const selectedFiles = Array.from(files);
-                const readerPromises = selectedFiles.map((file) => {
-                    return new Promise<string>((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                            resolve(reader.result as string);
-                        };
-                        reader.onerror = reject;
-                        reader.readAsDataURL(file);
-                    });
+                const resultBlob = await heic2any({ blob: file, toType: 'Image/jpg' }) as BlobPart;
+                const convertedFile = new File([resultBlob], `${file.name.split('.')[0]}.jpg`, {
+                    type: 'Image/jpeg',
+                    lastModified: new Date().getTime(),
                 });
 
-                const base64Images = await Promise.all(readerPromises);
-                setPreviewImages(base64Images);
+                handleUpload(convertedFile);
+
+                reader.onloadend = () => {
+                    setPreviewImages((prevImages) => [...prevImages, reader.result as string]);
+                };
+
+                reader.readAsDataURL(convertedFile);
             } catch (error) {
                 console.error(error);
             }
+        } else {
+            reader.onloadend = () => {
+                setPreviewImages((prevImages) => [...prevImages, reader.result as string]);
+            };
+
+            reader.readAsDataURL(file);
+            handleUpload(file);
+        }
+        setLopenLoading(false);
+    };
+
+    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            const fileArray = Array.from(event.target.files);
+            fileArray.forEach((file) => {
+                handleConvertFile(file);
+            });
         }
     };
 
@@ -192,7 +224,7 @@ export default function CreateGroupPost(props: IHandle & IData) {
             caption: post.caption,
             hashTagTopic: post.hashTagTopic,
             status: status,
-            photoPost: previewImages,
+            photoPost: imagePath,
             likes: [],
             createAt: new Date().toLocaleString(),
             dateCreated: serverTimestamp(),
@@ -267,6 +299,9 @@ export default function CreateGroupPost(props: IHandle & IData) {
                 handleCloseLocation={handleCloseLocation}
                 handletSaveLocation={handletSaveLocation}
                 handleChangeLocation={handleChangeLocation}
+            />
+            <Loading
+                openLoading={openLoading}
             />
             <Box sx={styleCreatePost}>
                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -402,7 +437,7 @@ export default function CreateGroupPost(props: IHandle & IData) {
                                         onChange={handleFileChange}
                                         multiple
                                         hidden
-                                        accept="image/*"
+                                        accept="*"
                                     />
                                     <InsertPhotoIcon sx={{ color: "green" }} />
                                 </IconButton>

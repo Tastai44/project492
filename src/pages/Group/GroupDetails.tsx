@@ -26,6 +26,7 @@ export default function GroupDetails() {
     const [postData, setPostData] = useState<Post[]>([]);
     const [shareGroupPost, setShareGroupPost] = useState<Post[]>([]);
     const [imageUrls, setImageUrls] = useState<string[]>([]);
+    const [reFreshImage, setReFreshImage] = useState(0);
 
     useEffect(() => {
         const queryGroupData = query(
@@ -130,7 +131,7 @@ export default function GroupDetails() {
             }
         };
         fetchImages();
-    }, []);
+    }, [reFreshImage]);
 
     const handleChangeType = (event: SelectChangeEvent) => {
         setType(event.target.value as string);
@@ -165,6 +166,8 @@ export default function GroupDetails() {
                                             members={g.members}
                                             details={g.details}
                                             status={g.status}
+                                            imageUrls={imageUrls}
+                                            handleReFreshImage={() => setReFreshImage(pre => pre + 1)}
                                         />
                                     </Item>
                                     <Item sx={{
@@ -212,6 +215,7 @@ export default function GroupDetails() {
                                                             groupName={g.groupName}
                                                             groupId={g.gId}
                                                             groupStatus={g.status}
+                                                            imageUrls={imageUrls}
                                                         />
                                                     </Item>
 
