@@ -5,13 +5,14 @@ import { styleBoxPop, styleSearchBox } from "../../utils/styleBox";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { Like, Post } from "../../interface/PostContent";
 import { collection, orderBy, onSnapshot, query } from "firebase/firestore";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import EachTopic from "../Topics/EachTopic";
 import { User } from "../../interface/User";
 import Content from "../MContainer/Content";
 import { IGroup } from "../../interface/Group";
 import { NavLink } from "react-router-dom";
 import EachGroup from "../Groups/EachGroup";
+import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
 
 interface IData {
     openSearchBar: boolean;
@@ -27,6 +28,7 @@ export default function SearchContent(props: IData) {
     const [likes, setLikes] = useState<Like[]>([]);
     const [postOwner, setPostOwner] = useState("");
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+    const [imageUrls, setImageUrls] = useState<string[]>([]);
 
     useEffect(() => {
         const fetchData = query(
@@ -68,6 +70,25 @@ export default function SearchContent(props: IData) {
         };
     }, []);
 
+    useEffect(() => {
+        const fetchImages = async () => {
+            try {
+                const listRef: StorageReference = ref(storage, '/Images');
+                const res = await listAll(listRef);
+                const urls = await Promise.all(
+                    res.items.map(async (itemRef) => {
+                        const imageUrl = await getDownloadURL(itemRef);
+                        return imageUrl;
+                    })
+                );
+                setImageUrls(urls);
+            } catch (error) {
+                console.error('Error fetching images:', error);
+            }
+        };
+        fetchImages();
+    }, []);
+
     const handletOpenPost = (id: string, likeData: Like[], owner: string) => {
         setOpenPost(true);
         setPostId(id);
@@ -96,6 +117,7 @@ export default function SearchContent(props: IData) {
                             likes={likes}
                             owner={postOwner}
                             handleClosePost={handleClosePost}
+                            imageUrls={imageUrls}
                         />
                     </Paper>
                 </Box>

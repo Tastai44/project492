@@ -55,6 +55,7 @@ export default function EventReasonContainer(props: IData & IFunction) {
   const [inFoUser, setInFoUser] = useState<User[]>([]);
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [reFreshImage, setReFreshImage] = useState(0);
 
   useEffect(() => {
     const fetchData = query(
@@ -117,7 +118,7 @@ export default function EventReasonContainer(props: IData & IFunction) {
       }
     };
     fetchImages();
-  }, []);
+  }, [reFreshImage]);
 
   const handleOpenShare = () => setOpenShare(true);
   const handleCloseShare = () => setOpenShare(false);
@@ -238,6 +239,7 @@ export default function EventReasonContainer(props: IData & IFunction) {
                             status={e.status}
                             location={e.location}
                             imageUrls={imageUrls}
+                            handleReFreshImage={() => setReFreshImage(pre => pre + 1)}
                           />
                         </Item>
                         <ShareCard

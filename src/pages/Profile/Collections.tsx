@@ -10,7 +10,7 @@ import {
 	Typography,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import { Like, Post } from "../../interface/PostContent";
 import {
 	collection,
@@ -25,6 +25,7 @@ import SearchPost from "../../components/Profile/SearchPost";
 import SearchBar from "../../helper/SearchBar";
 import { themeApp } from "../../utils/Theme";
 import TabLink from "./TabLink";
+import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
 
 export default function Collections() {
 	const { userId } = useParams();
@@ -35,6 +36,7 @@ export default function Collections() {
 	const [ownerId, setOwnerId] = useState("");
 	const [searchValue, setValue] = useState("");
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+	const [imageUrls, setImageUrls] = useState<string[]>([]);
 
 	useEffect(() => {
 		const queryData = query(
@@ -58,6 +60,25 @@ export default function Collections() {
 			unsubscribe();
 		};
 	}, [userId]);
+
+	useEffect(() => {
+		const fetchImages = async () => {
+			try {
+				const listRef: StorageReference = ref(storage, '/Images');
+				const res = await listAll(listRef);
+				const urls = await Promise.all(
+					res.items.map(async (itemRef) => {
+						const imageUrl = await getDownloadURL(itemRef);
+						return imageUrl;
+					})
+				);
+				setImageUrls(urls);
+			} catch (error) {
+				console.error('Error fetching images:', error);
+			}
+		};
+		fetchImages();
+	}, []);
 
 	const handletOpenPost = (id: string, likeData: Like[], ownerId: string) => {
 		setOpenPost(true);
@@ -90,6 +111,7 @@ export default function Collections() {
 							userId={userInfo.uid}
 							handleClosePost={handleClosePost}
 							owner={ownerId}
+							imageUrls={imageUrls}
 						/>
 					</Paper>
 				</Box>
@@ -148,7 +170,7 @@ export default function Collections() {
 													}
 												>
 													<img
-														src={img}
+														src={imageUrls.find((item) => item.includes(img))}
 														alt={`Preview ${index}`}
 														loading="lazy"
 														style={{ width: "200px", height: "200px", borderRadius: "10px" }}
