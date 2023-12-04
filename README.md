@@ -27,10 +27,14 @@ CMU Explore” is a social networking site developed for CMU people to use to so
    ```sh
    git clone https://git@github.com:Tastai44/project492.git
    ```
-3. Install NPM packages
+2. Install NPM packages
    ```sh
    npm install
    ```
+2. Start
+   ```sh
+   npm run dev
+   ``` 
 
 ## Contact
 
