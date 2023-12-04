@@ -147,6 +147,7 @@ export default function NotificationList(props: IData) {
                             likes={likes}
                             owner={postOwner}
                             handleClosePost={handleClosePost}
+                            imageUrls={props.imageUrls}
                         />
                     </Paper>
                 </Box>

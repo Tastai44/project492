@@ -24,12 +24,13 @@ import SearchIcon from "@mui/icons-material/Search";
 import Content from "../components/MContainer/Content";
 import SearchContent from "../components/TopBar/SearchContent";
 import EachTopic from "../components/Topics/EachTopic";
-import { dbFireStore } from "../config/firebase";
+import { dbFireStore, storage } from "../config/firebase";
 import { Post, Like } from "../interface/PostContent";
 import { styleBoxPop } from "../utils/styleBox";
 import { User } from "../interface/User";
 import { themeApp } from "../utils/Theme";
 import Loading from "../components/Loading";
+import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
 
 export default function Topics() {
 	const [dateType, setDateType] = useState("All");
@@ -43,6 +44,7 @@ export default function Topics() {
 	const [openSearch, setOpenSearch] = useState<boolean>(false);
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const [openLoading, setOpenLoading] = useState(false);
+	const [imageUrls, setImageUrls] = useState<string[]>([]);
 
 	useMemo(() => {
 		const fetchData = async () => {
@@ -88,6 +90,25 @@ export default function Topics() {
 			unsubscribe();
 		};
 	}, [reFresh]);
+
+	useEffect(() => {
+		const fetchImages = async () => {
+			try {
+				const listRef: StorageReference = ref(storage, '/Images');
+				const res = await listAll(listRef);
+				const urls = await Promise.all(
+					res.items.map(async (itemRef) => {
+						const imageUrl = await getDownloadURL(itemRef);
+						return imageUrl;
+					})
+				);
+				setImageUrls(urls);
+			} catch (error) {
+				console.error('Error fetching images:', error);
+			}
+		};
+		fetchImages();
+	}, []);
 
 	const handleOpenSearch = () => {
 		setOpenSearch(true);
@@ -211,6 +232,7 @@ export default function Topics() {
 							likes={likes}
 							owner={postOwner}
 							handleClosePost={handleClosePost}
+							imageUrls={imageUrls}
 						/>
 					</Paper>
 				</Box>

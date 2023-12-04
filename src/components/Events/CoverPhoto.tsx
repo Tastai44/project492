@@ -135,7 +135,7 @@ export default function ProCoverImage(props: IData & IFunction) {
                 <Box>
                     <EditEvent
                         closeAdd={handleClose}
-                        handleReFreshImage={handleReFreshImage}
+                        handleReFreshImage={props.handleReFreshImage}
                         eventId={props.eventId}
                         startDate={props.startDate}
                         startTime={props.startTime}
