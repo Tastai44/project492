@@ -8,11 +8,14 @@ import {
 import { User } from "../../interface/User";
 import { StyledBadge } from "../RightSide/UserCard";
 
+
 interface IData {
   inFoUser: User[];
+  imageUrls: string[];
 }
 
 export default function Header(props: IData) {
+
   return (
     <div>
       {props.inFoUser.map((user) => (
@@ -25,13 +28,13 @@ export default function Header(props: IData) {
                 variant="dot"
               >
                 <Avatar
-                  src={user.profilePhoto}
+                  src={props.imageUrls.find((item) => item.includes(user.profilePhoto ?? ''))}
                   sx={{ width: "40px", height: "40px" }}
                 />
               </StyledBadge>
             ) : (
               <Avatar
-                src={user.profilePhoto}
+                src={props.imageUrls.find((item) => item.includes(user.profilePhoto ?? ''))}
                 sx={{ width: "40px", height: "40px" }}
               />
             )}

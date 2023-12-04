@@ -84,7 +84,8 @@ export default function OAuthRedirect() {
                     userRole: "user",
                     isActive: true,
                     createdAt: new Date().toLocaleString(),
-                    profilePhoto: '',
+                    profilePhoto: 'default.png',
+                    coverPhoto: 'default.png',
                     year: 0
                 };
                 const docRef = doc(userCollection);

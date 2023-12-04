@@ -21,6 +21,7 @@ interface IData {
     inFoUser: User[];
     userId: string;
     IsAdmin: boolean;
+    imageUrls: string[];
     handleOpenMenu: () => void;
     handleLogout: () => void;
 }
@@ -216,7 +217,7 @@ export default function SmallMenu(props: IData) {
                             <NavLink key={user.uid} to={`/profileBlog/${user.uid}`} style={{ color: "black" }}>
                                 <ListItemButton sx={{ pl: 4 }} onClick={props.handleOpenMenu}>
                                     <ListItemIcon>
-                                        <Avatar src={user.profilePhoto} />
+                                        <Avatar src={props.imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))} />
                                     </ListItemIcon>
                                     <ListItemText primary={`${user.firstName} ${user.lastName}`} />
                                 </ListItemButton>

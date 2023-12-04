@@ -4,10 +4,10 @@ import CancelIcon from "@mui/icons-material/Cancel";
 
 interface IData {
     openPre: boolean;
-    previewImages: string[];
+    previewImages: string;
     handleClearImage: () => void;
     handleClosePre: () => void;
-    handleEditPhotoProfile: () => void;
+    handleUpload: () => void;
 }
 
 export default function UploadProfile(props: IData) {
@@ -19,7 +19,7 @@ export default function UploadProfile(props: IData) {
             aria-describedby="modal-modal-description"
         >
             <Box sx={stylePreviewPhoto}>
-                {props.previewImages.length !== 0 && (
+                {props.previewImages !== null && (
                     <Box>
                         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                             <IconButton onClick={props.handleClearImage}>
@@ -27,15 +27,13 @@ export default function UploadProfile(props: IData) {
                             </IconButton>
                         </Box>
                         <Box sx={{ display: "flex", justifyContent: "center" }}>
-                            {props.previewImages.map((image, index) => (
-                                <Card key={index} sx={{ width: "50%", height: "auto" }}>
-                                    <CardMedia
-                                        component="img"
-                                        image={image}
-                                        alt="Paella dish"
-                                    />
-                                </Card>
-                            ))}
+                            <Card sx={{ width: "50%", height: "auto" }}>
+                                <CardMedia
+                                    component="img"
+                                    image={props.previewImages}
+                                    alt="Paella dish"
+                                />
+                            </Card>
                         </Box>
                     </Box>
                 )}
@@ -64,7 +62,7 @@ export default function UploadProfile(props: IData) {
                                 backgroundColor: "#E1E1E1",
                             },
                         }}
-                        onClick={props.handleEditPhotoProfile}
+                        onClick={props.handleUpload}
                         type="submit"
                     >
                         Upload

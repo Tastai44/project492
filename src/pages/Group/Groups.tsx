@@ -90,7 +90,7 @@ export default function Groups() {
 					<AddGroup closeEdit={handleClose} />
 				</Box>
 			</Modal>
-			<Box sx={{ width: "100%", bgcolor: "background.paper", color: "black" }}>
+			<Box sx={{ width: "100%", bgcolor: "background.paper", color: "black", borderRadius: "10px" }}>
 				<SearchContent
 					openSearchBar={openSearch}
 					handleCloseSearchBar={handleCloseSearch}

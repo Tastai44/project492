@@ -17,6 +17,7 @@ interface IData {
     messages: GroupMessage[];
     groupId: string;
     members: string[];
+    imageUrls: string[];
 }
 
 export default function MessageBody(props: IData) {
@@ -198,9 +199,10 @@ export default function MessageBody(props: IData) {
                                                 {chat.photoMessage.map((image, index) => (
                                                     <ImageListItem key={index}>
                                                         <img
-                                                            src={image}
+                                                            src={props.imageUrls.find((item) => item.includes(image))}
                                                             alt={`Preview ${index}`}
                                                             loading="lazy"
+                                                            style={{ borderRadius: "10px" }}
                                                         />
                                                     </ImageListItem>
                                                 ))}

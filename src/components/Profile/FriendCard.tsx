@@ -15,9 +15,10 @@ import {
     where,
     onSnapshot,
 } from "firebase/firestore";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import { IFriendList, User } from "../../interface/User";
 import PopupAlert from "../PopupAlert";
+import { ref, listAll, getDownloadURL, StorageReference } from "firebase/storage";
 
 interface IData {
     username: string;
@@ -29,6 +30,7 @@ interface IData {
 export default function FriendCard(props: IData) {
     const { userId } = useParams();
     const [inFoUser, setInFoUser] = useState<User[]>([]);
+    const [imageUrls, setImageUrls] = useState<string[]>([]);
 
     useEffect(() => {
         const queryData = query(
@@ -49,6 +51,25 @@ export default function FriendCard(props: IData) {
             unsubscribe();
         };
     }, [props.uid]);
+
+    useEffect(() => {
+        const fetchImages = async () => {
+            try {
+                const listRef: StorageReference = ref(storage, '/Images');
+                const res = await listAll(listRef);
+                const urls = await Promise.all(
+                    res.items.map(async (itemRef) => {
+                        const imageUrl = await getDownloadURL(itemRef);
+                        return imageUrl;
+                    })
+                );
+                setImageUrls(urls);
+            } catch (error) {
+                console.error('Error fetching images:', error);
+            }
+        };
+        fetchImages();
+    }, []);
 
     const unFriendOtherSide = async (id: string) => {
         const IndexFriend = props.friendList.findIndex((index) => index.friendId === id);
@@ -113,7 +134,7 @@ export default function FriendCard(props: IData) {
                     <CardMedia
                         component="img"
                         height="184"
-                        image={user.profilePhoto}
+                        image={imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))}
                         alt="userPicture"
                     />
                     <CardContent>

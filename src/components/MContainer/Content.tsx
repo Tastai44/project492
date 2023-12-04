@@ -59,7 +59,6 @@ import { NavLink } from "react-router-dom";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ShareCard from "./ShareCard";
 
-
 const Item = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
     ...theme.typography.body2,
@@ -79,6 +78,7 @@ interface IData {
 }
 interface IFunction {
     handleClosePost: () => void;
+    imageUrls: string[];
 }
 
 export default function Content(props: IData & IFunction) {
@@ -297,6 +297,7 @@ export default function Content(props: IData & IFunction) {
                 friendList={props.friendList ?? []}
                 postId={props.postId}
                 postCaption={props.caption ?? ""}
+                imageUrls={props.imageUrls}
             />
             <Modal
                 open={openReportPost}
@@ -334,7 +335,7 @@ export default function Content(props: IData & IFunction) {
                                 oldEmoji={m.emoji !== undefined ? m.emoji : ""}
                                 postId={props.postId}
                                 location={props.location}
-
+                                imageUrls={props.imageUrls}
                             />
                         </Box>
                     </Modal>
@@ -348,7 +349,7 @@ export default function Content(props: IData & IFunction) {
                                                 {m.photoPost.map((image, index) => (
                                                     <ImageListItem key={index}>
                                                         <img
-                                                            src={image}
+                                                            src={props.imageUrls.find((item) => item.includes(image))}
                                                             srcSet={image}
                                                             alt={`${index}`}
                                                             loading="lazy"
@@ -357,19 +358,19 @@ export default function Content(props: IData & IFunction) {
                                                 ))}
                                             </ImageList>
                                         </>
-                                    ) : (
+                                    ) : (<>
                                         <ImageList variant="masonry" cols={2} gap={10} sx={{ borderRadius: '20px' }}>
                                             {m.photoPost.map((image, index) => (
                                                 <ImageListItem key={index}>
                                                     <img
-                                                        src={image}
-                                                        srcSet={image}
-                                                        alt={`${index}`}
+                                                        src={props.imageUrls.find((item) => item.includes(image))}
+                                                        alt={`Preview ${index}`}
                                                         loading="lazy"
                                                     />
                                                 </ImageListItem>
                                             ))}
                                         </ImageList>
+                                    </>
                                     )}
                                 </Box>
                             </Item>
@@ -382,7 +383,7 @@ export default function Content(props: IData & IFunction) {
                                             <ListItem key={user.uid}>
                                                 <ListItemAvatar>
                                                     <Avatar
-                                                        src={user.profilePhoto}
+                                                        src={props.imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))}
                                                         sx={{
                                                             width: "60px",
                                                             height: "60px",
@@ -595,7 +596,7 @@ export default function Content(props: IData & IFunction) {
                                     >
                                         <Avatar
                                             alt="User"
-                                            src={inFoUser.find((user) => user.profilePhoto)?.profilePhoto}
+                                            src={props.imageUrls.find((item) => item.includes(inFoUser.find((user) => user.profilePhoto)?.profilePhoto ?? ""))}
                                             sx={{ width: "45px", height: "45px" }}
                                         />
                                         <Box sx={{ width: "98%", display: "flex", gap: 2 }}>
@@ -654,6 +655,7 @@ export default function Content(props: IData & IFunction) {
                                                             postId={m.id}
                                                             author={comment.author}
                                                             userId={props.userId}
+                                                            imageUrls={props.imageUrls}
                                                         />
                                                     </Box>
                                                 ))}

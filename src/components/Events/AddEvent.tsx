@@ -21,7 +21,7 @@ import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
 
 import "firebase/database";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import {
     collection,
     setDoc,
@@ -37,6 +37,10 @@ import { createNoti } from "../NotificationFunction";
 import { User } from "../../interface/User";
 import { styleBox } from "../../utils/styleBox";
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
+import { ref, uploadBytes } from "firebase/storage";
+import heic2any from "heic2any";
+import Loading from "../Loading";
+import { removeSpacesBetweenWords } from "../Profile/ProfileInfo";
 
 interface Ihandle {
     closeAdd: () => void;
@@ -47,8 +51,10 @@ export default function AddEvent({ closeAdd }: Ihandle) {
     const [inFoUser, setInFoUser] = useState<User[]>([]);
     const [status, setStatus] = useState("");
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [previewImages, setPreviewImages] = useState<string[]>([]);
     const [location, setLocation] = useState("");
+    const [previewImages, setPreviewImages] = useState<string>('');
+    const [openLoading, setLopenLoading] = useState(false);
+    const [imageUpload, setImageUpload] = useState<File | null>(null);
     const initialState = {
         eventId: "",
         title: "",
@@ -90,40 +96,64 @@ export default function AddEvent({ closeAdd }: Ihandle) {
         };
     }, [userInfo.uid]);
 
-    const handleChange = (event: SelectChangeEvent) => {
-        setStatus(event.target.value as string);
-    };
-
-    const handleClearImage = () => {
-        setPreviewImages([]);
-    };
     const handleUploadClick = () => {
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
     };
-    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-        const files = event.target.files;
-        if (files) {
-            try {
-                const selectedFiles = Array.from(files);
-                const readerPromises = selectedFiles.map((file) => {
-                    return new Promise<string>((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                            resolve(reader.result as string);
-                        };
-                        reader.onerror = reject;
-                        reader.readAsDataURL(file);
-                    });
-                });
 
-                const base64Images = await Promise.all(readerPromises);
-                setPreviewImages(base64Images);
+    const handleUpload = async () => {
+        setLopenLoading(true);
+        if (imageUpload == null) return;
+        const fileName = removeSpacesBetweenWords(imageUpload.name);
+        const imageRef = ref(storage, `Images/event_${userInfo.uid}${fileName}`);
+        uploadBytes(imageRef, imageUpload).then(() => {
+            createEvent(`event_${userInfo.uid}${fileName}`);
+        });
+    };
+
+    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+        const fileInput = event.target;
+        const fileName = fileInput.value;
+        const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+        const reader = new FileReader();
+
+        if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
+            const blob = fileInput.files?.[0];
+            try {
+                if (blob) {
+                    const resultBlob = await heic2any({ blob, toType: 'image/jpg' }) as BlobPart;
+                    const file = new File([resultBlob], `${event.target.files?.[0].name.split('.')[0]}.jpg`, {
+                        type: 'image/jpeg',
+                        lastModified: new Date().getTime(),
+                    });
+                    setImageUpload(file);
+                    reader.onloadend = () => {
+                        setPreviewImages(reader.result as string);
+                    };
+                    reader.readAsDataURL(file);
+                }
             } catch (error) {
                 console.error(error);
             }
+        } else {
+            const selectedFile = event.target.files?.[0];
+            if (selectedFile) {
+                reader.onloadend = () => {
+                    setPreviewImages(reader.result as string);
+                };
+                reader.readAsDataURL(selectedFile);
+                setImageUpload(selectedFile);
+            }
         }
+    };
+
+    const handleChange = (event: SelectChangeEvent) => {
+        setStatus(event.target.value as string);
+    };
+
+    const handleClearImage = () => {
+        setPreviewImages('');
     };
 
     const clearState = () => {
@@ -149,7 +179,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
         }
     };
 
-    const createEvent = async () => {
+    const createEvent = async (picPath: string) => {
         const eventCollection = collection(dbFireStore, "events");
         const newEvent = {
             eventId: "",
@@ -177,7 +207,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
             topic: event.topic,
             ageRage: event.ageRage,
             details: event.details,
-            coverPhoto: previewImages[0],
+            coverPhoto: removeSpacesBetweenWords(picPath),
             status: status,
             interest: [],
             shareUsers: [],
@@ -210,6 +240,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
             clearState();
             closeAdd();
             PopupAlert("Added an event successfully", "success");
+            setLopenLoading(false);
         } catch (error) {
             console.error("Error adding post: ", error);
         }
@@ -217,6 +248,9 @@ export default function AddEvent({ closeAdd }: Ihandle) {
 
     return (
         <div style={{ color: "black" }}>
+            <Loading
+                openLoading={openLoading}
+            />
             <Box sx={styleBox}>
                 <Typography id="modal-modal-title" variant="h5">
                     Create an event
@@ -393,7 +427,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
                             onChange={handleFileChange}
                             multiple
                             hidden
-                            accept="image/*"
+                            accept="*"
                         />
 
                         <Box sx={{
@@ -430,7 +464,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
                         Cancel
                     </Button>
                     <Button
-                        onClick={createEvent}
+                        onClick={handleUpload}
                         sx={{
                             backgroundColor: "#8E51E2",
                             color: "white",
@@ -445,7 +479,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
                         Create
                     </Button>
                 </Typography>
-                {previewImages.length !== 0 && (
+                {previewImages !== '' && (
                     <Box>
                         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                             <IconButton onClick={handleClearImage}>
@@ -457,11 +491,9 @@ export default function AddEvent({ closeAdd }: Ihandle) {
                             cols={1}
                             rowHeight={160}
                         >
-                            {previewImages.map((image, index) => (
-                                <ImageListItem key={index}>
-                                    <img src={image} alt={`Preview ${index}`} loading="lazy" />
-                                </ImageListItem>
-                            ))}
+                            <ImageListItem>
+                                <img src={previewImages} alt={`Preview`} loading="lazy" />
+                            </ImageListItem>
                         </ImageList>
                     </Box>
                 )}

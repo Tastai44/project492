@@ -20,16 +20,22 @@ import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
 
 import "firebase/database";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import { doc } from "firebase/firestore";
 import { collection, getDoc, updateDoc } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import { locations } from "../../helper/CMULocations";
 import { styleBox } from "../../utils/styleBox";
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
+import { ref, uploadBytes } from "firebase/storage";
+import heic2any from "heic2any";
+import Loading from "../Loading";
+import { removeSpacesBetweenWords } from "../Profile/ProfileInfo";
 
 interface Ihandle {
     closeAdd: () => void;
+    handleReFreshImage: () => void;
+    imageUrls: string[];
 }
 
 interface IData {
@@ -52,7 +58,11 @@ export default function EditEvent(props: IData & Ihandle) {
     const [location, setLocation] = useState(props.location);
     const [status, setStatus] = useState(`${props.status}`);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [previewImages, setPreviewImages] = useState<string[]>([props.coverPhoto]);
+    const [previewImages, setPreviewImages] = useState<string>('');
+    const [oldPicture, setOldPicture] = useState<string>(props.coverPhoto);
+    const [openLoading, setLopenLoading] = useState(false);
+    const [imageUpload, setImageUpload] = useState<File | null>(null);
+
     const initialState = {
         eventId: "",
         title: props.title,
@@ -89,37 +99,60 @@ export default function EditEvent(props: IData & Ihandle) {
     };
 
     const handleClearImage = () => {
-        setPreviewImages([]);
+        setPreviewImages('');
+        setOldPicture('NoPhoto');
     };
     const handleUploadClick = () => {
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
     };
-    const handleFileChange = async (
-        event: ChangeEvent<HTMLInputElement>
-    ) => {
-        const files = event.target.files;
-        if (files) {
-            try {
-                const selectedFiles = Array.from(files);
-                const readerPromises = selectedFiles.map((file) => {
-                    return new Promise<string>((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                            resolve(reader.result as string);
-                        };
-                        reader.onerror = reject;
-                        reader.readAsDataURL(file);
-                    });
-                });
+    const handleUpload = async () => {
+        if (imageUpload == null) return;
+        const fileName = removeSpacesBetweenWords(imageUpload.name);
+        const imageRef = ref(storage, `Images/event_${userId}${fileName}`);
+        uploadBytes(imageRef, imageUpload).then(() => {
+            props.handleReFreshImage();
+        });
+    };
 
-                const base64Images = await Promise.all(readerPromises);
-                setPreviewImages(base64Images);
+    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+        setLopenLoading(true);
+        setPreviewImages('');
+        const fileInput = event.target;
+        const fileName = fileInput.value;
+        const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+        const reader = new FileReader();
+
+        if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
+            const blob = fileInput.files?.[0];
+            try {
+                if (blob) {
+                    const resultBlob = await heic2any({ blob, toType: 'image/jpg' }) as BlobPart;
+                    const file = new File([resultBlob], `${event.target.files?.[0].name.split('.')[0]}.jpg`, {
+                        type: 'image/jpeg',
+                        lastModified: new Date().getTime(),
+                    });
+                    setImageUpload(file);
+                    reader.onloadend = () => {
+                        setPreviewImages(reader.result as string);
+                    };
+                    reader.readAsDataURL(file);
+                }
             } catch (error) {
                 console.error(error);
             }
+        } else {
+            const selectedFile = event.target.files?.[0];
+            if (selectedFile) {
+                reader.onloadend = () => {
+                    setPreviewImages(reader.result as string);
+                };
+                reader.readAsDataURL(selectedFile);
+                setImageUpload(selectedFile);
+            }
         }
+        setLopenLoading(false);
     };
 
     const clearState = () => {
@@ -137,6 +170,7 @@ export default function EditEvent(props: IData & Ihandle) {
     };
 
     const handleEditEvent = () => {
+        setLopenLoading(true);
         const eventCollection = collection(dbFireStore, "events");
         const updatedEvent = {
             title: event.title,
@@ -163,10 +197,15 @@ export default function EditEvent(props: IData & Ihandle) {
             topic: event.topic,
             ageRage: event.ageRage,
             details: event.details,
-            coverPhoto: previewImages,
+            coverPhoto: imageUpload !== null ? removeSpacesBetweenWords(imageUpload.name) : props.coverPhoto,
             status: status,
             updateAt: new Date().toLocaleString(),
         };
+
+        if (imageUpload) {
+            handleUpload();
+        }
+
         try {
             const docRef = doc(eventCollection, props.eventId);
             getDoc(docRef)
@@ -176,6 +215,7 @@ export default function EditEvent(props: IData & Ihandle) {
                         clearState();
                         props.closeAdd();
                         PopupAlert("Event has edited successfully", "success");
+                        setLopenLoading(false);
                     } else {
                         console.log("You don't have permission to delete this post");
                     }
@@ -190,6 +230,9 @@ export default function EditEvent(props: IData & Ihandle) {
 
     return (
         <Box sx={{ color: "black" }}>
+            <Loading
+                openLoading={openLoading}
+            />
             <Box sx={styleBox}>
                 <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <IconButton onClick={props.closeAdd}>
@@ -371,7 +414,7 @@ export default function EditEvent(props: IData & Ihandle) {
                             onChange={handleFileChange}
                             multiple
                             hidden
-                            accept="image/*"
+                            accept="*"
                         />
 
                         <Box sx={{
@@ -422,7 +465,7 @@ export default function EditEvent(props: IData & Ihandle) {
                         Save
                     </Button>
                 </Box>
-                {previewImages.length !== 0 && (
+                {previewImages == "" ? (
                     <Box>
                         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                             <IconButton onClick={handleClearImage}>
@@ -434,11 +477,26 @@ export default function EditEvent(props: IData & Ihandle) {
                             cols={1}
                             rowHeight={160}
                         >
-                            {previewImages.map((image, index) => (
-                                <ImageListItem key={index}>
-                                    <img src={image} alt={`Preview ${index}`} loading="lazy" />
-                                </ImageListItem>
-                            ))}
+                            <ImageListItem>
+                                <img src={props.imageUrls.find((item) => item.includes(oldPicture))} alt={`Preview`} loading="lazy" />
+                            </ImageListItem>
+                        </ImageList>
+                    </Box>
+                ) : (
+                    <Box>
+                        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                            <IconButton onClick={handleClearImage}>
+                                <CancelIcon />
+                            </IconButton>
+                        </Box>
+                        <ImageList
+                            sx={{ width: "100%", height: "auto", maxHeight: "400px" }}
+                            cols={1}
+                            rowHeight={160}
+                        >
+                            <ImageListItem>
+                                <img src={previewImages} alt={`Preview`} loading="lazy" />
+                            </ImageListItem>
                         </ImageList>
                     </Box>
                 )}

@@ -12,12 +12,12 @@ interface IData {
   messages: Message[];
   uId: string;
   userProfile?: string;
+  imageUrls: string[];
 }
 
 export default function MessageBody(props: IData) {
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   const chatMessages = props.messages.filter((message) => message.participants.includes(props.uId));
-
   return (
     <div>
       {chatMessages.sort((a, b) =>
@@ -28,7 +28,8 @@ export default function MessageBody(props: IData) {
             key={index}
           >
             {mess.content.map((chat, index) => (
-              <Box key={index}
+              <Box
+                key={index}
                 sx={{
                   display: "flex",
                   justifyContent: chat.senderId === userInfo.uid ? "end" : "start",
@@ -37,33 +38,57 @@ export default function MessageBody(props: IData) {
                   mr: chat.senderId === userInfo.uid ? 1 : 0,
                 }}
               >
-                {chat.message && (
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    {chat.senderId !== userInfo.uid && (
-                      <Avatar
-                        src={props.userProfile}
-                        sx={{ width: "25px", height: "25px", mr: 1 }}
-                      />
-                    )}
+                <Box sx={{ flexDirection: "column" }}>
+                  {chat.message && (
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      {chat.senderId !== userInfo.uid && (
+                        <Avatar
+                          src={props.userProfile}
+                          sx={{ width: "25px", height: "25px", mr: 1 }}
+                        />
+                      )}
 
-                    <Chip
-                      color="primary"
-                      label={chat.message}
-                      variant={
-                        chat.senderId === userInfo.uid ? "filled" : "outlined"
-                      }
-                    />
-                  </Box>
-                )}
-
-                {chat.emoji && (
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    {chat.senderId !== userInfo.uid && (
-                      <Avatar
-                        src={props.userProfile}
-                        sx={{ width: "25px", height: "25px", mr: 1 }}
+                      <Chip
+                        color="primary"
+                        label={chat.message}
+                        variant={
+                          chat.senderId === userInfo.uid ? "filled" : "outlined"
+                        }
                       />
-                    )}
+                    </Box>
+                  )}
+
+                  {chat.emoji && (
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      {chat.senderId !== userInfo.uid && (
+                        <Avatar
+                          src={props.userProfile}
+                          sx={{ width: "25px", height: "25px", mr: 1 }}
+                        />
+                      )}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          color: "grey",
+                        }}
+                      >
+                        <Chip
+                          color="primary"
+                          label={
+                            <Box>
+                              {String.fromCodePoint(parseInt(chat.emoji, 16))}
+                            </Box>
+                          }
+                          variant={
+                            chat.senderId === userInfo.uid ? "filled" : "outlined"
+                          }
+                        />
+                      </Box>
+                    </Box>
+                  )}
+
+                  {chat.photoMessage.length !== 0 && (
                     <Box
                       sx={{
                         display: "flex",
@@ -71,65 +96,44 @@ export default function MessageBody(props: IData) {
                         color: "grey",
                       }}
                     >
-                      <Chip
-                        color="primary"
-                        label={
-                          <Box>
-                            {String.fromCodePoint(parseInt(chat.emoji, 16))}
-                          </Box>
-                        }
-                        variant={
-                          chat.senderId === userInfo.uid ? "filled" : "outlined"
-                        }
-                      />
-                    </Box>
-                  </Box>
-                )}
-
-                {chat.photoMessage.length !== 0 && (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      color: "grey",
-                    }}
-                  >
-                    <Box sx={{ display: "flex", mb: -1.5 }}>
-                      {chat.senderId !== userInfo.uid && (
-                        <Avatar
-                          src={props.userProfile}
-                          sx={{ width: "25px", height: "25px", mr: 1 }}
-                        />
-                      )}
-                    </Box>
-                    <Box
-                      sx={{
-                        color: "black",
-                        display: "flex",
-                        justifyContent:
-                          chat.senderId === userInfo.uid ? "end" : "start",
-                      }}
-                    >
-                      <ImageList
+                      <Box sx={{ display: "flex", mb: -1.5 }}>
+                        {chat.senderId !== userInfo.uid && (
+                          <Avatar
+                            src={props.userProfile}
+                            sx={{ width: "25px", height: "25px", mr: 1 }}
+                          />
+                        )}
+                      </Box>
+                      <Box
                         sx={{
-                          width: "50%",
-                          height: "auto",
+                          color: "black",
+                          display: "flex",
+                          justifyContent:
+                            chat.senderId === userInfo.uid ? "end" : "start",
                         }}
-                        cols={1}
                       >
-                        {chat.photoMessage.map((image, index) => (
-                          <ImageListItem key={index}>
-                            <img
-                              src={image}
-                              alt={`Preview ${index}`}
-                              loading="lazy"
-                            />
-                          </ImageListItem>
-                        ))}
-                      </ImageList>
+                        <ImageList
+                          sx={{
+                            width: "50%",
+                            height: "auto",
+                          }}
+                          cols={1}
+                        >
+                          {chat.photoMessage.map((image, index) => (
+                            <ImageListItem key={index}>
+                              <img
+                                src={props.imageUrls.find((item) => item.includes(image))}
+                                alt={`Preview ${index}`}
+                                loading="lazy"
+                                style={{ borderRadius: "10px" }}
+                              />
+                            </ImageListItem>
+                          ))}
+                        </ImageList>
+                      </Box>
                     </Box>
-                  </Box>
-                )}
+                  )}
+                </Box>
               </Box>
             ))}
 

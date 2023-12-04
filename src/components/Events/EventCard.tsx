@@ -7,8 +7,9 @@ import { Avatar, Box } from "@mui/material";
 
 import { NavLink } from "react-router-dom";
 import { User } from "../../interface/User";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import { collection, query, getDocs, where } from "firebase/firestore";
+import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
 
 interface IData {
 	eventId: string;
@@ -23,6 +24,7 @@ interface IData {
 
 export default function MediaCard(props: IData) {
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	const [imageUrls, setImageUrls] = useState<string[]>([]);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -47,12 +49,32 @@ export default function MediaCard(props: IData) {
 		fetchData();
 	}, [props.ownerId]);
 
+	useEffect(() => {
+		const fetchImages = async () => {
+			try {
+				const listRef: StorageReference = ref(storage, '/Images');
+				const res = await listAll(listRef);
+				const urls = await Promise.all(
+					res.items.map(async (itemRef) => {
+						const imageUrl = await getDownloadURL(itemRef);
+						return imageUrl;
+					})
+				);
+				setImageUrls(urls);
+			} catch (error) {
+				console.error('Error fetching images:', error);
+			}
+		};
+		fetchImages();
+	}, []);
+
 	return (
 		<Card sx={{ width: 258, height: 360, borderRadius: "20px" }}>
 			<NavLink to={`/eventsDetail/${props.eventId}`}>
 				<CardMedia
 					sx={{ height: 194 }}
-					image={props.coverPhoto}
+					image={imageUrls.find((item) => item.includes(props.coverPhoto ?? ""))}
+
 					title="green iguana"
 				/>
 			</NavLink>
@@ -70,12 +92,12 @@ export default function MediaCard(props: IData) {
 						sx={{ display: "flex", alignItems: "end", gap: 1 }}
 					>
 						<Avatar
-							src={user.profilePhoto}
+							src={imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))}
 							sx={{ width: "30px", height: "30px", marginTop: 2 }}
 							aria-label="recipe"
 						/>
 						<Typography>
-							{user.firstName} {user.lastName} is owner.
+							{user.firstName} is owner.
 						</Typography>
 					</Box>
 				))}

@@ -26,17 +26,21 @@ import GroupIcon from "@mui/icons-material/Group";
 import PublicIcon from "@mui/icons-material/Public";
 import Emoji from "./Emoji";
 import emojiData from "emoji-datasource-facebook";
+import { StorageReference, listAll, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 import "firebase/database";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import { Post } from "../../interface/PostContent";
 import { doc, onSnapshot, query, where, serverTimestamp } from "firebase/firestore";
 import { collection, setDoc } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import LocationCard from "./LocationCard";
 import { User } from "../../interface/User";
+import { removeSpacesBetweenWords } from "../Profile/ProfileInfo";
 import { createNoti } from "../NotificationFunction";
 import { styleCreatePost } from "../../utils/styleBox";
+import heic2any from "heic2any";
+import Loading from "../Loading";
 
 interface IHandle {
 	handleCloseCratePost: () => void;
@@ -52,6 +56,10 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 	const [previewImages, setPreviewImages] = useState<string[]>([]);
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [emoji, setEmoji] = useState("");
+	const [imageUrls, setImageUrls] = useState<string[]>([]);
+	const [openLoading, setLopenLoading] = useState(false);
+	const [imagePath, setImagePath] = useState<string[]>([]);
+
 	const initialState = {
 		id: "",
 		caption: "",
@@ -88,6 +96,25 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 		};
 	}, [userInfo.uid]);
 
+	useEffect(() => {
+		const fetchImages = async () => {
+			try {
+				const listRef: StorageReference = ref(storage, '/Images');
+				const res = await listAll(listRef);
+				const urls = await Promise.all(
+					res.items.map(async (itemRef) => {
+						const imageUrl = await getDownloadURL(itemRef);
+						return imageUrl;
+					})
+				);
+				setImageUrls(urls);
+			} catch (error) {
+				console.error('Error fetching images:', error);
+			}
+		};
+		fetchImages();
+	}, []);
+
 	const handleChange = (event: SelectChangeEvent) => {
 		setStatus(event.target.value as string);
 	};
@@ -110,29 +137,57 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 			fileInputRef.current.click();
 		}
 	};
-	const handleFileChange = async (
-		event: ChangeEvent<HTMLInputElement>
-	) => {
-		const files = event.target.files;
-		if (files) {
+
+	const handleUpload = async (file: File) => {
+		if (file == null) return;
+		const fileName = removeSpacesBetweenWords(file.name);
+		const imageRef = ref(storage, `Images/post_${userInfo.uid}${fileName}`);
+		uploadBytes(imageRef, file).then(() => {
+			setImagePath((pre) => [...pre, `post_${userInfo.uid}${fileName}`]);
+		});
+	};
+
+	const handleConvertFile = async (file: File) => {
+		setLopenLoading(true);
+		const fileName = file.name;
+		const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+		const reader = new FileReader();
+
+		if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
 			try {
-				const selectedFiles = Array.from(files);
-				const readerPromises = selectedFiles.map((file) => {
-					return new Promise<string>((resolve, reject) => {
-						const reader = new FileReader();
-						reader.onloadend = () => {
-							resolve(reader.result as string);
-						};
-						reader.onerror = reject;
-						reader.readAsDataURL(file);
-					});
+				const resultBlob = await heic2any({ blob: file, toType: 'Image/jpg' }) as BlobPart;
+				const convertedFile = new File([resultBlob], `${file.name.split('.')[0]}.jpg`, {
+					type: 'Image/jpeg',
+					lastModified: new Date().getTime(),
 				});
 
-				const base64Images = await Promise.all(readerPromises);
-				setPreviewImages(base64Images);
+				handleUpload(convertedFile);
+
+				reader.onloadend = () => {
+					setPreviewImages((prevImages) => [...prevImages, reader.result as string]);
+				};
+
+				reader.readAsDataURL(convertedFile);
 			} catch (error) {
 				console.error(error);
 			}
+		} else {
+			reader.onloadend = () => {
+				setPreviewImages((prevImages) => [...prevImages, reader.result as string]);
+			};
+
+			reader.readAsDataURL(file);
+			handleUpload(file);
+		}
+		setLopenLoading(false);
+	};
+
+	const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+		if (event.target.files) {
+			const fileArray = Array.from(event.target.files);
+			fileArray.forEach((file) => {
+				handleConvertFile(file);
+			});
 		}
 	};
 
@@ -164,7 +219,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 			caption: post.caption,
 			hashTagTopic: post.hashTagTopic,
 			status: status,
-			photoPost: previewImages,
+			photoPost: imagePath,
 			likes: [],
 			createAt: new Date().toLocaleString(),
 			dateCreated: serverTimestamp(),
@@ -243,6 +298,9 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 				handletSaveLocation={handletSaveLocation}
 				handleChangeLocation={handleChangeLocation}
 			/>
+			<Loading
+				openLoading={openLoading}
+			/>
 			<Box sx={styleCreatePost}>
 				<Box sx={{ display: "flex", justifyContent: "space-between" }}>
 					<Box
@@ -262,7 +320,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 						<ListItem key={user.uid}>
 							<ListItemAvatar>
 								<Avatar
-									src={user.profilePhoto}
+									src={imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))}
 									sx={{ width: "40px", height: "40px", marginRight: "10px" }}
 								/>
 							</ListItemAvatar>
@@ -384,7 +442,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 										onChange={handleFileChange}
 										multiple
 										hidden
-										accept="image/*"
+										accept="*"
 									/>
 									<InsertPhotoIcon sx={{ color: "green" }} />
 								</IconButton>

@@ -12,10 +12,11 @@ import {
     where,
     getDocs,
 } from "firebase/firestore";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import { User } from "../../interface/User";
 import { NavLink } from "react-router-dom";
 import { handleAddFriend } from "../Functions/AddUnFriend";
+import { ref, listAll, getDownloadURL, StorageReference } from "firebase/storage";
 
 interface IData {
     username: string;
@@ -26,6 +27,7 @@ interface IData {
 export default function MemberCard(props: IData) {
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const [user, setUser] = useState<User[]>([]);
+    const [imageUrls, setImageUrls] = useState<string[]>([]);
 
     useEffect(() => {
         const fetchUSerData = async () => {
@@ -43,6 +45,25 @@ export default function MemberCard(props: IData) {
         };
         fetchUSerData();
     }, [user, userInfo.uid]);
+
+    useEffect(() => {
+        const fetchImages = async () => {
+            try {
+                const listRef: StorageReference = ref(storage, '/Images');
+                const res = await listAll(listRef);
+                const urls = await Promise.all(
+                    res.items.map(async (itemRef) => {
+                        const imageUrl = await getDownloadURL(itemRef);
+                        return imageUrl;
+                    })
+                );
+                setImageUrls(urls);
+            } catch (error) {
+                console.error('Error fetching images:', error);
+            }
+        };
+        fetchImages();
+    }, []);
 
     return (
         <Card sx={{ width: 250, borderRadius: "20px" }}>
@@ -84,7 +105,7 @@ export default function MemberCard(props: IData) {
                 <CardMedia
                     component="img"
                     height="194"
-                    image={props.profilePhoto}
+                    image={imageUrls.find((item) => item.includes(props.profilePhoto))}
                     alt="userPicture"
                 />
             ) : (

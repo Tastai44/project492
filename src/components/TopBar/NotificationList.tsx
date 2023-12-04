@@ -32,6 +32,7 @@ interface IData {
     mobileMenuId: string;
     isMobileMenuOpen: boolean;
     notifications: INoti[];
+    imageUrls: string[];
     handleMobileMenuClose: () => void;
 }
 
@@ -226,7 +227,7 @@ export default function NotificationList(props: IData) {
                                 <ListItemAvatar>
                                     <Avatar
                                         alt="CMU"
-                                        src={inFoUser.find((user) => user.profilePhoto)?.profilePhoto}
+                                        src={props.imageUrls.find((item) => item.includes(inFoUser.find((user) => user.profilePhoto)?.profilePhoto ?? ""))}
                                     />
                                 </ListItemAvatar>
                                 <ListItemText

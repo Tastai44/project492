@@ -5,14 +5,22 @@ import { IFriendList, User } from "../../interface/User";
 import EditProfile from "./EditProfile";
 import { collection, where, onSnapshot, query, getDocs, updateDoc, arrayUnion, doc } from "firebase/firestore";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import PopupAlert from "../PopupAlert";
 import UploadProfile from "./UploadProfile";
 import { useParams } from "react-router-dom";
+import { ref, uploadBytes, listAll, getDownloadURL, StorageReference } from "firebase/storage";
+import heic2any from "heic2any";
+import Loading from "../Loading";
 
 interface IData {
     userId: string;
 }
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const removeSpacesBetweenWords = (inputString: string) => {
+    return inputString.replace(/\s+/g, '');
+};
 
 export default function ProfileInfo(props: IData) {
     const [open, setOpen] = useState(false);
@@ -20,9 +28,13 @@ export default function ProfileInfo(props: IData) {
     const [inFoUser, setInFoUser] = useState<User[]>([]);
     const [loginUser, setLoginUser] = useState<User[]>([]);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [previewImages, setPreviewImages] = useState<string[]>([]);
     const [openPre, setOpenPre] = useState(false);
     const { userId } = useParams();
+    const [previewImages, setPreviewImages] = useState<string>('');
+    const [openLoading, setLopenLoading] = useState(false);
+    const [imageUpload, setImageUpload] = useState<File | null>(null);
+    const [imageUrls, setImageUrls] = useState<string[]>([]);
+    const [reFresh, setReFresh] = useState(0);
 
     useEffect(() => {
         const queryData = query(
@@ -42,7 +54,7 @@ export default function ProfileInfo(props: IData) {
         return () => {
             unsubscribe();
         };
-    }, [props.userId]);
+    }, [props.userId, reFresh]);
 
     useEffect(() => {
         const queryData = query(
@@ -62,50 +74,32 @@ export default function ProfileInfo(props: IData) {
         return () => {
             unsubscribe();
         };
-    }, [userInfo.uid]);
+    }, [userInfo.uid, reFresh]);
+
+    useEffect(() => {
+        const fetchImages = async () => {
+            try {
+                const listRef: StorageReference = ref(storage, '/Images');
+                const res = await listAll(listRef);
+                const urls = await Promise.all(
+                    res.items.map(async (itemRef) => {
+                        const imageUrl = await getDownloadURL(itemRef);
+                        return imageUrl;
+                    })
+                );
+                setImageUrls(urls);
+            } catch (error) {
+                console.error('Error fetching images:', error);
+            }
+        };
+        fetchImages();
+    }, [reFresh]);
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
     const handleOpenPre = () => setOpenPre(true);
     const handleClosePre = () => setOpenPre(false);
-
-    const handleUploadClick = () => {
-        if (fileInputRef.current) {
-            fileInputRef.current.click();
-        }
-    };
-    const handleFileChange = async (
-        event: ChangeEvent<HTMLInputElement>
-    ) => {
-        const files = event.target.files;
-        if (files) {
-            try {
-                const selectedFiles = Array.from(files);
-                const readerPromises = selectedFiles.map((file) => {
-                    return new Promise<string>((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                            resolve(reader.result as string);
-                        };
-                        reader.onerror = reject;
-                        reader.readAsDataURL(file);
-                    });
-                });
-
-                const base64Images = await Promise.all(readerPromises);
-                setPreviewImages(base64Images);
-                handleOpenPre();
-            } catch (error) {
-                console.error(error);
-            }
-        }
-    };
-
-    const handleClearImage = () => {
-        setPreviewImages([]);
-        handleClosePre();
-    };
 
     const unFriendOtherSide = async (id: string) => {
         const IndexFriend = loginUser.map((user) => user.friendList?.findIndex((index) => index.friendId === id)).flat();
@@ -211,7 +205,66 @@ export default function ProfileInfo(props: IData) {
         }
     };
 
-    const handleEditPhotoProfile = async () => {
+    const handleUploadClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+
+    const handleUpload = async () => {
+        setLopenLoading(true);
+        if (imageUpload == null) return;
+        const fileName = removeSpacesBetweenWords(imageUpload.name);
+        const imageRef = ref(storage, `Images/${userId}${fileName}`);
+        uploadBytes(imageRef, imageUpload).then(() => {
+            handleEditPhotoProfile(`${userId}${imageUpload.name}`);
+        });
+    };
+
+    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+        const fileInput = event.target;
+        const fileName = fileInput.value;
+        const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+        const reader = new FileReader();
+
+        if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
+            const blob = fileInput.files?.[0];
+            try {
+                if (blob) {
+                    const resultBlob = await heic2any({ blob, toType: 'image/jpg' }) as BlobPart;
+                    const file = new File([resultBlob], `${event.target.files?.[0].name.split('.')[0]}.jpg`, {
+                        type: 'image/jpeg',
+                        lastModified: new Date().getTime(),
+                    });
+                    setImageUpload(file);
+                    reader.onloadend = () => {
+                        setPreviewImages(reader.result as string);
+                    };
+                    reader.readAsDataURL(file);
+                    handleOpenPre();
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        } else {
+            const selectedFile = event.target.files?.[0];
+            if (selectedFile) {
+                reader.onloadend = () => {
+                    setPreviewImages(reader.result as string);
+                };
+                reader.readAsDataURL(selectedFile);
+                handleOpenPre();
+                setImageUpload(selectedFile);
+            }
+        }
+    };
+
+    const handleClearImage = () => {
+        setPreviewImages('');
+        handleClosePre();
+    };
+
+    const handleEditPhotoProfile = async (picPatch: string) => {
         try {
             const q = query(
                 collection(dbFireStore, "users"),
@@ -222,9 +275,12 @@ export default function ProfileInfo(props: IData) {
 
             if (doc.exists()) {
                 await updateDoc(doc.ref, {
-                    profilePhoto: previewImages[0],
+                    profilePhoto: removeSpacesBetweenWords(picPatch),
                 });
                 handleClearImage();
+                setReFresh(pre => pre + 1);
+                PopupAlert("Upload photo successfully", "success");
+                setLopenLoading(false);
             } else {
                 console.log("Profile does not exist");
             }
@@ -235,12 +291,15 @@ export default function ProfileInfo(props: IData) {
 
     return (
         <>
+            <Loading
+                openLoading={openLoading}
+            />
             <UploadProfile
                 openPre={openPre}
                 previewImages={previewImages}
                 handleClearImage={handleClearImage}
                 handleClosePre={handleClosePre}
-                handleEditPhotoProfile={handleEditPhotoProfile}
+                handleUpload={handleUpload}
             />
             {inFoUser.map((user) => (
                 <Paper
@@ -301,16 +360,15 @@ export default function ProfileInfo(props: IData) {
                                                 onChange={handleFileChange}
                                                 multiple
                                                 hidden
-                                                accept="image/*"
+                                                accept="*"
                                             />
                                             <AddAPhotoIcon style={{ fontSize: "10px" }} />
                                         </IconButton>
                                     )}
-
                                 </Box>
                             }
                         >
-                            <Avatar src={user.profilePhoto} />
+                            <Avatar src={imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))} />
                         </Badge>
                         <Box sx={{ fontSize: "20px" }}>
                             {`${user.firstName} ${user.lastName}`}{" "}
