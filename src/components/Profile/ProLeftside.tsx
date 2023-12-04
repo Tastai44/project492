@@ -26,10 +26,15 @@ import {
 	updateDoc,
 	onSnapshot,
 } from "firebase/firestore";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import UploadProfile from "./UploadProfile";
 import { handleAddFriend, unFriend } from "../Functions/AddUnFriend";
+import { uploadBytes, ref, StorageReference, getDownloadURL, listAll } from "firebase/storage";
+import heic2any from "heic2any";
+import PopupAlert from "../PopupAlert";
+import { removeSpacesBetweenWords } from "./ProfileInfo";
+import Loading from "../Loading";
 
 const Item = styled(Box)(({ theme }) => ({
 	...theme.typography.body2,
@@ -40,12 +45,16 @@ const Item = styled(Box)(({ theme }) => ({
 export default function ProLeftside() {
 	const [open, setOpen] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
-	const [previewImages, setPreviewImages] = useState<string[]>([]);
 	const [openPre, setOpenPre] = useState(false);
 	const { userId } = useParams();
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const [loginUser, setLoginUser] = useState<User[]>([]);
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
+	const [previewImages, setPreviewImages] = useState<string>('');
+	const [openLoading, setLopenLoading] = useState(false);
+	const [imageUpload, setImageUpload] = useState<File | null>(null);
+	const [imageUrls, setImageUrls] = useState<string[]>([]);
+	const [reFresh, setReFresh] = useState(0);
 
 	useEffect(() => {
 		const queryData = query(
@@ -65,7 +74,7 @@ export default function ProLeftside() {
 		return () => {
 			unsubscribe();
 		};
-	}, [userId]);
+	}, [userId, reFresh]);
 
 	useEffect(() => {
 		const queryData = query(
@@ -85,7 +94,27 @@ export default function ProLeftside() {
 		return () => {
 			unsubscribe();
 		};
-	}, [userInfo.uid]);
+	}, [userInfo.uid, reFresh]);
+
+	useEffect(() => {
+		const fetchImages = async () => {
+			try {
+				const listRef: StorageReference = ref(storage, '/Images');
+				const res = await listAll(listRef);
+				const urls = await Promise.all(
+					res.items.map(async (itemRef) => {
+						const imageUrl = await getDownloadURL(itemRef);
+						return imageUrl;
+					})
+				);
+				setImageUrls(urls);
+			} catch (error) {
+				console.error('Error fetching images:', error);
+			}
+		};
+		fetchImages();
+	}, [reFresh]);
+
 
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
@@ -98,38 +127,61 @@ export default function ProLeftside() {
 			fileInputRef.current.click();
 		}
 	};
-	const handleFileChange = async (
-		event: ChangeEvent<HTMLInputElement>
-	) => {
-		const files = event.target.files;
-		if (files) {
-			try {
-				const selectedFiles = Array.from(files);
-				const readerPromises = selectedFiles.map((file) => {
-					return new Promise<string>((resolve, reject) => {
-						const reader = new FileReader();
-						reader.onloadend = () => {
-							resolve(reader.result as string);
-						};
-						reader.onerror = reject;
-						reader.readAsDataURL(file);
-					});
-				});
 
-				const base64Images = await Promise.all(readerPromises);
-				setPreviewImages(base64Images);
-				handleOpenPre();
+	const handleUpload = async () => {
+		setLopenLoading(true);
+		if (imageUpload == null) return;
+		const fileName = removeSpacesBetweenWords(imageUpload.name);
+		const imageRef = ref(storage, `Images/${userId}${fileName}`);
+		uploadBytes(imageRef, imageUpload).then(() => {
+			handleEditPhotoProfile(`${userId}${imageUpload.name}`);
+		});
+	};
+
+	const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+		const fileInput = event.target;
+		const fileName = fileInput.value;
+		const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+		const reader = new FileReader();
+
+		if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
+			const blob = fileInput.files?.[0];
+			try {
+				if (blob) {
+					const resultBlob = await heic2any({ blob, toType: 'image/jpg' }) as BlobPart;
+					const file = new File([resultBlob], `${event.target.files?.[0].name.split('.')[0]}.jpg`, {
+						type: 'image/jpeg',
+						lastModified: new Date().getTime(),
+					});
+					setImageUpload(file);
+					reader.onloadend = () => {
+						setPreviewImages(reader.result as string);
+					};
+					reader.readAsDataURL(file);
+					handleOpenPre();
+				}
 			} catch (error) {
 				console.error(error);
 			}
+		} else {
+			const selectedFile = event.target.files?.[0];
+			if (selectedFile) {
+				reader.onloadend = () => {
+					setPreviewImages(reader.result as string);
+				};
+				reader.readAsDataURL(selectedFile);
+				handleOpenPre();
+				setImageUpload(selectedFile);
+			}
 		}
 	};
+
 	const handleClearImage = () => {
-		setPreviewImages([]);
+		setPreviewImages('');
 		handleClosePre();
 	};
 
-	const handleEditPhotoProfile = async () => {
+	const handleEditPhotoProfile = async (picPatch: string) => {
 		try {
 			const q = query(
 				collection(dbFireStore, "users"),
@@ -140,9 +192,12 @@ export default function ProLeftside() {
 
 			if (doc.exists()) {
 				await updateDoc(doc.ref, {
-					profilePhoto: previewImages[0],
+					profilePhoto: removeSpacesBetweenWords(picPatch),
 				});
 				handleClearImage();
+				setReFresh(pre => pre + 1);
+				PopupAlert("Upload photo successfully", "success");
+				setLopenLoading(false);
 			} else {
 				console.log("Profile does not exist");
 			}
@@ -153,12 +208,13 @@ export default function ProLeftside() {
 
 	return (
 		<>
+			<Loading openLoading={openLoading} />
 			<UploadProfile
 				openPre={openPre}
 				previewImages={previewImages}
 				handleClearImage={handleClearImage}
 				handleClosePre={handleClosePre}
-				handleEditPhotoProfile={handleEditPhotoProfile}
+				handleUpload={handleUpload}
 			/>
 			{inFoUser.map((m) => (
 				<Box key={m.uid} sx={{ display: { xs: "none", lg: "flex" } }}>
@@ -211,7 +267,7 @@ export default function ProLeftside() {
 																onChange={handleFileChange}
 																multiple
 																hidden
-																accept="image/*"
+																accept="*"
 															/>
 															<AddAPhotoIcon />
 														</IconButton>
@@ -221,7 +277,7 @@ export default function ProLeftside() {
 										>
 											<Avatar
 												alt="Travis Howard"
-												src={m.profilePhoto}
+												src={imageUrls.find((item) => item.includes(m.profilePhoto ?? ""))}
 												sx={{ width: "186px", height: "186px" }}
 											/>
 										</Badge>

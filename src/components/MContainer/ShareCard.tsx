@@ -62,6 +62,7 @@ interface IData {
 }
 interface IFunction {
     handleCloseShare: () => void;
+    imageUrls: string[];
 }
 
 export default function ShareCard(props: IData & IFunction) {
@@ -119,7 +120,7 @@ export default function ShareCard(props: IData & IFunction) {
                 id: `${row.uid}_${index}`,
                 uid: row.uid,
                 username: `${row.firstName} ${row.lastName}`,
-                profilePhoto: row.profilePhoto,
+                profilePhoto: props.imageUrls.find((item) => item.includes(row.profilePhoto ?? "")),
             }));
             setRows(rows);
         } else if (status == "Group") {
@@ -127,10 +128,10 @@ export default function ShareCard(props: IData & IFunction) {
                 id: `${group.gId}_${index}`,
                 uid: group.gId,
                 username: group.groupName,
-                profilePhoto: group.coverPhoto,
+                profilePhoto: props.imageUrls.find((item) => item.includes(group.coverPhoto ?? "")),
             })));
         }
-    }, [groupData, inFoUser, props.friendList, status]);
+    }, [groupData, inFoUser, props.friendList, status, props.imageUrls]);
 
     const handleChange = (event: SelectChangeEvent) => {
         setStatus(event.target.value as string);
@@ -149,7 +150,6 @@ export default function ShareCard(props: IData & IFunction) {
                 getRowsId.includes(row.id ? row.id : "")
             );
 
-            // Check if the post has been shared already by the current user
             const postSnapshot = await getDoc(postRef);
             const postExists = postSnapshot.exists();
 
@@ -160,7 +160,6 @@ export default function ShareCard(props: IData & IFunction) {
 
             const post = postSnapshot.data() as Post;
 
-            //Strill wrong
             const existingShareIndex = post.shareUsers.some((share) => (
                 (share.shareBy === userInfo.uid && share.shareTo === userInfo.uid) &&
                 (status === "Private" || status === "Public")
@@ -232,7 +231,6 @@ export default function ShareCard(props: IData & IFunction) {
                 getRowsId.includes(row.id ? row.id : "")
             );
 
-            // Check if the post has been shared already by the current user
             const eventSnapshot = await getDoc(eventRef);
             const eventExists = eventSnapshot.exists();
 
@@ -243,7 +241,6 @@ export default function ShareCard(props: IData & IFunction) {
 
             const event = eventSnapshot.data() as Post;
 
-            //Strill wrong
             const existingShareIndex = event.shareUsers.some((share) => (
                 (share.shareBy === userInfo.uid && share.shareTo === userInfo.uid) &&
                 (status === "Private" || status === "Public")

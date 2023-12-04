@@ -4,10 +4,10 @@ import Badge from "@mui/material/Badge";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import { Typography, Box } from "@mui/material";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import { collection, query, onSnapshot, where } from "firebase/firestore";
 import { User } from "../../interface/User";
-
+import { ref, listAll, getDownloadURL, StorageReference } from "firebase/storage";
 
 export const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": {
@@ -47,6 +47,7 @@ interface IData {
 
 export default function UserCard(props: IData) {
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	const [imageUrls, setImageUrls] = useState<string[]>([]);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -73,6 +74,25 @@ export default function UserCard(props: IData) {
 			fetchData();
 		}
 	}, [props.userId]);
+
+	useEffect(() => {
+		const fetchImages = async () => {
+			try {
+				const listRef: StorageReference = ref(storage, '/Images');
+				const res = await listAll(listRef);
+				const urls = await Promise.all(
+					res.items.map(async (itemRef) => {
+						const imageUrl = await getDownloadURL(itemRef);
+						return imageUrl;
+					})
+				);
+				setImageUrls(urls);
+			} catch (error) {
+				console.error('Error fetching images:', error);
+			}
+		};
+		fetchImages();
+	}, []);
 
 	return (
 		<Stack
@@ -103,7 +123,7 @@ export default function UserCard(props: IData) {
 									anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
 									variant={u.isActive ? "dot" : "standard"}
 								>
-									<Avatar alt="Remy Sharp" src={u.profilePhoto} />
+									<Avatar alt="Remy Sharp" src={imageUrls.find((item) => item.includes(u.profilePhoto ?? ""))} />
 								</StyledBadge>
 
 								<Typography sx={{ fontSize: "16px" }}>
@@ -114,13 +134,7 @@ export default function UserCard(props: IData) {
 				</>
 			) : (
 				<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-					{/* <StyledBadge
-						overlap="circular"
-						anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-						variant={IsMemberActive ? "dot" : "standard"}
-					> */}
-					<Avatar alt="Remy Sharp" src={props.profilePhoto} />
-					{/* </StyledBadge> */}
+					<Avatar alt="Remy Sharp" src={imageUrls.find((item) => item.includes(props.profilePhoto ?? ""))} />
 					<Typography sx={{ fontSize: "16px" }}>{props.username}</Typography>
 				</Box>
 			)}

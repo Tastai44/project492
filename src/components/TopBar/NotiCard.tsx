@@ -11,6 +11,7 @@ interface IData {
     dateCreated: string;
     senderId: string;
     notiId: string;
+    imageUrls: string[];
     isRead: boolean;
 }
 
@@ -82,7 +83,7 @@ export default function NotiCard(props: IData) {
                 <ListItemAvatar>
                     <Avatar
                         alt="profile"
-                        src={inFoUser.find((user) => user.profilePhoto)?.profilePhoto}
+                        src={props.imageUrls.find((item) => item.includes(inFoUser.find((user) => user.profilePhoto)?.profilePhoto ?? ""))}
                     />
                 </ListItemAvatar>
                 <ListItemText

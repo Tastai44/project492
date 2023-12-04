@@ -63,7 +63,7 @@ export const styleBox = {
   [themeApp.breakpoints.down("md")]: {
     width: 300,
   },
-  maxHeight: 700,
+  maxHeight: 600,
   bgcolor: "background.paper",
   overflow: "auto",
   p: 4,

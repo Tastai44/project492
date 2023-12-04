@@ -7,8 +7,9 @@ import { NavLink } from "react-router-dom";
 
 interface IData {
     hostId: string;
+    imageUrls: string[];
 }
-export default function Host({ hostId }: IData) {
+export default function Host({ hostId, imageUrls }: IData) {
     const [inFoUser, setInFoUser] = useState<User[]>([]);
 
     useEffect(() => {
@@ -37,7 +38,7 @@ export default function Host({ hostId }: IData) {
     return (
         <div>
             {inFoUser.map((u) => (
-                <Paper key={u.uid} sx={{ borderRadius: "10px" }}>
+                <Paper key={u.uid} sx={{ borderRadius: "10px", height: "310px" }}>
                     <NavLink to={`/profileBlog/${u.uid}`} style={{ color: "black" }}>
                         <Box
                             sx={{
@@ -55,7 +56,7 @@ export default function Host({ hostId }: IData) {
                             <CardMedia
                                 component="img"
                                 sx={{ width: 200, m: 1, height: 200 }}
-                                image={u.profilePhoto}
+                                image={imageUrls.find((item) => item.includes(u.profilePhoto ?? ""))}
                                 alt="Host"
                             />
                         </Box>

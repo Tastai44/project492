@@ -28,16 +28,21 @@ import Emoji from "./Emoji";
 import emojiData from "emoji-datasource-facebook";
 
 import "firebase/database";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import { Post } from "../../interface/PostContent";
 import { doc, updateDoc, collection, getDoc, onSnapshot, query, where } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import LocationCard from "./LocationCard";
 import { User } from "../../interface/User";
 import { styleCreatePost } from "../../utils/styleBox";
+import { uploadBytes, ref } from "firebase/storage";
+import heic2any from "heic2any";
+import { removeSpacesBetweenWords } from "../Profile/ProfileInfo";
+import Loading from "../Loading";
 
 interface IHandle {
 	handleCloseEditPost: () => void;
+	imageUrls: string[];
 }
 interface Idata {
 	postId: string;
@@ -49,16 +54,20 @@ interface Idata {
 	oldEmoji: string;
 }
 
-export default function CreatePost(props: IHandle & Idata) {
+export default function EditPost(props: IHandle & Idata) {
 	const [status, setStatus] = useState(`${props.oldStatus}`);
 	const [location, setLocation] = useState(props.location);
 	const [openLocation, setOpenLocation] = useState(false);
 	const [openEmoji, setOpenEmoji] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
-	const [previewImages, setPreviewImages] = useState<string[]>(props.oldPhoto);
+	const [previewImages, setPreviewImages] = useState<string[]>(props.imageUrls.filter(item =>
+		props.oldPhoto.length > 0 && props.oldPhoto.some(oldItem => item.includes(oldItem))
+	));
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const [emoji, setEmoji] = useState(props.oldEmoji ? props.oldEmoji : "");
+	const [openLoading, setLopenLoading] = useState(false);
+	const [imagePath, setImagePath] = useState<string[]>([]);
 	const initialState = {
 		id: "",
 		caption: props.caption,
@@ -126,29 +135,56 @@ export default function CreatePost(props: IHandle & Idata) {
 			fileInputRef.current.click();
 		}
 	};
-	const handleFileChange = async (
-		event: ChangeEvent<HTMLInputElement>
-	) => {
-		const files = event.target.files;
-		if (files) {
+	const handleUpload = async (file: File) => {
+		if (file == null) return;
+		const fileName = removeSpacesBetweenWords(file.name);
+		const imageRef = ref(storage, `Images/post_${userInfo.uid}${fileName}`);
+		uploadBytes(imageRef, file).then(() => {
+			setImagePath((pre) => [...pre, `post_${userInfo.uid}${fileName}`]);
+		});
+	};
+
+	const handleConvertFile = async (file: File) => {
+		setLopenLoading(true);
+		const fileName = file.name;
+		const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+		const reader = new FileReader();
+
+		if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
 			try {
-				const selectedFiles = Array.from(files);
-				const readerPromises = selectedFiles.map((file) => {
-					return new Promise<string>((resolve, reject) => {
-						const reader = new FileReader();
-						reader.onloadend = () => {
-							resolve(reader.result as string);
-						};
-						reader.onerror = reject;
-						reader.readAsDataURL(file);
-					});
+				const resultBlob = await heic2any({ blob: file, toType: 'Image/jpg' }) as BlobPart;
+				const convertedFile = new File([resultBlob], `${file.name.split('.')[0]}.jpg`, {
+					type: 'Image/jpeg',
+					lastModified: new Date().getTime(),
 				});
 
-				const base64Images = await Promise.all(readerPromises);
-				setPreviewImages(base64Images);
+				handleUpload(convertedFile);
+
+				reader.onloadend = () => {
+					setPreviewImages((prevImages) => [...prevImages, reader.result as string]);
+				};
+
+				reader.readAsDataURL(convertedFile);
 			} catch (error) {
 				console.error(error);
 			}
+		} else {
+			reader.onloadend = () => {
+				setPreviewImages((prevImages) => [...prevImages, reader.result as string]);
+			};
+
+			reader.readAsDataURL(file);
+			handleUpload(file);
+		}
+		setLopenLoading(false);
+	};
+
+	const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+		if (event.target.files) {
+			const fileArray = Array.from(event.target.files);
+			fileArray.forEach((file) => {
+				handleConvertFile(file);
+			});
 		}
 	};
 
@@ -179,7 +215,7 @@ export default function CreatePost(props: IHandle & Idata) {
 			caption: post.caption,
 			hashTagTopic: post.hashTagTopic,
 			status: status,
-			photoPost: previewImages,
+			photoPost: imagePath.length == 0 ? props.oldPhoto : imagePath,
 			updateAt: new Date().toLocaleString(),
 			emoji: emoji,
 			owner: userInfo.uid,
@@ -233,6 +269,9 @@ export default function CreatePost(props: IHandle & Idata) {
 				handletSaveLocation={handletSaveLocation}
 				handleChangeLocation={handleChangeLocation}
 			/>
+			<Loading
+				openLoading={openLoading}
+			/>
 			<Box sx={styleCreatePost}>
 				<Box sx={{ display: "flex", justifyContent: "space-between" }}>
 					<Box
@@ -252,7 +291,7 @@ export default function CreatePost(props: IHandle & Idata) {
 						<ListItem key={user.uid}>
 							<ListItemAvatar>
 								<Avatar
-									src={user.profilePhoto}
+									src={props.imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))}
 									sx={{ width: "40px", height: "40px", marginRight: "10px" }}
 								/>
 							</ListItemAvatar>
@@ -377,7 +416,7 @@ export default function CreatePost(props: IHandle & Idata) {
 										onChange={handleFileChange}
 										multiple
 										hidden
-										accept="image/*"
+										accept="*"
 									/>
 									<InsertPhotoIcon sx={{ color: "green" }} />
 								</IconButton>

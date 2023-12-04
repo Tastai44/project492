@@ -14,6 +14,7 @@ interface IData {
     isMessageMenuOpen: boolean;
     messageNoti: IMessageNoti[];
     groupMessageNoti: IGroupMessageNoti[];
+    imageUrls: string[];
     handleCloseMessageNoti: () => void;
 }
 
@@ -78,6 +79,7 @@ export default function MessageNoti(props: IData) {
                                 notiId={noti.notiId}
                                 groupId={noti.groupId}
                                 isRead={noti.isRead}
+                                imageUrls={props.imageUrls}
                             />
                         );
                     } else {
@@ -89,6 +91,7 @@ export default function MessageNoti(props: IData) {
                                 senderId={noti.senderId}
                                 notiId={noti.notiId}
                                 isRead={noti.isRead}
+                                imageUrls={props.imageUrls}
                             />
                         );
                     }

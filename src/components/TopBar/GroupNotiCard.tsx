@@ -14,6 +14,7 @@ interface IData {
     notiId: string;
     groupId: string;
     isRead: boolean;
+    imageUrls: string[];
 }
 
 export default function GroupNotiCard(props: IData) {
@@ -107,7 +108,7 @@ export default function GroupNotiCard(props: IData) {
                 <ListItemAvatar>
                     <Avatar
                         alt="profile"
-                        src={inFoUser.find((user) => user.profilePhoto)?.profilePhoto}
+                        src={props.imageUrls.find((item) => item.includes(inFoUser.find((user) => user.profilePhoto)?.profilePhoto ?? ''))}
                     />
                 </ListItemAvatar>
                 <ListItemText

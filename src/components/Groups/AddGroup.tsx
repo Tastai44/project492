@@ -19,7 +19,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import PublicIcon from "@mui/icons-material/Public";
 import { IGroup } from "../../interface/Group";
 import "firebase/database";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import { doc, getDocs, serverTimestamp } from "firebase/firestore";
 import { collection, setDoc } from "firebase/firestore";
 import { User } from "../../interface/User";
@@ -30,6 +30,10 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import PopupAlert from "../PopupAlert";
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
+import { uploadBytes, ref } from "firebase/storage";
+import heic2any from "heic2any";
+import { removeSpacesBetweenWords } from "../Profile/ProfileInfo";
+import Loading from "../Loading";
 
 interface Ihandle {
 	closeEdit: () => void;
@@ -40,8 +44,11 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 	const [users, setUsers] = useState<User[]>([]);
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
-	const [previewImages, setPreviewImages] = useState<string[]>([]);
 	const [status, setStatus] = useState("");
+	const [previewImages, setPreviewImages] = useState<string>('');
+	const [openLoading, setLopenLoading] = useState(false);
+	const [imageUpload, setImageUpload] = useState<File | null>(null);
+
 	const initialState = {
 		gId: "",
 		hostId: "",
@@ -87,33 +94,54 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 		}
 	};
 
-	const handleFileChange = async (
-		event: ChangeEvent<HTMLInputElement>
-	) => {
-		const files = event.target.files;
-		if (files) {
-			try {
-				const selectedFiles = Array.from(files);
-				const readerPromises = selectedFiles.map((file) => {
-					return new Promise<string>((resolve, reject) => {
-						const reader = new FileReader();
-						reader.onloadend = () => {
-							resolve(reader.result as string);
-						};
-						reader.onerror = reject;
-						reader.readAsDataURL(file);
-					});
-				});
+	const handleUpload = async () => {
+		setLopenLoading(true);
+		if (imageUpload == null) return;
+		const fileName = removeSpacesBetweenWords(imageUpload.name);
+		const imageRef = ref(storage, `Images/group_${userInfo.uid}${fileName}`);
+		uploadBytes(imageRef, imageUpload).then(() => {
+			createGroup(`group_${userInfo.uid}${fileName}`);
+		});
+	};
 
-				const base64Images = await Promise.all(readerPromises);
-				setPreviewImages(base64Images);
+	const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+		const fileInput = event.target;
+		const fileName = fileInput.value;
+		const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+		const reader = new FileReader();
+
+		if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
+			const blob = fileInput.files?.[0];
+			try {
+				if (blob) {
+					const resultBlob = await heic2any({ blob, toType: 'image/jpg' }) as BlobPart;
+					const file = new File([resultBlob], `${event.target.files?.[0].name.split('.')[0]}.jpg`, {
+						type: 'image/jpeg',
+						lastModified: new Date().getTime(),
+					});
+					setImageUpload(file);
+					reader.onloadend = () => {
+						setPreviewImages(reader.result as string);
+					};
+					reader.readAsDataURL(file);
+				}
 			} catch (error) {
 				console.error(error);
 			}
+		} else {
+			const selectedFile = event.target.files?.[0];
+			if (selectedFile) {
+				reader.onloadend = () => {
+					setPreviewImages(reader.result as string);
+				};
+				reader.readAsDataURL(selectedFile);
+				setImageUpload(selectedFile);
+			}
 		}
 	};
+
 	const handleClearImage = () => {
-		setPreviewImages([]);
+		setPreviewImages('');
 	};
 
 	const handleChange = (event: SelectChangeEvent) => {
@@ -135,7 +163,7 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 		}));
 	};
 
-	const createGroup = async () => {
+	const createGroup = async (picPath: string) => {
 		const postCollection = collection(dbFireStore, "groups");
 		const tmp = [...member].map((m) => JSON.parse(m));
 		const tmp2 = tmp.map((m) => m.uid);
@@ -146,7 +174,7 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 			members: [...tmp2, userInfo.uid],
 			status: status,
 			details: group.details,
-			coverPhoto: previewImages[0],
+			coverPhoto: removeSpacesBetweenWords(picPath),
 			createAt: new Date().toLocaleString(),
 			dateCreated: serverTimestamp(),
 		};
@@ -161,6 +189,7 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 			clearState();
 			PopupAlert("Group Successfully Added", "success");
 			closeEdit();
+			setLopenLoading(false);
 		} catch (error) {
 			console.error("Error adding post: ", error);
 		}
@@ -168,6 +197,9 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 
 	return (
 		<div style={{ color: "black" }}>
+			<Loading
+				openLoading={openLoading}
+			/>
 			<Box sx={styleBox}>
 				<Typography id="modal-modal-title" variant="h5">
 					Create a group
@@ -275,7 +307,7 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 							onChange={handleFileChange}
 							multiple
 							hidden
-							accept="image/*"
+							accept="*"
 						/>
 
 						<Box sx={{
@@ -320,14 +352,14 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 								backgroundColor: "#E1E1E1",
 							},
 						}}
-						onClick={createGroup}
+						onClick={handleUpload}
 						type="submit"
 						disabled={!group.details || !group.groupName || !member || !status || !fileInputRef}
 					>
-						Save
+						Create
 					</Button>
 				</Box>
-				{previewImages.length !== 0 && (
+				{previewImages !== '' && (
 					<Box>
 						<Box sx={{ display: "flex", justifyContent: "flex-end" }}>
 							<IconButton onClick={handleClearImage}>
@@ -339,11 +371,9 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 							cols={1}
 							rowHeight={160}
 						>
-							{previewImages.map((image, index) => (
-								<ImageListItem key={index}>
-									<img src={image} alt={`Preview ${index}`} loading="lazy" />
-								</ImageListItem>
-							))}
+							<ImageListItem>
+								<img src={previewImages} alt={`Preview`} loading="lazy" />
+							</ImageListItem>
 						</ImageList>
 					</Box>
 				)}

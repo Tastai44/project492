@@ -30,7 +30,6 @@ interface IData {
 export default function AddMembers(props: IFunction & IData) {
 	const [member, setMember] = useState<string[]>([]);
 	const [users, setUsers] = useState<User[]>([]);
-	// const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
 	useEffect(() => {
 		const fetchData = async () => {

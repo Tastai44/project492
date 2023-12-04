@@ -20,7 +20,8 @@ import Diversity3Icon from "@mui/icons-material/Diversity3";
 import { NavLink } from "react-router-dom";
 import { User } from "../interface/User";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
-import { dbFireStore } from "../config/firebase";
+import { dbFireStore, storage } from "../config/firebase";
+import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
 
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -34,6 +35,7 @@ export default function LeftSide() {
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const IsAdmin = inFoUser.some((user) => user.userRole === "admin");
+	const [imageUrls, setImageUrls] = useState<string[]>([]);
 
 	useEffect(() => {
 		const queryData = query(
@@ -55,6 +57,25 @@ export default function LeftSide() {
 		};
 	}, [userInfo.uid]);
 
+	useEffect(() => {
+		const fetchImages = async () => {
+			try {
+				const listRef: StorageReference = ref(storage, '/Images');
+				const res = await listAll(listRef);
+				const urls = await Promise.all(
+					res.items.map(async (itemRef) => {
+						const imageUrl = await getDownloadURL(itemRef);
+						return imageUrl;
+					})
+				);
+				setImageUrls(urls);
+			} catch (error) {
+				console.error('Error fetching images:', error);
+			}
+		};
+		fetchImages();
+	}, []);
+
 	return (
 		<Box sx={{ width: "100%", display: { xs: "none", lg: "flex" } }}>
 			<Box sx={{ width: "100%", flexDirection: "column", ml: 5 }}>
@@ -71,7 +92,7 @@ export default function LeftSide() {
 								"&:hover": { backgroundColor: "#F1F1F1" }
 							}}
 						>
-							<Avatar alt="Remy Sharp" src={user.profilePhoto} />
+							<Avatar alt="Remy Sharp" src={imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))} />
 							{user.firstName} {user.lastName}
 						</Item>
 					))}
