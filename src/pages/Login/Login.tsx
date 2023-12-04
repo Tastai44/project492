@@ -29,7 +29,7 @@ export default function Login() {
             }}>
                 <img src={CMUSubLogo} alt="cmuLogo" />
                 <Box onClick={() => setOpenPrivacy(true)} sx={{ fontSize: "20px", mt: 1, cursor: "pointer", textDecoration: 'underline' }}>
-                    Please read privacy before login
+                    Please read policy before login
                 </Box>
                 <Box sx={{ fontSize: "28px", mt: 3, fontFamily: "Roboto", color: "#133463" }}>
                     “ CMU EXPLORE “
