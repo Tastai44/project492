@@ -302,6 +302,7 @@ export default function GroupDetails() {
                                                                             reportNumber={post.reportPost.length}
                                                                             reFreshInfo={0}
                                                                             reportPost={post.reportPost}
+                                                                            imageUrls={imageUrls}
                                                                         />
                                                                     ))
                                                             )

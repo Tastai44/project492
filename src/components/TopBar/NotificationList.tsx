@@ -34,6 +34,7 @@ interface IData {
     notifications: INoti[];
     imageUrls: string[];
     handleMobileMenuClose: () => void;
+    handleRefreshImage: () => void;
 }
 
 export default function NotificationList(props: IData) {
@@ -148,6 +149,7 @@ export default function NotificationList(props: IData) {
                             owner={postOwner}
                             handleClosePost={handleClosePost}
                             imageUrls={props.imageUrls}
+                            handleRefreshImage={props.handleRefreshImage}
                         />
                     </Paper>
                 </Box>

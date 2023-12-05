@@ -29,6 +29,7 @@ export default function SearchContent(props: IData) {
     const [postOwner, setPostOwner] = useState("");
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
     const [imageUrls, setImageUrls] = useState<string[]>([]);
+    const [refreshImage, setRefreshImage] = useState(0);
 
     useEffect(() => {
         const fetchData = query(
@@ -87,7 +88,7 @@ export default function SearchContent(props: IData) {
             }
         };
         fetchImages();
-    }, []);
+    }, [refreshImage]);
 
     const handletOpenPost = (id: string, likeData: Like[], owner: string) => {
         setOpenPost(true);
@@ -118,6 +119,7 @@ export default function SearchContent(props: IData) {
                             owner={postOwner}
                             handleClosePost={handleClosePost}
                             imageUrls={imageUrls}
+                            handleRefreshImage={() => setRefreshImage(pre => pre + 1)}
                         />
                     </Paper>
                 </Box>
