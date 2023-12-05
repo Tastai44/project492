@@ -60,6 +60,7 @@ interface Idata {
 	reFreshInfo: number;
 	reportNumber: number;
 	reportPost: PostReport[];
+	imageUrls: string[];
 }
 
 export default function ReportContent(props: Idata) {
@@ -162,6 +163,7 @@ export default function ReportContent(props: Idata) {
 				handleCloseReason={handleCloseReason}
 				reportPost={props.reportPost}
 				owner={props.owner}
+				imageUrls={props.imageUrls}
 			/>
 			{inFoUser.map((u) => (
 				<Box key={u.uid} sx={{
@@ -174,7 +176,7 @@ export default function ReportContent(props: Idata) {
 							<ListItem>
 								<ListItemAvatar>
 									<Avatar
-										src={u.profilePhoto}
+										src={props.imageUrls.find((item) => item.includes(u.profilePhoto ?? ""))}
 										sx={{
 											width: "60px",
 											height: "60px",
@@ -302,21 +304,6 @@ export default function ReportContent(props: Idata) {
 										: `#${props.hashTagTopic}`}
 								</Typography>
 							</CardContent>
-							{/* <Box
-									sx={{
-										fontSize: "25px",
-										display: "flex",
-										justifyContent: "start",
-										margin: 1,
-										[themeApp.breakpoints.down("md")]: {
-											fontSize: "20px"
-										},
-									}}
-								>
-									{props.hashTagTopic.startsWith("#")
-										? props.hashTagTopic
-										: `#${props.hashTagTopic}`}
-								</Box> */}
 							{props.photoPost.length == 1 ? (
 								<ImageList
 									onClick={handleOpenReason}
@@ -330,11 +317,12 @@ export default function ReportContent(props: Idata) {
 									cols={1}
 								>
 									{props.photoPost.map((image, index) => (
-										<ImageListItem key={index}>
+										<ImageListItem key={index} sx={{ borderRadius: '20px' }}>
 											<img
-												src={image}
+												src={props.imageUrls.find((item) => item.includes(image))}
 												alt={`Preview ${index}`}
 												loading="lazy"
+												style={{ borderRadius: '20px' }}
 											/>
 										</ImageListItem>
 									))}
@@ -347,11 +335,12 @@ export default function ReportContent(props: Idata) {
 									gap={2}
 								>
 									{props.photoPost.map((image, index) => (
-										<ImageListItem key={index}>
+										<ImageListItem key={index} sx={{ borderRadius: '20px' }}>
 											<img
-												src={image}
+												src={props.imageUrls.find((item) => item.includes(image))}
 												alt={`Preview ${index}`}
 												loading="lazy"
+												style={{ borderRadius: '20px' }}
 											/>
 										</ImageListItem>
 									))}

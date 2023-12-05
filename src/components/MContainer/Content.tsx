@@ -58,6 +58,7 @@ import { themeApp } from "../../utils/Theme";
 import { NavLink } from "react-router-dom";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ShareCard from "./ShareCard";
+import Loading from "../Loading";
 
 const Item = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -78,6 +79,7 @@ interface IData {
 }
 interface IFunction {
     handleClosePost: () => void;
+    handleRefreshImage: () => void;
     imageUrls: string[];
 }
 
@@ -100,8 +102,10 @@ export default function Content(props: IData & IFunction) {
     const [isLike, setIsLike] = useState(false);
     const [openReportPost, setOpenReportPost] = useState(false);
     const [userOwner, setUserOwner] = useState<User[]>([]);
+    const [openLoading, setOpenLoading] = useState(false);
 
     useEffect(() => {
+        setOpenLoading(true);
         const queryData = query(
             collection(dbFireStore, "posts"),
             where("id", "==", props.postId)
@@ -117,6 +121,7 @@ export default function Content(props: IData & IFunction) {
                 console.error("Error fetching data:", error);
             }
         );
+        setOpenLoading(false);
 
         return () => {
             unsubscribe();
@@ -291,6 +296,9 @@ export default function Content(props: IData & IFunction) {
 
     return (
         <Box>
+            <Loading
+                openLoading={openLoading}
+            />
             <ShareCard
                 openShare={openShare}
                 handleCloseShare={handleCloseShare}
@@ -336,6 +344,7 @@ export default function Content(props: IData & IFunction) {
                                 postId={props.postId}
                                 location={props.location}
                                 imageUrls={props.imageUrls}
+                                handleRefreshImage={props.handleRefreshImage}
                             />
                         </Box>
                     </Modal>
@@ -350,9 +359,9 @@ export default function Content(props: IData & IFunction) {
                                                     <ImageListItem key={index}>
                                                         <img
                                                             src={props.imageUrls.find((item) => item.includes(image))}
-                                                            srcSet={image}
                                                             alt={`${index}`}
                                                             loading="lazy"
+                                                            style={{ borderRadius: '20px' }}
                                                         />
                                                     </ImageListItem>
                                                 ))}
@@ -366,6 +375,7 @@ export default function Content(props: IData & IFunction) {
                                                         src={props.imageUrls.find((item) => item.includes(image))}
                                                         alt={`Preview ${index}`}
                                                         loading="lazy"
+                                                        style={{ borderRadius: '20px' }}
                                                     />
                                                 </ImageListItem>
                                             ))}

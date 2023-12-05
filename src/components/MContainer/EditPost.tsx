@@ -42,6 +42,7 @@ import Loading from "../Loading";
 
 interface IHandle {
 	handleCloseEditPost: () => void;
+	handleRefreshImage: () => void;
 	imageUrls: string[];
 }
 interface Idata {
@@ -230,6 +231,7 @@ export default function EditPost(props: IHandle & Idata) {
 						clearState();
 						props.handleCloseEditPost();
 						PopupAlert("Post has edited successfully", "success");
+						props.handleRefreshImage();
 					} else {
 						PopupAlert("You don't have permission to delete this post", "warning");
 					}

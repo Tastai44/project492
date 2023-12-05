@@ -99,6 +99,7 @@ export default function MContainer(props: Idata) {
     const [inFoUser, setInFoUser] = useState<User[]>([]);
     const [openShare, setOpenShare] = useState(false);
     const [imageUrls, setImageUrls] = useState<string[]>([]);
+    const [refreshImage, setRefreshImage] = useState(0);
 
     useEffect(() => {
         const queryData = query(
@@ -137,7 +138,7 @@ export default function MContainer(props: Idata) {
             }
         };
         fetchImages();
-    }, []);
+    }, [refreshImage]);
 
     const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
         const emoji = emojiData.find((data) => data.unified === emojiCode);
@@ -255,6 +256,7 @@ export default function MContainer(props: Idata) {
                                     friendList={u.friendList}
                                     caption={props.caption}
                                     imageUrls={imageUrls}
+                                    handleRefreshImage={() => setRefreshImage(pre => pre + 1)}
                                 />
                             </Paper>
                         </Box>
@@ -277,6 +279,7 @@ export default function MContainer(props: Idata) {
                                 postId={props.postId}
                                 location={props.location}
                                 imageUrls={imageUrls}
+                                handleRefreshImage={() => setRefreshImage(pre => pre + 1)}
                             />
                         </Box>
                     </Modal>

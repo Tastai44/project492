@@ -64,6 +64,7 @@ interface IData {
 }
 interface IFunction {
 	handleCloseReason: () => void;
+	imageUrls: string[];
 }
 
 export default function ReasonContainer(props: IData & IFunction) {
@@ -183,7 +184,7 @@ export default function ReasonContainer(props: IData & IFunction) {
 						.map((post) => (
 							<Box key={post.id} sx={{ flexGrow: 1, p: 1 }}>
 								<Grid container spacing={1}>
-									<Grid item xs={6}>
+									<Grid item lg={6} md={12}>
 										<Item>
 											<Box
 												sx={{ height: "auto", maxWidth: "lg", minWidth: "sm" }}
@@ -194,10 +195,10 @@ export default function ReasonContainer(props: IData & IFunction) {
 															{post.photoPost.map((image, index) => (
 																<ImageListItem key={index}>
 																	<img
-																		src={image}
-																		srcSet={image}
+																		src={props.imageUrls.find((item) => item.includes(image))}
 																		alt={`${index}`}
 																		loading="lazy"
+																		style={{ borderRadius: '20px' }}
 																	/>
 																</ImageListItem>
 															))}
@@ -208,10 +209,10 @@ export default function ReasonContainer(props: IData & IFunction) {
 														{post.photoPost.map((image, index) => (
 															<ImageListItem key={index}>
 																<img
-																	src={image}
-																	srcSet={image}
+																	src={props.imageUrls.find((item) => item.includes(image))}
 																	alt={`${index}`}
 																	loading="lazy"
+																	style={{ borderRadius: '20px' }}
 																/>
 															</ImageListItem>
 														))}
@@ -220,7 +221,7 @@ export default function ReasonContainer(props: IData & IFunction) {
 											</Box>
 										</Item>
 									</Grid>
-									<Grid item xs={post.photoPost.length == 0 ? 12 : 6}>
+									<Grid item lg={post.photoPost.length !== 0 ? 6 : 12} md={12}>
 										<Item>
 											<Box sx={{ display: "flex", flexDirection: "column" }}>
 												<Box>
@@ -228,7 +229,7 @@ export default function ReasonContainer(props: IData & IFunction) {
 														<ListItem key={user.uid}>
 															<ListItemAvatar>
 																<Avatar
-																	src={user.profilePhoto}
+																	src={props.imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))}
 																	sx={{
 																		width: "60px",
 																		height: "60px",
@@ -389,6 +390,7 @@ export default function ReasonContainer(props: IData & IFunction) {
 																		text={report.reason}
 																		createAt={report.createAt}
 																		userId={report.uid}
+																		imageUrls={props.imageUrls}
 																	/>
 																</Box>
 															))}
