@@ -67,6 +67,7 @@ interface Idata {
     coverPhoto: string;
     reportNumber: number;
     reportEvent: EventReport[];
+    imageUrls: string[];
 }
 
 export default function EventContent(props: Idata) {
@@ -170,6 +171,7 @@ export default function EventContent(props: Idata) {
                 handleCloseReason={handleCloseReason}
                 reportEvent={props.reportEvent}
                 ownerId={props.ownerId}
+                imageUrls={props.imageUrls}
             />
             {inFoUser.map((u) => (
                 <Box key={u.uid} sx={{
@@ -182,7 +184,7 @@ export default function EventContent(props: Idata) {
                             <ListItem>
                                 <ListItemAvatar>
                                     <Avatar
-                                        src={u.profilePhoto}
+                                        src={props.imageUrls.find((item) => item.includes(u.profilePhoto ?? ""))}
                                         sx={{
                                             width: "60px",
                                             height: "60px",
@@ -302,7 +304,7 @@ export default function EventContent(props: Idata) {
                             >
                                 <ImageListItem onClick={handleOpenReason}>
                                     <img
-                                        src={props.coverPhoto}
+                                        src={props.imageUrls.find((item) => item.includes(props.coverPhoto ?? ""))}
                                         alt={`Preview`}
                                         loading="lazy"
                                     />

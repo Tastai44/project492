@@ -52,6 +52,7 @@ export default function Navigation() {
 	const [openChatList, setOpenChatList] = useState(false);
 	const IsAdmin = inFoUser.some((user) => user.userRole === "admin");
 	const [imageUrls, setImageUrls] = useState<string[]>([]);
+	const [refreshImage, setRefreshImage] = useState(0);
 
 	useEffect(() => {
 		const fetchImages = async () => {
@@ -70,7 +71,7 @@ export default function Navigation() {
 			}
 		};
 		fetchImages();
-	}, []);
+	}, [refreshImage]);
 
 	useEffect(() => {
 		const fetchData = query(
@@ -274,6 +275,7 @@ export default function Navigation() {
 			notifications={notifications ?? []}
 			imageUrls={imageUrls}
 			handleMobileMenuClose={handleMobileMenuClose}
+			handleRefreshImage={() => setRefreshImage(pre => pre + 1)}
 		/>
 	);
 

@@ -37,6 +37,7 @@ export default function Collections() {
 	const [searchValue, setValue] = useState("");
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [imageUrls, setImageUrls] = useState<string[]>([]);
+	const [refreshImage, setRefreshImage] = useState(0);
 
 	useEffect(() => {
 		const queryData = query(
@@ -78,7 +79,7 @@ export default function Collections() {
 			}
 		};
 		fetchImages();
-	}, []);
+	}, [refreshImage]);
 
 	const handletOpenPost = (id: string, likeData: Like[], ownerId: string) => {
 		setOpenPost(true);
@@ -112,6 +113,7 @@ export default function Collections() {
 							handleClosePost={handleClosePost}
 							owner={ownerId}
 							imageUrls={imageUrls}
+							handleRefreshImage={() => setRefreshImage(pre => pre + 1)}
 						/>
 					</Paper>
 				</Box>

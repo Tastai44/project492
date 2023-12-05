@@ -44,6 +44,7 @@ interface IData {
   openReason: boolean;
   reportEvent: EventReport[];
   ownerId: string;
+  imageUrls: string[];
 }
 interface IFunction {
   handleCloseReason: () => void;
@@ -289,6 +290,7 @@ export default function EventReasonContainer(props: IData & IFunction) {
                                               text={report.reason}
                                               createAt={report.createAt}
                                               userId={report.reportBy}
+                                              imageUrls={props.imageUrls}
                                             />
                                           </Box>
                                         ))}

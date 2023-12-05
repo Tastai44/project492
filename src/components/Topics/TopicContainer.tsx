@@ -42,6 +42,7 @@ export default function TopicContainer() {
 	const [openSearch, setOpenSearch] = useState<boolean>(false);
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const [imageUrls, setImageUrls] = useState<string[]>([]);
+	const [refreshImage, setRefreshImage] = useState(0);
 
 	useMemo(() => {
 		const fetchData = async () => {
@@ -103,7 +104,7 @@ export default function TopicContainer() {
 			}
 		};
 		fetchImages();
-	}, []);
+	}, [refreshImage]);
 
 	const handleOpenSearch = () => {
 		setOpenSearch(true);
@@ -230,7 +231,7 @@ export default function TopicContainer() {
 							owner={postOwner}
 							handleClosePost={handleClosePost}
 							imageUrls={imageUrls}
-
+							handleRefreshImage={() => setRefreshImage(pre => pre + 1)}
 						/>
 					</Paper>
 				</Box>

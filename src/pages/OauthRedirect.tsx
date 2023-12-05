@@ -19,7 +19,6 @@ export default function OAuthRedirect() {
         const fetchData = async () => {
             if (code) {
                 const accessToken = await requestAccessToken(code);
-                console.log(accessToken);
                 if (accessToken) {
                     const userInfo = await getUserInfo(accessToken.access_token);
                     console.log(userInfo);
@@ -36,7 +35,7 @@ export default function OAuthRedirect() {
 
         fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [code]);
 
     const handleActiveUser = async (userId: string) => {
         try {
