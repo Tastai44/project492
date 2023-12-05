@@ -45,6 +45,7 @@ export default function Topics() {
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const [openLoading, setOpenLoading] = useState(false);
 	const [imageUrls, setImageUrls] = useState<string[]>([]);
+	const [refreshImage, setRefreshImage] = useState(0);
 
 	useMemo(() => {
 		const fetchData = async () => {
@@ -108,7 +109,7 @@ export default function Topics() {
 			}
 		};
 		fetchImages();
-	}, []);
+	}, [refreshImage]);
 
 	const handleOpenSearch = () => {
 		setOpenSearch(true);
@@ -233,6 +234,7 @@ export default function Topics() {
 							owner={postOwner}
 							handleClosePost={handleClosePost}
 							imageUrls={imageUrls}
+							handleRefreshImage={() => setRefreshImage(pre => pre + 1)}
 						/>
 					</Paper>
 				</Box>
