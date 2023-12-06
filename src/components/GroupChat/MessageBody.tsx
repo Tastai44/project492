@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import {
     Box,
     Avatar,
@@ -25,7 +25,7 @@ export default function MessageBody(props: IData) {
     const [inFoUser, setInFoUser] = useState<User[]>([]);
     const [chatMessages, setChatMessage] = useState<GroupMessage[]>([]);
 
-    useMemo(() => {
+    useEffect(() => {
         if (props.members.length !== 0) {
             const chatMessages = props.messages.filter((message) =>
                 message.participants.some((participant) => participant === userInfo.uid)
