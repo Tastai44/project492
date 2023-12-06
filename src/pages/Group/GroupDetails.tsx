@@ -262,6 +262,7 @@ export default function GroupDetails() {
                                                                                     (share.status == "Group" &&
                                                                                         share.shareBy == m.shareUsers.find((share) => share.shareBy)?.shareBy)
                                                                                 )}
+                                                                                imageUrls={imageUrls}
                                                                             />
                                                                             <MContainer
                                                                                 owner={m.owner}

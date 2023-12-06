@@ -33,7 +33,7 @@ import Emoji from "../MContainer/Emoji";
 import Header from "./Header";
 import MessageBody from "./MessageBody";
 import { IGroup } from "../../interface/Group";
-import { useState, useRef, ChangeEvent, useEffect } from "react";
+import { useState, useRef, ChangeEvent, useMemo, useEffect } from "react";
 import { createGroupMessageNoti } from "../MessageNotification";
 import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
@@ -67,7 +67,7 @@ export default function GroupChatBox
 	const [imageUrls, setImageUrls] = useState<string[]>([]);
 	const [reFreshImage, setReFreshImage] = useState(0);
 
-	useEffect(() => {
+	useMemo(() => {
 		const fetchData = async () => {
 			try {
 				const q = query(
@@ -379,7 +379,7 @@ export default function GroupChatBox
 									sx={{ color: "primary.main", fontSize: "20px" }}
 								/>
 							</IconButton>
-							<IconButton onClick={handletOpenEmoji}>
+							<IconButton size="large" onClick={handletOpenEmoji} sx={{ mr: 1 }}>
 								<EmojiEmotionsIcon
 									sx={{ color: "primary.main", fontSize: "20px" }}
 								/>

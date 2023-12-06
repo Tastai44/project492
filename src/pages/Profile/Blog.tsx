@@ -14,7 +14,7 @@ import MContainer from "../../components/MContainer/MContainer";
 import PostForm from "../../components/MContainer/PostForm";
 import { useParams } from "react-router-dom";
 
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import {
 	collection,
 	query,
@@ -29,6 +29,7 @@ import ShareContent from "./ShareContent";
 import { EventPost } from "../../interface/Event";
 import ShareEvent from "../../components/Events/ShareEvent";
 import TabLink from "./TabLink";
+import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
 
 export default function Blog() {
 	const { userId } = useParams();
@@ -38,6 +39,7 @@ export default function Blog() {
 	const [eventData, setEventData] = useState<EventPost[]>([]);
 	const [data, setData] = useState<Post[]>([]);
 	const [sharePost, setSharePost] = useState<Post[]>([]);
+	const [imageUrls, setImageUrls] = useState<string[]>([]);
 
 	useEffect(() => {
 		const queryData = query(
@@ -118,6 +120,25 @@ export default function Blog() {
 			unsubscribe();
 		};
 	}, [userId]);
+
+	useEffect(() => {
+		const fetchImages = async () => {
+			try {
+				const listRef: StorageReference = ref(storage, '/Images');
+				const res = await listAll(listRef);
+				const urls = await Promise.all(
+					res.items.map(async (itemRef) => {
+						const imageUrl = await getDownloadURL(itemRef);
+						return imageUrl;
+					})
+				);
+				setImageUrls(urls);
+			} catch (error) {
+				console.error('Error fetching images:', error);
+			}
+		};
+		fetchImages();
+	}, []);
 
 	const handleChangeType = (event: SelectChangeEvent) => {
 		setType(event.target.value as string);
@@ -231,6 +252,7 @@ export default function Blog() {
 																		(share.status == "Public" &&
 																			share.shareBy == userId))
 																)}
+																imageUrls={imageUrls}
 															/>
 															<MContainer
 																owner={m.owner}
@@ -281,6 +303,7 @@ export default function Blog() {
 																	share.status == "Friend" &&
 																	share.shareTo == userId
 															)}
+															imageUrls={imageUrls}
 														/>
 														<MContainer
 															owner={m.owner}
@@ -339,6 +362,7 @@ export default function Blog() {
 																		(share.status == "Public" &&
 																			share.shareBy == userId)
 																)}
+																imageUrls={imageUrls}
 															/>
 															<ShareEvent
 																eventId={m.eventId}
@@ -379,6 +403,7 @@ export default function Blog() {
 																		share.status == "Friend" &&
 																		share.shareTo == userId
 																)}
+																imageUrls={imageUrls}
 															/>
 															<ShareEvent
 																eventId={m.eventId}
