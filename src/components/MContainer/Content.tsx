@@ -592,7 +592,7 @@ export default function Content(props: IData & IFunction) {
                                     >
                                         <Typography>{m.likes.length} likes</Typography>
                                         <Typography>{m.comments.length} comments</Typography>
-                                        <Typography>10 shares</Typography>
+                                        <Typography>{m.shareUsers.length} shares</Typography>
                                     </Box>
                                     <Divider />
                                     <Box

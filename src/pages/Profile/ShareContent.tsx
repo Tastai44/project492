@@ -31,6 +31,7 @@ interface Idata {
 	eventId?: string;
 	shareUsers: ShareUser[];
 	userId?: string;
+	imageUrls: string[];
 }
 
 
@@ -122,7 +123,7 @@ export default function ShareContent(props: Idata) {
 				<ListItem key={index}>
 					<ListItemAvatar>
 						<Avatar
-							src={inFoUser.find((user) => user.firstName)?.profilePhoto}
+							src={props.imageUrls.find((item) => item.includes((inFoUser.find((user) => user)?.profilePhoto) ?? ""))}
 							sx={{
 								width: "60px",
 								height: "60px",

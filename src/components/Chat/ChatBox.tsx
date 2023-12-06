@@ -386,7 +386,7 @@ export default function ChatBox(props: IFunction & IData) {
 									sx={{ color: "primary.main", fontSize: "20px" }}
 								/>
 							</IconButton>
-							<IconButton onClick={handletOpenEmoji}>
+							<IconButton size="large" onClick={handletOpenEmoji} sx={{ mr: 1 }}>
 								<EmojiEmotionsIcon
 									sx={{ color: "primary.main", fontSize: "20px" }}
 								/>
