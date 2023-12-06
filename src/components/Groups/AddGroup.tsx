@@ -1,4 +1,4 @@
-import { useState, useMemo, ChangeEvent, useRef } from "react";
+import { useState, ChangeEvent, useRef, useEffect } from "react";
 import {
 	Button,
 	Divider,
@@ -61,7 +61,7 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 	};
 	const [group, setGroup] = useState<IGroup>(initialState);
 
-	useMemo(() => {
+	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const q = collection(dbFireStore, "users");
