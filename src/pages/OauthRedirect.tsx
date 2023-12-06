@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IUserReturnFromToken } from '../interface/User';
 import { useNavigate } from 'react-router-dom';
 import { doc, getDocs, query, updateDoc, where } from "firebase/firestore";
@@ -14,7 +14,7 @@ export default function OAuthRedirect() {
     const code = urlParams.get('code');
     const [openLoading, setOpenLoading] = useState(false);
 
-    useMemo(() => {
+    useEffect(() => {
         setOpenLoading(true);
         const fetchData = async () => {
             if (code) {
@@ -35,7 +35,7 @@ export default function OAuthRedirect() {
 
         fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [code]);
+    }, []);
 
     const handleActiveUser = async (userId: string) => {
         try {
