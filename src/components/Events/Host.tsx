@@ -55,7 +55,7 @@ export default function Host({ hostId, imageUrls }: IData) {
                         <Box sx={{ display: "flex", justifyContent: "center" }}>
                             <CardMedia
                                 component="img"
-                                sx={{ width: 200, m: 1, height: 200 }}
+                                sx={{ width: 200, m: 1, height: 200, borderRadius: "10px" }}
                                 image={imageUrls.find((item) => item.includes(u.profilePhoto ?? ""))}
                                 alt="Host"
                             />

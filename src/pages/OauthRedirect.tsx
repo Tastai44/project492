@@ -56,6 +56,16 @@ export default function OAuthRedirect() {
         }
     };
 
+    const hashString = async (inputString: string) => {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(inputString);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashedString = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+
+        return hashedString;
+    };
+
     const handleStoreUserInfo = async (docUser: IUserReturnFromToken) => {
         const userCollection = collection(dbFireStore, "users");
 
@@ -72,8 +82,9 @@ export default function OAuthRedirect() {
                 await handleActiveUser(docUser.student_id ?? "");
                 navigate("/");
             } else {
+                const hashedString = await hashString(docUser.student_id != "" ? docUser.student_id : docUser.cmuitaccount);
                 const newUser = {
-                    uid: docUser.student_id,
+                    uid: hashedString,
                     email: docUser.cmuitaccount,
                     firstName: docUser.firstname_EN,
                     lastName: docUser.lastname_EN,
