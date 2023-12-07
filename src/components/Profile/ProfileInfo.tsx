@@ -312,6 +312,7 @@ export default function ProfileInfo(props: IData) {
                         mr: 1,
                         ml: 1,
                         justifyContent: "space-between",
+                        borderRadius: "10px"
                     }}
                 >
                     <Modal

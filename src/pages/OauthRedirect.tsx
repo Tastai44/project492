@@ -21,9 +21,9 @@ export default function OAuthRedirect() {
                 const accessToken = await requestAccessToken(code);
                 if (accessToken) {
                     const userInfo = await getUserInfo(accessToken.access_token);
-                    console.log(userInfo);
+                    const hashedString = await hashString(userInfo.student_id != "" ? userInfo.student_id : userInfo.cmuitaccount);
                     const userData = {
-                        uid: userInfo.student_id,
+                        uid: hashedString,
                         firstName: userInfo.firstname_EN,
                         lastName: userInfo.lastname_EN
                     };
