@@ -119,7 +119,7 @@ export default function ProCoverImage(props: IData) {
 						borderRadius: "10px",
 						[themeApp.breakpoints.down("md")]: {
 							background:
-								"linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 1))",
+								"linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(255, 255, 255, 1))",
 							width: "100%",
 						},
 					}}
@@ -155,8 +155,8 @@ export default function ProCoverImage(props: IData) {
 									fontSize: "25px",
 									[themeApp.breakpoints.down("md")]: {
 										justifyContent: "center",
+										fontWeight: "bold",
 										color: "white",
-										textShadow: "5px 5px 5px black",
 									},
 								}}
 							>

@@ -171,7 +171,7 @@ export default function ProCoverImage(props: IData & IFunction) {
             >
                 <Card sx={{
                     borderRadius: "10px", width: "95%", backgroundColor: "white", display: "flex", [themeApp.breakpoints.down("md")]: {
-                        background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 1))',
+                        background: "linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(255, 255, 255, 1))",
                         width: "100%",
                     }
                 }}>
@@ -186,12 +186,12 @@ export default function ProCoverImage(props: IData & IFunction) {
                                 mt: 1,
                                 ml: 1,
                                 display: "flex",
-                                fontWeight: "bold",
                                 justifyContent: "flex-start",
                                 fontSize: "25px",
                                 [themeApp.breakpoints.down("md")]: {
                                     justifyContent: "center",
-                                    color: "white"
+                                    color: "white",
+                                    fontWeight: "bold",
                                 }
                             }}
                         >

@@ -40,6 +40,20 @@ export const themeApp = createTheme({
         },
       },
     },
+
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          border: "0px",
+          "&:focus": {
+            outline: "none",
+          },
+          "&:active": {
+            boxShadow: "none",
+          },
+        },
+      },
+    }
   },
 
   palette: {

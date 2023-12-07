@@ -177,11 +177,13 @@ export default function ProCoverImage() {
                 handleClosePre={handleClosePre}
                 handleUpload={handleUpload}
             />
-            {inFoUser.map((info) => (
-                <Box key={info.uid}>
-                    <Card key={info.coverPhoto} sx={{ maxWidth: "100%", borderRadius: "10px" }}>
-                        <CardMedia sx={{ height: 300 }} image={imageUrls.find((item) => item.includes(info.coverPhoto ?? ""))} title="green iguana" />
-                    </Card>
+            {inFoUser.map((info, index) => (
+                <Box key={index}>
+                    {imageUrls.length !== 0 && (
+                        <Card sx={{ maxWidth: "100%", borderRadius: "10px" }}>
+                            <CardMedia sx={{ height: 300 }} image={imageUrls.find((item) => item.includes(info.coverPhoto ?? ""))} title="green iguana" />
+                        </Card>
+                    )}
                     {userInfo.uid == info.uid && (
                         <Box
                             sx={{
