@@ -562,6 +562,7 @@ export default function MContainer(props: Idata) {
                                     </Button>
                                     <Box>
                                         <Button
+                                            onClick={handletOpenPost}
                                             aria-label="add to favorites"
                                             sx={{ color: "grey" }}
                                         >
