@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Modal, Box, Button, Divider, Typography } from "@mui/material";
 import AddGroup from "../../components/Groups/AddGroup";
 import { collection, query, orderBy, onSnapshot, getDocs, where } from "firebase/firestore";
@@ -42,7 +42,7 @@ export default function Groups() {
 		};
 	}, []);
 
-	useMemo(() => {
+	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const q = query(

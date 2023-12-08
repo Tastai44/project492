@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Menu,
     MenuItem,
@@ -50,7 +50,7 @@ export default function NotificationList(props: IData) {
     const [postOwner, setPostOwner] = useState("");
     const [postId, setPostId] = useState("");
 
-    useMemo(() => {
+    useEffect(() => {
         const queryData = query(
             collection(dbFireStore, "users"),
             where("uid", "==", userId)
@@ -70,7 +70,7 @@ export default function NotificationList(props: IData) {
         };
     }, [userId]);
 
-    useMemo(() => {
+    useEffect(() => {
         const queryData = query(
             collection(dbFireStore, "users"),
             where("uid", "==", shareId)

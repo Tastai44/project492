@@ -1,4 +1,4 @@
-import { Fragment, useMemo, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { ListItem, ListItemAvatar, Avatar, ListItemText, Typography, Box, Modal } from '@mui/material';
 
 import { collection, where, onSnapshot, query, updateDoc, doc } from 'firebase/firestore';
@@ -20,7 +20,7 @@ export default function NotiCard(props: IData) {
     const [openChat, setOpenChat] = useState(false);
     const [senderId, setSenderId] = useState("");
 
-    useMemo(() => {
+    useEffect(() => {
         const queryData = query(
             collection(dbFireStore, "users"),
             where("uid", "==", props.senderId)

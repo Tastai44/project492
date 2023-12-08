@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -79,7 +79,7 @@ export default function EventReasonContainer(props: IData & IFunction) {
     };
   }, [props.eventId]);
 
-  useMemo(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const q = query(

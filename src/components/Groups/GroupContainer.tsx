@@ -2,7 +2,7 @@ import EachGroup from "./EachGroup";
 import { Typography, Button, Divider, Box } from "@mui/material";
 import { NavLink } from "react-router-dom";
 import { IGroup } from "../../interface/Group";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import SearchContent from "../TopBar/SearchContent";
 import SearchIcon from "@mui/icons-material/Search";
 import { collection, where, getDocs, query } from "firebase/firestore";
@@ -24,7 +24,7 @@ export default function GroupContainer({
 	const [openSearch, setOpenSearch] = useState<boolean>(false);
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 
-	useMemo(() => {
+	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const q = query(

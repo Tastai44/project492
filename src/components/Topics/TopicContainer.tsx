@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import EachTopic from "./EachTopic";
 import {
 	Box,
@@ -44,7 +44,7 @@ export default function TopicContainer() {
 	const [imageUrls, setImageUrls] = useState<string[]>([]);
 	const [refreshImage, setRefreshImage] = useState(0);
 
-	useMemo(() => {
+	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const q = query(

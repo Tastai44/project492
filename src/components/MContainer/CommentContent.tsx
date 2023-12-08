@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useMemo } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import {
 	ListItem,
 	ListItemAvatar,
@@ -54,7 +54,7 @@ export default function CommentContent(props: IData) {
 	});
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 
-	useMemo(() => {
+	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const q = query(

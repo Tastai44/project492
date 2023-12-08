@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import {
 	ListItem,
 	ListItemAvatar,
@@ -29,7 +29,7 @@ interface IData {
 export default function ReasonContent(props: IData) {
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 
-	useMemo(() => {
+	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const q = query(
