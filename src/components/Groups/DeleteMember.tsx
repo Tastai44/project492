@@ -42,6 +42,7 @@ const columns: GridColDef[] = [
 
 interface IData {
 	members: string[];
+	imageUrls: string[];
 	gId: string;
 }
 interface IFunction {

@@ -354,7 +354,7 @@ export default function AddGroup({ closeEdit }: Ihandle) {
 						}}
 						onClick={handleUpload}
 						type="submit"
-						disabled={!group.details || !group.groupName || !member || !status || !fileInputRef}
+						disabled={!group.details || !group.groupName || !member || !status || !fileInputRef || !previewImages}
 					>
 						Create
 					</Button>

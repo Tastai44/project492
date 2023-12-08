@@ -183,6 +183,7 @@ export default function ProCoverImage(props: IData) {
 									}}
 									size="small"
 									startIcon={<MessageIcon sx={{ width: "16px" }} />}
+									disabled={!props.members.includes(userInfo.uid)}
 								>
 									Chatting
 								</Button>

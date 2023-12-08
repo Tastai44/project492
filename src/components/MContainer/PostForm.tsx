@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Avatar, TextField, Divider, Box, Button, Modal } from "@mui/material";
+import { Avatar, Divider, Box, Button, Modal } from "@mui/material";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
@@ -70,19 +70,18 @@ export default function PostForm({
                         sx={{ width: "40px", height: "40px", m: 1 }}
                     />
                     <Box style={{ width: "98%" }}>
-                        <TextField
-                            id="outlined-basic"
-                            label="What is in your mind?"
+                        <Button
+                            onClick={handletOpenCratePost}
                             variant="outlined"
-                            maxRows={4}
                             sx={{
+                                borderRadius: '20px',
                                 width: "99%", '& fieldset': {
                                     borderRadius: '20px',
                                 },
-                            }}
-                            onClick={handletOpenCratePost}
-                            size="small"
-                        />
+                                color: "black"
+                            }}>
+                            What is in your mind?
+                        </Button>
                     </Box>
                 </Box>
             ))}

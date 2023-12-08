@@ -59,6 +59,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 	const [imageUrls, setImageUrls] = useState<string[]>([]);
 	const [openLoading, setLopenLoading] = useState(false);
 	const [imagePath, setImagePath] = useState<string[]>([]);
+	const [isHashtag, setIsHashtag] = useState(false);
 
 	const initialState = {
 		id: "",
@@ -214,52 +215,58 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 
 	const createPost = async () => {
 		const postCollection = collection(dbFireStore, "posts");
-		const newPost = {
-			id: "",
-			caption: post.caption,
-			hashTagTopic: post.hashTagTopic,
-			status: status,
-			photoPost: imagePath,
-			likes: [],
-			createAt: new Date().toLocaleString(),
-			dateCreated: serverTimestamp(),
-			date: new Date().toLocaleDateString("en-US"),
-			emoji: emoji,
-			owner: userInfo.uid,
-			shareUsers: [],
-			reportPost: [],
-			location: location,
-			comments: post.comments,
-			participants: [userInfo.uid]
-		};
+		if (!post.hashTagTopic.includes("#")) {
+			const newPost = {
+				id: "",
+				caption: post.caption,
+				hashTagTopic: post.hashTagTopic,
+				status: status,
+				photoPost: imagePath,
+				likes: [],
+				createAt: new Date().toLocaleString(),
+				dateCreated: serverTimestamp(),
+				date: new Date().toLocaleDateString("en-US"),
+				emoji: emoji,
+				owner: userInfo.uid,
+				shareUsers: [],
+				reportPost: [],
+				location: location,
+				comments: post.comments,
+				participants: [userInfo.uid]
+			};
 
-		try {
-			const docRef = doc(postCollection);
-			const postId = docRef.id;
-			const updatedPost = { ...newPost, id: postId };
-			if (status && post.hashTagTopic && post.caption) {
-				await setDoc(docRef, updatedPost);
-				if (inFoUser.flatMap((user) => user.friendList).length !== 0) {
-					createNoti(
-						postId, `posted ${post.caption}`, userInfo.uid, status,
-						[
-							...inFoUser.flatMap((user) =>
-								user.friendList?.flatMap((friend) => friend.friendId) || []
-							)
-						]
-					);
+			try {
+				const docRef = doc(postCollection);
+				const postId = docRef.id;
+				const updatedPost = { ...newPost, id: postId };
+				if (status && post.hashTagTopic && post.caption) {
+					await setDoc(docRef, updatedPost);
+					if (inFoUser.flatMap((user) => user.friendList).length !== 0) {
+						createNoti(
+							postId, `posted ${post.caption}`, userInfo.uid, status,
+							[
+								...inFoUser.flatMap((user) =>
+									user.friendList?.flatMap((friend) => friend.friendId) || []
+								)
+							]
+						);
+					}
+					setPost(updatedPost);
+					clearState();
+					handleCloseCratePost();
+					PopupAlert("Content was posted successfully", "success");
+					setIsHashtag(false);
+				} else {
+					PopupAlert("Please fill in all information", "warning");
 				}
-				setPost(updatedPost);
-				clearState();
-				handleCloseCratePost();
-				PopupAlert("Content was posted successfully", "success");
-			} else {
-				PopupAlert("Please fill in all information", "warning");
-			}
 
-		} catch (error) {
-			console.error("Error adding post: ", error);
+			} catch (error) {
+				console.error("Error adding post: ", error);
+			}
+		} else {
+			setIsHashtag(true);
 		}
+
 	};
 
 	const convertEmojiCodeToName = (emojiCode: string): string | undefined => {
@@ -383,7 +390,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 						</ListItem>
 					))}
 
-					<Typography sx={{ color: "red", ml: 2, mb: 1 }}>{location ? `Location: ${location}` : ""}</Typography>
+					<Typography sx={{ color: "grey", ml: 2, mb: 1 }}>{location ? `Location: ${location}` : ""}</Typography>
 					<TextField
 						name="caption"
 						label="What is in your mind?"
@@ -431,6 +438,9 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 						value={post.hashTagTopic}
 						onChange={handleChangePost}
 					/>
+					{isHashtag && (
+						<Typography color={"error"} sx={{ ml: 2, fontSize: "14px" }}>Do not need to type #</Typography>
+					)}
 
 					<Box sx={{ display: "flex", justifyContent: "space-between" }}>
 						<Box sx={{ display: "flex", gap: 1 }}>

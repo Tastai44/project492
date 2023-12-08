@@ -270,7 +270,7 @@ export default function NotificationList(props: IData) {
                                                 noti.actionMessage.substring(0, 30) + "..."
                                             )}
                                             <br />
-                                            <Typography color="red" fontSize={14}>
+                                            <Typography color="grey" fontSize={14}>
                                                 {noti.dateCreated}
                                             </Typography>
                                         </Typography>

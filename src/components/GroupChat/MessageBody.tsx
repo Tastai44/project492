@@ -87,8 +87,9 @@ export default function MessageBody(props: IData) {
                                         {chat.senderId !== userInfo.uid && (
                                             <Avatar
                                                 src={
-                                                    inFoUser.find((user) => user.uid === chat.senderId)
-                                                        ?.profilePhoto
+                                                    props.imageUrls.find((item) => item.includes(inFoUser.find((user) => user.uid === chat.senderId)
+                                                        ?.profilePhoto ?? ""))
+
                                                 }
                                                 sx={{ width: "25px", height: "25px", mr: 1 }}
                                             />
@@ -125,8 +126,8 @@ export default function MessageBody(props: IData) {
                                         {chat.senderId !== userInfo.uid && (
                                             <Avatar
                                                 src={
-                                                    inFoUser.find((user) => user.uid === chat.senderId)
-                                                        ?.profilePhoto
+                                                    props.imageUrls.find((item) => item.includes(inFoUser.find((user) => user.uid === chat.senderId)
+                                                        ?.profilePhoto ?? ""))
                                                 }
                                                 sx={{ width: "25px", height: "25px", mr: 1 }}
                                             />
@@ -174,8 +175,8 @@ export default function MessageBody(props: IData) {
                                             {chat.senderId !== userInfo.uid && (
                                                 <Avatar
                                                     src={
-                                                        inFoUser.find((user) => user.uid === chat.senderId)
-                                                            ?.profilePhoto
+                                                        props.imageUrls.find((item) => item.includes(inFoUser.find((user) => user.uid === chat.senderId)
+                                                            ?.profilePhoto ?? ""))
                                                     }
                                                     sx={{ width: "25px", height: "25px", mr: 1 }}
                                                 />

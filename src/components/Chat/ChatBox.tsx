@@ -397,6 +397,7 @@ export default function ChatBox(props: IFunction & IData) {
 							name="message"
 							variant="outlined"
 							multiline
+							maxRows={1}
 							sx={{
 								borderRadius: "10px",
 								minHeight: "40px",

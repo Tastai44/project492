@@ -16,7 +16,7 @@ export const themeApp = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          border: "0px",
+          // border: "0px",
           "&:focus": {
             outline: "none",
           },
