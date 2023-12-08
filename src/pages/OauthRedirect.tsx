@@ -68,11 +68,11 @@ export default function OAuthRedirect() {
 
     const handleStoreUserInfo = async (docUser: IUserReturnFromToken) => {
         const userCollection = collection(dbFireStore, "users");
-
+        const hashedString = await hashString(docUser.student_id != "" ? docUser.student_id : docUser.cmuitaccount);
         try {
             const q = query(
                 collection(dbFireStore, "users"),
-                where("uid", "==", docUser.student_id)
+                where("uid", "==", hashedString)
             );
 
             const querySnapshot = await getDocs(q);
@@ -82,7 +82,6 @@ export default function OAuthRedirect() {
                 await handleActiveUser(docUser.student_id ?? "");
                 navigate("/");
             } else {
-                const hashedString = await hashString(docUser.student_id != "" ? docUser.student_id : docUser.cmuitaccount);
                 const newUser = {
                     uid: hashedString,
                     email: docUser.cmuitaccount,
