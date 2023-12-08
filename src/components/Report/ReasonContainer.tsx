@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, MouseEvent } from "react";
+import { useState, useEffect, MouseEvent } from "react";
 import {
 	styled,
 	Grid,
@@ -97,7 +97,7 @@ export default function ReasonContainer(props: IData & IFunction) {
 		};
 	}, [props.postId]);
 
-	useMemo(() => {
+	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const q = query(

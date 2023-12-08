@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { styled, Box, Grid, Stack } from "@mui/material";
 import DetailCard from "../../components/Events/DetailCard";
@@ -50,7 +50,7 @@ export default function EventDetail() {
 
 	}, [eventId]);
 
-	useMemo(() => {
+	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const q = query(

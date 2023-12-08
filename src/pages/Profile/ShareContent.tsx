@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import {
 	Box,
 	Avatar,
@@ -39,7 +39,7 @@ export default function ShareContent(props: Idata) {
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
-	useMemo(() => {
+	useEffect(() => {
 		const shareByValue = props.shareUsers.find((share) => share.shareBy);
 		const fetchData = async () => {
 			try {
