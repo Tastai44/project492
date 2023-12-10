@@ -12,6 +12,8 @@ import { useParams } from "react-router-dom";
 import { ref, uploadBytes, listAll, getDownloadURL, StorageReference } from "firebase/storage";
 import heic2any from "heic2any";
 import Loading from "../Loading";
+import { validExtensions } from "../../helper/ImageLastName";
+import { resizeImage } from "../Functions/ResizeImage";
 
 interface IData {
     userId: string;
@@ -214,9 +216,10 @@ export default function ProfileInfo(props: IData) {
     const handleUpload = async () => {
         setLopenLoading(true);
         if (imageUpload == null) return;
+        const resizedImage = await resizeImage(imageUpload, 800, 600);
         const fileName = removeSpacesBetweenWords(imageUpload.name);
         const imageRef = ref(storage, `Images/${userId}${fileName}`);
-        uploadBytes(imageRef, imageUpload).then(() => {
+        uploadBytes(imageRef, resizedImage).then(() => {
             handleEditPhotoProfile(`${userId}${imageUpload.name}`);
         });
     };
@@ -226,6 +229,7 @@ export default function ProfileInfo(props: IData) {
         const fileName = fileInput.value;
         const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
         const reader = new FileReader();
+        const isExtensionValid = validExtensions.includes(fileNameExt.toLowerCase());
 
         if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
             const blob = fileInput.files?.[0];
@@ -246,7 +250,7 @@ export default function ProfileInfo(props: IData) {
             } catch (error) {
                 console.error(error);
             }
-        } else {
+        } else if (isExtensionValid) {
             const selectedFile = event.target.files?.[0];
             if (selectedFile) {
                 reader.onloadend = () => {
@@ -256,6 +260,8 @@ export default function ProfileInfo(props: IData) {
                 handleOpenPre();
                 setImageUpload(selectedFile);
             }
+        } else {
+            PopupAlert("Sorry, this website can only upload picture", "warning");
         }
     };
 

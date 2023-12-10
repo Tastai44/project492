@@ -478,7 +478,7 @@ export default function ShareCard(props: IData & IFunction) {
                         }}
                         onClick={props.handleCloseShare}
                     >
-                        Cancle
+                        Cancel
                     </Button>
                     <Button
                         onClick={

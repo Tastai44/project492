@@ -28,6 +28,8 @@ import { uploadBytes, ref } from "firebase/storage";
 import heic2any from "heic2any";
 import { removeSpacesBetweenWords } from "../Profile/ProfileInfo";
 import Loading from "../Loading";
+import { validExtensions } from "../../helper/ImageLastName";
+import { resizeImage } from "../Functions/ResizeImage";
 
 interface Ihandle {
 	closeEdit: () => void;
@@ -62,9 +64,10 @@ export default function EditGroup(props: IData & Ihandle) {
 	const handleUpload = async () => {
 		setLopenLoading(true);
 		if (imageUpload == null) return;
+		const resizedImage = await resizeImage(imageUpload, 800, 600);
 		const fileName = removeSpacesBetweenWords(imageUpload.name);
 		const imageRef = ref(storage, `Images/group_${userInfo.uid}${fileName}`);
-		uploadBytes(imageRef, imageUpload).then(() => {
+		uploadBytes(imageRef, resizedImage).then(() => {
 			props.handleReFreshImage();
 		});
 	};
@@ -75,6 +78,7 @@ export default function EditGroup(props: IData & Ihandle) {
 		const fileName = fileInput.value;
 		const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
 		const reader = new FileReader();
+		const isExtensionValid = validExtensions.includes(fileNameExt.toLowerCase());
 
 		if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
 			const blob = fileInput.files?.[0];
@@ -94,7 +98,7 @@ export default function EditGroup(props: IData & Ihandle) {
 			} catch (error) {
 				console.error(error);
 			}
-		} else {
+		} else if (isExtensionValid) {
 			const selectedFile = event.target.files?.[0];
 			if (selectedFile) {
 				reader.onloadend = () => {
@@ -103,6 +107,8 @@ export default function EditGroup(props: IData & Ihandle) {
 				reader.readAsDataURL(selectedFile);
 				setImageUpload(selectedFile);
 			}
+		} else {
+			PopupAlert("Sorry, this website can only upload picture", "warning");
 		}
 		setLopenLoading(false);
 	};

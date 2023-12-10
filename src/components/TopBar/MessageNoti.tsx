@@ -15,6 +15,7 @@ interface IData {
     messageNoti: IMessageNoti[];
     groupMessageNoti: IGroupMessageNoti[];
     imageUrls: string[];
+    owner: string;
     handleCloseMessageNoti: () => void;
 }
 
@@ -68,7 +69,7 @@ export default function MessageNoti(props: IData) {
             >
                 <TitleMessage />
                 <Divider style={{ background: "white" }} />
-                {combinedNotifications.map((noti) => {
+                {combinedNotifications.filter((item) => item.senderId !== props.owner).map((noti) => {
                     if ("groupId" in noti) {
                         return (
                             <GroupNotiCard

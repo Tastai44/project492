@@ -26,6 +26,7 @@ import { User } from "../../interface/User";
 import { styleBoxPop } from "../../utils/styleBox";
 import Content from "../MContainer/Content";
 import { Like, Post } from "../../interface/PostContent";
+import PopupAlert from "../PopupAlert";
 
 interface IData {
     mobileMoreAnchorEl: null | HTMLElement;
@@ -103,31 +104,42 @@ export default function NotificationList(props: IData) {
     };
 
     const handletOpenPost = (postId: string, notiId: string) => {
-        setOpenPost(true);
-        setPostId(postId);
-        handleReaded(notiId);
+        try {
+            const queryData = query(
+                collection(dbFireStore, "posts"),
+                where("id", "==", postId)
+            );
+            const unsubscribe = onSnapshot(
+                queryData,
+                (snapshot) => {
+                    const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
+                    if (queriedData.length !== 0) {
+                        setOpenPost(true);
+                        setPostId(postId);
+                        handleReaded(notiId);
+                        setLikes(queriedData.flatMap((post) => post.likes));
+                        setPostOwner(queriedData.flatMap((post) => post.owner)[0]);
+                    } else {
+                        PopupAlert("This post was deleted already!", "error");
+                    }
+                },
+                (error) => {
+                    console.error("Error fetching data:", error);
+                }
+            );
 
-        const queryData = query(
-            collection(dbFireStore, "posts"),
-            where("id", "==", postId)
-        );
+            return () => {
+                unsubscribe();
+            };
 
-        const unsubscribe = onSnapshot(
-            queryData,
-            (snapshot) => {
-                const queriedData = snapshot.docs.map((doc) => doc.data() as Post);
-                setLikes(queriedData.flatMap((post) => post.likes));
-                setPostOwner(queriedData.flatMap((post) => post.owner)[0]);
-            },
-            (error) => {
-                console.error("Error fetching data:", error);
-            }
-        );
 
-        return () => {
-            unsubscribe();
-        };
+        } catch (error) {
+            console.error(error);
+        }
+
+
     };
+
     const handleClosePost = () => {
         setOpenPost(false);
     };

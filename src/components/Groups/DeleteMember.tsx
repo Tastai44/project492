@@ -55,7 +55,7 @@ export default function DeleteMember(props: IData & IFunction) {
 	const rows = props.members.map((row, index) => {
 		const matchingUser = inFoUser.find((user) => user.uid === row);
 		const username = matchingUser ? `${matchingUser.firstName} ${matchingUser.lastName}` : '';
-		const profilePhoto = matchingUser ? matchingUser.profilePhoto : '';
+		const profilePhoto = props.imageUrls.find((item) => item.includes(matchingUser?.profilePhoto ?? ''));
 
 		return {
 			id: `${row}_${index}`,
@@ -166,7 +166,7 @@ export default function DeleteMember(props: IData & IFunction) {
 					}}
 					onClick={props.handleCloseDelete}
 				>
-					Cancle
+					Cancel
 				</Button>
 				<Button
 					onClick={DeleteMember}

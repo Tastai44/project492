@@ -40,6 +40,8 @@ import { StorageReference, listAll, getDownloadURL, ref, uploadBytes } from "fir
 import heic2any from "heic2any";
 import Loading from "../Loading";
 import { removeSpacesBetweenWords } from "../Profile/ProfileInfo";
+import { validExtensions } from "../../helper/ImageLastName";
+import { resizeImage } from "../Functions/ResizeImage";
 
 interface IHandle {
     handleCloseCratePost: () => void;
@@ -146,9 +148,10 @@ export default function CreateGroupPost(props: IHandle & IData) {
 
     const handleUpload = async (file: File) => {
         if (file == null) return;
+        const resizedImage = await resizeImage(file, 800, 600);
         const fileName = removeSpacesBetweenWords(file.name);
         const imageRef = ref(storage, `Images/post_${userInfo.uid}${fileName}`);
-        uploadBytes(imageRef, file).then(() => {
+        uploadBytes(imageRef, resizedImage).then(() => {
             setImagePath((pre) => [...pre, `post_${userInfo.uid}${fileName}`]);
         });
     };
@@ -158,6 +161,7 @@ export default function CreateGroupPost(props: IHandle & IData) {
         const fileName = file.name;
         const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
         const reader = new FileReader();
+        const isExtensionValid = validExtensions.includes(fileNameExt.toLowerCase());
 
         if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
             try {
@@ -177,13 +181,15 @@ export default function CreateGroupPost(props: IHandle & IData) {
             } catch (error) {
                 console.error(error);
             }
-        } else {
+        } else if (isExtensionValid) {
             reader.onloadend = () => {
                 setPreviewImages((prevImages) => [...prevImages, reader.result as string]);
             };
 
             reader.readAsDataURL(file);
             handleUpload(file);
+        } else {
+            PopupAlert("Sorry, this website can only upload picture", "warning");
         }
         setLopenLoading(false);
     };

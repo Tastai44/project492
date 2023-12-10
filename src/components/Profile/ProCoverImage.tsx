@@ -17,6 +17,9 @@ import ProfileInfo, { removeSpacesBetweenWords } from "./ProfileInfo";
 import heic2any from 'heic2any';
 import Loading from "../Loading";
 import UploadProfile from "./UploadProfile";
+import { resizeImage } from "../Functions/ResizeImage";
+import PopupAlert from "../PopupAlert";
+import { validExtensions } from "../../helper/ImageLastName";
 
 export default function ProCoverImage() {
     const { userId } = useParams();
@@ -72,76 +75,10 @@ export default function ProCoverImage() {
         fetchImages();
     }, [reFresh]);
 
-    // const handleUpload = async () => {
-    //     setLopenLoading(true);
-    //     if (imageUpload == null) return;
-    //     const fileName = removeSpacesBetweenWords(imageUpload.name);
-    //     const imageRef = ref(storage, `Images/${userId}${fileName}`);
-    //     uploadBytes(imageRef, imageUpload).then(() => {
-    //         handleEditPhotoProfile(`${userId}${imageUpload.name}`);
-    //     });
-    // };
     const handleUpload = async (): Promise<void> => {
         setLopenLoading(true);
         if (imageUpload == null) return;
-
-        // Function to resize the image
-        const resizeImage = (file: File, maxWidth: number, maxHeight: number): Promise<Blob> => {
-            return new Promise((resolve) => {
-                const image = new Image();
-                const reader = new FileReader();
-
-                reader.onload = (readerEvent) => {
-                    image.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-
-                        let width = image.width;
-                        let height = image.height;
-
-                        // Calculate the new dimensions to maintain aspect ratio
-                        if (width > height) {
-                            if (width > maxWidth) {
-                                height *= maxWidth / width;
-                                width = maxWidth;
-                            }
-                        } else {
-                            if (height > maxHeight) {
-                                width *= maxHeight / height;
-                                height = maxHeight;
-                            }
-                        }
-
-                        // Resize the image
-                        canvas.width = width;
-                        canvas.height = height;
-                        ctx?.drawImage(image, 0, 0, width, height);
-
-                        // Convert the canvas to a Blob
-                        canvas.toBlob((blob) => {
-                            if (blob) {
-                                resolve(blob);
-                            } else {
-                                throw new Error('Error converting canvas to Blob.');
-                            }
-                        }, file.type);
-                    };
-
-                    image.src = readerEvent.target?.result as string;
-                };
-
-                reader.readAsDataURL(file);
-            });
-        };
-
-        // Set the maximum dimensions for the resized image
-        const maxWidth = 800;
-        const maxHeight = 600;
-
-        // Resize the image before uploading
-        const resizedImage = await resizeImage(imageUpload, maxWidth, maxHeight);
-
-        // Now you can upload the resized image
+        const resizedImage = await resizeImage(imageUpload, 800, 600);
         const fileName = removeSpacesBetweenWords(imageUpload.name);
         const imageRef = ref(storage, `Images/${userId}${fileName}`);
         uploadBytes(imageRef, resizedImage).then(() => {
@@ -155,6 +92,7 @@ export default function ProCoverImage() {
         const fileName = fileInput.value;
         const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
         const reader = new FileReader();
+        const isExtensionValid = validExtensions.includes(fileNameExt.toLowerCase());
 
         if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
             const blob = fileInput.files?.[0];
@@ -176,7 +114,7 @@ export default function ProCoverImage() {
             } catch (error) {
                 console.error(error);
             }
-        } else {
+        } else if (isExtensionValid) {
             const selectedFile = event.target.files?.[0];
             if (selectedFile) {
                 reader.onloadend = () => {
@@ -187,6 +125,8 @@ export default function ProCoverImage() {
                 handleOpenPre();
                 setImageUpload(selectedFile);
             }
+        } else {
+            PopupAlert("Sorry, this website can only upload picture", "warning");
         }
     };
 
@@ -223,6 +163,7 @@ export default function ProCoverImage() {
                 handleClearImage();
                 handleRefresh();
                 handleClosePre();
+                PopupAlert("Upload picture successfully", "success");
                 setLopenLoading(false);
             } else {
                 console.log("Profile does not exist");

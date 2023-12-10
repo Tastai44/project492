@@ -35,6 +35,8 @@ import heic2any from "heic2any";
 import PopupAlert from "../PopupAlert";
 import { removeSpacesBetweenWords } from "./ProfileInfo";
 import Loading from "../Loading";
+import { validExtensions } from "../../helper/ImageLastName";
+import { resizeImage } from "../Functions/ResizeImage";
 
 const Item = styled(Box)(({ theme }) => ({
 	...theme.typography.body2,
@@ -131,9 +133,10 @@ export default function ProLeftside() {
 	const handleUpload = async () => {
 		setLopenLoading(true);
 		if (imageUpload == null) return;
+		const resizedImage = await resizeImage(imageUpload, 800, 600);
 		const fileName = removeSpacesBetweenWords(imageUpload.name);
 		const imageRef = ref(storage, `Images/${userId}${fileName}`);
-		uploadBytes(imageRef, imageUpload).then(() => {
+		uploadBytes(imageRef, resizedImage).then(() => {
 			handleEditPhotoProfile(`${userId}${imageUpload.name}`);
 		});
 	};
@@ -143,6 +146,7 @@ export default function ProLeftside() {
 		const fileName = fileInput.value;
 		const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
 		const reader = new FileReader();
+		const isExtensionValid = validExtensions.includes(fileNameExt.toLowerCase());
 
 		if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
 			const blob = fileInput.files?.[0];
@@ -163,7 +167,7 @@ export default function ProLeftside() {
 			} catch (error) {
 				console.error(error);
 			}
-		} else {
+		} else if (isExtensionValid) {
 			const selectedFile = event.target.files?.[0];
 			if (selectedFile) {
 				reader.onloadend = () => {
@@ -173,6 +177,8 @@ export default function ProLeftside() {
 				handleOpenPre();
 				setImageUpload(selectedFile);
 			}
+		} else {
+			PopupAlert("Sorry, this website can only upload picture", "warning");
 		}
 	};
 
