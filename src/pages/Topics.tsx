@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import {
 	Typography,
 	Divider,
-	Modal,
-	Paper,
 	FormControl,
 	InputLabel,
 	MenuItem,
@@ -21,31 +19,24 @@ import {
 	onSnapshot,
 } from "firebase/firestore";
 import SearchIcon from "@mui/icons-material/Search";
-import Content from "../components/MContainer/Content";
 import SearchContent from "../components/TopBar/SearchContent";
 import EachTopic from "../components/Topics/EachTopic";
-import { dbFireStore, storage } from "../config/firebase";
-import { Post, Like } from "../interface/PostContent";
-import { styleBoxPop } from "../utils/styleBox";
+import { dbFireStore } from "../config/firebase";
+import { Post } from "../interface/PostContent";
 import { User } from "../interface/User";
 import { themeApp } from "../utils/Theme";
 import Loading from "../components/Loading";
-import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
+import { NavLink } from "react-router-dom";
 
 export default function Topics() {
 	const [dateType, setDateType] = useState("All");
 	const [dataPost, setPosts] = useState<Post[]>([]);
-	const [postId, setPostId] = useState("");
+	const [uniquePosts, setUniquePosts] = useState<Post[]>([]);
 	const [reFresh, setReFresh] = useState(0);
-	const [openPost, setOpenPost] = useState(false);
-	const [likes, setLikes] = useState<Like[]>([]);
-	const [postOwner, setPostOwner] = useState("");
 	const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 	const [openSearch, setOpenSearch] = useState<boolean>(false);
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const [openLoading, setOpenLoading] = useState(false);
-	const [imageUrls, setImageUrls] = useState<string[]>([]);
-	const [refreshImage, setRefreshImage] = useState(0);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -74,7 +65,7 @@ export default function Topics() {
 		setOpenLoading(true);
 		const fetchData = query(
 			collection(dbFireStore, "posts"),
-			orderBy("createAt", "desc")
+			orderBy("createAt", "desc"),
 		);
 		const unsubscribe = onSnapshot(
 			fetchData,
@@ -93,23 +84,32 @@ export default function Topics() {
 	}, [reFresh]);
 
 	useEffect(() => {
-		const fetchImages = async () => {
-			try {
-				const listRef: StorageReference = ref(storage, '/Images');
-				const res = await listAll(listRef);
-				const urls = await Promise.all(
-					res.items.map(async (itemRef) => {
-						const imageUrl = await getDownloadURL(itemRef);
-						return imageUrl;
-					})
-				);
-				setImageUrls(urls);
-			} catch (error) {
-				console.error('Error fetching images:', error);
-			}
-		};
-		fetchImages();
-	}, [refreshImage]);
+		const uniqueData = Array.from(
+			new Set(
+				dataPost
+					.filter(
+						(item) =>
+							item.owner == userInfo.uid ||
+							item.status == "Public" ||
+							(item.status == "Friend" &&
+								inFoUser.some(
+									(user) =>
+										user.uid === item.owner ||
+										user.friendList?.some(
+											(friend) => friend.friendId == item.owner
+										)
+								))
+					)
+					.map((posts) => posts.hashTagTopic)
+			)
+		)
+			.map((uniqueHashtag) => dataPost.find((post) => post.hashTagTopic === uniqueHashtag))
+			.filter((post) => post !== undefined) as Post[]; // Type assertion to remove undefined values
+
+		setUniquePosts(uniqueData);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [dataPost]);
+
 
 	const handleOpenSearch = () => {
 		setOpenSearch(true);
@@ -119,16 +119,6 @@ export default function Topics() {
 	};
 	const handleRefresh = () => {
 		setReFresh((pre) => pre + 1);
-	};
-
-	const handletOpenPost = (id: string, likeData: Like[], owner: string) => {
-		setOpenPost(true);
-		setPostId(id);
-		setLikes(likeData);
-		setPostOwner(owner);
-	};
-	const handleClosePost = () => {
-		setOpenPost(false);
 	};
 
 	const handleDaily = () => {
@@ -219,26 +209,6 @@ export default function Topics() {
 				handleCloseSearchBar={handleCloseSearch}
 				inFoUser={inFoUser}
 			/>
-			<Modal
-				open={openPost}
-				onClose={handleClosePost}
-				aria-labelledby="modal-modal-title"
-				aria-describedby="modal-modal-description"
-			>
-				<Box>
-					<Paper sx={styleBoxPop}>
-						<Content
-							postId={postId}
-							userId={userInfo.uid}
-							likes={likes}
-							owner={postOwner}
-							handleClosePost={handleClosePost}
-							imageUrls={imageUrls}
-							handleRefreshImage={() => setRefreshImage(pre => pre + 1)}
-						/>
-					</Paper>
-				</Box>
-			</Modal>
 			<Box sx={{ width: "100%", bgcolor: "background.paper", color: "black", borderRadius: "10px" }}>
 				<Box
 					sx={{
@@ -270,7 +240,6 @@ export default function Topics() {
 								"&:hover": {
 									backgroundColor: "white"
 								},
-								backgroundColor: "primary.contrastText"
 							}}
 							onClick={handleOpenSearch}
 						>
@@ -304,7 +273,7 @@ export default function Topics() {
 					</Box>
 				</Box>
 				<Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
-				{dataPost
+				{uniquePosts
 					.filter(
 						(item) =>
 							item.owner == userInfo.uid ||
@@ -321,11 +290,10 @@ export default function Topics() {
 					.map((posts) => (
 						<Box
 							key={posts.id}
-							onClick={() =>
-								handletOpenPost(posts.id, posts.likes, posts.owner)
-							}
 						>
-							<EachTopic hashTag={posts.hashTagTopic} />
+							<NavLink to={`/hashtag/${posts.hashTagTopic}`}>
+								<EachTopic hashTag={posts.hashTagTopic} />
+							</NavLink>
 						</Box>
 					))}
 			</Box>

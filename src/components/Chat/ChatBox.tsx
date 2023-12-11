@@ -27,7 +27,6 @@ import {
 	onSnapshot,
 	serverTimestamp,
 	updateDoc,
-	arrayUnion,
 } from "firebase/firestore";
 import { User } from "../../interface/User";
 import { Conversation, Message } from "../../interface/Chat";
@@ -41,6 +40,9 @@ import { uploadBytes, StorageReference, listAll, getDownloadURL, ref } from "fir
 import heic2any from "heic2any";
 import { removeSpacesBetweenWords } from "../Profile/ProfileInfo";
 import Loading from "../Loading";
+import { resizeImage } from "../Functions/ResizeImage";
+import PopupAlert from "../PopupAlert";
+import { validExtensions } from "../../helper/ImageLastName";
 
 interface IFunction {
 	handleClose: () => void;
@@ -161,9 +163,10 @@ export default function ChatBox(props: IFunction & IData) {
 	};
 	const handleUpload = async (file: File) => {
 		if (file == null) return;
+		const resizedImage = await resizeImage(file, 800, 600);
 		const fileName = removeSpacesBetweenWords(file.name);
 		const imageRef = ref(storage, `Images/chat_${userInfo.uid}${fileName}`);
-		uploadBytes(imageRef, file).then(() => {
+		uploadBytes(imageRef, resizedImage).then(() => {
 			setImagePath((pre) => [...pre, `chat_${userInfo.uid}${fileName}`]);
 		});
 	};
@@ -173,6 +176,7 @@ export default function ChatBox(props: IFunction & IData) {
 		const fileName = file.name;
 		const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
 		const reader = new FileReader();
+		const isExtensionValid = validExtensions.includes(fileNameExt.toLowerCase());
 
 		if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
 			try {
@@ -192,13 +196,15 @@ export default function ChatBox(props: IFunction & IData) {
 			} catch (error) {
 				console.error(error);
 			}
-		} else {
+		} else if (isExtensionValid) {
 			reader.onloadend = () => {
 				setPreviewImages((prevImages) => [...prevImages, reader.result as string]);
 			};
 
 			reader.readAsDataURL(file);
 			handleUpload(file);
+		} else {
+			PopupAlert("Sorry, this website can only upload picture", "warning");
 		}
 		setLopenLoading(false);
 	};
@@ -232,6 +238,7 @@ export default function ChatBox(props: IFunction & IData) {
 
 		const querySnapshot = await getDocs(messagesCollection);
 		let conversationId = "";
+		let newContentMessage: Conversation[] = [];
 
 		querySnapshot.forEach((doc) => {
 			const data = doc.data();
@@ -245,6 +252,7 @@ export default function ChatBox(props: IFunction & IData) {
 
 			if ((hasUserAsSender && hasPropsUserAsReceiver) || (hasPropsUserAsSender && hasUserAsReceiver)) {
 				conversationId = data.conversationId;
+				newContentMessage = data.content;
 			}
 		});
 
@@ -264,12 +272,13 @@ export default function ChatBox(props: IFunction & IData) {
 			createAt: serverTimestamp(),
 			timestamp: new Date().toLocaleString(),
 		};
+		newContentMessage.push(newMessage.content[0]);
 
 		try {
 			if (conversationId) {
 				const conversationDocRef = doc(messagesCollection, conversationId);
 				await updateDoc(conversationDocRef, {
-					content: arrayUnion(newMessage.content[0]),
+					content: newContentMessage,
 				});
 				createMessageNoti(conversationId, userInfo.uid, props.uId, message);
 				clearState();
@@ -397,6 +406,7 @@ export default function ChatBox(props: IFunction & IData) {
 							name="message"
 							variant="outlined"
 							multiline
+							maxRows={1}
 							sx={{
 								borderRadius: "10px",
 								minHeight: "40px",

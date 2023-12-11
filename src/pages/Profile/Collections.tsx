@@ -161,7 +161,7 @@ export default function Collections() {
 											m: 1,
 											cursor: "pointer"
 										}}
-										cols={4}
+										cols={6}
 									>
 										{postData.map((m) =>
 											m.photoPost.map((img, index) => (

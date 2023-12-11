@@ -78,31 +78,31 @@ export default function MediaCard(props: IData) {
 						title="green iguana"
 					/>
 				)}
+				<CardContent sx={{ textAlign: "justify" }}>
+					<Typography gutterBottom sx={{ fontSize: "20px" }} component="div">
+						{props.title}
+					</Typography>
+					<Typography>
+						<b>Start:</b> {props.startDate}, {props.startTime} <br />
+						<b>End:</b> {props.endDate}, {props.endTime}
+					</Typography>
+					{inFoUser.map((user) => (
+						<Box
+							key={user.uid}
+							sx={{ display: "flex", alignItems: "end", gap: 1 }}
+						>
+							<Avatar
+								src={imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))}
+								sx={{ width: "30px", height: "30px", marginTop: 2 }}
+								aria-label="recipe"
+							/>
+							<Typography>
+								{user.firstName} is owner.
+							</Typography>
+						</Box>
+					))}
+				</CardContent>
 			</NavLink>
-			<CardContent sx={{ textAlign: "justify" }}>
-				<Typography gutterBottom sx={{ fontSize: "20px" }} component="div">
-					{props.title}
-				</Typography>
-				<Typography color={"error"}>
-					<b>Start:</b> {props.startDate}, {props.startTime} <br />
-					<b>End:</b> {props.endDate}, {props.endTime}
-				</Typography>
-				{inFoUser.map((user) => (
-					<Box
-						key={user.uid}
-						sx={{ display: "flex", alignItems: "end", gap: 1 }}
-					>
-						<Avatar
-							src={imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))}
-							sx={{ width: "30px", height: "30px", marginTop: 2 }}
-							aria-label="recipe"
-						/>
-						<Typography>
-							{user.firstName} is owner.
-						</Typography>
-					</Box>
-				))}
-			</CardContent>
 		</Card>
 	);
 }

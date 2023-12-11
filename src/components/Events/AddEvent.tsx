@@ -41,6 +41,8 @@ import { ref, uploadBytes } from "firebase/storage";
 import heic2any from "heic2any";
 import Loading from "../Loading";
 import { removeSpacesBetweenWords } from "../Profile/ProfileInfo";
+import { validExtensions } from "../../helper/ImageLastName";
+import { resizeImage } from "../Functions/ResizeImage";
 
 interface Ihandle {
     closeAdd: () => void;
@@ -105,9 +107,10 @@ export default function AddEvent({ closeAdd }: Ihandle) {
     const handleUpload = async () => {
         setLopenLoading(true);
         if (imageUpload == null) return;
+        const resizedImage = await resizeImage(imageUpload, 800, 600);
         const fileName = removeSpacesBetweenWords(imageUpload.name);
         const imageRef = ref(storage, `Images/event_${userInfo.uid}${fileName}`);
-        uploadBytes(imageRef, imageUpload).then(() => {
+        uploadBytes(imageRef, resizedImage).then(() => {
             createEvent(`event_${userInfo.uid}${fileName}`);
         });
     };
@@ -117,6 +120,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
         const fileName = fileInput.value;
         const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
         const reader = new FileReader();
+        const isExtensionValid = validExtensions.includes(fileNameExt.toLowerCase());
 
         if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
             const blob = fileInput.files?.[0];
@@ -136,7 +140,7 @@ export default function AddEvent({ closeAdd }: Ihandle) {
             } catch (error) {
                 console.error(error);
             }
-        } else {
+        } else if (isExtensionValid) {
             const selectedFile = event.target.files?.[0];
             if (selectedFile) {
                 reader.onloadend = () => {
@@ -145,6 +149,8 @@ export default function AddEvent({ closeAdd }: Ihandle) {
                 reader.readAsDataURL(selectedFile);
                 setImageUpload(selectedFile);
             }
+        } else {
+            PopupAlert("Sorry, this website can only upload picture", "warning");
         }
     };
 

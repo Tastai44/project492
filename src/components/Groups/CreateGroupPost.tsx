@@ -40,6 +40,8 @@ import { StorageReference, listAll, getDownloadURL, ref, uploadBytes } from "fir
 import heic2any from "heic2any";
 import Loading from "../Loading";
 import { removeSpacesBetweenWords } from "../Profile/ProfileInfo";
+import { validExtensions } from "../../helper/ImageLastName";
+import { resizeImage } from "../Functions/ResizeImage";
 
 interface IHandle {
     handleCloseCratePost: () => void;
@@ -52,7 +54,7 @@ interface IData {
 
 export default function CreateGroupPost(props: IHandle & IData) {
     const [location, setLocation] = useState("");
-    const [status, setStatus] = useState("");
+    const [status, setStatus] = useState(props.groupStatus);
     const [openEmoji, setOpenEmoji] = useState(false);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [previewImages, setPreviewImages] = useState<string[]>([]);
@@ -62,6 +64,7 @@ export default function CreateGroupPost(props: IHandle & IData) {
     const [imageUrls, setImageUrls] = useState<string[]>([]);
     const [openLoading, setLopenLoading] = useState(false);
     const [imagePath, setImagePath] = useState<string[]>([]);
+    const [isHashtag, setIsHashtag] = useState(false);
     const initialState = {
         id: "",
         caption: "",
@@ -145,9 +148,10 @@ export default function CreateGroupPost(props: IHandle & IData) {
 
     const handleUpload = async (file: File) => {
         if (file == null) return;
+        const resizedImage = await resizeImage(file, 800, 600);
         const fileName = removeSpacesBetweenWords(file.name);
         const imageRef = ref(storage, `Images/post_${userInfo.uid}${fileName}`);
-        uploadBytes(imageRef, file).then(() => {
+        uploadBytes(imageRef, resizedImage).then(() => {
             setImagePath((pre) => [...pre, `post_${userInfo.uid}${fileName}`]);
         });
     };
@@ -157,6 +161,7 @@ export default function CreateGroupPost(props: IHandle & IData) {
         const fileName = file.name;
         const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
         const reader = new FileReader();
+        const isExtensionValid = validExtensions.includes(fileNameExt.toLowerCase());
 
         if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
             try {
@@ -176,13 +181,15 @@ export default function CreateGroupPost(props: IHandle & IData) {
             } catch (error) {
                 console.error(error);
             }
-        } else {
+        } else if (isExtensionValid) {
             reader.onloadend = () => {
                 setPreviewImages((prevImages) => [...prevImages, reader.result as string]);
             };
 
             reader.readAsDataURL(file);
             handleUpload(file);
+        } else {
+            PopupAlert("Sorry, this website can only upload picture", "warning");
         }
         setLopenLoading(false);
     };
@@ -219,48 +226,53 @@ export default function CreateGroupPost(props: IHandle & IData) {
 
     const createPost = async () => {
         const postCollection = collection(dbFireStore, "posts");
-        const newPost = {
-            id: "",
-            caption: post.caption,
-            hashTagTopic: post.hashTagTopic,
-            status: status,
-            photoPost: imagePath,
-            likes: [],
-            createAt: new Date().toLocaleString(),
-            dateCreated: serverTimestamp(),
-            date: new Date().toLocaleDateString("en-US"),
-            emoji: emoji,
-            owner: userInfo.uid,
-            comments: post.comments,
-            groupName: props.groupName,
-            groupId: props.groupId,
-            shareUsers: [],
-            reportPost: [],
-        };
+        if (!post.hashTagTopic.includes("#")) {
+            const newPost = {
+                id: "",
+                caption: post.caption,
+                hashTagTopic: post.hashTagTopic,
+                status: status,
+                photoPost: imagePath,
+                likes: [],
+                createAt: new Date().toLocaleString(),
+                dateCreated: serverTimestamp(),
+                date: new Date().toLocaleDateString("en-US"),
+                emoji: emoji,
+                owner: userInfo.uid,
+                comments: post.comments,
+                groupName: props.groupName,
+                groupId: props.groupId,
+                shareUsers: [],
+                reportPost: [],
+            };
 
-        try {
-            const docRef = doc(postCollection);
-            const postId = docRef.id;
-            const updatedPost = { ...newPost, id: postId };
-            await setDoc(docRef, updatedPost);
+            try {
+                const docRef = doc(postCollection);
+                const postId = docRef.id;
+                const updatedPost = { ...newPost, id: postId };
+                await setDoc(docRef, updatedPost);
 
-            if (inFoUser.flatMap((user) => user.friendList).length !== 0) {
-                createNoti(
-                    postId, ` posted ${post.caption}`, userInfo.uid, status,
-                    [
-                        ...inFoUser.flatMap((user) =>
-                            user.friendList?.flatMap((friend) => friend.friendId) || []
-                        )
-                    ]
-                );
+                if (inFoUser.flatMap((user) => user.friendList).length !== 0) {
+                    createNoti(
+                        postId, ` posted ${post.caption}`, userInfo.uid, status,
+                        [
+                            ...inFoUser.flatMap((user) =>
+                                user.friendList?.flatMap((friend) => friend.friendId) || []
+                            )
+                        ]
+                    );
+                }
+
+                setPost(updatedPost);
+                clearState();
+                props.handleCloseCratePost();
+                PopupAlert("Content was posted successfully", "success");
+                setIsHashtag(false);
+            } catch (error) {
+                console.error("Error adding post: ", error);
             }
-
-            setPost(updatedPost);
-            clearState();
-            props.handleCloseCratePost();
-            PopupAlert("Content was posted successfully", "success");
-        } catch (error) {
-            console.error("Error adding post: ", error);
+        } else {
+            setIsHashtag(true);
         }
     };
 
@@ -330,7 +342,7 @@ export default function CreateGroupPost(props: IHandle & IData) {
                                 primary={
                                     <Box sx={{ fontSize: "16px" }}>
                                         <Box sx={{ mb: 1 }}>
-                                            <b>{u.username} </b>
+                                            <b>{`${u.firstName} ${u.lastName}`} </b>
                                             {emoji !== "" && (
                                                 <>
                                                     {String.fromCodePoint(parseInt(emoji, 16))}{" "}
@@ -400,7 +412,7 @@ export default function CreateGroupPost(props: IHandle & IData) {
                         value={post.caption}
                         onChange={handleChangePost}
                     />
-                    <Typography sx={{ color: "red", ml: 2, mb: 1 }}>
+                    <Typography sx={{ color: "grey", ml: 2, mb: 1 }}>
                         {location ? <><b>Location:</b> {location}</> : ""}
                     </Typography>
                     <TextField
@@ -426,6 +438,9 @@ export default function CreateGroupPost(props: IHandle & IData) {
                         value={post.hashTagTopic}
                         onChange={handleChangePost}
                     />
+                    {isHashtag && (
+                        <Typography color={"error"} sx={{ ml: 2, fontSize: "14px" }}>Do not need to type #</Typography>
+                    )}
 
                     <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                         <Box sx={{ display: "flex", gap: 1 }}>

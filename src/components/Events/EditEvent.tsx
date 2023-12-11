@@ -31,6 +31,8 @@ import { ref, uploadBytes } from "firebase/storage";
 import heic2any from "heic2any";
 import Loading from "../Loading";
 import { removeSpacesBetweenWords } from "../Profile/ProfileInfo";
+import { resizeImage } from "../Functions/ResizeImage";
+import { validExtensions } from "../../helper/ImageLastName";
 
 interface Ihandle {
     closeAdd: () => void;
@@ -109,9 +111,10 @@ export default function EditEvent(props: IData & Ihandle) {
     };
     const handleUpload = async () => {
         if (imageUpload == null) return;
+        const resizedImage = await resizeImage(imageUpload, 800, 600);
         const fileName = removeSpacesBetweenWords(imageUpload.name);
         const imageRef = ref(storage, `Images/event_${userId}${fileName}`);
-        uploadBytes(imageRef, imageUpload).then(() => {
+        uploadBytes(imageRef, resizedImage).then(() => {
             props.handleReFreshImage();
         });
     };
@@ -123,6 +126,7 @@ export default function EditEvent(props: IData & Ihandle) {
         const fileName = fileInput.value;
         const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
         const reader = new FileReader();
+        const isExtensionValid = validExtensions.includes(fileNameExt.toLowerCase());
 
         if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
             const blob = fileInput.files?.[0];
@@ -142,7 +146,7 @@ export default function EditEvent(props: IData & Ihandle) {
             } catch (error) {
                 console.error(error);
             }
-        } else {
+        } else if (isExtensionValid) {
             const selectedFile = event.target.files?.[0];
             if (selectedFile) {
                 reader.onloadend = () => {
@@ -151,6 +155,8 @@ export default function EditEvent(props: IData & Ihandle) {
                 reader.readAsDataURL(selectedFile);
                 setImageUpload(selectedFile);
             }
+        } else {
+            PopupAlert("Sorry, this website can only upload picture", "warning");
         }
         setLopenLoading(false);
     };

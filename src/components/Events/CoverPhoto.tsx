@@ -214,7 +214,7 @@ export default function ProCoverImage(props: IData & IFunction) {
                                     to={`https://www.google.com/search?q=${props.location}`}
                                     target="_blank"
                                 >
-                                    <Button color="error" startIcon={<LocationOnIcon />}>
+                                    <Button startIcon={<LocationOnIcon />}>
                                         {props.location}
                                     </Button>
                                 </NavLink>

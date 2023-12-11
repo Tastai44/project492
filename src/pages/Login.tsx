@@ -106,7 +106,7 @@ export default function Login() {
 
 	const fakeData = () => {
 		const userData = {
-			uid: '630615022',
+			uid: 'f99559e425b34b93c2aded5f447ac0ba38c3f3bd1e844a2ad6062f3b75130ff3',
 			firstName: 'TASTAI',
 			lastName: 'KHIANHAI'
 		};

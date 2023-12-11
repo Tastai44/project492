@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Paper,
     Divider,
@@ -16,6 +16,8 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import AddMembers from "./AddMembers";
 import DeleteMember from "./DeleteMember";
+import { ref, listAll, getDownloadURL, StorageReference } from "firebase/storage";
+import { storage } from "../../config/firebase";
 
 interface IData {
     members: string[];
@@ -30,6 +32,26 @@ export default function Members(props: IData) {
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(
         null
     );
+    const [imageUrls, setImageUrls] = useState<string[]>([]);
+
+    useEffect(() => {
+        const fetchImages = async () => {
+            try {
+                const listRef: StorageReference = ref(storage, '/Images');
+                const res = await listAll(listRef);
+                const urls = await Promise.all(
+                    res.items.map(async (itemRef) => {
+                        const imageUrl = await getDownloadURL(itemRef);
+                        return imageUrl;
+                    })
+                );
+                setImageUrls(urls);
+            } catch (error) {
+                console.error('Error fetching images:', error);
+            }
+        };
+        fetchImages();
+    }, []);
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
@@ -75,6 +97,7 @@ export default function Members(props: IData) {
                 <Box>
                     <DeleteMember
                         gId={props.gId}
+                        imageUrls={imageUrls}
                         members={props.members}
                         handleCloseDelete={handleCloseDelete}
                     />

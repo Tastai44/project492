@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Avatar, TextField, Divider, Box, Button, Modal } from "@mui/material";
+import { Avatar, Divider, Box, Button, Modal } from "@mui/material";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
@@ -54,15 +54,18 @@ export default function PostGroupForm(props: IData) {
 						sx={{ width: "40px", height: "40px", mr: 1 }}
 					/>
 					<div style={{ width: "98%" }}>
-						<TextField
-							id="outlined-basic"
-							label="What is in your mind?"
-							variant="outlined"
-							maxRows={4}
-							sx={{ width: "99%" }}
+						<Button
 							onClick={handletOpenCratePost}
-							size="small"
-						/>
+							variant="outlined"
+							sx={{
+								borderRadius: '20px',
+								color: "black",
+								width: "99%", '& fieldset': {
+									borderRadius: '20px',
+								},
+							}}>
+							What is in your mind?
+						</Button>
 					</div>
 				</div>
 			))}

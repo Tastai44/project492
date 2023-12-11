@@ -17,6 +17,9 @@ import ProfileInfo, { removeSpacesBetweenWords } from "./ProfileInfo";
 import heic2any from 'heic2any';
 import Loading from "../Loading";
 import UploadProfile from "./UploadProfile";
+import { resizeImage } from "../Functions/ResizeImage";
+import PopupAlert from "../PopupAlert";
+import { validExtensions } from "../../helper/ImageLastName";
 
 export default function ProCoverImage() {
     const { userId } = useParams();
@@ -72,12 +75,13 @@ export default function ProCoverImage() {
         fetchImages();
     }, [reFresh]);
 
-    const handleUpload = async () => {
+    const handleUpload = async (): Promise<void> => {
         setLopenLoading(true);
         if (imageUpload == null) return;
+        const resizedImage = await resizeImage(imageUpload, 800, 600);
         const fileName = removeSpacesBetweenWords(imageUpload.name);
         const imageRef = ref(storage, `Images/${userId}${fileName}`);
-        uploadBytes(imageRef, imageUpload).then(() => {
+        uploadBytes(imageRef, resizedImage).then(() => {
             handleEditPhotoProfile(`${userId}${imageUpload.name}`);
         });
     };
@@ -88,6 +92,7 @@ export default function ProCoverImage() {
         const fileName = fileInput.value;
         const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
         const reader = new FileReader();
+        const isExtensionValid = validExtensions.includes(fileNameExt.toLowerCase());
 
         if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
             const blob = fileInput.files?.[0];
@@ -109,7 +114,7 @@ export default function ProCoverImage() {
             } catch (error) {
                 console.error(error);
             }
-        } else {
+        } else if (isExtensionValid) {
             const selectedFile = event.target.files?.[0];
             if (selectedFile) {
                 reader.onloadend = () => {
@@ -120,6 +125,8 @@ export default function ProCoverImage() {
                 handleOpenPre();
                 setImageUpload(selectedFile);
             }
+        } else {
+            PopupAlert("Sorry, this website can only upload picture", "warning");
         }
     };
 
@@ -156,6 +163,7 @@ export default function ProCoverImage() {
                 handleClearImage();
                 handleRefresh();
                 handleClosePre();
+                PopupAlert("Upload picture successfully", "success");
                 setLopenLoading(false);
             } else {
                 console.log("Profile does not exist");

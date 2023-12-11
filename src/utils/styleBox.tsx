@@ -6,6 +6,7 @@ export const styleCreatePost = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 400,
+  maxHeight: 500,
   [themeApp.breakpoints.down("md")]: {
     width: 300,
   },
@@ -63,7 +64,7 @@ export const styleBox = {
   [themeApp.breakpoints.down("md")]: {
     width: 300,
   },
-  maxHeight: 600,
+  maxHeight: 500,
   bgcolor: "background.paper",
   overflow: "auto",
   p: 4,

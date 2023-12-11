@@ -26,7 +26,6 @@ import {
 	onSnapshot,
 	serverTimestamp,
 	updateDoc,
-	arrayUnion,
 } from "firebase/firestore";
 import { Conversation, GroupMessage } from "../../interface/Chat";
 import Emoji from "../MContainer/Emoji";
@@ -41,6 +40,9 @@ import { uploadBytes, StorageReference, listAll, getDownloadURL, ref } from "fir
 import heic2any from "heic2any";
 import { removeSpacesBetweenWords } from "../Profile/ProfileInfo";
 import Loading from "../Loading";
+import { resizeImage } from "../Functions/ResizeImage";
+import { validExtensions } from "../../helper/ImageLastName";
+import PopupAlert from "../PopupAlert";
 
 interface IFunction {
 	handleClose: () => void;
@@ -164,9 +166,10 @@ export default function GroupChatBox
 
 	const handleUpload = async (file: File) => {
 		if (file == null) return;
+		const resizedImage = await resizeImage(file, 800, 600);
 		const fileName = removeSpacesBetweenWords(file.name);
 		const imageRef = ref(storage, `Images/groupChat_${userInfo.uid}${fileName}`);
-		uploadBytes(imageRef, file).then(() => {
+		uploadBytes(imageRef, resizedImage).then(() => {
 			setImagePath((pre) => [...pre, `groupChat_${userInfo.uid}${fileName}`]);
 		});
 	};
@@ -176,6 +179,7 @@ export default function GroupChatBox
 		const fileName = file.name;
 		const fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
 		const reader = new FileReader();
+		const isExtensionValid = validExtensions.includes(fileNameExt.toLowerCase());
 
 		if (fileNameExt === 'heic' || fileNameExt === 'HEIC') {
 			try {
@@ -195,13 +199,15 @@ export default function GroupChatBox
 			} catch (error) {
 				console.error(error);
 			}
-		} else {
+		} else if (isExtensionValid) {
 			reader.onloadend = () => {
 				setPreviewImages((prevImages) => [...prevImages, reader.result as string]);
 			};
 
 			reader.readAsDataURL(file);
 			handleUpload(file);
+		} else {
+			PopupAlert("Sorry, this website can only upload picture", "warning");
 		}
 		setLopenLoading(false);
 	};
@@ -236,6 +242,7 @@ export default function GroupChatBox
 
 		const querySnapshot = await getDocs(messagesCollection);
 		let conversationId = "";
+		let newContentMessage: Conversation[] = [];
 
 		querySnapshot.forEach((doc) => {
 			const data = doc.data();
@@ -245,6 +252,7 @@ export default function GroupChatBox
 
 				if (hasPropsUserAsReceiver) {
 					conversationId = data.conversationId;
+					newContentMessage = data.content;
 				}
 			}
 		});
@@ -252,7 +260,7 @@ export default function GroupChatBox
 		const newMessage = {
 			receiverId: props.groupId,
 			content: [{
-				message: (imagePath.length == 0) ? message : "",
+				message: message,
 				photoMessage: imagePath,
 				emoji: emoji,
 				senderId: userInfo.uid,
@@ -267,7 +275,7 @@ export default function GroupChatBox
 			if (conversationId) {
 				const conversationDocRef = doc(messagesCollection, conversationId);
 				await updateDoc(conversationDocRef, {
-					content: arrayUnion(newMessage.content[0]),
+					content: newContentMessage,
 				});
 				createGroupMessageNoti(conversationId, userInfo.uid, props.groupId, groupData.flatMap(member => member.members), message);
 				clearState();

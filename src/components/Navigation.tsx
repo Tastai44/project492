@@ -289,6 +289,7 @@ export default function Navigation() {
 			groupMessageNoti={groupMessageNoti ?? []}
 			imageUrls={imageUrls}
 			handleCloseMessageNoti={handleCloseMessageNoti}
+			owner={userInfo.uid ?? ''}
 		/>
 	);
 
