@@ -19,7 +19,6 @@ import {
     Paper,
     Stack,
     styled,
-    TextField
 } from "@mui/material";
 
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";
@@ -203,15 +202,15 @@ export default function MContainer(props: Idata) {
         };
         try {
             const postRef = doc(postsCollection, props.postId);
+            await updateDoc(postRef, {
+                likes: arrayUnion(updateLike),
+            });
             createNoti(
                 props.postId, `liked ${props.caption}`, userInfo.uid, props.status,
                 [
                     props.owner
                 ]
             );
-            await updateDoc(postRef, {
-                likes: arrayUnion(updateLike),
-            });
         } catch (err) {
             console.error("Like error: ", err);
         }
@@ -614,20 +613,19 @@ export default function MContainer(props: Idata) {
                                             sx={{ width: "40px", height: "40px" }}
                                         />
                                         <Box style={{ width: "98%" }}>
-                                            <TextField
-                                                id="outlined-basic"
-                                                label="Comment something..."
+                                            <Button
+                                                onClick={handletOpenPost}
                                                 variant="outlined"
-                                                multiline
-                                                maxRows={4}
                                                 sx={{
+                                                    borderRadius: '20px',
                                                     width: "99%", '& fieldset': {
                                                         borderRadius: '20px',
                                                     },
-                                                }}
-                                                size="small"
-                                                onClick={handletOpenPost}
-                                            />
+                                                    border: "1px solid black",
+                                                    color: "black"
+                                                }}>
+                                                Comment something...
+                                            </Button>
                                         </Box>
                                     </Box>
                                 ))}

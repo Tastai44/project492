@@ -59,6 +59,7 @@ import { NavLink } from "react-router-dom";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ShareCard from "./ShareCard";
 import Loading from "../Loading";
+import { createNoti } from "../Functions/NotificationFunction";
 
 const Item = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -219,6 +220,12 @@ export default function Content(props: IData & IFunction) {
         })
             .then(() => {
                 clearState();
+                createNoti(
+                    props.postId, `commented ${props.caption}`, userInfo.uid, postData.find((item) => item)?.status ?? "",
+                    [
+                        props.owner ?? ""
+                    ]
+                );
             })
             .catch((error) => {
                 console.error("Error adding comment: ", error);
@@ -235,6 +242,12 @@ export default function Content(props: IData & IFunction) {
         await updateDoc(postRef, {
             likes: arrayUnion(updateLike),
         });
+        createNoti(
+            props.postId, `liked ${props.caption}`, userInfo.uid, postData.find((item) => item)?.status ?? "",
+            [
+                props.owner ?? ""
+            ]
+        );
     };
     const decreaseLike = async (id: string) => {
         const IndexLike = props.likes.findIndex((f) => f.likeBy === props.userId);

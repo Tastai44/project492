@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Menu,
     MenuItem,
@@ -26,7 +27,7 @@ import { User } from "../../interface/User";
 import { styleBoxPop } from "../../utils/styleBox";
 import Content from "../MContainer/Content";
 import { Like, Post } from "../../interface/PostContent";
-import PopupAlert from "../PopupAlert";
+// import PopupAlert from "../PopupAlert";
 
 interface IData {
     mobileMoreAnchorEl: null | HTMLElement;
@@ -40,21 +41,16 @@ interface IData {
 
 export default function NotificationList(props: IData) {
     const [inFoUser, setInFoUser] = useState<User[]>([]);
-    const [inFoShareUser, setInShareFoUser] = useState<User[]>([]);
     const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-    const userId =
-        props.notifications.find((noti) => noti.actionBy)?.actionBy ?? "";
-    const shareId =
-        props.notifications.find((noti) => noti.actionTo)?.actionTo ?? "";
     const [openPost, setOpenPost] = useState(false);
     const [likes, setLikes] = useState<Like[]>([]);
     const [postOwner, setPostOwner] = useState("");
     const [postId, setPostId] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         const queryData = query(
             collection(dbFireStore, "users"),
-            where("uid", "==", userId)
         );
         const unsubscribe = onSnapshot(
             queryData,
@@ -69,27 +65,7 @@ export default function NotificationList(props: IData) {
         return () => {
             unsubscribe();
         };
-    }, [userId]);
-
-    useEffect(() => {
-        const queryData = query(
-            collection(dbFireStore, "users"),
-            where("uid", "==", shareId)
-        );
-        const unsubscribe = onSnapshot(
-            queryData,
-            (snapshot) => {
-                const queriedData = snapshot.docs.map((doc) => doc.data() as User);
-                setInShareFoUser(queriedData);
-            },
-            (error) => {
-                console.error("Error fetching data: ", error);
-            }
-        );
-        return () => {
-            unsubscribe();
-        };
-    }, [shareId]);
+    }, [props.notifications]);
 
     const handleReaded = async (notiId: string) => {
         const notification = collection(dbFireStore, "notifications");
@@ -109,6 +85,27 @@ export default function NotificationList(props: IData) {
                 collection(dbFireStore, "posts"),
                 where("id", "==", postId)
             );
+            const queryEventData = query(
+                collection(dbFireStore, "events"),
+                where("eventId", "==", postId)
+            );
+            const unsubscribeEvent = onSnapshot(
+                queryEventData,
+                (snapshot) => {
+                    const queriedEventData = snapshot.docs.map((doc) => doc.data() as Post);
+                    if (queriedEventData.length !== 0) {
+                        handleReaded(notiId);
+                        navigate(`/eventsDetail/${postId}`);
+                    }
+                    // else {
+                    //     PopupAlert("This event was deleted already!", "error");
+                    // }
+                },
+                (error) => {
+                    console.error("Error fetching data:", error);
+                }
+            );
+
             const unsubscribe = onSnapshot(
                 queryData,
                 (snapshot) => {
@@ -119,9 +116,10 @@ export default function NotificationList(props: IData) {
                         handleReaded(notiId);
                         setLikes(queriedData.flatMap((post) => post.likes));
                         setPostOwner(queriedData.flatMap((post) => post.owner)[0]);
-                    } else {
-                        PopupAlert("This post was deleted already!", "error");
                     }
+                    // else {
+                    //     PopupAlert("This post was deleted already!", "error");
+                    // }
                 },
                 (error) => {
                     console.error("Error fetching data:", error);
@@ -130,14 +128,12 @@ export default function NotificationList(props: IData) {
 
             return () => {
                 unsubscribe();
+                unsubscribeEvent();
             };
-
 
         } catch (error) {
             console.error(error);
         }
-
-
     };
 
     const handleClosePost = () => {
@@ -166,7 +162,6 @@ export default function NotificationList(props: IData) {
                     </Paper>
                 </Box>
             </Modal>
-
             <Menu
                 anchorEl={props.mobileMoreAnchorEl}
                 id={props.mobileMenuId}
@@ -240,57 +235,66 @@ export default function NotificationList(props: IData) {
                                 }}
                             >
                                 <ListItemAvatar>
-                                    <Avatar
-                                        alt="CMU"
-                                        src={props.imageUrls.find((item) => item.includes(inFoUser.find((user) => user.profilePhoto)?.profilePhoto ?? ""))}
-                                    />
+                                    {inFoUser.filter((item) => item.uid == noti.actionBy).map((user, index) => (
+                                        <Avatar
+                                            key={index}
+                                            alt="CMU"
+                                            src={props.imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))}
+                                        />
+                                    ))}
                                 </ListItemAvatar>
                                 <ListItemText
                                     primary={
-                                        <Typography
-                                            sx={{
-                                                display: "inline",
-                                            }}
-                                            component="span"
-                                            variant="body2"
-                                            color="black"
-                                            fontWeight="bold"
-                                        >
-                                            {`${inFoUser.find((user) => user.firstName)?.firstName} 
-                                            ${inFoUser.find((user) => user.lastName)?.lastName} `}
-                                        </Typography>
+                                        <>
+                                            {inFoUser.filter((item) => item.uid == noti.actionBy).map((user, index) => (
+                                                <Typography
+                                                    key={index}
+                                                    sx={{
+                                                        display: "inline",
+                                                    }}
+                                                    component="span"
+                                                    variant="body2"
+                                                    color="black"
+                                                    fontWeight="bold"
+                                                >
+                                                    {`${user.firstName} ${user.lastName}`}
+                                                </Typography>
+                                            ))}
+                                        </>
                                     }
                                     secondary={
-                                        <Typography
-                                            sx={{ display: "inline", fontSize: "16px" }}
-                                            component="span"
-                                            variant="body2"
-                                            color="black"
-                                        >
-                                            {noti.actionTo ? (
-                                                <>
-                                                    {noti.actionMessage.substring(0, 30)}... <br />
-                                                    to{" "}
-                                                    <b>
-                                                        {
-                                                            inFoShareUser.find((shareTo) => shareTo.firstName)
-                                                                ?.firstName
-                                                        }
-                                                    </b>
-                                                </>
-                                            ) : (
-                                                noti.actionMessage.substring(0, 30) + "..."
-                                            )}
-                                            <br />
-                                            <Typography color="grey" fontSize={14}>
-                                                {noti.dateCreated}
+                                        <>
+                                            <Typography
+                                                sx={{ display: "inline", fontSize: "16px" }}
+                                                component="span"
+                                                variant="body2"
+                                                color="black"
+                                            >
+                                                {noti.actionTo != "" ? (
+                                                    inFoUser.filter((item) => item.uid == noti.actionTo).map((user, index) => (
+                                                        <Box key={index} sx={{ color: "black" }}>
+                                                            {noti.actionMessage.substring(0, 30)}... <br />
+                                                            to{" "}
+                                                            <b>
+                                                                {`${user.firstName} ${user.lastName}`}
+                                                            </b>
+                                                        </Box>
+                                                    ))
+                                                ) : (
+                                                    noti.actionMessage.substring(0, 30) + "..."
+                                                )}
+                                                <br />
+                                                <Typography color="grey" fontSize={14}>
+                                                    {noti.dateCreated}
+                                                </Typography>
                                             </Typography>
-                                        </Typography>
+                                        </>
                                     }
                                 />
                             </ListItem>
                         )))}
             </Menu>
+
         </>
     );
 }
