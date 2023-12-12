@@ -79,17 +79,17 @@ export default function MediaCard(props: IData) {
 					/>
 				)}
 				<CardContent sx={{ textAlign: "justify" }}>
-					<Typography gutterBottom sx={{ fontSize: "20px" }} component="div">
+					<Typography gutterBottom sx={{ fontSize: "20px", color: "black" }} component="div">
 						{props.title}
 					</Typography>
-					<Typography>
+					<Typography sx={{ color: "gray" }}>
 						<b>Start:</b> {props.startDate}, {props.startTime} <br />
 						<b>End:</b> {props.endDate}, {props.endTime}
 					</Typography>
 					{inFoUser.map((user) => (
 						<Box
 							key={user.uid}
-							sx={{ display: "flex", alignItems: "end", gap: 1 }}
+							sx={{ display: "flex", alignItems: "end", gap: 1, color: "black" }}
 						>
 							<Avatar
 								src={imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))}
@@ -103,6 +103,6 @@ export default function MediaCard(props: IData) {
 					))}
 				</CardContent>
 			</NavLink>
-		</Card>
+		</Card >
 	);
 }

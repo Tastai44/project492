@@ -252,6 +252,7 @@ export default function EventReasonContainer(props: IData & IFunction) {
                           }
                           eventId={e.eventId}
                           imageUrls={imageUrls}
+                          owner={e.owner}
                         />
                         <Item>
                           <Box sx={{ flexGrow: 1 }}>

@@ -306,6 +306,7 @@ export default function Content(props: IData & IFunction) {
                 postId={props.postId}
                 postCaption={props.caption ?? ""}
                 imageUrls={props.imageUrls}
+                owner={props.owner ?? ""}
             />
             <Modal
                 open={openReportPost}

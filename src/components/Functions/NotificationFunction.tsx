@@ -1,5 +1,5 @@
 import { collection, setDoc, doc, serverTimestamp } from "firebase/firestore";
-import { dbFireStore } from "../config/firebase";
+import { dbFireStore } from "../../config/firebase";
 
 export const createNoti = async (
     contentId: string, actionMessage: string, actionBy: string, status: string, friends: string[], actionTo?: string,

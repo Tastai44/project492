@@ -33,7 +33,7 @@ import Emoji from "../MContainer/Emoji";
 import { User } from "../../interface/User";
 import { collection, query, getDocs, where, setDoc } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
-import { createNoti } from "../NotificationFunction";
+import { createNoti } from "../Functions/NotificationFunction";
 import LocationCard from "../MContainer/LocationCard";
 import { styleCreatePost } from "../../utils/styleBox";
 import { StorageReference, listAll, getDownloadURL, ref, uploadBytes } from "firebase/storage";

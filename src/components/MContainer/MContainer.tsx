@@ -61,6 +61,7 @@ import PopupAlert from "../PopupAlert";
 import ReportCard from "../Report/ReportCard";
 import ShareCard from "./ShareCard";
 import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
+import { createNoti } from "../Functions/NotificationFunction";
 
 export const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -202,6 +203,12 @@ export default function MContainer(props: Idata) {
         };
         try {
             const postRef = doc(postsCollection, props.postId);
+            createNoti(
+                props.postId, `liked ${props.caption}`, userInfo.uid, props.status,
+                [
+                    props.owner
+                ]
+            );
             await updateDoc(postRef, {
                 likes: arrayUnion(updateLike),
             });
@@ -477,14 +484,6 @@ export default function MContainer(props: Idata) {
 
                                 {props.photoPost.length == 1 ? (
                                     <ImageList
-                                        sx={{
-                                            width: "100%",
-                                            minHeight: "300px",
-                                            maxHeight: "auto",
-                                            justifyContent: "center",
-                                            cursor: "pointer",
-                                            borderRadius: "20px"
-                                        }}
                                         cols={1}
                                         onClick={handletOpenPost}
                                     >
@@ -494,6 +493,18 @@ export default function MContainer(props: Idata) {
                                                     src={imageUrls.find((item) => item.includes(image))}
                                                     alt={`Preview ${index}`}
                                                     loading="lazy"
+                                                    style={{
+                                                        display: "flex",
+                                                        flexDirection: "column",
+                                                        alignItems: "center",
+                                                        width: "100%",
+                                                        minHeight: "300px",
+                                                        maxHeight: "300px",
+                                                        justifyContent: "center",
+                                                        cursor: "pointer",
+                                                        borderRadius: "20px",
+                                                        overflow: "hidden",
+                                                    }}
                                                 />
                                             </ImageListItem>
                                         ))}
@@ -595,6 +606,7 @@ export default function MContainer(props: Idata) {
                                             postId={props.postId}
                                             postCaption={props.caption ?? ""}
                                             imageUrls={imageUrls}
+                                            owner={props.owner}
                                         />
                                         <Avatar
                                             alt="User"
