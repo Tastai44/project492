@@ -23,7 +23,7 @@ import { dbFireStore } from "../../config/firebase";
 import { collection, updateDoc, doc, arrayUnion, getDoc, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import SearchBar from "../../helper/SearchBar";
-import { createNoti } from "../NotificationFunction";
+import { createNoti } from "../Functions/NotificationFunction";
 import { Post } from "../../interface/PostContent";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
 import { IGroup, IShare } from "../../interface/Group";
@@ -59,6 +59,7 @@ interface IData {
     postId?: string;
     postCaption?: string;
     eventId?: string;
+    owner: string;
 }
 interface IFunction {
     handleCloseShare: () => void;
@@ -122,7 +123,7 @@ export default function ShareCard(props: IData & IFunction) {
                 username: `${row.firstName} ${row.lastName}`,
                 profilePhoto: props.imageUrls.find((item) => item.includes(row.profilePhoto ?? "")),
             }));
-            setRows(rows);
+            setRows(rows.filter((item) => item.uid !== props.owner));
         } else if (status == "Group") {
             setRows(groupData.flatMap((group, index) => ({
                 id: `${group.gId}_${index}`,
@@ -131,6 +132,7 @@ export default function ShareCard(props: IData & IFunction) {
                 profilePhoto: props.imageUrls.find((item) => item.includes(group.coverPhoto ?? "")),
             })));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [groupData, inFoUser, props.friendList, status, props.imageUrls]);
 
     const handleChange = (event: SelectChangeEvent) => {

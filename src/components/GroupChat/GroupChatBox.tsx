@@ -270,6 +270,7 @@ export default function GroupChatBox
 			createAt: serverTimestamp(),
 			timestamp: new Date().toLocaleString(),
 		};
+		newContentMessage.push(newMessage.content[0]);
 
 		try {
 			if (conversationId) {

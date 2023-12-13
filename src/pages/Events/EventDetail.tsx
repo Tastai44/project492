@@ -143,6 +143,7 @@ export default function EventDetail() {
 										}
 										eventId={e.eventId}
 										imageUrls={imageUrls}
+										owner={e.owner}
 									/>
 									<Box sx={{
 										[themeApp.breakpoints.down("md")]: {

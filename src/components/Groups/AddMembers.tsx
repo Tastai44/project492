@@ -58,11 +58,38 @@ export default function AddMembers(props: IFunction & IData) {
 		setMember(newValue);
 	};
 
+	const addParticipate = async (member: string[]) => {
+		const messagesCollection = collection(dbFireStore, "groupMessages");
+		const querySnapshot = await getDocs(messagesCollection);
+		let conversationId = "";
+
+		querySnapshot.forEach(async (doc) => {
+			const data = doc.data();
+			if (data.content && Array.isArray(data.content)) {
+				const hasPropsUserAsReceiver = data.content.some((con) => con.receiverId === props.gId);
+				if (hasPropsUserAsReceiver) {
+					conversationId = data.conversationId;
+				}
+			}
+		});
+		try {
+			if (conversationId) {
+				const conversationDocRef = doc(messagesCollection, conversationId);
+				await updateDoc(conversationDocRef, {
+					participants: arrayUnion(...member),
+				});
+			}
+		} catch (error) {
+			console.error("Error updating participants:", error);
+		}
+	};
+
 	const addMember = () => {
 		const groupCollection = collection(dbFireStore, "groups");
 		const tmp = [...member].map((m) => JSON.parse(m));
 		const tmp2 = tmp.map((m) => m.uid,);
 		const groupRef = doc(groupCollection, props.gId);
+		addParticipate(tmp2);
 		updateDoc(groupRef, {
 			members: arrayUnion(...tmp2),
 		})

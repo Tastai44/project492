@@ -19,7 +19,6 @@ import {
     Paper,
     Stack,
     styled,
-    TextField
 } from "@mui/material";
 
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";
@@ -61,6 +60,7 @@ import PopupAlert from "../PopupAlert";
 import ReportCard from "../Report/ReportCard";
 import ShareCard from "./ShareCard";
 import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
+import { createNoti } from "../Functions/NotificationFunction";
 
 export const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -205,6 +205,12 @@ export default function MContainer(props: Idata) {
             await updateDoc(postRef, {
                 likes: arrayUnion(updateLike),
             });
+            createNoti(
+                props.postId, `liked ${props.caption}`, userInfo.uid, props.status,
+                [
+                    props.owner
+                ]
+            );
         } catch (err) {
             console.error("Like error: ", err);
         }
@@ -477,14 +483,6 @@ export default function MContainer(props: Idata) {
 
                                 {props.photoPost.length == 1 ? (
                                     <ImageList
-                                        sx={{
-                                            width: "100%",
-                                            minHeight: "300px",
-                                            maxHeight: "auto",
-                                            justifyContent: "center",
-                                            cursor: "pointer",
-                                            borderRadius: "20px"
-                                        }}
                                         cols={1}
                                         onClick={handletOpenPost}
                                     >
@@ -494,6 +492,18 @@ export default function MContainer(props: Idata) {
                                                     src={imageUrls.find((item) => item.includes(image))}
                                                     alt={`Preview ${index}`}
                                                     loading="lazy"
+                                                    style={{
+                                                        display: "flex",
+                                                        flexDirection: "column",
+                                                        alignItems: "center",
+                                                        width: "100%",
+                                                        minHeight: "300px",
+                                                        maxHeight: "300px",
+                                                        justifyContent: "center",
+                                                        cursor: "pointer",
+                                                        borderRadius: "20px",
+                                                        overflow: "hidden",
+                                                    }}
                                                 />
                                             </ImageListItem>
                                         ))}
@@ -595,6 +605,7 @@ export default function MContainer(props: Idata) {
                                             postId={props.postId}
                                             postCaption={props.caption ?? ""}
                                             imageUrls={imageUrls}
+                                            owner={props.owner}
                                         />
                                         <Avatar
                                             alt="User"
@@ -602,20 +613,19 @@ export default function MContainer(props: Idata) {
                                             sx={{ width: "40px", height: "40px" }}
                                         />
                                         <Box style={{ width: "98%" }}>
-                                            <TextField
-                                                id="outlined-basic"
-                                                label="Comment something..."
+                                            <Button
+                                                onClick={handletOpenPost}
                                                 variant="outlined"
-                                                multiline
-                                                maxRows={4}
                                                 sx={{
+                                                    borderRadius: '20px',
                                                     width: "99%", '& fieldset': {
                                                         borderRadius: '20px',
                                                     },
-                                                }}
-                                                size="small"
-                                                onClick={handletOpenPost}
-                                            />
+                                                    border: "1px solid black",
+                                                    color: "black"
+                                                }}>
+                                                Comment something...
+                                            </Button>
                                         </Box>
                                     </Box>
                                 ))}

@@ -37,7 +37,7 @@ import PopupAlert from "../PopupAlert";
 import LocationCard from "./LocationCard";
 import { User } from "../../interface/User";
 import { removeSpacesBetweenWords } from "../Profile/ProfileInfo";
-import { createNoti } from "../NotificationFunction";
+import { createNoti } from "../Functions/NotificationFunction";
 import { styleCreatePost } from "../../utils/styleBox";
 import heic2any from "heic2any";
 import Loading from "../Loading";

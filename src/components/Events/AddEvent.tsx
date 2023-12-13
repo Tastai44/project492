@@ -33,7 +33,7 @@ import {
 } from "firebase/firestore";
 import PopupAlert from "../PopupAlert";
 import { locations } from "../../helper/CMULocations";
-import { createNoti } from "../NotificationFunction";
+import { createNoti } from "../Functions/NotificationFunction";
 import { User } from "../../interface/User";
 import { styleBox } from "../../utils/styleBox";
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
