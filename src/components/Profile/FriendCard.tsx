@@ -31,6 +31,7 @@ export default function FriendCard(props: IData) {
     const { userId } = useParams();
     const [inFoUser, setInFoUser] = useState<User[]>([]);
     const [imageUrls, setImageUrls] = useState<string[]>([]);
+    const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
     useEffect(() => {
         const queryData = query(
@@ -142,34 +143,36 @@ export default function FriendCard(props: IData) {
                             {`${user.firstName} ${user.lastName}`}
                         </Typography>
                     </CardContent>
-                    <CardActions
-                        disableSpacing
-                        sx={{ display: "flex", justifyContent: "center", gap: 1 }}
-                    >
-                        <NavLink to={`/profileBlog/${props.uid}`}>
+                    {userInfo.uid == userId && (
+                        <CardActions
+                            disableSpacing
+                            sx={{ display: "flex", justifyContent: "center", gap: 1 }}
+                        >
+                            <NavLink to={`/profileBlog/${props.uid}`}>
+                                <Button
+                                    sx={{
+                                        color: "white",
+                                        borderRadius: "5px",
+                                        backgroundColor: "#920EFA",
+                                        "&:hover": { backgroundColor: "white", color: "black" },
+                                    }}
+                                >
+                                    View
+                                </Button>
+                            </NavLink>
                             <Button
                                 sx={{
                                     color: "white",
                                     borderRadius: "5px",
-                                    backgroundColor: "#920EFA",
+                                    backgroundColor: "grey",
                                     "&:hover": { backgroundColor: "white", color: "black" },
                                 }}
+                                onClick={() => unFriend(props.uid)}
                             >
-                                View
+                                UnFriend
                             </Button>
-                        </NavLink>
-                        <Button
-                            sx={{
-                                color: "white",
-                                borderRadius: "5px",
-                                backgroundColor: "grey",
-                                "&:hover": { backgroundColor: "white", color: "black" },
-                            }}
-                            onClick={() => unFriend(props.uid)}
-                        >
-                            UnFriend
-                        </Button>
-                    </CardActions>
+                        </CardActions>
+                    )}
                 </Card>
             ))}
         </>
