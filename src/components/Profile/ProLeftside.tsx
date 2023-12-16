@@ -323,7 +323,7 @@ export default function ProLeftside() {
 										</Button>
 									) : (m.friendList?.some((friend) => friend.friendId === userInfo.uid)) ? (
 										<Button
-											onClick={() => unFriend(inFoUser, loginUser, userId)}
+											onClick={() => unFriend(inFoUser, loginUser, userId, userInfo.uid)}
 											size="small"
 											sx={{
 												width: "100px",
@@ -339,7 +339,7 @@ export default function ProLeftside() {
 										</Button>
 									) : (
 										<Button
-											onClick={() => handleAddFriend(userId)}
+											onClick={() => handleAddFriend(userId, userInfo.uid)}
 											size="small"
 											sx={{
 												width: "100px",

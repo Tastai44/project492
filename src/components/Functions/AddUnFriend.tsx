@@ -4,11 +4,9 @@ import { dbFireStore } from "../../config/firebase";
 import { User } from "../../interface/User";
 import PopupAlert from "../PopupAlert";
 
-const userInfo = JSON.parse(localStorage.getItem("user") || "null");
-
-const addFriendOtherSide = async (userId: string | undefined) => {
+const addFriendOtherSide = async (userId: string | undefined, loginUserId: string) => {
     const addFriend = {
-        friendId: userInfo.uid,
+        friendId: loginUserId,
         createdAt: new Date().toLocaleString(),
     };
     const querySnapshot = await getDocs(
@@ -28,13 +26,13 @@ const addFriendOtherSide = async (userId: string | undefined) => {
             });
     }
 };
-export const handleAddFriend = async (userId: string | undefined) => {
+export const handleAddFriend = async (userId: string | undefined, loginUserId: string) => {
     const addFriend = {
         friendId: userId,
         createdAt: new Date().toLocaleString(),
     };
     const querySnapshot = await getDocs(
-        query(collection(dbFireStore, "users"), where("uid", "==", userInfo.uid))
+        query(collection(dbFireStore, "users"), where("uid", "==", loginUserId))
     );
     if (!querySnapshot.empty) {
         const userDoc = querySnapshot.docs[0];
@@ -48,7 +46,7 @@ export const handleAddFriend = async (userId: string | undefined) => {
             .catch((error) => {
                 console.error("Error adding friend to the friendList: ", error);
             });
-        addFriendOtherSide(userId);
+        addFriendOtherSide(userId, loginUserId);
     }
 };
 
@@ -77,10 +75,10 @@ const unFriendOtherSide = async (loginUser: User[], userId: string | undefined, 
     }
 };
 
-export const unFriend = async (inFoUser: User[], loginUser: User[], userId: string | undefined) => {
+export const unFriend = async (inFoUser: User[], loginUser: User[], userId: string | undefined, loginUserId: string) => {
     const IndexFriend = inFoUser.map((user) => user.friendList?.findIndex((index) => index.friendId === userId)).flat();
     try {
-        const q = query(collection(dbFireStore, "users"), where("uid", "==", userInfo.uid));
+        const q = query(collection(dbFireStore, "users"), where("uid", "==", loginUserId));
         const querySnapshot = await getDocs(q);
 
         const doc = querySnapshot.docs[0];
@@ -94,7 +92,7 @@ export const unFriend = async (inFoUser: User[], loginUser: User[], userId: stri
                 const updatedData = { ...friendData, friendList: updateFriend };
                 await updateDoc(doc.ref, updatedData);
             }
-            unFriendOtherSide(loginUser, userId ? userId : "", userInfo.uid);
+            unFriendOtherSide(loginUser, userId ? userId : "", loginUserId);
             PopupAlert("Unfriend successfully", "success");
         } else {
             console.log("No post found with the specified ID");

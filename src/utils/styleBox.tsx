@@ -160,6 +160,7 @@ export const styleChatList = {
   },
   bgcolor: "background.paper",
   color: "black",
+  borderRadius: "10px",
 };
 
 export const styleEditProfile = {
