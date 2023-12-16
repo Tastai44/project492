@@ -1,9 +1,9 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Avatar, Paper, Box, Button, Modal, Badge, IconButton } from "@mui/material";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
-import { IFriendList, User } from "../../interface/User";
+import { User } from "../../interface/User";
 import EditProfile from "./EditProfile";
-import { collection, where, onSnapshot, query, getDocs, updateDoc, arrayUnion, doc } from "firebase/firestore";
+import { collection, where, onSnapshot, query, getDocs, updateDoc } from "firebase/firestore";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import { dbFireStore, storage } from "../../config/firebase";
 import PopupAlert from "../PopupAlert";
@@ -14,6 +14,7 @@ import heic2any from "heic2any";
 import Loading from "../Loading";
 import { validExtensions } from "../../helper/ImageLastName";
 import { resizeImage } from "../Functions/ResizeImage";
+import { handleAddFriend } from "../Functions/AddUnFriend";
 
 interface IData {
     userId: string;
@@ -152,58 +153,6 @@ export default function ProfileInfo(props: IData) {
             }
         } catch (error) {
             console.error("Error deleting friend:", error);
-        }
-    };
-
-    const addFriendOtherSide = async () => {
-        const addFriend: IFriendList[] = loginUser.map((m) => ({
-            status: true,
-            friendId: userInfo.uid,
-            username: m.firstName + m.lastName,
-            profilePhoto: m.profilePhoto,
-            createdAt: new Date().toLocaleString(),
-        }));
-        const querySnapshot = await getDocs(
-            query(collection(dbFireStore, "users"), where("uid", "==", props.userId))
-        );
-        if (!querySnapshot.empty) {
-            const userDoc = querySnapshot.docs[0];
-            const userRef = doc(dbFireStore, "users", userDoc.id);
-            updateDoc(userRef, {
-                friendList: addFriend,
-            })
-                .then(() => {
-                    console.log("Successfully added friend to the friendList.");
-                })
-                .catch((error) => {
-                    console.error("Error adding friend to the friendList: ", error);
-                });
-        }
-    };
-    const handleAddFriend = async () => {
-        const addFriend: IFriendList[] = inFoUser.map((user) => ({
-            status: true,
-            friendId: props.userId ?? "",
-            username: `${user.firstName} ${user.lastName}`,
-            profilePhoto: user.profilePhoto,
-            createdAt: new Date().toLocaleString(),
-        }));
-        const querySnapshot = await getDocs(
-            query(collection(dbFireStore, "users"), where("uid", "==", userInfo.uid))
-        );
-        if (!querySnapshot.empty) {
-            const userDoc = querySnapshot.docs[0];
-            const userRef = doc(dbFireStore, "users", userDoc.id);
-            updateDoc(userRef, {
-                friendList: arrayUnion(addFriend[0]),
-            })
-                .then(() => {
-                    PopupAlert("Successfully added friend to the friendList", "success");
-                })
-                .catch((error) => {
-                    console.error("Error adding friend to the friendList: ", error);
-                });
-            addFriendOtherSide();
         }
     };
 
@@ -418,7 +367,7 @@ export default function ProfileInfo(props: IData) {
                         </Button>
                     ) : (
                         <Button
-                            onClick={handleAddFriend}
+                            onClick={() => handleAddFriend(userId, userInfo.uid)}
                             size="small"
                             sx={{
                                 width: "100px",

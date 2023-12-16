@@ -84,7 +84,7 @@ export default function MemberCard(props: IData) {
                         backgroundColor: "#A005FF",
                         "&:hover": { color: "black", backgroundColor: "#F1F1F1" },
                     }}
-                    onClick={() => handleAddFriend(props.uId)}
+                    onClick={() => handleAddFriend(props.uId, userInfo.uid)}
                 >
                     Add Friend
                 </Button>
