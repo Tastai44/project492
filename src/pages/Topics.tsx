@@ -273,29 +273,31 @@ export default function Topics() {
 					</Box>
 				</Box>
 				<Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
-				{uniquePosts
-					.filter(
-						(item) =>
-							item.owner == userInfo.uid ||
-							item.status == "Public" ||
-							(item.status == "Friend" &&
-								inFoUser.some(
-									(user) =>
-										user.uid === item.owner ||
-										user.friendList?.some(
-											(friend) => friend.friendId == item.owner
-										)
-								))
-					)
-					.map((posts) => (
-						<Box
-							key={posts.id}
-						>
-							<NavLink to={`/hashtag/${posts.hashTagTopic}`}>
-								<EachTopic hashTag={posts.hashTagTopic} />
-							</NavLink>
-						</Box>
-					))}
+				<Box sx={{ maxHeight: "500px", overflow: "auto" }}>
+					{uniquePosts
+						.filter(
+							(item) =>
+								item.owner == userInfo.uid ||
+								item.status == "Public" ||
+								(item.status == "Friend" &&
+									inFoUser.some(
+										(user) =>
+											user.uid === item.owner ||
+											user.friendList?.some(
+												(friend) => friend.friendId == item.owner
+											)
+									))
+						)
+						.map((posts) => (
+							<Box
+								key={posts.id}
+							>
+								<NavLink to={`/hashtag/${posts.hashTagTopic}`}>
+									<EachTopic hashTag={posts.hashTagTopic} />
+								</NavLink>
+							</Box>
+						))}
+				</Box>
 			</Box>
 		</div>
 	);

@@ -147,18 +147,20 @@ export default function Groups() {
 					</Box>
 				</Box>
 				<Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
-				{groupData
-					.filter(
-						(item) =>
-							item.status === "Public" ||
-							(item.hostId === userInfo.uid) ||
-							item.members.some((member) => member === userInfo.uid)
-					)
-					.map((g) => (
-						<NavLink key={g.gId} to={`/groupDetail/${g.gId}`}>
-							<EachGroup title={g.groupName} />
-						</NavLink>
-					))}
+				<Box sx={{ maxHeight: "500px", overflow: "auto" }}>
+					{groupData
+						.filter(
+							(item) =>
+								item.status === "Public" ||
+								(item.hostId === userInfo.uid) ||
+								item.members.some((member) => member === userInfo.uid)
+						)
+						.map((g) => (
+							<NavLink key={g.gId} to={`/groupDetail/${g.gId}`}>
+								<EachGroup title={g.groupName} />
+							</NavLink>
+						))}
+				</Box>
 			</Box>
 		</>
 	);
