@@ -181,9 +181,9 @@ export default function Navigation() {
 
 	useEffect(() => {
 		const messageNumber = messageNoti?.filter((messNoti) => !messNoti.isRead).length;
-		const groupMessageNumber: number | undefined = groupMessageNoti?.filter((messNoti) => !messNoti.isRead).length;
+		const groupMessageNumber: number | undefined = groupMessageNoti?.filter((messNoti) => !messNoti.isRead && messNoti.senderId != userInfo.uid).length;
 		setMessageNumber((messageNumber ? messageNumber : 0) + (groupMessageNumber ? groupMessageNumber : 0));
-	}, [groupMessageNoti, messageNoti]);
+	}, [groupMessageNoti, messageNoti, userInfo.uid]);
 
 	const handleOpenSearch = () => {
 		setOpenSearch(true);

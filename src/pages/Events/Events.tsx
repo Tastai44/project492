@@ -30,7 +30,7 @@ export default function Events() {
 		setOpenLoading(true);
 		const fetchData = query(
 			collection(dbFireStore, "events"),
-			orderBy("createAt", "desc")
+			orderBy("startDate", "desc")
 		);
 		const unsubscribe = onSnapshot(
 			fetchData,
