@@ -13,6 +13,7 @@ import EditGroup from "./EditGroup";
 import GroupChatBox from "../GroupChat/GroupChatBox";
 import PopupAlert from "../PopupAlert";
 import { themeApp } from "../../utils/Theme";
+import AskPopup from "../AskPopup";
 
 
 interface IData {
@@ -34,6 +35,7 @@ export default function ProCoverImage(props: IData) {
 	const navigate = useNavigate();
 	const [groupId, setGroupId] = useState("");
 	const [openGroupChat, setOpenGroupChat] = useState(false);
+	const [openAskPop, setOpenAskPop] = useState(false);
 
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
@@ -94,6 +96,16 @@ export default function ProCoverImage(props: IData) {
 						details={props.details}
 						coverPhoto={props.coverPhoto}
 						imageUrls={props.imageUrls}
+					/>
+				</Box>
+			</Modal>
+			<Modal
+				open={openAskPop}
+			>
+				<Box>
+					<AskPopup
+						handleCloseAsk={() => setOpenAskPop(false)}
+						handleDelete={handleDelete}
 					/>
 				</Box>
 			</Modal>
@@ -209,7 +221,7 @@ export default function ProCoverImage(props: IData) {
 										</Button>
 
 										<Button
-											onClick={handleDelete}
+											onClick={() => setOpenAskPop(true)}
 											sx={{
 												fontSize: "16px",
 												mr: 1,

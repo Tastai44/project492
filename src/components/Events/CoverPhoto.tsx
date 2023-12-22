@@ -33,6 +33,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import EditEvent from "./EditEvent";
 import PopupAlert from "../PopupAlert";
 import { themeApp } from "../../utils/Theme";
+import AskPopDeleteEvent from "./AskPopDeleteEvent";
 
 interface IData {
     eventId: string;
@@ -62,6 +63,7 @@ export default function ProCoverImage(props: IData & IFunction) {
     const IsOwner = userInfo.uid === props.owner;
     const isInterest = props.interest.some((f) => f.interestBy === userInfo.uid);
     const [open, setOpen] = useState(false);
+    const [openAskPop, setOpenAskPop] = useState(false);
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -149,6 +151,17 @@ export default function ProCoverImage(props: IData & IFunction) {
                         status={props.status}
                         location={props.location}
                         imageUrls={props.imageUrls}
+                    />
+                </Box>
+            </Modal>
+            <Modal
+                open={openAskPop}
+            >
+                <Box>
+                    <AskPopDeleteEvent
+                        handleCloseAsk={() => setOpenAskPop(false)}
+                        handleDelete={() => handleDelete(props.eventId)}
+                        eventId={props.eventId}
                     />
                 </Box>
             </Modal>
@@ -278,7 +291,7 @@ export default function ProCoverImage(props: IData & IFunction) {
                                             Edit
                                         </Button>
                                         <Button
-                                            onClick={() => handleDelete(props.eventId)}
+                                            onClick={() => setOpenAskPop(true)}
                                             size="small"
                                             variant="text"
                                             sx={{
