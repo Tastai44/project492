@@ -118,7 +118,7 @@ export default function ShareContent(props: Idata) {
 	};
 
 	return (
-		<Box sx={{ backgroundColor: "primary.contrastText" }}>
+		<Box sx={{ backgroundColor: "primary.contrastText", borderRadius: "10px" }}>
 			{props.shareUsers.map((share, index) => (
 				<ListItem key={index}>
 					<ListItemAvatar>

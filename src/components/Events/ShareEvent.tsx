@@ -6,10 +6,11 @@ import { styled } from "@mui/material/styles";
 import { Avatar, CardContent, Typography, CardMedia } from "@mui/material";
 
 import "firebase/database";
-import { dbFireStore } from "../../config/firebase";
+import { dbFireStore, storage } from "../../config/firebase";
 import { collection, query, getDocs, where } from "firebase/firestore";
 import { User } from "../../interface/User";
 import { NavLink } from "react-router-dom";
+import { StorageReference, listAll, getDownloadURL, ref } from "firebase/storage";
 
 export const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -33,6 +34,7 @@ interface Idata {
 
 export default function ShareEvent(props: Idata) {
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
+	const [imageUrls, setImageUrls] = useState<string[]>([]);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -57,6 +59,25 @@ export default function ShareEvent(props: Idata) {
 		fetchData();
 	}, [props.userId]);
 
+	useEffect(() => {
+		const fetchImages = async () => {
+			try {
+				const listRef: StorageReference = ref(storage, '/Images');
+				const res = await listAll(listRef);
+				const urls = await Promise.all(
+					res.items.map(async (itemRef) => {
+						const imageUrl = await getDownloadURL(itemRef);
+						return imageUrl;
+					})
+				);
+				setImageUrls(urls);
+			} catch (error) {
+				console.error('Error fetching images:', error);
+			}
+		};
+		fetchImages();
+	}, []);
+
 	return (
 		<Box>
 			<Box sx={{ width: "100%" }}>
@@ -65,7 +86,7 @@ export default function ShareEvent(props: Idata) {
 						<NavLink to={`/eventsDetail/${props.eventId}`}>
 							<CardMedia
 								sx={{ height: 300, borderRadius: "10px" }}
-								image={props.coverPhoto}
+								image={imageUrls.find((item) => item.includes(props.coverPhoto ?? ""))}
 								title="green iguana"
 							/>
 						</NavLink>
@@ -87,7 +108,7 @@ export default function ShareEvent(props: Idata) {
 									sx={{ display: "flex", alignItems: "end", gap: 1 }}
 								>
 									<Avatar
-										src={user.profilePhoto}
+										src={imageUrls.find((item) => item.includes(user.profilePhoto ?? ""))}
 										sx={{ width: "30px", height: "30px", marginTop: 2 }}
 										aria-label="recipe"
 									/>
