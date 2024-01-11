@@ -365,7 +365,7 @@ export default function EditPost(props: IHandle & Idata) {
 						</ListItem>
 					))}
 
-					<Typography sx={{ color: "red", ml: 2, mb: 1 }}>{location ? `Location: ${location}` : ""}</Typography>
+					<Typography sx={{ color: "grey", ml: 2, mb: 1 }}>{location ? `Location: ${location}` : ""}</Typography>
 					<TextField
 						name="caption"
 						label="What is in your mind?"

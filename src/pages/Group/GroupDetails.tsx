@@ -32,7 +32,7 @@ export default function GroupDetails() {
         const queryGroupData = query(
             collection(dbFireStore, "groups"),
             where("gId", "==", groupId),
-            orderBy("createAt", "desc")
+            orderBy("dateCreated", "desc")
         );
         const unsubscribe = onSnapshot(
             queryGroupData,
@@ -76,7 +76,7 @@ export default function GroupDetails() {
         const queryPostData = query(
             collection(dbFireStore, "posts"),
             where("groupId", "==", groupId),
-            orderBy("createAt", "desc")
+            orderBy("dateCreated", "desc")
         );
         const unsubscribe = onSnapshot(
             queryPostData,

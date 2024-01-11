@@ -11,6 +11,7 @@ import { User } from "../../interface/User";
 import { IGroup } from "../../interface/Group";
 import { NavLink } from "react-router-dom";
 import EachGroup from "../Groups/EachGroup";
+import { themeApp } from "../../utils/Theme";
 
 interface IData {
     openSearchBar: boolean;
@@ -74,8 +75,12 @@ export default function SearchContent(props: IData) {
                 onClose={props.handleCloseSearchBar}
             >
                 <Box sx={styleSearchBox}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between" }} >
-                        <Typography sx={{ fontSize: "25px", fontWeight: "bold" }}>Search for the content only</Typography>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} >
+                        <Typography sx={{
+                            fontSize: "25px", fontWeight: "bold", [themeApp.breakpoints.down("lg")]: {
+                                fontSize: "18px"
+                            }
+                        }}>Search for the content only</Typography>
                         <IconButton onClick={props.handleCloseSearchBar}>
                             <CancelIcon />
                         </IconButton>
@@ -89,7 +94,7 @@ export default function SearchContent(props: IData) {
 
                     <Divider style={{ background: "#EAEAEA", marginBottom: 10 }} />
                     {searchValue !== "" && (
-                        <>
+                        <Box sx={{ overflow: "auto", height: "200px" }}>
                             {props.inFoUser.length > 0 && (
                                 dataPost
                                     .filter((search) => search.caption.includes(searchValue) || search.hashTagTopic.includes(searchValue))
@@ -134,7 +139,7 @@ export default function SearchContent(props: IData) {
                                     </Box>
 
                                 ))}
-                        </>
+                        </Box>
                     )}
 
 

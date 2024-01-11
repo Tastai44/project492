@@ -390,7 +390,7 @@ export default function CreateGroupPost(props: IHandle & IData) {
                     ))}
                     <TextField
                         name="caption"
-                        label="What is in your mind?"
+                        label="*What is in your mind?"
                         variant="outlined"
                         size="small"
                         multiline
@@ -418,7 +418,7 @@ export default function CreateGroupPost(props: IHandle & IData) {
                     <TextField
                         name="hashTagTopic"
                         id="outlined-basic"
-                        label="#hashtag"
+                        label="*hashtag"
                         variant="outlined"
                         maxRows={4}
                         sx={{
@@ -441,7 +441,9 @@ export default function CreateGroupPost(props: IHandle & IData) {
                     {isHashtag && (
                         <Typography color={"error"} sx={{ ml: 2, fontSize: "14px" }}>Do not need to type #</Typography>
                     )}
-
+                    {!(post.caption && post.hashTagTopic) && (
+                        <Typography color={"error"} sx={{ ml: 2, fontSize: "12px" }}>Please type all *require before post</Typography>
+                    )}
                     <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                         <Box sx={{ display: "flex", gap: 1 }}>
                             <Box onClick={handleUploadClick}>

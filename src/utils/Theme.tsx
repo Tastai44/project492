@@ -53,7 +53,7 @@ export const themeApp = createTheme({
           },
         },
       },
-    }
+    },
   },
 
   palette: {

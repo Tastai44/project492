@@ -50,7 +50,7 @@ interface IHandle {
 
 export default function CreatePost({ handleCloseCratePost }: IHandle) {
 	const [location, setLocation] = useState("");
-	const [status, setStatus] = useState("");
+	const [status, setStatus] = useState("Public");
 	const [inFoUser, setInFoUser] = useState<User[]>([]);
 	const [openLocation, setOpenLocation] = useState(false);
 	const [openEmoji, setOpenEmoji] = useState(false);
@@ -399,7 +399,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 					<Typography sx={{ color: "grey", ml: 2, mb: 1 }}>{location ? `Location: ${location}` : ""}</Typography>
 					<TextField
 						name="caption"
-						label="What is in your mind?"
+						label="*What is in your mind?"
 						variant="outlined"
 						size="small"
 						multiline
@@ -424,7 +424,7 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 					<TextField
 						name="hashTagTopic"
 						id="outlined-basic"
-						label="#hashtag"
+						label="*hashtag"
 						variant="outlined"
 						maxRows={4}
 						sx={{
@@ -446,6 +446,9 @@ export default function CreatePost({ handleCloseCratePost }: IHandle) {
 					/>
 					{isHashtag && (
 						<Typography color={"error"} sx={{ ml: 2, fontSize: "14px" }}>Do not need to type #</Typography>
+					)}
+					{!(post.caption && post.hashTagTopic) && (
+						<Typography color={"error"} sx={{ ml: 2, fontSize: "12px" }}>Please type all *require before post</Typography>
 					)}
 
 					<Box sx={{ display: "flex", justifyContent: "space-between" }}>
