@@ -45,7 +45,7 @@ export default function Blog() {
 		const queryData = query(
 			collection(dbFireStore, "posts"),
 			where("owner", "==", userId),
-			orderBy("createAt", "desc")
+			orderBy("dateCreated", "desc")
 		);
 		const unsubscribe = onSnapshot(
 			queryData,

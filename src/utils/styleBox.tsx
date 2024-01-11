@@ -98,6 +98,7 @@ export const styleSearchBox = {
   borderRadius: "10px",
   color: "black",
   p: 2,
+  height: 300,
 };
 
 export const styleBoxEmoji = {

@@ -234,19 +234,6 @@ export default function BasicModal(props: Ihandle & IData) {
                             }
                         }}
                         id="outlined-basic"
-                        label="Email"
-                        variant="outlined"
-                        name="email"
-                        onChange={handleChangeProfile}
-                        value={profile.email}
-                    />
-                    <TextField
-                        sx={{
-                            width: 400, mb: 1, [themeApp.breakpoints.down("md")]: {
-                                width: 300,
-                            }
-                        }}
-                        id="outlined-basic"
                         label="IG"
                         variant="outlined"
                         name="instagram"
