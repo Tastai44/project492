@@ -80,6 +80,8 @@ export const createGroupMessageNoti = async (
             await updateDoc(notiDocRef, {
                 isRead: false,
                 message: message,
+                createAt: serverTimestamp(),
+                dateCreated: new Date().toLocaleString(),
             });
         } else {
             const docRef = doc(messageNotiCollection);
