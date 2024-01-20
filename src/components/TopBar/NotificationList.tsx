@@ -219,7 +219,7 @@ export default function NotificationList(props: IData) {
                 </MenuItem>
                 <Divider style={{ background: "white" }} />
                 {props.notifications.length !== 0 && (
-                    props.notifications.filter((item) => item.status !== "Private")
+                    props.notifications.filter((item) => item.status !== "Private" && item.actionBy != userInfo.uid)
                         .map((noti) => (
                             <ListItem
                                 key={noti.notiId}

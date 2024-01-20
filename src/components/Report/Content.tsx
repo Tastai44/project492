@@ -112,13 +112,31 @@ export default function ReportContent(props: Idata) {
 		setAnchorElUser(null);
 	};
 
+	const handleDeleteNoti = async (pId: string) => {
+		try {
+			const notiData = await getDocs(
+				query(collection(dbFireStore, "notifications"), where("contentId", "==", pId))
+			);
+
+			if (!notiData.empty) {
+				const docSnap = notiData.docs[0];
+				await deleteDoc(docSnap.ref);
+				console.log("Delete noti successfully");
+			} else {
+				console.log("Notification not found for the given contentId");
+			}
+		} catch (error) {
+			console.error("Error handling delete notification: ", error);
+		}
+	};
+
 	const handleDelete = (pId: string) => {
 		const postRef = doc(dbFireStore, "posts", pId);
 		getDoc(postRef);
 		deleteDoc(postRef)
 			.then(() => {
 				PopupAlert("Post deleted successfully", "success");
-				console.log("Post deleted successfully");
+				handleDeleteNoti(pId);
 			})
 			.catch((error) => {
 				PopupAlert("Error deleting post", "error");

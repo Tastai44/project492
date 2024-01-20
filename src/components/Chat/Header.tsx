@@ -7,6 +7,7 @@ import {
 } from "@mui/material";
 import { User } from "../../interface/User";
 import { StyledBadge } from "../RightSide/UserCard";
+import { NavLink } from "react-router-dom";
 
 
 interface IData {
@@ -42,7 +43,9 @@ export default function Header(props: IData) {
           <ListItemText
             primary={
               <Box sx={{ fontSize: "16px", ml: -1 }}>
-                <b>{`${user.firstName} ${user.lastName}`} </b>
+                <NavLink to={`profileBlog/${user.uid}`} style={{ color: "white" }}>
+                  <b>{`${user.firstName} ${user.lastName}`} </b>
+                </NavLink>
               </Box>
             }
             secondary={

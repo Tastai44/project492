@@ -6,6 +6,7 @@ import {
 	Box,
 } from "@mui/material";
 import { IGroup } from "../../interface/Group";
+import { NavLink } from "react-router-dom";
 
 interface IData {
 	groupData: IGroup[];
@@ -27,7 +28,9 @@ export default function Header(props: IData) {
 					<ListItemText
 						primary={
 							<Box sx={{ fontSize: "16px", ml: -1 }}>
-								<b>{group.groupName} </b>
+								<NavLink to={`profileBlog/${group.gId}`} style={{ color: "white" }}>
+									<b>{group.groupName} </b>
+								</NavLink>
 							</Box>
 						}
 					/>
