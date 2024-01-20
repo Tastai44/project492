@@ -28,6 +28,7 @@ import {
 	updateDoc,
 	doc,
 	getDoc,
+	deleteDoc
 } from "firebase/firestore";
 import { Post } from "../../interface/PostContent";
 import { User } from "../../interface/User";
@@ -90,6 +91,24 @@ export default function CommentContent(props: IData) {
 	};
 	const handleCloseEditCom = () => setOpenEditCom(false);
 
+	const handleDeleteNoti = async (pId: string) => {
+		try {
+			const notiData = await getDocs(
+				query(collection(dbFireStore, "notifications"), where("contentId", "==", pId))
+			);
+
+			if (!notiData.empty) {
+				const docSnap = notiData.docs[0];
+				await deleteDoc(docSnap.ref);
+				console.log("Delete noti successfully");
+			} else {
+				console.log("Notification not found for the given contentId");
+			}
+		} catch (error) {
+			console.error("Error handling delete notification: ", error);
+		}
+	};
+
 	const handleDelete = async (id: string, comId: number) => {
 		try {
 			const q = query(
@@ -106,6 +125,7 @@ export default function CommentContent(props: IData) {
 					const updatedData = { ...postData, comments: updatedComments };
 					await updateDoc(doc.ref, updatedData);
 					handleCloseUserMenu();
+					handleDeleteNoti(id);
 				} else {
 					handleCloseUserMenu();
 					alert("You don't have permission to delete this comment");

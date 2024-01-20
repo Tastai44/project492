@@ -122,17 +122,34 @@ export default function EventContent(props: Idata) {
         setAnchorElUser(null);
     };
 
+    const handleDeleteNoti = async (pId: string) => {
+        try {
+            const notiData = await getDocs(
+                query(collection(dbFireStore, "notifications"), where("contentId", "==", pId))
+            );
+
+            if (!notiData.empty) {
+                const docSnap = notiData.docs[0];
+                await deleteDoc(docSnap.ref);
+                console.log("Delete noti successfully");
+            } else {
+                console.log("Notification not found for the given contentId");
+            }
+        } catch (error) {
+            console.error("Error handling delete notification: ", error);
+        }
+    };
+
     const handleDelete = (eId: string) => {
         const postRef = doc(dbFireStore, "events", eId);
         getDoc(postRef);
         deleteDoc(postRef)
             .then(() => {
                 PopupAlert("Post deleted successfully", "success");
-                console.log("Post deleted successfully");
+                handleDeleteNoti(eId);
             })
             .catch((error) => {
-                PopupAlert("Error deleting post", "error");
-                console.error("Error deleting post: ", error);
+                PopupAlert("Error deleting post", error);
             });
     };
 

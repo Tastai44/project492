@@ -20,6 +20,7 @@ import {
 	getDocs,
 	updateDoc,
 	where,
+	deleteDoc
 } from "firebase/firestore";
 import { Post, ShareUser } from "../../interface/PostContent";
 import { User } from "../../interface/User";
@@ -63,6 +64,24 @@ export default function ShareContent(props: Idata) {
 		fetchData();
 	}, [props.shareUsers]);
 
+	const handleDeleteNoti = async (pId: string) => {
+		try {
+			const notiData = await getDocs(
+				query(collection(dbFireStore, "notifications"), where("contentId", "==", pId))
+			);
+
+			if (!notiData.empty) {
+				const docSnap = notiData.docs[0];
+				await deleteDoc(docSnap.ref);
+				console.log("Delete noti successfully");
+			} else {
+				console.log("Notification not found for the given contentId");
+			}
+		} catch (error) {
+			console.error("Error handling delete notification: ", error);
+		}
+	};
+
 	const handleDeleteShare = async (postId?: string) => {
 		const IndexShare = props.shareUsers.findIndex(
 			(index) => index.shareBy == userInfo.uid || index.shareTo == userInfo.uid
@@ -81,6 +100,7 @@ export default function ShareContent(props: Idata) {
 				const updateData = { ...postData, shareUsers: updateShare };
 				await updateDoc(doc.ref, updateData);
 				PopupAlert("Deleted share content succussfully", "success");
+				handleDeleteNoti(postId ?? "");
 			} else {
 				PopupAlert("There is no share to delete!", "warning");
 				console.log("No share to delete.");
@@ -108,6 +128,7 @@ export default function ShareContent(props: Idata) {
 				const updateData = { ...postData, shareUsers: updateShare };
 				await updateDoc(doc.ref, updateData);
 				PopupAlert("Deleted share content succussfully", "success");
+				handleDeleteNoti(eventId ?? "");
 			} else {
 				PopupAlert("There is no share to delete!", "warning");
 				console.log("No share to delete.");
