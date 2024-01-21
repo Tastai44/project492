@@ -382,7 +382,7 @@ export default function ChatBox(props: IFunction & IData) {
 						}}
 					>
 						<Box sx={{ width: "auto", display: "flex" }}>
-							<IconButton size="large" onClick={handleUploadClick}>
+							<IconButton size="large" onClick={handleUploadClick} disabled={emoji !== '' || message !== ''}>
 								<input
 									type="file"
 									ref={fileInputRef}
@@ -395,7 +395,7 @@ export default function ChatBox(props: IFunction & IData) {
 									sx={{ color: "primary.main", fontSize: "20px" }}
 								/>
 							</IconButton>
-							<IconButton size="large" onClick={handletOpenEmoji} sx={{ mr: 1 }}>
+							<IconButton size="large" onClick={handletOpenEmoji} sx={{ mr: 1 }} disabled={message !== '' || previewImages.length !== 0}>
 								<EmojiEmotionsIcon
 									sx={{ color: "primary.main", fontSize: "20px" }}
 								/>
