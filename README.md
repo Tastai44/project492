@@ -5,6 +5,9 @@ CMU Explore” is a social networking site developed for CMU people to use to so
 ## Figma
 <a href="https://www.figma.com/file/52IWsetBYJCOCGVeSSWVlC/CMU_Community?type=design&node-id=158%3A568&mode=design&t=tcohuHgLakWr08Im-1" target="_blank">Web Design</a>
 
+## Document
+<a href="https://1drv.ms/b/s!Apiw4hvT5x_0g9VBHIGO_NjqfRZOJQ?e=eO0vky" target="_blank">Website document</a>
+
 ## Features
 
 - Content side
